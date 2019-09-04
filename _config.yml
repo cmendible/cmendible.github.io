@@ -28,7 +28,7 @@ urls:
   - text: About My Dad
     url: /my-dads-profile/
   - text: Posts by Category
-    url: /category/dotnetcore/
+    url: /category/azure/
   - text: RSS Feed
     url: /feed.xml
 
