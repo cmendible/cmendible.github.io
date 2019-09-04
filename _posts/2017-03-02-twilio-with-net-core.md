@@ -4,11 +4,11 @@ date: 2017-03-02T07:59:30+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/03/twilio-csharp-blog-logo.png
+description: Twilio with .NET Core
+crosspost_to_medium: true
 categories:
   - dotNetCore
-tags:
-  - SMS
-  - Twilio
+tags: SMS Twilio
 ---
 Last night after reading this tweet, I decided to try out **<a href="https://www.twilio.com/" target="_blank">Twilio</a> with .NET Core** 
 
@@ -38,7 +38,7 @@ Open a command prompt and run
 
 ## 2. Replace the contents of project.json
 ---
-Replace the contents on **project.json** file in order to include the references to: **Twilio**</p> 
+Replace the contents on **project.json** file in order to include the references to: **Twilio**
     
 ``` json
 {
@@ -66,7 +66,7 @@ Replace the contents on **project.json** file in order to include the references
 
 ## 3. Replace the contents of Program.cs
 ---
-The **CreateClass** method is where the magic occurs. Each relevant line is explained to help you understand each step.</p> 
+The **CreateClass** method is where the magic occurs. Each relevant line is explained to help you understand each step. 
     
 ``` csharp
 using System;

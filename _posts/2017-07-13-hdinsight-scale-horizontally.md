@@ -4,13 +4,12 @@ date: 2017-07-13T11:07:13+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/06/automation1.png
+description: 'HDInsight: Scale Horizontally'
+crosspost_to_medium: true
 categories:
   - Azure
   - DevOps
-tags:
-  - Automation
-  - HDInsight
-  - PowerShell
+tags: Automation HDInsight PowerShell
 ---
 **HDInsight: Scale Horizontally** with [Scale-HDInsightClusterNodes.ps1](https://gallery.technet.microsoft.com/Scale-your-HDInsight-f57bb4d8) a PowerShell workflow that will help you automate the process of scaling your cluster.
 
@@ -21,7 +20,7 @@ The script receives 4 parameters:
   * **Nodes**: The number of nodes you want for the cluster
   * **ConnectionName**: The name of your automation connection account
 
-and requires the following powershell modules: **AzureRM.Profile**, **AzureRM.HDInsight**
+and requires the following PowerShell modules: **AzureRM.Profile**, **AzureRM.HDInsight**
 
 Here is the code:
 
@@ -65,7 +64,7 @@ Workflow Scale-HDInsightClusterNodes {
         [String]$ConnectionName
     )
 
-    # This Workflow requieres the following powershell modules: AzureRM.Profile, AzureRM.HDInsight
+    # This Workflow requieres the following PowerShell modules: AzureRM.Profile, AzureRM.HDInsight
 
     $automationConnectionName = $ConnectionName
     if (!$ConnectionName) {

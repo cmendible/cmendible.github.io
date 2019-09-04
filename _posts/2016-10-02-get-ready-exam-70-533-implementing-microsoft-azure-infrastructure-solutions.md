@@ -4,17 +4,15 @@ date: 2016-10-02T09:54:40+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/10/70-533.jpg
+description: 'Get Ready: Exam 70-533 Implementing Microsoft Azure Infrastructure Solutions'
 categories:
   - Azure
   - Certifications
-tags:
-  - 70-533
-  - Developer
-  - Exam
+tags: 70-533 Developer Exam
 ---
 This week I cleared the **<a href="https://www.microsoft.com/learning/en-us/exam-70-533.aspx" target="_blank">70-533 Implementing Microsoft Azure Infrastructure Solutions</a>** exam, and I want to share with you tips about the exam and the resources I used to study:
 
-**Should you take the exam?**[<img src="/wp-content/uploads/2016/09/Spec_Arch_AzureSol_logo_BW-300x193.png" alt="spec_arch_azuresol_logo_bw" width="300" height="193" class="alignleft size-medium wp-image-6111 alignright" srcset="/wp-content/uploads/2016/09/Spec_Arch_AzureSol_logo_BW-300x193.png 300w, /wp-content/uploads/2016/09/Spec_Arch_AzureSol_logo_BW-768x494.png 768w, /wp-content/uploads/2016/09/Spec_Arch_AzureSol_logo_BW-250x161.png 250w, /wp-content/uploads/2016/09/Spec_Arch_AzureSol_logo_BW.png 800w" sizes="(max-width: 300px) 100vw, 300px" />](/wp-content/uploads/2016/09/Spec_Arch_AzureSol_logo_BW.png)
+**Should you take the exam?**
 
 If you are an **Infrastructure Geek**, **Developer** or **Software Architect** looking to validate your <a href="https://azure.microsoft.com/" target="_blank">Microsoft Azure </a>skills then this exam is for you. Also note that Microsoft expects you to:
 

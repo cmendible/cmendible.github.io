@@ -4,14 +4,11 @@ date: 2017-05-30T11:58:00+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/05/datalake.png
+description: Start with Elasticssearch, Kibana and ASP.NET Core
+crosspost_to_medium: true
 categories:
   - dotNetCore
-tags:
-  - ASP.NET Core
-  - Docker
-  - elasticsearch
-  - kibana
-  - SeriLog
+tags: aspNetCore Docker elasticsearch kibana SeriLog
 ---
 You want to **Start with <a href="https://www.elastic.co/products/elasticsearch" target="_blank">Elasticssearch</a>, <a href="https://www.elastic.co/products/kibana" target="_blank">Kibana</a> and ASP.NET Core** and also want to do it fast? Let's use Docker and find out how easy it can be:
 
@@ -38,8 +35,8 @@ You´ll send the logs to ElasticSearch using Serilog:
     
 ``` powershell
 dotnet add package Serilog -v 2.4.0
-dotnet add packageSerilog.Extensions.Logging -v 1.4.0
-dotnet add packageSerilog.Sinks.ElasticSearch -v 5.1.0
+dotnet add package Serilog.Extensions.Logging -v 1.4.0
+dotnet add package Serilog.Sinks.ElasticSearch -v 5.1.0
 dotnet restore
 ```
 
@@ -154,7 +151,7 @@ And navigate through some of the pages: <a href="http://localhost:5000" target="
             
 ## 7. Setup Kibana and search your logs
 ---            
-Open <a href="http://localhost:5601" target="_blank">http://localhost:5601</a> and configure the Index Pattern with the default values (Click Create at the bottom of the page).</p> 
+Open <a href="http://localhost:5601" target="_blank">http://localhost:5601</a> and configure the Index Pattern with the default values (Click Create at the bottom of the page).
 
 Now click Discover on the side bar and start searching your logs. Enjoy!
             

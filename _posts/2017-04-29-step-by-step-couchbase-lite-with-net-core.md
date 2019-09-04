@@ -4,14 +4,12 @@ date: 2017-04-29T19:51:45+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/04/Couchbase_Inc._official_logo.png
+description: 'Step by step: Couchbase Lite with .Net Core'
+crosspost_to_medium: true
 categories:
   - dotNet
   - dotNetCore
-tags:
-  - couchbase
-  - couchbase lite
-  - Docker
-  - NoSQL
+tags: couchbase Docker NoSQL
 ---
 Not long after writing **Step by step: Couchbase with .Net Core** I discovered Couchbase Lite, which is still in development, but it looks like a great solution for embedded NoSQL scenarios.
 
@@ -35,7 +33,7 @@ dotnet new console
 
 ## 3. Add a nuget.config
 ---
-Since Couchbase Lite is still in development you'll need to add their development nuget server as Nuget source, so create a nuget.config file with the following contents.</p> 
+Since Couchbase Lite is still in development you'll need to add their development nuget server as Nuget source, so create a nuget.config file with the following contents.
     
 ``` xml
 <?xml version="1.0" encoding="utf-8"?>

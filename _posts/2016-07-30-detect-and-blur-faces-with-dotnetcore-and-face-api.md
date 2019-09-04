@@ -4,14 +4,11 @@ date: 2016-07-30T16:07:18+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/07/detectedfaces.jpg
+description: Detect and Blur Faces with .NET Core and Face API
 categories:
   - Azure
   - dotNetCore
-tags:
-  - Cognitive Services
-  - Face API
-  - ImageProcessorCore
-  - ProjectOxford
+tags: CognitiveServices FaceAPI ImageProcessorCoreProjectOxford
 ---
 Today I'll show you how to create a small console application that will **Detect and Blur Faces with .NET Core and Face API**.
 

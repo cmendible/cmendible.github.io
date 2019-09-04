@@ -4,14 +4,11 @@ date: 2017-07-18T08:56:48+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/07/dotnetcore.png
+description: dotnet new templates for AWS Lambda and Raspberry Pi
+crosspost_to_medium: true
 categories:
   - dotNetCore
-tags:
-  - AWS
-  - dotnet new
-  - Lambda
-  - Raspberry Pi
-  - template
+tags: AWS Lambda RaspberryPi Template
 ---
 
 After reading the following articles:
@@ -26,15 +23,20 @@ So here are the results:
 ## 1. Create a an ASP.NET Core Web API project ready for AWS lambda
 ---
   
-**Name** | **Type** | **Installation** |  **Usage** | **Related Post**
---- | --- | --- | --- | ---
-CodeItYourself.WebAPI.AWS.Lambda | Web/API | <code>dotnet new --install CodeItYourself.WebAPI.AWS.Lambda::*</code> | <code>dotnet new webapilambda</code> | <a href="/2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/" target="_blank">Deploy   
+* **Name:** CodeItYourself.WebAPI.AWS.Lambda
+* **Type**: Web/API
+* **Installation:** <code>dotnet new --install CodeItYourself.WebAPI.AWS.Lambda::*</code>
+* **Usage:** <code>dotnet new webapilambda</code>
+* **Related post:** [Deploy your ASP.NET Core Web API to AWS Lambda](/2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/)
 
 ## 2. Create an ASP.NET Core Web project for RaspberryPi
 ---
-**Name** | **Type** | **Installation** |  **Usage** | **Related Post**
---- | --- | --- | --- | ---
-CodeItYourself.ASPNET.Raspberry | Web | <code>dotnet new --install CodeItYourself.ASPNET.Raspberry::*</code> | <code>dotnet new webrpi</code> | <a href="/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/" target="_blank">Step by step: Running ASP.NET Core on Raspberry Pi</a>
+
+* **Name:** CodeItYourself.ASPNET.Raspberry 
+* **Type**: Web
+* **Installation:** <code>dotnet new --install CodeItYourself.ASPNET.Raspberry::*</code>
+* **Usage:** <code>dotnet new webrpi</code>
+* **Related post:** [Step by step: Running ASP.NET Core on Raspberry Pi](/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/)
 
 You can clone the code for the templates <a href="https://github.com/cmendible/dotnetcore.templates" target="_blank">here</a>.
 

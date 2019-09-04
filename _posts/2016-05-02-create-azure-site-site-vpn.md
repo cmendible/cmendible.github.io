@@ -4,14 +4,11 @@ date: 2016-05-02T18:30:24+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/05/Cloud-Azure.jpg
+description: Create an Azure Site to Site VPN
 categories:
   - Azure
   - DevOps
-tags:
-  - Hybrid Cloud
-  - PowerShell
-  - Site-to-Site
-  - VPN
+tags: HybridCloud PowerShell VPN Site-to-Site
 ---
 In this post I'll just show the list of PowerShell commands needed to **Create an Azure Site to Site VPN** and give you some tips when using a <a href="http://www.checkpoint.com/" target="_blank">Check Point Security Gateway</a>.
 
@@ -29,7 +26,7 @@ Select-AzureRmSubscription -SubscriptionId xxxxxxxx-xxx-xxxx-xxxx-xxxxxxxxxxx
 
 ## 2. Create a Resource Group
 ---
-Create a resource group. Let's name it: **resourceGroup**</p> 
+Create a resource group. Let's name it: **resourceGroup**
     
 ``` powershell
 New-AzureRmResourceGroup -Name resourceGroup -Location 'West Europe'
@@ -94,7 +91,7 @@ Get-AzureRmPublicIpAddress -Name gwpip -ResourceGroupName resourceGroup
 ```
 
 ## 9. Configure your VPN device
-For our Check Point device we followed the:<a href="https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&#038;solutionid=sk101275" target="_blank"> How to setup Site-to-Site VPN between Check Point and Microsoft Azure guide</a></p> 
+For our Check Point device we followed the:<a href="https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&#038;solutionid=sk101275" target="_blank"> How to setup Site-to-Site VPN between Check Point and Microsoft Azure guide</a>
     
 Take note that the commands given here will result in a **Gateway to Gateway** Azure setup and therefor you'll have to configure **One VPN tunnel per Gateway pair** in your Check Point device.
 
@@ -102,7 +99,7 @@ Also save the Shared Key (i.e secretword) you'll need it in the next step.
            
 ## 10. Create the VPN connection
 ---
-It's time to create your connection (named localtoazure in the sample) and your **Azure Site-to-Site VPN** will start working in a snap! </p> 
+It's time to create your connection (named localtoazure in the sample) and your **Azure Site-to-Site VPN** will start working in a snap!
           
 ``` powershell
 $gateway1 = Get-AzureRmVirtualNetworkGateway -Name vnetgw -ResourceGroupName resourceGroup

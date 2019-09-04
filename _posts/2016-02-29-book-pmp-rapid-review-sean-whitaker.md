@@ -4,14 +4,12 @@ date: 2016-02-29T23:55:57+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/02/PMP_Rapid_Review.jpg
+description: 'Book: PMP Rapid Review by Sean Whitaker'
 categories:
   - Certifications
   - Management
-tags:
-  - Book
-  - PMP
+tags: Book PMP
 ---
-
 ![PMP RAPID REVIEW](/wp-content/uploads/2016/02/PMP_Rapid_Review.jpg)
 
 Four months ago I cleared the **PMP** exam as part of a program launched by <a href="https://twitter.com/sogetispain" target="_blank">@SogetiSpain</a> and I want to share with you that the book: **<a href="http://www.amazon.com/PMP-Rapid-Review-Sean-Whitaker/dp/0735664404" target="_blank">&#8220;PMP Rapid Review" by Sean Whitaker</a>** was key to success.
@@ -31,23 +29,16 @@ Many books are structured by Knowledge Areas defined in the <a href="http://www.
 Reading the book you'll find one chapter for each Process Group:
 
 1. Initiating the project
-  
 2. Planning the project
-  
 3. Executing the project
-  
 4. Monitoring and controlling the project
-  
 5. Closing the project
 
 and also that it's a great and interesting resource because:
 
 * It's really easy to follow.
-  
 * It's not a full and cumbersome study guide.
-  
 * It's a book published by <a href="https://www.microsoftpressstore.com" target="_blank">Microsoft Press</a>
-  
 * Each section contains some exam tips and five questions designed to make you understand the PMP processes and concepts.
 
 <blockquote class="twitter-tweet" data-width="550">
@@ -56,7 +47,7 @@ and also that it's a great and interesting resource because:
   </p>
   
   <p>
-    &mdash; Carlos Mendible â˜ (@cmendibl3) <a href="https://twitter.com/cmendibl3/status/659810766711861248">October 29, 2015</a>
+    &mdash; Carlos Mendible  (@cmendibl3) <a href="https://twitter.com/cmendibl3/status/659810766711861248">October 29, 2015</a>
   </p>
 </blockquote>
 

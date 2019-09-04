@@ -4,14 +4,11 @@ date: 2016-06-05T19:08:30+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/06/automation1.png
+description: Stop or Start all WebApps in your Azure subscription
 categories:
   - Azure
   - DevOps
-tags:
-  - Automation
-  - PowerShell
-  - WebApp
-  - WebSite
+tags: Automation PowerShell WebApp WebSite
 ---
 **Stop or Start all WebApps in your Azure subscription** with [Stop-Start-All-WebApps.ps1](https://gallery.technet.microsoft.com/scriptcenter/Stop-or-Start-all-WebApps-9533dda6/file/153545/1/Stop-Start-All-WebApps.ps1) a simple PowerShell workflow runbook that will help you automate the process of stopping or starting every single WebApp (Website) you've deployed.
 

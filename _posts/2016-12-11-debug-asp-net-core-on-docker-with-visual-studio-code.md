@@ -4,93 +4,27 @@ date: 2016-12-11T12:49:54+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg
+description: Debug ASP.NET Core on Docker with Visual Studio Code
 categories:
   - DevOps
   - dotNetCore
-tags:
-  - ASP.NET Core
-  - Debug
-  - Docker
-  - Visual Studio Code
+tags: aspNetCore Debug Docker VisualStudioCode
 ---
 Last Thursday I started reading the Free eBook: <a href="https://aka.ms/dockerlifecycleebook" target="_blank">"Containerized Docker Application Lifecycle with Microsoft Tools and Platform"</a> by Cesar de la Torre. The book is really easy to read and really gives the reader a glimpse on the way to approach the overall application lifecycle when using containers and Microsoft Technologies. One of the interesting things he mentions is the ability to debug your source code inside a container using Visual Studio or Visual Studio Code, so I decided to try it out and **Debug ASP.NET Core on Docker with Visual Studio Code**
 
 First be aware of the following prerequisites:
 
-<table>
-    <tr>
-      <td>
-        **Prerequisites**
-      </td>
-      <td>
-        **Command**
-      </td>
-    </tr>
-    <tr>
-      <td>
-        .NET Core 1.1 SDK for Windows
-      </td>
-      <td>
-        Download and install: <a href="https://go.microsoft.com/fwlink/?LinkID=835014" target="_blank">.NET Core 1.1 SDK for Windows</a>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Docker for Windows
-      </td>
-      <td>
-        Download and install: <a href="https://download.docker.com/win/stable/InstallDocker.msi" target="_blank">Docker for Windows (stable)</a>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Visual Studio Code and C# Plugin
-      </td>
-      <td>
-        Download and install from here: <a href="https://code.visualstudio.com/" target="_blank">Code</a>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Node.js
-      </td>
-      <td>
-        Download and install from here: <a href="https://nodejs.org/dist/v6.9.2/node-v6.9.2-x64.msi" target="_blank">Node.js v6.9.2</a>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Yeoman
-      </td>
-      <td>
-        From a Command Prompt run the following: **npm install -g yo**
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Generator-docker
-      </td>
-      <td>
-        Run the following command: **npm install -g generator-docker**
-      </td>
-      <tr>
-        <td>
-          Bower
-        </td>
-        <td>
-          Run the following command: **npm install -g bower**
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Gulp
-        </td>
-        <td>
-          Run the following command: **npm install -g gulp**
-        </td>
-      </tr>
-</table>  
-  
+| **Prerequisites** |  **Command** |
+|---|---|
+.NET Core 1.1 SDK for Windows | Download and install: <a href="https://go.microsoft.com/fwlink/?LinkID=835014" target="_blank">.NET Core 1.1 SDK for Windows</a>|
+|Docker for Windows| Download and install: <a href="https://download.docker.com/win/stable/InstallDocker.msi" target="_blank">Docker for Windows (stable)</a>|
+|Visual Studio Code and C# Plugin | Download and install from here: <a href="https://code.visualstudio.com/" target="_blank">Code</a>|
+|Node.js| Download and install from here: <a href="https://nodejs.org/dist/v6.9.2/node-v6.9.2-x64.msi" target="_blank">Node.js v6.9.2</a>|
+|Yeoman| From a Command Prompt run the following: **npm install -g yo**|
+|Generator-docker|Run the following command: **npm install -g generator-docker**|
+|Bower| Run the following command: **npm install -g bower**|
+|Gulp| Run the following command: **npm install -g gulp**|
+
 Now let's create an ASP .NET Core application and debug it inside Docker:
 
 ## 1. Create an ASP .NET Core application
@@ -107,7 +41,7 @@ Open a command prompt and run
 
 ## 2. Change your application port in Program.cs
 ---
-Let's use port **5000** to host the application</p> 
+Let's use port **5000** to host the application
           
 ``` csharp
    public static void Main(string[] args)
@@ -126,7 +60,7 @@ Let's use port **5000** to host the application</p>
       
 ## 3. Create the artifacts needed to Debug on Docker
 ---
-Run the following command in the root folder of your project.</p> 
+Run the following command in the root folder of your project.
           
 ``` powershell
     yo docker
@@ -154,7 +88,7 @@ The Yeoman generator is not ready for .Net Core 1.1 so change **dockerTask.ps1**
       
 ## 5. Change the docker files
 ---
-Change the fist line of both **Dockerfile** and **Dockerfile.debug** in order to use the latest image for .NET Core 1.1</p> 
+Change the fist line of both **Dockerfile** and **Dockerfile.debug** in order to use the latest image for .NET Core 1.1
           
 ``` powershell
    FROM microsoft/dotnet

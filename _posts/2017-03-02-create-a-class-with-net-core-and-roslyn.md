@@ -4,11 +4,11 @@ date: 2017-03-02T07:28:14+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/01/roslyn.png
+description: Create a class with .NET Core and Roslyn
+crosspost_to_medium: true
 categories:
   - dotNetCore
-tags:
-  - Code Generation
-  - Roslyn
+tags: Roslyn
 ---
 After my post first post on: **<a href="https://carlos.mendible.com/2017/01/29/net-core-roslyn-and-code-generation/" target="_blank">Code Generation</a>** I decided to go a bit further, so today we'll **Create a class with .NET Core and Roslyn** and write the output to the console.
 
@@ -28,7 +28,7 @@ Open a command prompt and run
 
 ## 2. Replace the contents of project.json
 ---
-Replace the contents on **project.json** file in order to include the references to: **Microsoft.CodeAnalysis.CSharp** and **Microsoft.CodeAnalysis.Compilers<br /> **</p> 
+Replace the contents on **project.json** file in order to include the references to: **Microsoft.CodeAnalysis.CSharp** and **Microsoft.CodeAnalysis.Compilers<br /> **
     
 ``` json
 {
@@ -57,7 +57,7 @@ Replace the contents on **project.json** file in order to include the references
 
 ## 3. Replace the contents of Program.cs
 ---
-The **CreateClass** method is where the magic occurs. Each relevant line is explained to help you understand each step.</p> 
+The **CreateClass** method is where the magic occurs. Each relevant line is explained to help you understand each step.
     
 ``` csharp
 using System;

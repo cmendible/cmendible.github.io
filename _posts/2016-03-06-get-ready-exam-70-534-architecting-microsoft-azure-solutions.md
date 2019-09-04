@@ -4,15 +4,13 @@ date: 2016-03-06T12:07:02+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/02/ExamRef_70_534.jpg
+description: 'Get Ready: Exam 70-534 Architecting Microsoft Azure Solutions'
 categories:
   - Azure
   - Certifications
-tags:
-  - 70-534
-  - Architect
-  - Exam
+tags: 70-534 Architect Exam
 ---
-<a href="http://carlos.mendible.com/wp-content/uploads/2016/02/Spec_Arch_AzureSol_logo_BW.png" rel="attachment wp-att-1351"><img class="size-medium wp-image-1351 alignright" src="http://carlos.mendible.com/wp-content/uploads/2016/02/Spec_Arch_AzureSol_logo_BW-300x193.png" alt="MS Architecting Microsoft Azure Solutions" width="300" height="193" srcset="/wp-content/uploads/2016/02/Spec_Arch_AzureSol_logo_BW-300x193.png 300w, /wp-content/uploads/2016/02/Spec_Arch_AzureSol_logo_BW-768x494.png 768w, /wp-content/uploads/2016/02/Spec_Arch_AzureSol_logo_BW-250x161.png 250w, /wp-content/uploads/2016/02/Spec_Arch_AzureSol_logo_BW.png 800w" sizes="(max-width: 300px) 100vw, 300px" /></a>I recently passed the <a href="https://www.microsoft.com/en-us/learning/exam-70-534.aspx" target="_blank">70-534 Architecting Microsoft Azure Solutions</a> exam, and I want to share with you tips about the exam and the resources I used to study:
+I recently passed the <a href="https://www.microsoft.com/en-us/learning/exam-70-534.aspx" target="_blank">70-534 Architecting Microsoft Azure Solutions</a> exam, and I want to share with you tips about the exam and the resources I used to study:
 
 **Should you take the exam?**
 
@@ -26,8 +24,7 @@ If you are a **Solutions or Software Architect** looking to validate your <a hre
   * Design Microsoft Azure infrastructure and networking (15-20%)
   * Secure resources (15-20%)
   * Design an application storage and data access strategy (15-20%)
-  
-    Design an advanced application (15-20%)
+  * Design an advanced application (15-20%)
   * Design websites (15-20%)
   * Design a management, monitoring, and business continuity strategy (15-20%)
 

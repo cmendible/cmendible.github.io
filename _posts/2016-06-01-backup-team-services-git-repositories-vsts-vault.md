@@ -4,12 +4,10 @@ date: 2016-06-01T13:17:22+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/06/vault.jpg
+description: Backup your Team Services Git Repositories with VSTS Vault
 categories:
   - DevOps
-tags:
-  - BackUp
-  - Git
-  - VSTS
+tags: BackUp Git VSTS
 ---
 **Backup your Team Services Git Repositories with VSTS Vault**: A simple windows service or console application designed to keep a local copy of all your code.
 

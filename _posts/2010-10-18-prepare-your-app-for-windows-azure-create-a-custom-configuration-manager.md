@@ -3,13 +3,11 @@ title: 'Prepare your App for Windows Azure! Create a custom Configuration Manage
 date: 2010-10-18T10:21:03+00:00
 author: Carlos Mendible
 layout: post
+description: 'Prepare your App for Windows Azure! Create a custom Configuration Manager!'
 categories:
   - Azure
   - dotNet
-tags:
-  - Configuration
-  - ServiceDefinition
-  - Windows
+tags: Configuration ServiceDefinition Windows
 ---
 When you deploy an application to Windowes Azure, your application configuration cannot be changed cause it becomes part of the distributed package.
 

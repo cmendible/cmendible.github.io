@@ -4,12 +4,11 @@ date: 2017-09-21T17:23:14+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/07/dotnetcore.png
+description: A small .NET Core CLI and MSBUILD Cheat Sheet
+crosspost_to_medium: true
 categories:
   - dotNetCore
-tags:
-  - Cheat Sheet
-  - CLI
-  - msbuild
+tags: CheatSheet CLI msbuild
 ---
 This is a small **.NET Core CLI and MSBUILD Cheat Sheet** with the list of commands and settings I use almost on daily basis when working with .NET Core, the command line and Visual Studio Code.
 

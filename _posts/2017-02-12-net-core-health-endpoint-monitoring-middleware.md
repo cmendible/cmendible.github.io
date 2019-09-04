@@ -4,12 +4,11 @@ date: 2017-02-12T14:06:42+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/02/pipeline.png
+description: .NET Core Health Endpoint Monitoring Middleware
+crosspost_to_medium: true
 categories:
   - dotNetCore
-tags:
-  - Health Endpoint
-  - Middleware
-  - Monitoring
+tags:  HealthEndpoint Middleware Monitoring
 ---
 Today I'll show a simple example of how to create a **.Net Core Health Endpoint Monitoring <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware" target="_blank">Middleware</a>**.
 

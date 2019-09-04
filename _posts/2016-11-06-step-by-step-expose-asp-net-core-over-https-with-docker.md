@@ -4,16 +4,12 @@ date: 2016-11-06T08:00:49+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg
+description: 'Step by step: Expose ASP.NET Core over HTTPS with Docker'
 categories:
   - Azure
   - dotNet
   - dotNetCore
-tags:
-  - ASP.NET Core
-  - Docker
-  - HTTPS
-  - Kestrel
-  - openssl
+tags: aspNetCore Docker https Kestrel openssl
 ---
 This week I decided to modify the sample of my previous post: <a href="https://carlos.mendible.com/2016/10/30/step-by-step-scale-asp-net-core-with-docker-swarm/" target="_blank">Step by step: Scale ASP.NET Core with Docker Swarm</a> so you can add TLS to your ASP.NET Core applications and Dockerize it.
 
@@ -21,7 +17,7 @@ Let's see how I changed the application in order to make it work:
 
 ## 1. Add HTTPS support for Kestrel
 ---
-I added the following line to the dependencies in the <em>project.json</em> file</p> 
+I added the following line to the dependencies in the <em>project.json</em> file.
     
 ``` json 
     "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.1",
@@ -29,7 +25,7 @@ I added the following line to the dependencies in the <em>project.json</em> file
 
 ## 2. Configure Kestrel to use HTTPS
 ---
-In the <em>Main</em> method I configured Kestrel to use HTTPS. Don't worry about the <em>cert.pfx</em> certificate file because it will be created inside the docker container.</p> 
+In the <em>Main</em> method I configured Kestrel to use HTTPS. Don't worry about the <em>cert.pfx</em> certificate file because it will be created inside the docker container.
     
 Note that in line 8 I also configured the application to use port 443.
     

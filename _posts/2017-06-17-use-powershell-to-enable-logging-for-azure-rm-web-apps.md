@@ -4,12 +4,12 @@ date: 2017-06-17T15:01:53+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/06/powershell.png
+description: Use PowerShell to Enable Logging for Azure RM Web Apps
+crosspost_to_medium: true
 categories:
   - Azure
   - DevOps
-tags:
-  - PowerShell
-  - WebApp
+tags: PowerShell WebApp
 ---
 Recently I client ask me to enable application and http logging for more than 20 AzureRM Web Apps. Furthermore the client wanted the logs to be stored in a Storage Account.
 

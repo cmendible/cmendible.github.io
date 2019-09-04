@@ -3,16 +3,10 @@ title: Running Apache behind an IIS server. .Net Solution
 date: 2010-02-23T15:17:00+00:00
 author: Carlos Mendible
 layout: post
-blogger_blog:
-  - carlos.mendible.com
-blogger_author:
-  - Carlos Mendible
+description: Running Apache behind an IIS server. .Net Solution
 categories:
   - dotNet
-tags:
-  - Apache
-  - IIS
-  - Url rewrite
+tags: Apache IIS UrlRewrite
 ---
 Yesterday I had the challenge to redirect &#8211; rewrite an url from my public IIS7 server to an internal Apache server. For instance a request to **http://www.mysite.com/app** handled by IIS should be redirected (using a reverse proxy) to ; **http://127.0.0.1:8080/app** where the internal Apache is listening.
 

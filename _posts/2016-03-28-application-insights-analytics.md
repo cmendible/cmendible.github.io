@@ -4,13 +4,11 @@ date: 2016-03-28T12:01:42+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/03/query-1.png
+description: 'Application Insights Analytics'
 categories:
   - Azure
   - DevOps
-tags:
-  - Application Insights
-  - Application Insights Analytics
-  - Insights Query Language
+tags: ApplicationInsights
 ---
 For the last couple of months I've been using **<a href="https://azure.microsoft.com/en-us/documentation/articles/app-insights-overview/" target="_blank">Application Insights</a>** to monitor, detect and diagnose performance issues in our applications. Last week I noticed that the _Analytics_ button on the <a href="https://azure.microsoft.com/en-us/documentation/articles/app-insights-overview/" target="_blank">Application Insights</a> blade was working:
 

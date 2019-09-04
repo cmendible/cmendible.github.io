@@ -4,17 +4,15 @@ date: 2016-04-01T09:39:59+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/04/70-532.jpg
+description: 'Get Ready: Exam 70-532 Developing Microsoft Azure Solutions'
 categories:
   - Azure
   - Certifications
-tags:
-  - 70-532
-  - Developer
-  - Exam
+tags: 70-532 Developer Exam
 ---
 Yesterday I cleared the **<a href="https://www.microsoft.com/learning/en-us/exam-70-532.aspx" target="_blank">70-532 Develping Microsoft Azure Solutions </a>**exam, and I want to share with you tips about the exam and the resources I used to study:
 
-**Should you take the exam?**<a href="http://carlos.mendible.com/wp-content/uploads/2016/04/Spec_Dev_AzureSol_BW.png" rel="attachment wp-att-2951"><img class="size-medium wp-image-2951 alignright" src="http://carlos.mendible.com/wp-content/uploads/2016/04/Spec_Dev_AzureSol_BW-300x193.png" alt="Spec_Dev_AzureSol_BW" width="300" height="193" srcset="/wp-content/uploads/2016/04/Spec_Dev_AzureSol_BW-300x193.png 300w, /wp-content/uploads/2016/04/Spec_Dev_AzureSol_BW-768x494.png 768w, /wp-content/uploads/2016/04/Spec_Dev_AzureSol_BW-250x161.png 250w, /wp-content/uploads/2016/04/Spec_Dev_AzureSol_BW.png 800w" sizes="(max-width: 300px) 100vw, 300px" /></a>
+**Should you take the exam?**
 
 If you are a **Developer** **or Software Architect** looking to validate your <a href="https://azure.microsoft.com/" target="_blank">Microsoft Azure </a>skills then this exam is for you. Also note that Microsoft expects you to:
 
@@ -52,7 +50,7 @@ Just like for any certification exam, studying with practice tests is key to suc
 
 Be sure to get some hands on experience!
 
-  * Learn those Powershell commands and don't forget that Azure CLI does exists.
+  * Learn those PowerShell commands and don't forget that Azure CLI does exists.
   * Developing <a href="https://github.com/cmendible/AzureBus" target="_blank">AzureBus</a> was key to understand and master <a href="https://azure.microsoft.com/en-gb/documentation/articles/service-bus-queues-topics-subscriptions/" target="_blank">Azure Service Bus Topics, Queues and Subscriptions</a> concepts.
   * I also created my own storage samples to get experience with <a href="https://azure.microsoft.com/en-us/documentation/articles/storage-dotnet-shared-access-signature-part-1/" target="_blank">Shared Access Signatures (SAS)</a> and custom policies.
 

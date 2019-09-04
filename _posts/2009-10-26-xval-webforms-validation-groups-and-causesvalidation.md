@@ -2,14 +2,10 @@
 title: xVal.WebForms, Validation Groups and CausesValidation
 date: 2009-10-26T09:10:00+00:00
 author: Carlos Mendible
+description: xVal.WebForms, Validation Groups and CausesValidation
 categories:
   - dotNet
-tags:
-  - ASP.Net
-  - CausesValidation
-  - ValidationGroups
-  - WebForms
-  - xVal
+tags: ASP.Net CausesValidation ValidationGroups WebForms xVal
 ---
 In one of our recent projects we needed a behavior like the ASP.Net **ValidationGroups** and also be able to relay on the **CausesValidation** of all controls implementing **IButtonControl** interface control.
 

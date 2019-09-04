@@ -4,20 +4,19 @@ date: 2016-09-26T06:59:08+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg
+description: 'Step by step: ASP.NET Core on Docker'
 categories:
   - Azure
   - dotNetCore
-tags:
-  - ASP.NET Core
-  - Docker
+tags: aspNetCore Docker
 ---
-This week I have to give an introductory talk on DevOps and <a href="https://www.docker.com/" target="_blank">Docker</a> and therefore I decided to prepare a simple **Step by step: ASP.NET Core on **<a href="https://www.docker.com/" target="_blank">Docker</a>** sample.</p> 
+This week I have to give an introductory talk on DevOps and <a href="https://www.docker.com/" target="_blank">Docker</a> and therefore I decided to prepare a simple **Step by step: ASP.NET Core on <a href="https://www.docker.com/" target="_blank">Docker</a>** sample.
 
 Assuming you have <a href="https://www.docker.com/" target="_blank">Docker</a> installed and running, follow these 4 simple steps:
 
 ## 1. Create a dockerfile
 ---
-On your Docker box create a dockerfile with the following contents 
+On your Docker box create a dockerfile with the following contents
     
 ``` yaml
     # We use the microsoft/dotnet image as a starting point.
@@ -26,7 +25,7 @@ On your Docker box create a dockerfile with the following contents
     # Install git
     RUN apt-get install git -y
 
-    # Create a folder to clone our source code 
+    # Create a folder to clone our source code
     RUN mkdir repositories
 
     # Set our working folder
@@ -38,7 +37,7 @@ On your Docker box create a dockerfile with the following contents
     # Set our working folder
     WORKDIR aspnet-core-helloworld/src/dotnetstarter
 
-    # Expose port 5000 for the application.    
+    # Expose port 5000 for the application.
     EXPOSE 5000
 
     # Restore nuget packages
@@ -50,16 +49,16 @@ On your Docker box create a dockerfile with the following contents
 
 ## 2. Create a docker image
 ---
-With the dockerfile in place run the following command 
+With the dockerfile in place run the following command
     
 ``` powershell
-   sudoÂ dockerÂ buildÂ -tÂ hello_worldÂ .
+   sudo docker buildÂ -t hello_world .
 ```
 Now you have an image named <em>hello_world</em> with all the dependencies and code needed to run the sample.
 
 ## 3. Test the Docker image
 ---
-To test the Docker image run the following command 
+To test the Docker image run the following command
     
 ``` powershell
    docker run -it -p 5000:5000 hello_world
@@ -79,4 +78,4 @@ Feel free to logout or close the connection with your Docker box and the applica
 
 You can get a copy of the docker file here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld">https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld</a>
         
-Hope it helps!     
+Hope it helps!

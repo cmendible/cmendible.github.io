@@ -3,12 +3,10 @@ title: In-Person or online Networking?
 date: 2011-06-24T15:49:19+00:00
 author: Carlos Mendible
 layout: post
+description: In-Person or online Networking?
 categories:
   - Management
-tags:
-  - HexaSystems
-  - Microsoft WPC
-  - Project
+tags: Project
 ---
 Recently I've been puzzled by the following question: what is the best way to approach networking and to connect with people and companies that will help you survive in this competitive world?
 

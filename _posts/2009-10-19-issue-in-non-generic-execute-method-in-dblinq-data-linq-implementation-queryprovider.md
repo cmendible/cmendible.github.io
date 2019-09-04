@@ -3,13 +3,11 @@ title: Issue in non Generic Execute Method in DbLinq.Data.Linq.Implementation.Qu
 date: 2009-10-19T15:07:00+00:00
 author: Carlos Mendible
 layout: post
+description: Issue in non Generic Execute Method in DbLinq.Data.Linq.Implementation.QueryProvider
 categories:
   - dotNet
-tags:
-  - DbLinq
-  - SQLite
+tags: DbLinq SQLite
 ---
-
 We've been working with DbLinq for a while now, at [HexaSystems](http://hexasystems.com) and recently using it together with Dynamic Linq and SQLite I programed a call to the Count method of a Queryable object as follows:
 
 ``` csharp

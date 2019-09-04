@@ -4,12 +4,14 @@ date: 2016-09-19T09:32:57+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/09/serilog.png
+description: 'Step by step: Serilog with ASP.NET Core'
 categories:
   - dotNetCore
-tags:
-  - ASP.NET Core
-  - SeriLog
+tags: aspNetCore SeriLog
 ---
+
+## **NOTE**: This post is out of date. Please read: [Updated Step by step: Serilog with ASP.NET Core](https://carlos.mendible.com/2019/01/14/updated-step-step-serilog-asp-net-core/) for an update. 
+
 Last week I wrote about <a href="https://carlos.mendible.com/2016/09/11/netcore-and-microsoft-bot-framework/" target="_blank">.NET Core and Microsoft Bot Framework</a> and I'm still learning and playing with it. The thing is that once I implemented more features and deployed the bot to Azure it didn't work. So I had to find a way to log and trace what was happening in order to diagnose and fix the problem.
 
 This time I decided to give a chance to <a href="https://serilog.net/" target="_blank">Serilog</a> and as you should know by now, getting the correct dependencies to work with .Net Core is not always easy, so here is my **Step by step: Serilog with ASP.NET Core**

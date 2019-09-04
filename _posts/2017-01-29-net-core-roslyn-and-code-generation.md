@@ -4,11 +4,11 @@ date: 2017-01-29T20:31:41+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/01/roslyn.png
+description: .NET Core, Roslyn and Code Generation
+crosspost_to_medium: true
 categories:
   - dotNetCore
-tags:
-  - Code Generation
-  - Roslyn
+tags: Roslyn
 ---
 For ages I've been using T4 templates as main tool for code generation and scaffolding, but now that I'm an absolute fan of Visual Studio Code and .Net Core I need to explore other options such as Yeoman, Scripty and Roslyn. This post is just the result of my first and simplest experiment with **.Net Core, Roslyn and Code Generation**.
 
@@ -29,7 +29,7 @@ Open a command prompt and run
 
 ## 2. Replace the contents of project.json
 ---
-Replace the contents on **project.json** file in order to include the references to both: **Microsoft.CodeAnalysis.CSharp** and **Microsoft.CodeAnalysis.Compilers**.</p> 
+Replace the contents on **project.json** file in order to include the references to both: **Microsoft.CodeAnalysis.CSharp** and **Microsoft.CodeAnalysis.Compilers**.
     
 ``` json
 {
@@ -58,7 +58,7 @@ Replace the contents on **project.json** file in order to include the references
 
 ## 3. Replace the contents of Program.cs
 ---
-The **ChangeNamespaceAsync** method is where the magic occurs. It takes the code in a string, parses it, replaces the namespace and finally writes the class to the console and a file.</p> 
+The **ChangeNamespaceAsync** method is where the magic occurs. It takes the code in a string, parses it, replaces the namespace and finally writes the class to the console and a file.
     
 ``` csharp
 using System;

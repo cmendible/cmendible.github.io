@@ -3,11 +3,10 @@ title: netDumbster another .Net Fake SMTP server based on Dumbster
 date: 2010-05-06T16:02:00+00:00
 author: Carlos Mendible
 layout: post
+description: netDumbster another .Net Fake SMTP server based on Dumbster
 categories:
   - dotNet
-tags:
-  - netDumbster
-  - SMTP
+tags: netDumbster SMTP
 ---
 Today I've released **netDumbster** (<http://netdumbster.codeplex.com/>)
 

@@ -4,11 +4,12 @@ date: 2017-06-25T18:52:22+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/06/cosmos.png
+description: 'Step by step: .NET Core and Azure Cosmos DB'
+crosspost_to_medium: true
 categories:
   - Azure
   - dotNetCore
-tags:
-  - Cosmos DB
+tags: CosmosDB
 ---
 **Step by step: .NET Core and Azure Cosmos DB** is a short post on how to connect to Cosmos DB, save a document and then query to find it.
 
@@ -16,7 +17,7 @@ Let's start:
 
 ## 1. Create a Cosmos DB account
 ---
-Create a Cosmos DB account in your Azure subscription. Once created get the URI and the primary Read-write key from the Keys section.</p> 
+Create a Cosmos DB account in your Azure subscription. Once created get the URI and the primary Read-write key from the Keys section.
 
 If you need info on how to do this browse to the **Create a database account** section here: <a href="https://docs.microsoft.com/en-us/azure/cosmos-db/create-documentdb-dotnet" target="_blank">https://docs.microsoft.com/en-us/azure/cosmos-db/create-documentdb-dotnet</a>
       

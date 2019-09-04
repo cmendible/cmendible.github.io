@@ -4,12 +4,10 @@ date: 2017-01-16T14:54:55+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/01/nancy.jpg
+description: '.Net Core and NancyFX: can writing a WebApi get any simpler?'
 categories:
   - dotNetCore
-tags:
-  - ASP.NET Core
-  - NancyFX
-  - WebAPI
+tags: aspNetCore NancyFX WebAPI
 ---
 Last Thursday I attended a Meetup hosted by my friends of <a href="https://twitter.com/mscodersmadrid" target="_blank">@MsCodersMadrid</a> in Madrid where, thanks to <a href="https://twitter.com/snavarropino" target="_blank">@snavarropino</a>, I learned a bit about the **<a href="http://nancyfx.org/" target="_blank">NancyFX</a>** open source framework. 
 
@@ -33,7 +31,7 @@ Open a command prompt and run
 
 ## 2. Replace the contents of project.json
 ---
-Replace the contents on **project.json** file. Be sure to include the references to **Microsoft.AspNetCore.Owin** and **Nancy**</p> 
+Replace the contents on **project.json** file. Be sure to include the references to **Microsoft.AspNetCore.Owin** and **Nancy**
     
 ``` json
 {
@@ -104,7 +102,7 @@ namespace WebApplication
 
 ## 4. Add a Startup.cs
 ---
-This one-liner hooks **<a href="http://nancyfx.org/" target="_blank">NancyFX</a>** to our application.</p> 
+This one-liner hooks **<a href="http://nancyfx.org/" target="_blank">NancyFX</a>** to our application. 
     
 ``` csharp
 using Microsoft.AspNetCore.Builder;

@@ -3,6 +3,7 @@ title: Do IT Certifications help?
 date: 2013-08-27T18:03:32+00:00
 author: Carlos Mendible
 layout: post
+description: Do IT Certifications help?
 categories:
   - Certifications
 ---

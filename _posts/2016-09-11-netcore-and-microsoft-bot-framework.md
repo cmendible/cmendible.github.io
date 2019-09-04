@@ -4,13 +4,10 @@ date: 2016-09-11T09:15:32+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/09/bot-framework-default-8.png
+description: .NET Core and Microsoft Bot Framework
 categories:
   - dotNetCore
-tags:
-  - ASP.NET Core
-  - Bot Connector API
-  - Bot Framewok
-  - REST
+tags: aspNetCore BotFramewok REST
 ---
 Today I'll show you how to create a simple Skype bot that will reply with the same text message you send to it. 
 
@@ -20,7 +17,7 @@ Let me show you what it takes to create a simple bot:
 
 ## 1. Register the bot
 ---
-Head to the <a href="https://dev.botframework.com/bots/new" target="_blank">Register bot</a> page and fill the required fields.</p> 
+Head to the <a href="https://dev.botframework.com/bots/new" target="_blank">Register bot</a> page and fill the required fields.
     
 For the messaging endpoint use something like: **<em>https://{url of your bot}/api/messages</em>**
 

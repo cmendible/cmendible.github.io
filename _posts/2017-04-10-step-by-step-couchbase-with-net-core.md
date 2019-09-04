@@ -4,13 +4,12 @@ date: 2017-04-10T17:11:15+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/04/Couchbase_Inc._official_logo.png
+description: 'Step by step: Couchbase with .Net Core'
+crosspost_to_medium: true
 categories:
   - dotNet
   - dotNetCore
-tags:
-  - couchbase
-  - Docker
-  - NoSQL
+tags:  couchbase Docker NoSQL
 ---
 This week I started to read an understand how **[Couchbase](http://www.couchbase.com)** works and that's the reason I decided to write: **Step by step: Couchbase with .Net Core**
 
@@ -110,7 +109,7 @@ Be sure to add the Beer Sample bucket and check the documentation here: <a href=
 
 ## 6. Run the program
 ---      
-Run the program and enjoy!</p> 
+Run the program and enjoy!
           
 ``` powershell
 dotnet run

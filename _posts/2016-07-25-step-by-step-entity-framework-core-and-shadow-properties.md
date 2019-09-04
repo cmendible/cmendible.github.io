@@ -4,10 +4,10 @@ date: 2016-07-25T16:07:49+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/07/efsqlite.png
+description: 'Step by step: Entity Framework Core and Shadow Properties'
 categories:
   - dotNetCore
-tags:
-  - EntityFrameworkCore
+tags: EntityFrameworkCore
 ---
 Today I'll show you how to create a small console application with a **Step by step: Entity Framework Core and Shadow Properties** example.
 

@@ -4,12 +4,11 @@ date: 2016-07-17T15:21:03+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/02/Microsoft-Service-Bus-logo.png
+description: 'Step by step: .NET Core, Azure Service Bus and AMQP'
 categories:
   - Azure
   - dotNetCore
-tags:
-  - AMQP
-  - ServiceBus
+tags: AMQP ServiceBus
 ---
 Today I'll show you how to create a small console application with a **Step by step: .NET Core, Azure Service Bus and AMQP** example.
 

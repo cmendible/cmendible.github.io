@@ -4,16 +4,11 @@ date: 2016-05-06T07:18:05+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/05/download.png
+description: NHInsights an OracleManagedDataClientDriver for NHibernate and Application Insights
 categories:
   - Azure
   - dotNet
-tags:
-  - Application Insights
-  - NHibernate
-  - NHInsights
-  - Oracle
-  - OracleManagedDataClientDriver
-  - Telemetry
+tags: ApplicationInsights NHibernate Oracle OracleManagedDataClientDriver Telemetry
 ---
 Let's talk about **<a href="https://github.com/cmendible/NHInsights" target="_blank">NHInsights</a> an OracleManagedDataClientDriver for NHibernate and Application Insights**
 

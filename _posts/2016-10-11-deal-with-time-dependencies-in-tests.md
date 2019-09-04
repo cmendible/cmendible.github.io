@@ -4,13 +4,11 @@ date: 2016-10-11T07:37:35+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/10/SystemDateTime.jpg
+description: Deal with time dependencies in Tests
 categories:
   - dotNet
   - dotNetCore
-tags:
-  - DateTime
-  - Unit Tests
-  - xUnit
+tags: DateTime UnitTests xUnit
 ---
 Las week we discovered that some of our test would"randomly" fail depending of the time of the day. After investigating the issue we found that the culprit was that the service being tested was taking decisions based on the current system time (DateTime.Now) leading to different outcomes through the day. So how **do we deal with time dependencies in tests**?
 
@@ -31,7 +29,7 @@ dotnet new -t xunittest
 ```
 ## 2. Create a SystemDateTime helper class
 ---
-This is the helper class a proposed by Ayende</p> 
+This is the helper class a proposed by Ayende
     
 ``` csharp
 namespace MyServices

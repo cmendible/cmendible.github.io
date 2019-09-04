@@ -1,52 +1,62 @@
-# Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
-
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
+---
 title: Code it Yourself...
 email: carlos@mendible.com
-description: .Net | Azure | VSTS
+description: A blog on Microsoft Azure and .NET by Carlos Mendible
 baseurl: "" # the subpath of your site, e.g. /blog
 url: https://carlos.mendible.com
 permalink: :year/:month/:day/:title/
-twitter_username: cmendibl3
-github_username: cmendible
-linkedin_username: carlosmendible
+author: Carlos Mendible
+github: https://github.com/cmendible
+
+enableTags: true
+tagarray: []
+
+social:
+  - icon: fa-twitter
+    link: "https://twitter.com/cmendibl3"
+  - icon: fa-linkedin
+    link: "https://www.linkedin.com/in/carlosmendible"
+  - icon: fa-github
+    link: "https://github.com/cmendible"
+
+share:
+  twitter_username: cmendibl3
+
+urls:
+  - text: About Me
+    url: /about/
+  - text: About My Dad
+    url: /my-dads-profile/
+  - text: Posts by Category
+    url: /category/dotnetcore/
+  - text: RSS Feed
+    url: /feed.xml
+
+# twitter_username: cmendibl3
+# github_username: cmendible
 
 # Build settings
 markdown: kramdown
-theme: minima
+# theme: minima
 plugins:
   - jekyll-feed
-  - jekyll-sitemap
-  # - jekyll-paginate
+  - jekyll-paginate
+  # - jekyll-sitemap
+  - jekyll-crosspost-to-medium
 
-disqus:
-  shortname: codeityourself
-
+disqus_shortname: codeityourself
 google_analytics: UA-11243417-1
-  
-# paginate: 8
-# paginate_path: "/page/:num"
+avatar_url: /static/img/avatar.jpg
 
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+paginate: 20
+per_page: 20
+paginate_path: "/page/:num/"
+
+compress_html:
+  clippings: all
+  comments: ["<!-- ", " -->"]
+  endings: all
+
+jekyll-crosspost_to_medium:
+  enabled: true
+  status: draft

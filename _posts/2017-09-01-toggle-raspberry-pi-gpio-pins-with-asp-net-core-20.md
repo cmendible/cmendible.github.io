@@ -4,14 +4,11 @@ date: 2017-09-01T09:39:08+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/09/IMG_20170901_111428_01.jpg
+description: Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0
+crosspost_to_medium: true
 categories:
   - dotNetCore
-tags:
-  - ARM
-  - ASP.NET Core
-  - GPIO
-  - Raspberry Pi
-  - Raspbian
+tags: ARM aspNetCore GPIO RaspberryPi Raspbian
 ---
 Today I'll show you how to **Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0**.
 
@@ -19,7 +16,7 @@ First be aware of the following prerequisites:
 
   * **<a href="https://www.microsoft.com/net/download/core" target="_blank">.NET Core 2.0 SDK</a>**
   * **A Raspberry Pi 3 Running Raspbian**
-  * Install linux dependencies: sudo apt-get install curl libunwind8 gettext**
+  * Install linux dependencies: sudo apt-get install curl libunwind8 gettext
 
 Now let's start:
 

@@ -3,10 +3,10 @@ title: SQL Azure Requires Clustered Indexes in all tables
 date: 2010-10-01T11:05:49+00:00
 author: Carlos Mendible
 layout: post
+description: SQL Azure Requires Clustered Indexes in all tables
 categories:
   - Azure
-tags:
-  - SQL
+tags: SQL
 ---
 Recently we performed some test against SQL Azure. We found that our system was throwing an exception cause SQL Azure requires a clustered index in each table ([Wanna know why?](http://blogs.msdn.com/b/sqlazure/archive/2010/05/12/10011257.aspx)).
 

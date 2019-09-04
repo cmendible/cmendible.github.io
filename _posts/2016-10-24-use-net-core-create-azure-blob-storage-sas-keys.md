@@ -4,14 +4,11 @@ date: 2016-10-24T10:11:58+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/10/SAS.jpg
+description: Use .NET Core to Create Azure Blob Storage SAS Keys
 categories:
   - Azure
   - dotNetCore
-tags:
-  - Blob
-  - Blob Storage
-  - SAS
-  - Shared Access Signature
+tags: Blob BlobStorage SAS SharedAccessSignature
 ---
 If you intend to use the <a href="https://www.nuget.org/packages/WindowsAzure.Storage/" target="_blank">WindowsAzure.Storage</a> library with .Net Core you'll hit a"compatibility wall" trying to make it work.
 
@@ -26,7 +23,7 @@ Add the following dependency in your project.json file
 ```
 ## 2. Create a StorageEntitySas class to hold the SAS key
 ---
-The following class will hold de blob Uri and the SAS credentials.</p> 
+The following class will hold de blob Uri and the SAS credentials.
     
 ``` csharp
     public struct StorageEntitySas
@@ -39,7 +36,7 @@ The following class will hold de blob Uri and the SAS credentials.</p>
 
 ## 3. Create the following methods
 ---
-I've created the GetSharedAccessSignature to return a write only SAS key for the blob. But you can easily change it to add more permissions.</p> 
+I've created the GetSharedAccessSignature to return a write only SAS key for the blob. But you can easily change it to add more permissions.
     
 ``` csharp
         /// <summary>

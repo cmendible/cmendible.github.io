@@ -4,14 +4,12 @@ date: 2017-03-21T11:24:05+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/03/aspnetcorerpi.gif
+description: 'Step by step: Running ASP.NET Core on Raspberry Pi'
+crosspost_to_medium: true
 categories:
   - dotNet
   - dotNetCore
-tags:
-  - ARM
-  - ASP.NET Core
-  - Raspberry Pi
-  - Windows 10 Iot Core
+tags: ARM aspNetCore RaspberryPi Windows10 IoT
 ---
 After reading <a href="https://github.com/dotnet/core/blob/master/samples/RaspberryPiInstructions.md" target="_blank">.NET Core on Raspberry Pi</a> and successfully running a console application on **Windows 10 IoT Core** on my **Raspberry Pi 3** I decided to write: **Step by step: Running ASP.NET Core on Raspberry Pi**.
 
@@ -139,13 +137,13 @@ dotnet publish -r win8-arm
       
 8. Copy libuv.dll
 ---      
-<del datetime="2017-03-23T20:33:55+00:00">Copy **libuv.dll** from **\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win7-arm\publish** to **\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win8-arm\publish**</del></p> 
+<del datetime="2017-03-23T20:33:55+00:00">Copy **libuv.dll** from **\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win7-arm\publish** to **\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win8-arm\publish**</del>
           
 This step is no longer needed cause we added **libuv** as a dependency in the **csproj** file
       
 ## 9. Copy the files to your Raspberry
 ---      
-Connect to Raspberry using powershell, start the ftp server and open port 5000 on the Raspberry
+Connect to Raspberry using PowerShell, start the ftp server and open port 5000 on the Raspberry
       
           
 ``` powershell
@@ -158,7 +156,7 @@ Open the **File Explorer** ftp://<TARGET_DEVICE> and copy the contents of **\asp
 
 ## 10. Run the application
 ---            
-Connect to Raspberry using powershell and run
+Connect to Raspberry using PowerShell and run
                             
 ``` powershell
 cd c:\publish\

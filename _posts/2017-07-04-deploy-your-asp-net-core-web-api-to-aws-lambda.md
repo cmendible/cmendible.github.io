@@ -4,14 +4,11 @@ date: 2017-07-04T12:59:05+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/07/AWS-Lambda-DotNet-Core.png
+description: Deploy your ASP.NET Core Web API to AWS Lambda
+crosspost_to_medium: true
 categories:
   - dotNetCore
-tags:
-  - ASP.NET Core
-  - AWS
-  - Lambda
-  - Serverless
-  - WebAPI
+tags: aspNetCore AWS Lambda Serverless WebAPI
 ---
 Today I'll show you how to **Deploy your ASP.NET Core Web API to AWS Lambda**.
 

@@ -4,19 +4,16 @@ date: 2017-08-02T16:57:08+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/06/automation1.png
+description: Create a Service Principal and write required parameters to a .azureauth file
+crosspost_to_medium: true
 categories:
   - Azure
   - DevOps
-tags:
-  - Automation
-  - Azure AD
-  - Azure AD Application
-  - PowerShell
-  - Service Principal
+tags:  Automation AzureAD PowerShell Service Principal
 ---
 This week I had to repeat the process of creating a Service Principal in order to use the **Microsoft.Azure.Management.Fluent** lib with **.NET Core** so I decided it was time to script the process. With the following script you can **Create a Service Principal and write required parameters to a .azureauth file**.
 
-You'll need the **AzureRM** powershell module installed:
+You'll need the **AzureRM** PowerShell module installed:
 
 ``` powershell
 Install-Module AzureRM 

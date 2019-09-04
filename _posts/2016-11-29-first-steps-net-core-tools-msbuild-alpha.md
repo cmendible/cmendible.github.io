@@ -4,11 +4,11 @@ date: 2016-11-29T12:49:28+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/11/netcoremsbuild.jpg
+description: 'First steps with .NET Core Tools MSBuild "alpha"'
 categories:
   - dotNet
   - dotNetCore
-tags:
-  - msbuild
+tags: msbuild
 ---
 On November 16th, Microsoft announced the <a href="https://blogs.msdn.microsoft.com/dotnet/2016/11/16/announcing-net-core-tools-msbuild-alpha/?Wt.mc_id=DX_MVP8656" target="_blank">.NET Core Tools MSBuild"alpha"</a>. I've been developing .Net Core applications with Visual Studio Code for a while now, and I needed to try the new tooling.
 
@@ -38,7 +38,7 @@ This will make things difficult for a while but right now you have to forget abo
 
 ## 4. The csproj file does not target .Net Core 1.1 by default
 ---
-You'll have to edit the **csproj** file to target .Net Core 1.1 (lines 6 and 16)</p> 
+You'll have to edit the **csproj** file to target .Net Core 1.1 (lines 6 and 16)
     
 ``` xml 
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -97,7 +97,7 @@ Hit F5 and select .NET Core. Visual Studio Code will create a **launch.json** fi
 ```
 ## 6. Create task.json
 ---
-Hit F5 again and select .NET Core. Visual Studio Code will create a **task.json** file which you won't have to modify.</p> 
+Hit F5 again and select .NET Core. Visual Studio Code will create a **task.json** file which you won't have to modify.
     
 ``` json 
 {
@@ -120,7 +120,7 @@ Hit F5 again and select .NET Core. Visual Studio Code will create a **task.json*
 ```
 ## 7. Restore packages
 ---
-Run the following command from the Visual Studio Code terminal or the command prompt from step 1 </p> 
+Run the following command from the Visual Studio Code terminal or the command prompt from step 1
     
 ``` powershell 
     dotnet restore
@@ -130,7 +130,7 @@ Visual Studio Code won't prompt automatically to restore so failing to run this 
       
 ## 8. Run and debug the application
 ---    
-Place a break point in line 7 of the **Program.cs** file</p> 
+Place a break point in line 7 of the **Program.cs** file
           
 ``` powershell 
 using System;

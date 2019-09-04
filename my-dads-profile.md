@@ -3,8 +3,11 @@ title: My Dad's Profile
 date: 2011-05-16T13:45:10+00:00
 author: Carlos Mendible
 layout: page
-image: /wp-content/uploads/2011/05/medad-2.jpg
+image: /assets/img/dad/me_and_dad.jpg
 ---
+
+![Me and my Dad training Kung fu](/assets/img/dad/me_and_dad.jpg)
+
 My name is Juan Carlos Mendible. I was born in Caracas, Venezuela.
 
 I got a M.Sc in Biophysics from the University of Illinois (1974) and a Ph.D in Biochemistry from the University of California at Berkeley (1983).

@@ -4,13 +4,12 @@ date: 2017-05-08T10:55:32+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/05/kafka-logo-wide.png
+description: 'Step by step: Kafka Pub/Sub with Docker and .Net Core'
+crosspost_to_medium: true
 categories:
   - dotNet
   - dotNetCore
-tags:
-  - Docker
-  - kafka
-  - pub/sub
+tags: Docker kafka pubsub
 ---
 Last week I attended to a <a href="https://kafka.apache.org/" target="_blank">Kafka</a> workshop and this is my attempt to show you a simple **Step by step: Kafka Pub/Sub with Docker and .Net Core** tutorial.
 
@@ -158,7 +157,7 @@ It will take a while but you'll get a working Kafka installation.
       
 ## 6. Run the program
 ---
-Run the program and enjoy!</p> 
+Run the program and enjoy!
           
 ``` powershell
 dotnet run

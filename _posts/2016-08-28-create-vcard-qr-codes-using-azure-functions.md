@@ -4,14 +4,11 @@ date: 2016-08-28T18:45:28+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/08/qrcodedark.png
+description: Create vCard QR Codes using Azure Functions
 categories:
   - Azure
   - dotNet
-tags:
-  - Azure Functions
-  - QR Code
-  - QRCoder
-  - vCard
+tags: AzureFunctions QRCode QRCoder vCard
 ---
 Today I'll show you how to develop a Web API to **Create vCard QR Codes using <a href="https://azure.microsoft.com/en-us/services/functions/" target="_blank">Azure Functions</a>**.
 
@@ -29,13 +26,13 @@ Now let's start:
 
 ## 1. Create a Function App
 ---
-Head to <a href="http://portal.azure.com" target="_blank">portal.azure.com</a> and hit the New button. Search for **Function App** and create one. You'll be asked for an app name, resource group, app service plan and storage account where the code will live.</p> 
+Head to <a href="http://portal.azure.com" target="_blank">portal.azure.com</a> and hit the New button. Search for **Function App** and create one. You'll be asked for an app name, resource group, app service plan and storage account where the code will live.
     
 <a href="/wp-content/uploads/2016/08/functionapp-1.png"><img src="/wp-content/uploads/2016/08/functionapp-1-186x300.png" alt="functionapp" width="186" height="300" class="alignleft size-medium wp-image-5601" srcset="/wp-content/uploads/2016/08/functionapp-1-186x300.png 186w, /wp-content/uploads/2016/08/functionapp-1-634x1024.png 634w, /wp-content/uploads/2016/08/functionapp-1-250x404.png 250w, /wp-content/uploads/2016/08/functionapp-1.png 639w" sizes="(max-width: 186px) 100vw, 186px" /></a>
       
 ## 2. Create the function
 ---      
-Create a new Function, selecting the empty C# template and give it a name: (i.e QRCoder)</p> 
+Create a new Function, selecting the empty C# template and give it a name: (i.e QRCoder)
           
 <a href="/wp-content/uploads/2016/08/qrcoder.png"><img src="/wp-content/uploads/2016/08/qrcoder.png" alt="qrcoder" class="alignleft size-medium wp-image-5621" srcset="/wp-content/uploads/2016/08/qrcoder.png 1900w, /wp-content/uploads/2016/08/qrcoder-300x205.png 300w, /wp-content/uploads/2016/08/qrcoder-768x525.png 768w, /wp-content/uploads/2016/08/qrcoder-1024x701.png 1024w, /wp-content/uploads/2016/08/qrcoder-250x171.png 250w" sizes="(max-width: 1900px) 100vw, 1900px" /></a>
          

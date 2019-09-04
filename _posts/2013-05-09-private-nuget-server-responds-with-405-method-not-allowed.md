@@ -3,11 +3,10 @@ title: Private Nuget Server responds with (405) Method Not Allowed while pushing
 date: 2013-05-09T10:31:14+00:00
 author: Carlos Mendible
 layout: post
+description: Private Nuget Server responds with (405) Method Not Allowed while pushing or deleting a package
 categories:
   - dotNet
-tags:
-  - IIS
-  - NuGet
+tags: IIS NuGet
 ---
 So you've deployed your own private **NuGet** server to **IIS** but you get this annoying exception trying to push packages:
 

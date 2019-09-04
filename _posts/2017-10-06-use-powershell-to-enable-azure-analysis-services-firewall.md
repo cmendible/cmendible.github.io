@@ -1,17 +1,16 @@
 ---
-title: Use Powershell to Enable Azure Analysis Services Firewall
+title: Use PowerShell to Enable Azure Analysis Services Firewall
 date: 2017-10-06T10:15:52+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/06/powershell.png
+description: Use PowerShell to Enable Azure Analysis Services Firewall
+crosspost_to_medium: true
 categories:
   - Azure
-tags:
-  - Analysis Services
-  - Firewall
-  - PowerShell
+tags: AnalysisServices Firewall PowerShell
 ---
-Last week, firewall support was added to Azure Analysis Service (<a href="https://azure.microsoft.com/en-us/blog/azure-analysis-services-adds-firewall-support/" rel="noopener" target="_blank">https://azure.microsoft.com/en-us/blog/azure-analysis-services-adds-firewall-support/</a>). The thing is that, at the time of writing, there is no AzureRM cmdlet availiable to **Use PowerShell to Enable Azure Analysis Services Firewall**
+Last week, firewall support was added to Azure Analysis Service (<a href="https://azure.microsoft.com/en-us/blog/azure-analysis-services-adds-firewall-support/" rel="noopener" target="_blank">https://azure.microsoft.com/en-us/blog/azure-analysis-services-adds-firewall-support/</a>). The thing is that, at the time of writing, there is no AzureRM cmdlet available to **Use PowerShell to Enable Azure Analysis Services Firewall**
 
 So, with the help of **<a href="https://resources.azure.com" target="_blank">Resource Explorer</a>** I found which properties must be added to the service (resource) in order to enable the firewall:
 

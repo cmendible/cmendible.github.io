@@ -4,12 +4,11 @@ date: 2017-08-24T17:01:39+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2017/07/dotnetcore.png
+description: .NET Core, Code Analysis and StyleCop
+crosspost_to_medium: true
 categories:
   - dotNetCore
-tags:
-  - Code Analysis
-  - FxCop
-  - StyleCop
+tags:  CodeAnalysis FxCop StyleCop
 ---
 So now that .NET Core and .NET Standard 2.0 have been released some of you may be migrating applications or even creating new ones with it. As you progress you are starting to worry about the quality of your code so what you want is to at least check your code against design and style guidelines don't you? 
 
@@ -43,10 +42,18 @@ dotnet restore
 
 ## 4. Add CodeAnalysisRuleSet property to the project
 ---
-Open the file **codeanalysis.csproj** and add the following property:
+Open the file **codeanalysis.csproj** and add the following property inside a Property Group:
 
 ``` xml
 <CodeAnalysisRuleSet>ca.ruleset</CodeAnalysisRuleSet>
+```
+
+or add a new Property Group:
+
+``` xml
+<PropertyGroup>
+    <CodeAnalysisRuleSet>ca.ruleset</CodeAnalysisRuleSet>
+</PropertyGroup>
 ```
 
 ## 5. Create the ca.ruleset file

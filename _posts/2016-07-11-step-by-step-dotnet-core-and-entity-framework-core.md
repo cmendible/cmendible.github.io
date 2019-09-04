@@ -4,12 +4,11 @@ date: 2016-07-11T15:14:26+00:00
 author: Carlos Mendible
 layout: post
 image: /wp-content/uploads/2016/07/efsqlite.png
+description: 'Step by step: .NET Core and Entity Framework Core'
 categories:
   - dotNet
   - dotNetCore
-tags:
-  - EntityFrameworkCore
-  - SQLite
+tags: EntityFrameworkCore SQLite
 ---
 Today I'll show you how to create a small console application with a **Step by step: .NET Core and Entity Framework Core** example.
 
