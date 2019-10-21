@@ -27,8 +27,6 @@ Many of you come to my site to read the post [Step by step: Serilog with ASP.NET
 ---
 
 ``` bash
-    dotnet add package Microsoft.AspNetCore.App
-    dotnet add package Microsoft.AspNetCore.Razor.Design
     dotnet add package Serilog.AspNetCore
     dotnet add package Serilog.Extensions.Logging
     dotnet add package Serilog.Sinks.ColoredConsole
