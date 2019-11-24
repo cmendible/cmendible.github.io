@@ -13,7 +13,9 @@ categories:
 tags: aks
 ---
 
-Durante el mes de Octubre tuve la suerte de grabar en LinkedIn Learning mi primer curso online sobre Kubernetes. Aun me queda mucho por aprender y mejorar en este formato, ya que mientras grabas los cursos no recibes feedback inmediato como sí ocurre cuando das una charla o haces una presentación.
+Durante el mes de Octubre tuve la suerte de grabar en LinkedIn Learning mi primer curso online sobre Kubernetes. 
+
+Aun me queda mucho por aprender y mejorar en este formato, ya que mientras grabas los cursos no recibes feedback inmediato como sí ocurre cuando das una charla o haces una presentación.
 
 Hoy os dejo el video introductorio por aquí:
 
