@@ -9,7 +9,7 @@ crosspost_to_medium: true
 categories:
   - dotNet
   - dotNetCore
-tags:  couchbase Docker NoSQL
+tags: couchbase Docker NoSQL
 ---
 This week I started to read an understand how **[Couchbase](http://www.couchbase.com)** works and that's the reason I decided to write: **Step by step: Couchbase with .Net Core**
 
