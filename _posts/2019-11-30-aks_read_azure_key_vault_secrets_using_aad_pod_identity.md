@@ -103,9 +103,9 @@ Then the **[Managed Identity Controller (MIC) deployment and the Node Managed Id
 
 In the last step, two resources are deployed. The first one is an **AzureIdentity** that will be used to identify the Managed Identity inside your cluster and the second one is an **AzureIdentityBinding** that binds the azure Identity with a Selector.
 
-Let's run the powershell command with the following parameters:
+Let's run the PowerShell command with the following parameters:
 
-* **Resourece Group**: myResourceGroup
+* **Resource Group**: myResourceGroup
 * **Managed Identity Name**: myId
 * **Identity Selector**: requires-vault
 * **AKS Name**: myAKS
