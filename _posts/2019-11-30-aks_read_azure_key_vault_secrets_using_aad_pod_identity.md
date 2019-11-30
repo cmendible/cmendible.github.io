@@ -17,9 +17,85 @@ What if I tell you that it's possible to connect you AKS pods to an **Azure Key 
 
 Well with **AAD Pod Identities** you can enable your Kubernetes applications to access Azure cloud resources securely using **Azure Active Directory** (AAD) including **Azure Key Vault**.
 
-The following gist show a **PowerShell** script that will help you setup everything inside your RBAC enabled AKS cluster. You will also need to have **Azure CLI** installed on your box and an **Azure Key Vault** deployed in the same resource group where your AKS lives.
+The following [gist](https://gist.github.com/cmendible/4dd5c48a45480d5a0db0d6ed68e4cd01) show a **PowerShell** script that will help you setup everything inside your RBAC enabled AKS cluster. You will also need to have **Azure CLI** installed on your box and an **Azure Key Vault** deployed in the same resource group where your AKS lives.
 
-{% gist 4dd5c48a45480d5a0db0d6ed68e4cd01 %}
+``` powershell
+param(
+  [string]
+  [Parameter(Mandatory = $true)]
+  $resourceGroupName,
+  [string]
+  [Parameter(Mandatory = $true)]
+  $identityName,
+  [string]
+  [Parameter(Mandatory = $true)]
+  $identitySelector,
+  [string]
+  [Parameter(Mandatory = $true)]
+  $aksName,
+  [string]
+  [Parameter(Mandatory = $true)]
+  $keyVaultName 
+)
+
+# Get the current subscription
+$subscriptionId = (az account show | ConvertFrom-Json).id
+
+# Get aks so we can extract it's Service Princpal later
+$aks = az aks show `
+  -g $resourceGroupName `
+  -n $aksName | ConvertFrom-Json
+
+# Create Managed Identity
+$identity = az identity create `
+  -g $resourceGroupName `
+  -n $identityName `
+  -o json | ConvertFrom-Json
+
+# Assign the Reader role to the Managed Identity
+az role assignment create `
+  --role "Reader" `
+  --assignee $identity.principalId `
+  --scope /subscriptions/$subscriptionId/resourcegroups/$resourceGroupName
+
+# Assign the Managed Identity Operator role to the AKS Service Principal
+az role assignment create `
+  --role "Managed Identity Operator" `
+  --assignee $aks.servicePrincipalProfile.clientId `
+  --scope $identity.id
+
+# Add policy to the Key Vault so the Managed Identity can read secrets
+az keyvault set-policy `
+  --name $keyVaultName `
+  --spn $identity.clientId `
+  --secret-permissions get list
+
+# Enable AAD Pod Identity on AKS
+kubectl apply -f https://raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml
+
+# Create the Azure Identity and AzureIdentityBinding yaml on the fly
+$k8sAzureIdentityandBinding = @"
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentity
+metadata:
+  name: $($identityName)
+spec:
+  type: 0
+  ResourceID: $($identity.id)
+  ClientID: $($identity.clientId)
+---
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentityBinding
+metadata:
+  name: $($identityName)-identity-binding
+spec:
+  AzureIdentity: $($identityName)
+  Selector: $($identitySelector)
+"@
+
+# Deploy the yamls 
+$k8sAzureIdentityandBinding | kubectl apply -f -
+```
 
 The script creates a Manged Identity, assigns some permissions to it and creates a policy inside the Key Vault enabling the Identity to list and get secrets.
 
