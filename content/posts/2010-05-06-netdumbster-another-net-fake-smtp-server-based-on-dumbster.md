@@ -4,7 +4,7 @@ categories:
 - dotNet
 date: "2010-05-06T16:02:00Z"
 description: netDumbster another .Net Fake SMTP server based on Dumbster
-# tags: ["netDumbster", "SMTP"]
+tags: ["netDumbster", "SMTP"]
 title: netDumbster another .Net Fake SMTP server based on Dumbster
 ---
 Today I've released **netDumbster** (<http://netdumbster.codeplex.com/>)

@@ -4,7 +4,7 @@ categories:
 - dotNet
 date: "2009-10-19T15:07:00Z"
 description: Issue in non Generic Execute Method in DbLinq.Data.Linq.Implementation.QueryProvider
-# tags: ["DbLinq", "SQLite"]
+tags: ["DbLinq", "SQLite"]
 title: Issue in non Generic Execute Method in DbLinq.Data.Linq.Implementation.QueryProvider
 ---
 We've been working with DbLinq for a while now, at [HexaSystems](http://hexasystems.com) and recently using it together with Dynamic Linq and SQLite I programed a call to the Count method of a Queryable object as follows:

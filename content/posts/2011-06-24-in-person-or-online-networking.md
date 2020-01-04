@@ -4,7 +4,7 @@ categories:
 - Management
 date: "2011-06-24T15:49:19Z"
 description: In-Person or online Networking?
-# tags: Project
+tags: ["Project"]
 title: In-Person or online Networking?
 ---
 Recently I've been puzzled by the following question: what is the best way to approach networking and to connect with people and companies that will help you survive in this competitive world?

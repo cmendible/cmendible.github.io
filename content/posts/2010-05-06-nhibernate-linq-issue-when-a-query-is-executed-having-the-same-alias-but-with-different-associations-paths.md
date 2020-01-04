@@ -5,7 +5,7 @@ categories:
 date: "2010-05-06T14:08:00Z"
 description: NHibernate.Linq Issue when a query is executed having the same alias
   but with different associations paths
-# tags: ["Linq", "NHibernate"]
+tags: ["Linq", "NHibernate"]
 title: NHibernate.Linq Issue when a query is executed having the same alias but with
   different associations paths
 ---

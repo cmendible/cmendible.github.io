@@ -6,7 +6,7 @@ categories:
 date: "2016-07-17T15:21:03Z"
 description: 'Step by step: .NET Core, Azure Service Bus and AMQP'
 image: /wp-content/uploads/2016/02/Microsoft-Service-Bus-logo.png
-# tags: AMQP ServiceBus
+tags: ["AMQP", "ServiceBus"]
 title: 'Step by step: .NET Core, Azure Service Bus and AMQP'
 url: /2016/07/17/step-by-step-net-core-azure-service-bus-and-amqp/
 ---

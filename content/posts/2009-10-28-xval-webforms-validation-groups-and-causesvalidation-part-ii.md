@@ -4,7 +4,7 @@ categories:
 - dotNet
 date: "2009-10-28T15:22:00Z"
 description: xVal.WebForms, Validation Groups and CausesValidation Part II
-# tags: ["ASP.Net", "CausesValidation", "ValidationGroups", "WebForms", "xVal"]
+tags: ["ASP.Net", "CausesValidation", "ValidationGroups", "WebForms", "xVal"]
 title: xVal.WebForms, Validation Groups and CausesValidation Part II
 ---
 A friend came with two issues concerning my recent post about xVal.webForms ValidationGroups and CausesValidation support.

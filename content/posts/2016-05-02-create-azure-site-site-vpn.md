@@ -6,7 +6,7 @@ categories:
 date: "2016-05-02T18:30:24Z"
 description: Create an Azure Site to Site VPN
 image: /wp-content/uploads/2016/05/Cloud-Azure.jpg
-# tags: HybridCloud PowerShell VPN Site-to-Site
+tags: ["HybridCloud", "PowerShell", "VPN", "Site-to-Site"]
 title: Create an Azure Site to Site VPN
 ---
 In this post I'll just show the list of PowerShell commands needed to **Create an Azure Site to Site VPN** and give you some tips when using a <a href="http://www.checkpoint.com/" target="_blank">Check Point Security Gateway</a>.

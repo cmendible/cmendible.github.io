@@ -6,7 +6,7 @@ categories:
 date: "2016-04-01T09:39:59Z"
 description: 'Get Ready: Exam 70-532 Developing Microsoft Azure Solutions'
 image: /wp-content/uploads/2016/04/70-532.jpg
-# tags: ["70-532", "Developer", "Exam"]
+tags: ["70-532", "Developer", "Exam"]
 title: 'Get Ready: Exam 70-532 Developing Microsoft Azure Solutions'
 ---
 Yesterday I cleared the **<a href="https://www.microsoft.com/learning/en-us/exam-70-532.aspx" target="_blank">70-532 Develping Microsoft Azure Solutions </a>**exam, and I want to share with you tips about the exam and the resources I used to study:

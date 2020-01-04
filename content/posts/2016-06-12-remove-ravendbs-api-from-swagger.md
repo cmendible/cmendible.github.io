@@ -5,7 +5,7 @@ categories:
 date: "2016-06-12T20:24:54Z"
 description: Remove RavenDb's API from Swagger
 image: /wp-content/uploads/2016/06/swagger.png
-# tags: ASP.Net OWIN RavenDb Swagger Swashbuckle WebAPI
+tags: ["ASP.Net", "OWIN", "RavenDb", "Swagger", "Swashbuckle", "WebAPI"]
 title: Remove RavenDb's API from Swagger
 ---
 I've been working on a small IoT project where we expose a simple REST API and use <a href="https://ravendb.net/" target="_blank">RavenDB </a>Embedded as the database. Once we enabled <a href="http://swagger.io/" target="_blank">Swagger</a> on our project we noticed that the generated documentation was not only showing our API but those exposed by RavenDB too. So the question came up: how can we **Remove RavenDb's API from <a href="http://swagger.io/" target="_blank">Swagger</a>** Documentation?

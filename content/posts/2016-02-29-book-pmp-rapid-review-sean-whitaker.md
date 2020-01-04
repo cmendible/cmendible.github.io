@@ -6,7 +6,7 @@ categories:
 date: "2016-02-29T23:55:57Z"
 description: 'Book: PMP Rapid Review by Sean Whitaker'
 image: /wp-content/uploads/2016/02/PMP_Rapid_Review.jpg
-# tags: ["Book", "PMP"]
+tags: ["Book", "PMP"]
 title: 'Book: PMP Rapid Review by Sean Whitaker'
 ---
 ![PMP RAPID REVIEW](/wp-content/uploads/2016/02/PMP_Rapid_Review.jpg)
