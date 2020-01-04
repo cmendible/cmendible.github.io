@@ -9,7 +9,7 @@ jobs:
   build-deploy:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@hugo
+      - uses: actions/checkout@v1
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
