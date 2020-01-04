@@ -1,0 +1,354 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Use PowerShell to Enable Logging for Azure RM Web Apps" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Use PowerShell to Enable Logging for Azure RM Web Apps</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2017-06-17T15:01:53Z">Jun 17, 2017</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/devops">DevOps</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>4 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>Recently I client ask me to enable application and http logging for more than 20 AzureRM Web Apps. Furthermore the client wanted the logs to be stored in a Storage Account.</p>
+<p>Issues started when I decided to <strong>Use PowerShell to Enable Logging for Azure RM Web Apps</strong>, because there is no equivalent to the ASM <strong><!-- raw HTML omitted -->Enable-AzureWebsiteApplicationDiagnostic<!-- raw HTML omitted --></strong> cmdlet for ARM resources.</p>
+<p>So how could I enable logging and the needed configuration? Well there is a handy cmdlet that can be used to set almost any property for an Azure ARM resource: <strong><!-- raw HTML omitted -->Set-AzureRmResource<!-- raw HTML omitted --></strong></p>
+<p>And how can anyone discover what properties must be set in order to enable or disable features? Well what I usually do is go to <!-- raw HTML omitted -->portal.azure.com<!-- raw HTML omitted --> and configure a service as specified. Then I browse with <strong><!-- raw HTML omitted -->Resource Explorer<!-- raw HTML omitted --></strong> to find the properties and values I need for the desired configuration.</p>
+<p>In my clients case I needed to set the following properties:</p>
+<ul>
+<li>applicationLogs.azureBlobStorage.level</li>
+<li>applicationLogs.azureBlobStorage.sasUrl</li>
+<li>applicationLogs.azureBlobStorage.retenionDays</li>
+<li>httpLogs.azureBlobStorage.level</li>
+<li>httpLogs.azureBlobStorage.sasUrl</li>
+<li>httpLogs.azureBlobStorage.retenionDays</li>
+<li>httpLogs.azureBlobStorage.enabled</li>
+</ul>
+<p>So for the solution I just need to create a storage account and set those properties for every Web App found inside a Resource Group. This is the script I used:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#66d9ef">function</span> Add-IndexNumberToArray (
+    [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $True)]
+    <span style="color:#66d9ef">[array]</span>$array
+) {
+    <span style="color:#66d9ef">for</span> ($i = 0; $i <span style="color:#f92672">-lt</span> $array.Count; $i++) { 
+        Add-Member -InputObject $array[$i] -Name <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#</span><span style="color:#e6db74">&#34;</span> -Value ($i + 1) -MemberType NoteProperty 
+    }
+    $array
+}
+
+<span style="color:#75715e"># Enable Web App Service Logs</span>
+<span style="color:#66d9ef">function</span> Enable-WebAppServiceLogs() {
+    Add-AzureRmAccount
+
+    <span style="color:#66d9ef">[array]</span>$SubscriptionArray = Add-IndexNumberToArray (Get-AzureRmSubscription) 
+    <span style="color:#66d9ef">[int]</span>$SelectedSub = 0
+
+    <span style="color:#75715e"># use the current subscription if there is only one subscription available</span>
+    <span style="color:#66d9ef">if</span> ($SubscriptionArray.Count <span style="color:#f92672">-eq</span> 1) {
+        $SelectedSub = 1
+    }
+    
+    <span style="color:#75715e"># Get SubscriptionID if one isn&#39;t provided</span>
+    <span style="color:#66d9ef">while</span> ($SelectedSub <span style="color:#f92672">-gt</span> $SubscriptionArray.Count <span style="color:#f92672">-or</span> $SelectedSub <span style="color:#f92672">-lt</span> 1) {
+        Write-host <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Please select a subscription from the list below</span><span style="color:#e6db74">&#34;</span>
+        $SubscriptionArray | Select-Object <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#</span><span style="color:#e6db74">&#34;</span>, Id, Name | Format-Table
+        <span style="color:#66d9ef">try</span> {
+            $SelectedSub = Read-Host <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Please enter a selection from 1 to </span>$($SubscriptionArray.count)<span style="color:#e6db74">&#34;</span>
+        }
+        <span style="color:#66d9ef">catch</span> {
+            Write-Warning -Message <span style="color:#e6db74">&#39;Invalid option, please try again.&#39;</span>
+        }
+    }
+
+    <span style="color:#75715e"># Select subscription</span>
+    Select-AzureRmSubscription -SubscriptionId $SubscriptionArray[$SelectedSub - 1].Id
+
+    <span style="color:#75715e"># Ask for the resource group.</span>
+    $resourceGroupName = Read-Host <span style="color:#e6db74">&#39;Resource Group name&#39;</span>
+
+    <span style="color:#75715e"># Ask for the storage account name</span>
+    $storageAccountName = Read-Host <span style="color:#e6db74">&#39;Storage account name&#39;</span>
+
+    <span style="color:#75715e"># Exit if resource group does not exists...</span>
+    $resourceGroup = Get-AzureRmResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue
+    <span style="color:#66d9ef">if</span> (!$resourceGroup) {
+        Write-Verbose <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">$</span><span style="color:#e6db74">resourceGroup does not exists...</span><span style="color:#e6db74">&#34;</span>
+        Exit 
+    }
+
+    <span style="color:#75715e"># Create a new storage account.</span>
+    $storage = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName -ErrorAction SilentlyContinue
+    <span style="color:#66d9ef">if</span> (!$storage) {
+        $storage = New-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName -Location $resourceGroup.Location -SkuName <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Standard_ZRS</span><span style="color:#e6db74">&#34;</span>
+    }
+
+    <span style="color:#75715e"># Create a container for the app logs </span>
+    New-AzureStorageContainer -Context $storage.Context -Name <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">webapp-logs</span><span style="color:#e6db74">&#34;</span> -ErrorAction Ignore
+
+    <span style="color:#75715e"># Get a SAS token for the container</span>
+    $webSASToken = New-AzureStorageContainerSASToken -Context $storage.Context `
+        -Name <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">webapp-logs</span><span style="color:#e6db74">&#34;</span> `
+        -FullUri `
+        -Permission rwdl `
+        -StartTime (Get-Date).Date `
+        -ExpiryTime (Get-Date).Date.AddYears(1)
+
+    <span style="color:#75715e"># Create a container for the http logs</span>
+    New-AzureStorageContainer -Context $storage.Context -Name <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">http-logs</span><span style="color:#e6db74">&#34;</span> -ErrorAction Ignore
+
+    <span style="color:#75715e"># Get a SAS token for the container</span>
+    $httpSASToken = New-AzureStorageContainerSASToken -Context $storage.Context `
+        -Name <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">http-logs</span><span style="color:#e6db74">&#34;</span> `
+        -FullUri `
+        -Permission rwdl `
+        -StartTime (Get-Date).Date `
+        -ExpiryTime (Get-Date).Date.AddYears(1) 
+    
+    <span style="color:#75715e"># Get all web app  in the resource group</span>
+    $resources = (Get-AzureRmResource).Where( {$_.ResourceType <span style="color:#f92672">-eq</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Microsoft.Web/sites</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">-and</span> $_.ResourceGroupName <span style="color:#f92672">-eq</span> $resourceGroupName})
+
+    <span style="color:#75715e"># For each web app enable application and http logs </span>
+    <span style="color:#66d9ef">foreach</span> ($resource <span style="color:#66d9ef">in</span> $resources) {
+        <span style="color:#75715e"># Property Object holding the log configuration.</span>
+        $propertiesObject = <span style="color:#66d9ef">[ordered]</span> @{
+            <span style="color:#e6db74">&#39;applicationLogs&#39;</span> = @{
+                <span style="color:#e6db74">&#39;azureBlobStorage&#39;</span> = @{
+                    <span style="color:#e6db74">&#39;level&#39;</span>           = <span style="color:#e6db74">&#39;Error&#39;</span> 
+                    <span style="color:#e6db74">&#39;sasUrl&#39;</span>          = <span style="color:#66d9ef">[string]</span>$webSASToken
+                    <span style="color:#e6db74">&#39;retentionInDays&#39;</span> = 30
+                }
+            }
+            <span style="color:#e6db74">&#39;httpLogs&#39;</span>        = @{
+                <span style="color:#e6db74">&#39;azureBlobStorage&#39;</span> = @{
+                    <span style="color:#e6db74">&#39;level&#39;</span>           = <span style="color:#e6db74">&#39;Error&#39;</span> 
+                    <span style="color:#e6db74">&#39;sasUrl&#39;</span>          = <span style="color:#66d9ef">[string]</span>$httpSASToken
+                    <span style="color:#e6db74">&#39;retentionInDays&#39;</span> = 30
+                    <span style="color:#e6db74">&#39;enabled&#39;</span>         = $true
+                }
+            }
+        } 
+
+        <span style="color:#75715e"># Set the properties. Note that the resource type is: Microsoft.Web/sites/config and the resource name: [Web App Name]/logs</span>
+        Set-AzureRmResource `
+            -PropertyObject $propertiesObject `
+            -ResourceGroupName $resourceGroupName `
+            -ResourceType Microsoft.Web/sites/config `
+            -ResourceName <span style="color:#e6db74">&#34;</span>$($resource.ResourceName)<span style="color:#e6db74">/logs</span><span style="color:#e6db74">&#34;</span> -ApiVersion 2016-03-01 -Force          
+    }
+}
+
+Enable-WebAppServiceLogs
+</code></pre></div><p>If you save the script in a file (i.e Enable-WebAppServiceLogs.ps1) you can run it as follows:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">.\Enable-WebAppServiceLogs.ps1
+</code></pre></div><p>The script will ask you to:</p>
+<ul>
+<li>login to your Azure account</li>
+<li>select a subscription</li>
+<li>write the name of the resource group containing the web apps</li>
+<li>write the name of the storage account to hold the logs</li>
+</ul>
+<p>Get the code here: <!-- raw HTML omitted --><a href="https://github.com/cmendible/azure.powershell.samples/tree/master/Enable-WebAppServiceLogs%3C/a%3E">https://github.com/cmendible/azure.powershell.samples/tree/master/Enable-WebAppServiceLogs&lt;/a&gt;</a></p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/05/30/start-with-elasticssearch-kibana-and-asp.net-core/"><i class="fa fa-chevron-circle-left"></i> Start with Elasticssearch, Kibana and ASP.NET Core</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/06/25/step-by-step-.net-core-and-azure-cosmos-db/">Step by step: .NET Core and Azure Cosmos DB <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1125 @@
+
+   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+     <channel>
+       <title>kubernetes on Code it Yourself...</title>
+       <link>https://carlos.mendible.com/categories/kubernetes/</link>
+       <description>Recent content in kubernetes on Code it Yourself...</description>
+       <generator>Hugo -- gohugo.io</generator>
+       <language>en-us</language>
+       <copyright>Copyright &amp;copy; 2019 - Carlos Mendible</copyright>
+       <lastBuildDate>Sat, 30 Nov 2019 00:00:00 +0000</lastBuildDate>
+       
+           <atom:link href="https://carlos.mendible.com/categories/kubernetes/feed.xml" rel="self" type="application/rss+xml" />
+       
+       
+       <item>
+         <title>AKS: Read Azure Key Vault secrets using AAD Pod Identity</title>
+         <link>https://carlos.mendible.com/2019/11/30/aks-read-azure-key-vault-secrets-using-aad-pod-identity/</link>
+         <pubDate>Sat, 30 Nov 2019 00:00:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2019/11/30/aks-read-azure-key-vault-secrets-using-aad-pod-identity/</guid>
+         <description>&lt;p&gt;What if I tell you that it&#39;s possible to connect you AKS pods to an &lt;strong&gt;Azure Key Vault&lt;/strong&gt; using identities but without having to use credentials in an explicit way?&lt;/p&gt;
+&lt;p&gt;Well with &lt;strong&gt;AAD Pod Identities&lt;/strong&gt; you can enable your Kubernetes applications to access Azure cloud resources securely using &lt;strong&gt;Azure Active Directory&lt;/strong&gt; (AAD) including &lt;strong&gt;Azure Key Vault&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;The following &lt;a href=&#34;https://gist.github.com/cmendible/4dd5c48a45480d5a0db0d6ed68e4cd01&#34;&gt;gist&lt;/a&gt; show a &lt;strong&gt;PowerShell&lt;/strong&gt; script that will help you setup everything inside your RBAC enabled AKS cluster. You will also need to have &lt;strong&gt;Azure CLI&lt;/strong&gt; installed on your box and an &lt;strong&gt;Azure Key Vault&lt;/strong&gt; deployed in the same resource group where your AKS lives.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;param&lt;/span&gt;(
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;[string]&lt;/span&gt;
+  [&lt;span style=&#34;color:#66d9ef&#34;&gt;Parameter&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;Mandatory&lt;/span&gt; = $true)]
+  $resourceGroupName,
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;[string]&lt;/span&gt;
+  [&lt;span style=&#34;color:#66d9ef&#34;&gt;Parameter&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;Mandatory&lt;/span&gt; = $true)]
+  $identityName,
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;[string]&lt;/span&gt;
+  [&lt;span style=&#34;color:#66d9ef&#34;&gt;Parameter&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;Mandatory&lt;/span&gt; = $true)]
+  $identitySelector,
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;[string]&lt;/span&gt;
+  [&lt;span style=&#34;color:#66d9ef&#34;&gt;Parameter&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;Mandatory&lt;/span&gt; = $true)]
+  $aksName,
+  &lt;span style=&#34;color:#66d9ef&#34;&gt;[string]&lt;/span&gt;
+  [&lt;span style=&#34;color:#66d9ef&#34;&gt;Parameter&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;Mandatory&lt;/span&gt; = $true)]
+  $keyVaultName 
+)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Get the current subscription&lt;/span&gt;
+$subscriptionId = (az account show | ConvertFrom-Json).id
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Get aks so we can extract it&amp;#39;s Service Princpal later&lt;/span&gt;
+$aks = az aks show `
+  -g $resourceGroupName `
+  -n $aksName | ConvertFrom-Json
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Create Managed Identity&lt;/span&gt;
+$identity = az identity create `
+  -g $resourceGroupName `
+  -n $identityName `
+  -o json | ConvertFrom-Json
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Assign the Reader role to the Managed Identity&lt;/span&gt;
+az role assignment create `
+  --role &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;Reader&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; `
+  --assignee $identity.principalId `
+  --scope /subscriptions/$subscriptionId/resourcegroups/$resourceGroupName
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Assign the Managed Identity Operator role to the AKS Service Principal&lt;/span&gt;
+az role assignment create `
+  --role &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;Managed Identity Operator&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; `
+  --assignee $aks.servicePrincipalProfile.clientId `
+  --scope $identity.id
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Add policy to the Key Vault so the Managed Identity can read secrets&lt;/span&gt;
+az keyvault set-policy `
+  --name $keyVaultName `
+  --spn $identity.clientId `
+  --secret-permissions get list
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Enable AAD Pod Identity on AKS&lt;/span&gt;
+kubectl apply &lt;span style=&#34;color:#f92672&#34;&gt;-f&lt;/span&gt; https&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;:&lt;/span&gt;//raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Create the Azure Identity and AzureIdentityBinding yaml on the fly&lt;/span&gt;
+$k8sAzureIdentityandBinding = &lt;span style=&#34;color:#e6db74&#34;&gt;@&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;p&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;V&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;r&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;o&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;p&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;o&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;y&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;k&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;8&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;o&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;v&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;k&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;A&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;z&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;u&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;r&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;I&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;y&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;m&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;m&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;$($identityName)&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;p&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;c&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;y&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;p&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;R&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;o&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;u&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;r&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;c&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;I&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;D&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;$($identity.id)&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;C&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;l&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;I&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;D&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;$($identity.clientId)&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;p&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;V&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;r&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;o&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;p&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;o&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;y&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;k&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;8&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;o&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;v&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;k&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;A&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;z&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;u&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;r&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;I&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;y&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;B&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;g&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;m&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;m&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;$($identityName)&lt;span style=&#34;color:#e6db74&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;y&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;g&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;p&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;c&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;A&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;z&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;u&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;r&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;I&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;y&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;$($identityName)&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;S&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;l&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;e&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;c&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;t&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;o&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;r&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;$($identitySelector)&lt;span style=&#34;color:#e6db74&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;@&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Deploy the yamls &lt;/span&gt;
+$k8sAzureIdentityandBinding | kubectl apply &lt;span style=&#34;color:#f92672&#34;&gt;-f&lt;/span&gt; -
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The script creates a Manged Identity, assigns some permissions to it and creates a policy inside the Key Vault enabling the Identity to list and get secrets.&lt;/p&gt;
+&lt;p&gt;Then the &lt;strong&gt;&lt;a href=&#34;https://github.com/Azure/aad-pod-identity#components&#34;&gt;Managed Identity Controller (MIC) deployment and the Node Managed Identity (NMI) daemon set&lt;/a&gt;&lt;/strong&gt; are deployed inside the cluster.&lt;/p&gt;
+&lt;p&gt;In the last step, two resources are deployed. The first one is an &lt;strong&gt;AzureIdentity&lt;/strong&gt; that will be used to identify the Managed Identity inside your cluster and the second one is an &lt;strong&gt;AzureIdentityBinding&lt;/strong&gt; that binds the azure Identity with a Selector.&lt;/p&gt;
+&lt;p&gt;Let&#39;s run the PowerShell command with the following parameters:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Resource Group&lt;/strong&gt;: myResourceGroup&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Managed Identity Name&lt;/strong&gt;: myId&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Identity Selector&lt;/strong&gt;: requires-vault&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;AKS Name&lt;/strong&gt;: myAKS&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Key Vault Name&lt;/strong&gt;: myKeyVault&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;.\SetupPodIdentityKeyVaultIntegration.ps1 myResourceGroup myId requires-vault myAKS myKeyVault
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Once the command is done, any pod marked with the &lt;em&gt;&lt;strong&gt;aadpodidbinding: requires-vault&lt;/strong&gt;&lt;/em&gt; label will get an Identity assigned.&lt;/p&gt;
+&lt;p&gt;To check that everything is working as expected you can create a &lt;strong&gt;deployment.yaml&lt;/strong&gt; with the following contents:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: az-keyvault-reader-test
+spec:
+  replicas: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+  template:
+    metadata:
+      labels:
+        app: az-keyvault-reader-test
+        aadpodidbinding: requires-vault
+    spec:
+      containers:
+        - name: busybox
+          image: busybox
+          command:
+            [
+              &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sh&amp;#34;&lt;/span&gt;,
+              &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;-c&amp;#34;&lt;/span&gt;,
+              &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wget --tries=70 -qO- http://127.0.0.1:8333/secrets/&amp;lt;SECRET_NAME&amp;gt;/&amp;#34;&lt;/span&gt;,
+            ]
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;4Mi&amp;#34;&lt;/span&gt;
+              cpu: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;100m&amp;#34;&lt;/span&gt;
+            limits:
+              memory: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8Mi&amp;#34;&lt;/span&gt;
+              cpu: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;200m&amp;#34;&lt;/span&gt;
+        - name: az-keyvault-reader-sidecar
+          image: cmendibl3/az-keyvault-reader:&lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;
+          imagePullPolicy: Always
+          env:
+            - name: AZURE_KEYVAULT_NAME
+              value: &amp;lt;AZURE_KEYVAULT_NAME&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;         &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;resources:&lt;/span&gt;
+            requests:
+              memory: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8Mi&amp;#34;&lt;/span&gt;
+              cpu: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;100m&amp;#34;&lt;/span&gt;
+            limits:
+              memory: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;16Mi&amp;#34;&lt;/span&gt;
+              cpu: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;200m&amp;#34;&lt;/span&gt;
+      restartPolicy: Always
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Replace the values for &amp;lt;AZURE_KEYVAULT_NAME&amp;gt; with the name of your Key Vault and &amp;lt;SECRET_NAME&amp;gt; with the name of an existing secret stored in your Key Vault:&lt;/p&gt;
+&lt;p&gt;Now deploy to Kubernetes:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;kubectl apply &lt;span style=&#34;color:#f92672&#34;&gt;-f&lt;/span&gt; ./deployment.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and check the logs for the &lt;strong&gt;busybox&lt;/strong&gt; pod:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;kubectl logs &lt;span style=&#34;color:#f92672&#34;&gt;-f&lt;/span&gt; $(kubectl get po --selector=app=az-keyvault-reader-test -o jsonpath=&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span&gt;) -c busybox -w
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If everything is OK you should see the value of your secret dumped in the logs (Bad security practice here)!!! And yes you did all this without knowing any credentials!&lt;/p&gt;
+&lt;p&gt;Please  find the code used to connect to the &lt;strong&gt;Azure KeyVault&lt;/strong&gt; here: &lt;a href=&#34;https://github.com/cmendible/az-keyvault-reader/blob/master/src/az-keyvault-reader.go&#34;&gt;az-keyvault-reader.go&lt;/a&gt; and check &lt;a href=&#34;https://github.com/Azure/aad-pod-identity&#34;&gt;AAD Pod Identity&lt;/a&gt; for more information on how this &amp;ldquo;magic&amp;rdquo; works.&lt;/p&gt;
+&lt;p&gt;Hope it helps!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Kubernetes: Despliegue en Azure</title>
+         <link>https://carlos.mendible.com/2019/11/24/kubernetes-despliegue-en-azure/</link>
+         <pubDate>Sun, 24 Nov 2019 00:00:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2019/11/24/kubernetes-despliegue-en-azure/</guid>
+         <description>&lt;p&gt;Durante el mes de Octubre tuve la suerte de grabar en LinkedIn Learning mi primer curso online sobre Kubernetes.&lt;/p&gt;
+&lt;p&gt;Aun me queda mucho por aprender y mejorar en este formato, ya que mientras grabas los cursos no recibes feedback inmediato como sí ocurre cuando das una charla o haces una presentación.&lt;/p&gt;
+&lt;p&gt;Hoy os dejo el video introductorio por aquí:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Espero que os guste!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux</title>
+         <link>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-aks-with-flux/</link>
+         <pubDate>Sun, 04 Aug 2019 00:00:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-aks-with-flux/</guid>
+         <description>&lt;p&gt;Recently I learned about GitOps which is a way to manage your Kubernetes clusters and the applications you run on top using Git. The idea is that you can declaratively describe the desired state of your systems in Git and roll out changes as soon as merges occur.&lt;/p&gt;
+&lt;p&gt;You can immediately see the main benefits of such an approach: Your Git repositories become the single source of truth for both your infrastructure and application code, allowing the teams to increase productivity and stability (you get the Git log to audit changes).&lt;/p&gt;
+&lt;p&gt;To implement GitOps you can use and configure &lt;a href=&#34;https://docs.fluxcd.io/en/latest/&#34;&gt;Flux&lt;/a&gt; following some simple steps:&lt;/p&gt;
+&lt;h2 id=&#34;1-download-the-helm-template&#34;&gt;1. Download the helm template&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;helm fetch `
+  --repo https&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;:&lt;/span&gt;//fluxcd.github.io/flux `
+  --untar `
+  --untardir .\.charts `
+  --version 0.10.2 `
+  flux
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;2-bake-the-template-with-your-repo-i-dont-use-tiller&#34;&gt;2. Bake the template with your repo (I don&#39;t use Tiller)&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;helm template flux `
+  --set git.url=&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;git@github.com:cmendible/kubernetes.samples&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; `
+  --set git.path=&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;19.flux&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; `
+  --set git.pollInterval=&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;5s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; `
+  --namespace flux `
+  --output-dir .\.baked .\.charts\fluxcd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;As you can see I&#39;m configuring &lt;a href=&#34;https://docs.fluxcd.io/en/latest/&#34;&gt;Flux&lt;/a&gt; to use my k8s sample repo and the &lt;a href=&#34;https://github.com/cmendible/kubernetes.samples/tree/master/19.flux&#34;&gt;19.flux&lt;/a&gt; folder, which contains a simple deployment &lt;a href=&#34;https://github.com/cmendible/kubernetes.samples/blob/master/19.flux/dni-function.yaml&#34;&gt;file&lt;/a&gt;, but of course you can have more resource definitions.&lt;/p&gt;
+&lt;h2 id=&#34;3-deploy-the-configuration-to-your-cluster&#34;&gt;3. Deploy the configuration to your cluster&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;kubectl apply &lt;span style=&#34;color:#f92672&#34;&gt;-f&lt;/span&gt; .\.baked\flux\templates\
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;4-get-the-fluxctl-cli&#34;&gt;4. Get the fluxctl CLI&lt;/h2&gt;
+&lt;p&gt;Download the &lt;a href=&#34;https://github.com/fluxcd/flux/releases/tag/1.13.2&#34;&gt;fluxctl CLI&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;5-use-fluxctl-to-get-the-public-key&#34;&gt;5. Use fluxctl to get the public key&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;fluxctl identity --k8s-fwd-ns flux
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This key is needed to sync your cluster state with the Git repository (GitHub): Copy the key you obtained and use it to create a &lt;strong&gt;deploy key&lt;/strong&gt; with write access on your GitHub repository (Settings &amp;gt; Deploy keys &amp;gt; Add deploy key &amp;gt; check Allow write access &amp;gt; paste the Flux public key &amp;gt; click Add key)&lt;/p&gt;
+&lt;p&gt;You are all set. If everything runs smooth you&#39;ll find a new deployment in your cluster with the &lt;strong&gt;dni-function&lt;/strong&gt; name.&lt;/p&gt;
+&lt;p&gt;To learn more about GitOps check: &lt;a href=&#34;https://www.weave.works/technologies/gitops/&#34;&gt;Weaveworks&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Click here to learn more about &lt;a href=&#34;https://docs.fluxcd.io/en/latest/&#34;&gt;Flux&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Hope it helps!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Kured: Restart your Azure Kubernetes Service Nodes</title>
+         <link>https://carlos.mendible.com/2019/07/28/kured-restart-your-azure-kubernetes-service-nodes/</link>
+         <pubDate>Sun, 28 Jul 2019 00:00:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2019/07/28/kured-restart-your-azure-kubernetes-service-nodes/</guid>
+         <description>&lt;p&gt;Two weeks ago I got an email message from Microsoft Azure explaining that Azure Kubernetes Services had been patched but that I had to restart my nodes (reboot the clusters) to complete the operation.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://carlos.mendible.com/assets/img/posts/aks_update_kured.png&#34; alt=&#34;The Microsoft Azure email explaining that I had to reboot my clusters&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The first thing you need to know is that, when things like this happens, the Azure platform creates a file called &lt;code&gt;/var/run/reboot-required&lt;/code&gt; in each of the nodes of your cluster.&lt;/p&gt;
+&lt;p&gt;The second thing is that a Kubernetes Reboot Daemon named &lt;a href=&#34;https://github.com/weaveworks/kured&#34;&gt;Kured&lt;/a&gt; exists and if installed in your cluster will run on each pod watching for the existence of the &lt;code&gt;/var/run/reboot-required&lt;/code&gt; file. &lt;a href=&#34;https://github.com/weaveworks/kured&#34;&gt;Kured&lt;/a&gt; then takes care of the reboots for you so only one node is restarted at a time.&lt;/p&gt;
+&lt;p&gt;So how do you install it and check what&#39;s going on with your nodes? Let&#39;s see:&lt;/p&gt;
+&lt;h2 id=&#34;1-check-the-nodes&#34;&gt;1. Check the nodes&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Damn I was running the affected kernel version: 4.15.0-1049-azure.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;kubectl get nodes -o wide
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;NAME                       STATUS    ROLES     AGE       VERSION   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+aks-agentpool-14502547-0   Ready     agent     3d        v1.12.8   &amp;lt;none&amp;gt;        Ubuntu 16.04.6 LTS   4.15.0-1049-azure   docker://3.0.4
+aks-agentpool-14502547-1   Ready     agent     3d        v1.12.8   &amp;lt;none&amp;gt;        Ubuntu 16.04.6 LTS   4.15.0-1049-azure   docker://3.0.4
+aks-agentpool-14502547-2   Ready     agent     3d        v1.12.8   &amp;lt;none&amp;gt;        Ubuntu 16.04.6 LTS   4.15.0-1049-azure   docker://3.0.4
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;2-install-kuredhttpsgithubcomweaveworkskured&#34;&gt;2. Install &lt;a href=&#34;https://github.com/weaveworks/kured&#34;&gt;Kured&lt;/a&gt;&lt;/h2&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;kubectl apply -f https://github.com/weaveworks/kured/releases/download/1.2.0/kured-1.2.0-dockerhub.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;3-check-the-nodes-again&#34;&gt;3. Check the nodes again&lt;/h2&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;kubectl get nodes -o wide
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can see that the first two nodes already restarted and the second has scheduling disabled cause it was still in the process.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;aks-agentpool-14502547-0   Ready                      agent     3d        v1.12.8   &amp;lt;none&amp;gt;        Ubuntu 16.04.6 LTS   4.15.0-1049-azure   docker://3.0.4
+aks-agentpool-14502547-1   Ready                      agent     3d        v1.12.8   &amp;lt;none&amp;gt;        Ubuntu 16.04.6 LTS   4.15.0-1050-azure   docker://3.0.4
+aks-agentpool-14502547-2   Ready,SchedulingDisabled   agent     3d        v1.12.8   &amp;lt;none&amp;gt;        Ubuntu 16.04.6 LTS   4.15.0-1050-azure   docker://3.0.4
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To learn more about &lt;a href=&#34;https://github.com/weaveworks/kured&#34;&gt;Kured&lt;/a&gt; and the features it offers, please check &lt;a href=&#34;https://github.com/weaveworks/kured&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Hope it helps!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Scale a Kubernetes Deployment with .NET Core</title>
+         <link>https://carlos.mendible.com/2019/05/31/scale-a-kubernetes-deployment-with-.net-core/</link>
+         <pubDate>Fri, 31 May 2019 09:12:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2019/05/31/scale-a-kubernetes-deployment-with-.net-core/</guid>
+         <description>&lt;p&gt;Let&#39;s start:&lt;/p&gt;
+&lt;h2 id=&#34;1-create-a-folder-for-your-new-project&#34;&gt;1. Create a folder for your new project&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Open a command prompt an run:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;mkdir kuberenetes.scale
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;2-create-the-project&#34;&gt;2. Create the project&lt;/h2&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;cd kuberenetes.scale
+dotnet new api
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;3-add-the-references-to-kubernetesclient&#34;&gt;3. Add the references to KubernetesClient&lt;/h2&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;dotnet add package KubernetesClient -v 1.5.18
+dotnet restore
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;4-create-a-podscontrollercs-with-the-following-code&#34;&gt;4. Create a PodsController.cs with the following code&lt;/h2&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-csharp&#34; data-lang=&#34;csharp&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; System;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; System.Collections.Generic;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; System.Linq;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; System.Threading.Tasks;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; k8s;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; k8s.Models;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; Microsoft.AspNetCore.JsonPatch;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; Microsoft.AspNetCore.Mvc;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; Microsoft.Extensions.Configuration;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;namespace&lt;/span&gt; kubernetes.scale
+{
+&lt;span style=&#34;color:#a6e22e&#34;&gt;    [Route(&amp;#34;api/[controller]&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;)]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;    [ApiController]&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;PodsController&lt;/span&gt; : ControllerBase
+    {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; KubernetesClientConfiguration k8sConfig = &lt;span style=&#34;color:#66d9ef&#34;&gt;null&lt;/span&gt;;
+
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; PodsController(IConfiguration config)
+        {
+            &lt;span style=&#34;color:#75715e&#34;&gt;// Reading configuration to know if running inside a cluster or in local mode.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; useKubeConfig = &lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt;.Parse(config[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;UseKubeConfig&amp;#34;&lt;/span&gt;]);
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (!useKubeConfig)
+            {
+                &lt;span style=&#34;color:#75715e&#34;&gt;// Running inside a k8s cluser
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                k8sConfig = KubernetesClientConfiguration.InClusterConfig();
+            }
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;
+            {
+                &lt;span style=&#34;color:#75715e&#34;&gt;// Running on dev machine
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                k8sConfig = KubernetesClientConfiguration.BuildConfigFromConfigFile();
+            }
+        }
+&lt;span style=&#34;color:#a6e22e&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;        [HttpPatch(&amp;#34;scale&amp;#34;)]&lt;/span&gt;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; IActionResult Scale([FromBody]ReplicaRequest request)
+        {
+            &lt;span style=&#34;color:#75715e&#34;&gt;// Use the config object to create a client.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;using&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; client = &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Kubernetes(k8sConfig))
+            {
+                &lt;span style=&#34;color:#75715e&#34;&gt;// Create a json patch for the replicas
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; jsonPatch = &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; JsonPatchDocument&amp;lt;V1Scale&amp;gt;();
+                &lt;span style=&#34;color:#75715e&#34;&gt;// Set the new number of repplcias
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                jsonPatch.Replace(e =&amp;gt; e.Spec.Replicas, request.Replicas);
+                &lt;span style=&#34;color:#75715e&#34;&gt;// Creat the patch
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; patch = &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; V1Patch(jsonPatch);
+
+                &lt;span style=&#34;color:#75715e&#34;&gt;// Patch the &amp;#34;minions&amp;#34; Deployment in the &amp;#34;default&amp;#34; namespace
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                client.PatchNamespacedDeploymentScale(patch, request.Deployment, request.Namespace);
+
+                &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; NoContent();
+            }
+        }
+    }
+
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ReplicaRequest&lt;/span&gt;
+    {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt; Deployment { &lt;span style=&#34;color:#66d9ef&#34;&gt;get&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;set&lt;/span&gt;; }
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt; Namespace { &lt;span style=&#34;color:#66d9ef&#34;&gt;get&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;set&lt;/span&gt;; }
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; Replicas { &lt;span style=&#34;color:#66d9ef&#34;&gt;get&lt;/span&gt;; &lt;span style=&#34;color:#66d9ef&#34;&gt;set&lt;/span&gt;; }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;5-replace-the-contents-of-the-appsettingsdevelopmentjson-file&#34;&gt;5. Replace the contents of the appsettings.Development.json file&lt;/h2&gt;
+&lt;p&gt;Note the &lt;strong&gt;UseKubeConfig&lt;/strong&gt; property is set to &lt;strong&gt;true&lt;/strong&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;{
+  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;Logging&amp;#34;&lt;/span&gt;: {
+    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;LogLevel&amp;#34;&lt;/span&gt;: {
+      &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;Default&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Debug&amp;#34;&lt;/span&gt;,
+      &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;System&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Information&amp;#34;&lt;/span&gt;,
+      &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;Microsoft&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Information&amp;#34;&lt;/span&gt;
+    }
+  },
+  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;UseKubeConfig&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;true&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;6-replace-the-contents-of-the-appsettingsjson-file&#34;&gt;6. Replace the contents of the appsettings.json file&lt;/h2&gt;
+&lt;p&gt;Note the &lt;strong&gt;UseKubeConfig&lt;/strong&gt; property is set to &lt;strong&gt;false&lt;/strong&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;{
+  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;Logging&amp;#34;&lt;/span&gt;: {
+    &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;LogLevel&amp;#34;&lt;/span&gt;: {
+      &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;Default&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Warning&amp;#34;&lt;/span&gt;
+    }
+  },
+  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;AllowedHosts&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;UseKubeConfig&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;7-test-the-application&#34;&gt;7. Test the application&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Test the app from your dev machine running:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;dotnet run
+curl -k -i -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Content-Type: application/json&amp;#39;&lt;/span&gt; -d &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{&amp;#34;Deployment&amp;#34;: &amp;#34;&amp;lt;YOUR DEPLOYMENT NAME&amp;gt;&amp;#34;, &amp;#34;Namespace&amp;#34;: &amp;#34;&amp;lt;YOUR NAMESPACE&amp;gt;&amp;#34;, &amp;#34;Replicas&amp;#34;: 3}&amp;#39;&lt;/span&gt; -X PATCH https://localhost:5001/api/pods/scale
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: You must have a valid config file to connect to the k8s cluster.&lt;/p&gt;
+&lt;p&gt;Please find all the code used in this post &lt;a href=&#34;https://github.com/cmendible/dotnetcore.samples/tree/master/kubernetes.scale&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Hope it helps!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Running the Global Azure Bootcamp Science Lab in Kubernetes</title>
+         <link>https://carlos.mendible.com/2019/04/22/running-the-global-azure-bootcamp-science-lab-in-kubernetes/</link>
+         <pubDate>Mon, 22 Apr 2019 05:00:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2019/04/22/running-the-global-azure-bootcamp-science-lab-in-kubernetes/</guid>
+         <description>&lt;p&gt;Next Saturday the &lt;a href=&#34;https://global.azurebootcamp.net&#34;&gt;Global Azure Bootcamp&lt;/a&gt; will be celebrated all over the world and as in previous years their will be a &lt;a href=&#34;https://global.azurebootcamp.net/global-azure-science-lab-2019/&#34;&gt;Science Lab&lt;/a&gt; where we&#39;ll try to discover a planet!!!. Isn&#39;t that cool?&lt;/p&gt;
+&lt;p&gt;Well to make this fast you can run the Science Lab using Azure Container Instances following the instructions found &lt;a href=&#34;https://github.com/intelequia/GAB2019ScienceLab&#34;&gt;here&lt;/a&gt; or you can use the following &lt;a href=&#34;https://gist.github.com/cmendible/8ce226b5996c92a020fe1761ff7325aa&#34;&gt;gist&lt;/a&gt; to run the workload in an existing kubernetes cluster:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Hope it helps!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>AKS &amp; Application Gateway: Expose more than one service in an ingress resource</title>
+         <link>https://carlos.mendible.com/2019/04/16/aks-application-gateway-expose-more-than-one-service-in-an-ingress-resource/</link>
+         <pubDate>Tue, 16 Apr 2019 06:00:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2019/04/16/aks-application-gateway-expose-more-than-one-service-in-an-ingress-resource/</guid>
+         <description>&lt;p&gt;If you install the Azure Aplication Gateway Ingress Controller for your AKS clusters you may want to expose more than one service through the same Public IP just changing the url path. In order to make this work you must use the &lt;a href=&#34;https://github.com/Azure/application-gateway-kubernetes-ingress/blob/master/docs/annotations.md#backend-path-prefix&#34;&gt;backend-path-prefix&lt;/a&gt; annotation.&lt;/p&gt;
+&lt;p&gt;In the following sample I create an ingress with the following behavior:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Calls to &lt;strong&gt;http://[Waf Pulic IP or DNS]/inventory&lt;/strong&gt; are sent to the &lt;strong&gt;inventory&lt;/strong&gt; service&lt;/li&gt;
+&lt;li&gt;Calls to &lt;strong&gt;http://[Waf Pulic IP or DNS]/orders&lt;/strong&gt; are sent to the &lt;strong&gt;orders&lt;/strong&gt; service&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: backend-ingress
+  annotations:
+    &lt;span style=&#34;color:#75715e&#34;&gt;# Service are serving content in this path.&lt;/span&gt;
+    appgw.ingress.kubernetes.io/backend-path-prefix: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt;
+    kubernetes.io/ingress.class: azure/application-gateway
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /inventory/*
+        backend:
+          serviceName: inventory
+          servicePort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+      - path: /orders/*
+        backend:
+          serviceName: orders
+          servicePort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note that the &lt;strong&gt;appgw.ingress.kubernetes.io/backend-path-prefix&lt;/strong&gt; value is set to: &lt;strong&gt;/&lt;/strong&gt; which means that the paths specified in the rules are rewritten to this value when sent to your services.&lt;/p&gt;
+&lt;p&gt;Hope it helps.&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>AKS: Persistent Volume with existing Storage Account</title>
+         <link>https://carlos.mendible.com/2019/04/16/aks-persistent-volume-with-existing-storage-account/</link>
+         <pubDate>Tue, 16 Apr 2019 05:00:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2019/04/16/aks-persistent-volume-with-existing-storage-account/</guid>
+         <description>&lt;p&gt;In order to deploy a Persistent Volume in your AKS cluster using an existing Storage Account you should take the following steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Create a &lt;strong&gt;Storage Class&lt;/strong&gt; with a reference to the Storage Account.&lt;/li&gt;
+&lt;li&gt;Create a &lt;strong&gt;Secret&lt;/strong&gt; with the credentials used to access the Storage Account.&lt;/li&gt;
+&lt;li&gt;Create a &lt;strong&gt;Persistent Volume&lt;/strong&gt; with a reference to the Storage Class, the secret and the File Share.&lt;/li&gt;
+&lt;li&gt;Create a &lt;strong&gt;Persistent Volume Claim&lt;/strong&gt; with a reference to the volume by name.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Use the following &lt;strong&gt;yaml&lt;/strong&gt; as a template for the resources described above. Save the contents as &lt;strong&gt;aks-existing-storage-account-pv.yaml&lt;/strong&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;---
+&lt;span style=&#34;color:#75715e&#34;&gt;# Create a StorageClass object pointing to the existing Storage Account&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# Remember: that the Storage account must be in the same Resource Group where the AKS cluster is deployed&lt;/span&gt;
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: azurefile
+provisioner: kubernetes.io/azure-file
+mountOptions:
+  - dir_mode=&lt;span style=&#34;color:#ae81ff&#34;&gt;0777&lt;/span&gt;
+  - file_mode=&lt;span style=&#34;color:#ae81ff&#34;&gt;0777&lt;/span&gt;
+parameters:
+  storageAccount: &amp;lt;storage account name&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;location: &amp;lt;storage account location&amp;gt;&lt;/span&gt;
+
+---
+&lt;span style=&#34;color:#75715e&#34;&gt;# Create a Secret to hold the name and key of the Storage Account&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# Remember: values are base64 encoded&lt;/span&gt;
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azurefile-secret
+type: Opaque
+data:
+  azurestorageaccountname: &amp;lt;base64 encoded storage account name&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;azurestorageaccountkey: &amp;lt;base64 encoded storage account key&amp;gt;&lt;/span&gt;
+
+---
+&lt;span style=&#34;color:#75715e&#34;&gt;# Create a persistent volume, with the corresponding StorageClass and the reference to the Azure File secret.&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# Remember: Create the share in the storage account otherwise the pods will fail with a &amp;#34;No such file or directory&amp;#34;&lt;/span&gt;
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: azurefile
+  azureFile:
+    secretName: azurefile-secret
+    shareName: &amp;lt;Share Name (must already exist in the storage account)&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;   &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;readOnly: false&lt;/span&gt;
+  mountOptions:
+  - dir_mode=&lt;span style=&#34;color:#ae81ff&#34;&gt;0777&lt;/span&gt;
+  - file_mode=&lt;span style=&#34;color:#ae81ff&#34;&gt;0777&lt;/span&gt;
+  - uid=&lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;
+  - gid=&lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;
+
+---
+&lt;span style=&#34;color:#75715e&#34;&gt;# Create a PersistentVolumeClaim referencing the StorageClass and the volume&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# Remember: this is a static scenario. The volume was created in the previous step.&lt;/span&gt;
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce  
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: azurefile
+  volumeName: nginx-pv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Deploy to your cluster and verify that the Private Volume Claim status is &lt;strong&gt;Bound&lt;/strong&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;kubectl apply -f aks-existing-storage-account-pv.yaml
+kubectl get pvc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Result should show something like:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;NAME                              STATUS    VOLUME                      CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+nginx-pvc                         Bound     nginx-pv                    5Gi        RWO            azurefile      ...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That&#39;s it! now you can mount a volume in a container with a reference to the Private Volume Claim as in the following deployment:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;---
+&lt;span style=&#34;color:#75715e&#34;&gt;# Deploy an nginx mounting a volume and referencing the persisten volume claim&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# Remember: using pvc decouples your deployment from the volume implementations&lt;/span&gt;
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx
+spec:  
+  template:
+    metadata:
+      labels:
+        app: nginx-storage
+    spec:
+      containers:
+      - name: nginx-pod
+        image: nginx:&lt;span style=&#34;color:#ae81ff&#34;&gt;1.15&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;.5&lt;/span&gt;
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        volumeMounts:
+        - mountPath: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/mnt/azure&amp;#34;&lt;/span&gt;
+          name: volume
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: nginx-pvc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hope it helps.&lt;/p&gt;
+&lt;p&gt;Please download all code and files &lt;a href=&#34;https://github.com/cmendible/kubernetes.samples/tree/master/16.aks-pv-with-existing-storage-account&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Kubernetes: Mount a file in your Pod using a ConfigMap</title>
+         <link>https://carlos.mendible.com/2019/02/10/kubernetes-mount-a-file-in-your-pod-using-a-configmap/</link>
+         <pubDate>Sun, 10 Feb 2019 15:12:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2019/02/10/kubernetes-mount-a-file-in-your-pod-using-a-configmap/</guid>
+         <description>&lt;p&gt;Lately I&#39;ve been learning Go and this week I started a side project named &lt;a href=&#34;https://github.com/cmendible/kube-sherlock&#34;&gt;kube-sherlock&lt;/a&gt;. The purpose of this small program is to list any pod that does not have the &lt;strong&gt;labels&lt;/strong&gt; that your organization requires.&lt;/p&gt;
+&lt;p&gt;For &lt;a href=&#34;https://github.com/cmendible/kube-sherlock&#34;&gt;kube-sherlock&lt;/a&gt; I created a &lt;a href=&#34;https://github.com/cmendible/kube-sherlock/blob/master/dockerfile&#34;&gt;dockerfile&lt;/a&gt; were both the program (kube-sherlock) and the default configuration (config.yaml) are placed in the &lt;strong&gt;app&lt;/strong&gt; folder:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-docker&#34; data-lang=&#34;docker&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; golang:1.11.5 AS build&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;WORKDIR&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; /src&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ADD&lt;/span&gt; go.mod go.sum ./&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;RUN&lt;/span&gt; go get -v&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ADD&lt;/span&gt; kube-sherlock.go config.yaml ./&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;RUN&lt;/span&gt; CGO_ENABLED&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; GOOS&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;linux go build -a -ldflags &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;-w&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; alpine:3.7&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;COPY&lt;/span&gt; --from&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;build src/config.yaml app/config.yaml&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;COPY&lt;/span&gt; --from&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;build src/kube-sherlock app/kube-sherlock&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;WORKDIR&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; /app&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CMD&lt;/span&gt; ./kube-sherlock&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Metadata&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ARG&lt;/span&gt; BUILD_DATE&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;ARG&lt;/span&gt; VCS_REF&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;LABEL&lt;/span&gt; org.label-schema.build-date&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$BUILD_DATE &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    org.label-schema.name&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;kube-sherlock&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    org.label-schema.description&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Check if labels are applied to your containers&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    org.label-schema.url&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://github.com/cmendible/kube-sherlock&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    org.label-schema.vcs-ref&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$VCS_REF &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    org.label-schema.vcs-url&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://github.com/cmendible/kube-sherlock&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;    org.label-schema.schema-version&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.1&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So what if you want to replace the default configuration?&lt;/p&gt;
+&lt;p&gt;You can achieve this with the help of a &lt;strong&gt;ConfigMap&lt;/strong&gt;, creating a new &lt;strong&gt;config.yaml&lt;/strong&gt; with your custom values:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sherlock-config
+  namespace: default
+data:
+  config.yaml: &lt;span style=&#34;color:#e6db74&#34;&gt;|
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;   &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;namespaces:&lt;/span&gt;
+      - default
+    labels:
+      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;app&amp;#34;&lt;/span&gt;
+      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;owner&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: I&#39;m using the name of the file as the &lt;strong&gt;key&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;And then create a pod definition, referencing the &lt;strong&gt;ConfigMap&lt;/strong&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-sherlock
+spec:
+  serviceAccountName: kube-sherlock
+  containers:
+    - name: kube-sherlock
+      image: cmendibl3/kube-sherlock:&lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;
+      volumeMounts:
+      - name: config-volume
+        mountPath: /app/config.yaml
+        subPath: config.yaml
+  volumes:
+    - name: config-volume
+      configMap:
+        name: sherlock-config
+  restartPolicy: Never
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: the volume references the &lt;strong&gt;ConfigMap&lt;/strong&gt; (sherlock-config), the volume mount specifies the &lt;strong&gt;mountPath&lt;/strong&gt; as the file you want to replace (/app/config.yaml) and the &lt;strong&gt;subPath&lt;/strong&gt; property is used to reference the file by key (config.yaml)&lt;/p&gt;
+&lt;p&gt;Hope it helps.&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>AKS: Configure TLS termination with the http application routing addon</title>
+         <link>https://carlos.mendible.com/2019/01/10/aks-configure-tls-termination-with-the-http-application-routing-addon/</link>
+         <pubDate>Thu, 10 Jan 2019 15:20:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2019/01/10/aks-configure-tls-termination-with-the-http-application-routing-addon/</guid>
+         <description>&lt;p&gt;When you install a AKS cluster you can configure it to deploy the &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/aks/http-application-routing&#34;&gt;http application routing addon&lt;/a&gt; or you you can update an existing cluster to deploy it.&lt;/p&gt;
+&lt;p&gt;Either way you end up with an &lt;a href=&#34;https://github.com/kubernetes/ingress-nginx&#34;&gt;NGINX Ingress Controller&lt;/a&gt; running, in the &lt;strong&gt;kube-system&lt;/strong&gt; namespace of your cluster, with the following properties:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;ingress-class: addon-http-application-routing&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;annotations-prefix: nginx.ingress.kubernetes.io&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Does this means that you can use this controller for TLS termination? The answer is yes! And you can also use rate limits, and whitelisting as described in my post [Secure your Kubernetes services with NGINX ingress controller, tls and more.]({{ site.baseurl }}{% post_url 2018-03-20-secure-your-kubernetes-services-with-nginx-ingress-controller-tls-and-more %})&lt;/p&gt;
+&lt;p&gt;So to try it out, follow steps &lt;strong&gt;2&lt;/strong&gt; and &lt;strong&gt;5&lt;/strong&gt; of the previous post, but be sure to replace the contents of the &lt;strong&gt;ingress_rules.yaml&lt;/strong&gt; file with the following yaml (Don&#39;t forget to replace the DNS Zone Name):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dni-function
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - dni-function.&amp;lt;YOUR CLUSTERS DNS ZONE NAME&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;   &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;secretName: tls-secret&lt;/span&gt;
+  rules:
+  - host: dni-function.&amp;lt;YOUR CLUSTERS DNS ZONE NAME&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;gt;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;   &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;http:&lt;/span&gt;
+      paths:
+      - path: /
+        backend:
+          serviceName: dni-function
+          servicePort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note that the &lt;strong&gt;kubernetes.io/ingress.class&lt;/strong&gt; value must be: &lt;strong&gt;addon-http-application-routing&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Once you have tls working go ahead and try rate limits and whitelisting!&lt;/p&gt;
+&lt;p&gt;Hope it helps.&lt;/p&gt;
+&lt;p&gt;Please download all code and files &lt;a href=&#34;https://github.com/cmendible/kubernetes.samples/tree/master/15.http-application-routing-tls&#34;&gt;here&lt;/a&gt; and be sure to check the &lt;a href=&#34;https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md&#34;&gt;online documentation&lt;/a&gt; to learn more about the annotations and other NGINX features.&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Develop and build ASP.NET Core applications to run on Kubernetes with Draft</title>
+         <link>https://carlos.mendible.com/2018/11/18/develop-and-build-asp.net-core-applications-to-run-on-kubernetes-with-draft/</link>
+         <pubDate>Sun, 18 Nov 2018 10:00:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2018/11/18/develop-and-build-asp.net-core-applications-to-run-on-kubernetes-with-draft/</guid>
+         <description>&lt;p&gt;You start developing an ASP.NET Core application to run it in Kubernetes and suddenly you find yourself creating a docker file, building an image, pushing the image to a registry, creating both a deployment and a service definition for Kubernetes and you wonder if there is a tool out there to help you streamline the whole process.&lt;/p&gt;
+&lt;p&gt;Meet &lt;a href=&#34;https://github.com/Azure/draft&#34;&gt;Draft&lt;/a&gt; a tool that will not only help you create the artifacts needed to build and run applications in Kubernetes but to also build the container image and deploy it.&lt;/p&gt;
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites:&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;A Kubernetes cluster and the &lt;a href=&#34;https://kubernetes.io/docs/reference/kubectl/kubectl/&#34;&gt;kubectl&lt;/a&gt; CLI tool&lt;/li&gt;
+&lt;li&gt;Installation of &lt;a href=&#34;https://github.com/Kubernetes/helm&#34;&gt;Helm&lt;/a&gt; on your Kubernetes cluster&lt;/li&gt;
+&lt;li&gt;A Container Registry&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;install-and-configure-draft&#34;&gt;Install and Configure Draft&lt;/h2&gt;
+&lt;p&gt;To install Draft I run the following command:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;cinst -y draft
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then configure it:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;draft config set registry &amp;lt;registry full name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Be sure to log on to the Container Registry:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;docker login &amp;lt;registry full name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;or if working with Azure Container Registry:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;az acr login --name &amp;lt;acrName&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;create-and-prepare-the-application&#34;&gt;Create and prepare the application&lt;/h2&gt;
+&lt;p&gt;Creat an ASP.NET Core MVC application and create the artifacts with Draft:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;dotnet new mvc
+draft create --pack&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;csharp -a mvcdraft
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note that I&#39;ve specified two parameters:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;pack&lt;/strong&gt; to tell draft that we are using C# as the language.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;a&lt;/strong&gt; to specify the name of the Helm release we will run on Kubernetes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;deploy-and-test-your-application&#34;&gt;Deploy and test your application&lt;/h2&gt;
+&lt;p&gt;Run the following command to build the container image and then deploy the application to Kubernetes:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;draft up
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The first time you run the command it will take a while. The output should look similar to this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;Draft Up Started: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;netcoredraft&amp;#39;&lt;/span&gt;: 01CWKAZ79WR6W66PHHR2AFRSGC
+netcoredraft: Building Docker Image: SUCCESS ⚓  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;1.0008s&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+netcoredraft: Pushing Docker Image: SUCCESS ⚓  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;3.2891s&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+netcoredraft: Releasing Application: SUCCESS ⚓  &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;2.7629s&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+Inspect the logs with &lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;draft logs 01CWKAZ79WR6W66PHHR2AFRSGC&lt;span style=&#34;color:#e6db74&#34;&gt;`&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To test the application run:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;draft connect
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output should look similar to:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;Connect to netcoredraft:80 on localhost:50998
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;netcoredraft&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;:       No XML encryptor configured. Key &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;ea9dac08-e7af-468c-9e00-cbe38ab40fa8&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt; may be persisted to storage in unencrypted form.
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;netcoredraft&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;: Hosting environment: Production
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;netcoredraft&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;: Content root path: /app
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;netcoredraft&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;: Now listening on: http://&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;::&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;:80
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;netcoredraft&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;: Application started. Press Ctrl+C to shut down.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Browse to the url shown in the output (i.e. http://localhost:50998) and you should be good to go!!!&lt;/p&gt;
+&lt;h2 id=&#34;cleaning-up&#34;&gt;Cleaning up&lt;/h2&gt;
+&lt;p&gt;Once you finish your tests you can cleanup with the following command:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;draft delete
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hope it helps!!!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Deploying Elastic Search, Fluentd, Kibana on AKS with Helm</title>
+         <link>https://carlos.mendible.com/2018/10/14/deploying-elastic-search-fluentd-kibana-on-aks-with-helm/</link>
+         <pubDate>Sun, 14 Oct 2018 14:00:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2018/10/14/deploying-elastic-search-fluentd-kibana-on-aks-with-helm/</guid>
+         <description>&lt;p&gt;For my recent talk at &lt;a href=&#34;http://netconfmad2018.azurewebsites.net/&#34;&gt;.NET Conf Madrid&lt;/a&gt; I managed to install Elastic Search, Fluentd and Kibana (EFK) as a logging solution for the AKS cluster I used in my demos.&lt;/p&gt;
+&lt;p&gt;The fact is that such deployment was possible thanks to Tim Park and his post &lt;a href=&#34;https://medium.com/@timfpark/efk-logging-on-kubernetes-on-azure-4c54402459c4&#34;&gt;Logging with Fluentd, ElasticSearch, and Kibana (EFK) on Kubernetes on Azure&lt;/a&gt; where I learned that to effectively deploy EFK on AKS I would have to tweak the resource definitions found in the &lt;a href=&#34;https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/fluentd-elasticsearch&#34;&gt;Kubernetes&lt;/a&gt; project.&lt;/p&gt;
+&lt;p&gt;I followed Tim&#39;s advice and took it to the next level creating my first Helm chart: &lt;a href=&#34;https://github.com/cmendible/kubernetes.samples/tree/master/13.efk.helm&#34;&gt;efk-aks&lt;/a&gt; so now you can deploy the EFK stack on AKS using Helm.&lt;/p&gt;
+&lt;p&gt;Feel free to get the Helm chart &lt;a href=&#34;https://github.com/cmendible/kubernetes.samples/tree/master/13.efk.helm&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>At last: Network Policies in AKS with kube-router</title>
+         <link>https://carlos.mendible.com/2018/07/19/at-last-network-policies-in-aks-with-kube-router/</link>
+         <pubDate>Thu, 19 Jul 2018 00:21:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2018/07/19/at-last-network-policies-in-aks-with-kube-router/</guid>
+         <description>&lt;p&gt;For ages I&#39;ve been waiting for a way to enforce netwok policies on AKS, so last weekend while I was googling around, I found this hidden gem posted by &lt;a href=&#34;https://www.techdiction.com/bio/&#34;&gt;Marcus Robinson&lt;/a&gt;: &lt;a href=&#34;https://www.techdiction.com/2018/06/02/enforcing-network-policies-using-kube-router-on-aks/&#34;&gt;Enforcing Network Policies using kube-router on AKS&lt;/a&gt; and had to test the proposed solution.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Prerequisites&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.microsoft.com/en-us/azure/aks/&#34;&gt;Azure Kubernetes Service (AKS)&lt;/a&gt; deployed with &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/aks/http-application-routing&#34;&gt;HTTP application routing&lt;/a&gt; enabled.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/tasks/tools/install-kubectl/&#34;&gt;kubectl&lt;/a&gt; installed&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;1-create-a-service-exposed-throuh-your-aks-dns-zone&#34;&gt;1. Create a service exposed throuh your AKS DNS Zone&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Let&#39;s start by deploying the following service to your Kubernetes cluster, by saving the following content to a file named &lt;strong&gt;dni-function.yaml&lt;/strong&gt; and replacing &lt;strong&gt;[YOUR_DNS__ZONE_NAME]&lt;/strong&gt; with the corresponding value of your service:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yml&#34; data-lang=&#34;yml&#34;&gt;apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: dni-function
+spec:
+  replicas: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+  template:
+    metadata:
+      labels:
+        app: dni-function
+    spec:
+      containers:
+      - name: dni-function
+        image: cmendibl3/dni:&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;.0&lt;/span&gt;
+        ports:
+        - containerPort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dni-function
+spec:
+  type: ClusterIP
+  ports:
+  - name:
+    port: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+  selector:
+    app: dni-function
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dni-function
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  rules:
+  - host: dni-function.[YOUR_DNS__ZONE_NAME]
+    http:
+      paths:
+      - backend:
+          serviceName: dni-function
+          servicePort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+        path: /
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now deploy it to Kubernetes:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;kubectl apply &lt;span style=&#34;color:#f92672&#34;&gt;-f&lt;/span&gt; ./dni-function.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In a few seconds you&#39;ll have a working Web API (Validates Spanish National Identification Numbers).&lt;/p&gt;
+&lt;p&gt;Now test the service with the following command:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;curl -k http://dni-function.&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;YOUR_DNS__ZONE_NAME&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;/api/validate?dni&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;88410248L
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;which should return &lt;strong&gt;true&lt;/strong&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;2-deploy-kube-router&#34;&gt;2. Deploy kube-router&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Thanks to &lt;a href=&#34;https://www.techdiction.com/bio/&#34;&gt;Marcus Robinson&lt;/a&gt; we can deploy &lt;a href=&#34;https://github.com/cloudnativelabs/kube-router&#34;&gt;kube-router&lt;/a&gt; to AKS:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl apply -f https://raw.githubusercontent.com/marrobi/kube-router/marrobi/aks-yaml/daemonset/kube-router-firewall-daemonset-aks.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;3-deny-all-traffic-to-the-service&#34;&gt;3. Deny all traffic to the service&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Now let&#39;s try to deny all the traffic to the service, creating a &lt;strong&gt;dni-function-deny-all.yaml&lt;/strong&gt; file with the following contents:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: dni-function-deny-all
+spec:
+  podSelector:
+    matchLabels:
+      app: dni-function
+  ingress: []
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Deploy the policy:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl apply -f ./dni-function-deny-all.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Try calling the service again:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;curl -k http://dni-function.&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;YOUR_DNS__ZONE_NAME&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;/api/validate?dni&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;88410248L
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This time you should get:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;html&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;head&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;title&lt;/span&gt;&amp;gt;502 Bad Gateway&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;title&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;head&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;body&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bgcolor&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;white&amp;#34;&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;center&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;h1&lt;/span&gt;&amp;gt;502 Bad Gateway&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;h1&lt;/span&gt;&amp;gt;&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;center&lt;/span&gt;&amp;gt;
+&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;hr&lt;/span&gt;&amp;gt;&amp;lt;&lt;span style=&#34;color:#f92672&#34;&gt;center&lt;/span&gt;&amp;gt;nginx/1.13.12&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;center&lt;/span&gt;&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;body&lt;/span&gt;&amp;gt;
+&amp;lt;/&lt;span style=&#34;color:#f92672&#34;&gt;html&lt;/span&gt;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That&#39;s it! Your service is no longer available!!!&lt;/p&gt;
+&lt;h2 id=&#34;4-allow-only-traffic-from-a-specific-pod&#34;&gt;4. Allow only traffic from a specific pod&lt;/h2&gt;
+&lt;p&gt;Create a &lt;strong&gt;dni-function-allow-internal.yaml&lt;/strong&gt; file with the following contents:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: dni-function-allow-internal
+spec:
+  podSelector:
+    matchLabels:
+      app: dni-function
+  ingress:
+  - from:
+      - podSelector:
+          matchLabels:
+            app: internal
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Deploy the policy, which restricts the traffic to pods with the label: &lt;strong&gt;app=internal&lt;/strong&gt;, and check that you still can&#39;t connect:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl apply -f ./dni-function-allow-internal.yaml
+curl -k http://dni-function.&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;YOUR_DNS__ZONE_NAME&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;/api/validate?dni&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;88410248L
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now let&#39;s create a pod with the expected label and try calling the &lt;strong&gt;dni-function&lt;/strong&gt; service from it:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl run internal-function-tester --rm -i -t --image&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;alpine --labels app&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;internal -- sh
+wget -qO- --timeout&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; http://dni-function/api/validate?dni&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;88410248L
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This time you should get &lt;strong&gt;true&lt;/strong&gt; as the result!!!&lt;/p&gt;
+&lt;p&gt;To learn more about Network Policies check the &lt;a href=&#34;https://github.com/ahmetb/kubernetes-network-policy-recipes&#34;&gt;kubernetes-network-policy-recipes&lt;/a&gt; repo and feel free to download the code and files for this post &lt;a href=&#34;https://github.com/cmendible/kubernetes.samples/11.kube-router&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Secure your Kubernetes services with NGINX ingress controller, tls and more.</title>
+         <link>https://carlos.mendible.com/2018/03/20/secure-your-kubernetes-services-with-nginx-ingress-controller-tls-and-more./</link>
+         <pubDate>Tue, 20 Mar 2018 15:13:00 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2018/03/20/secure-your-kubernetes-services-with-nginx-ingress-controller-tls-and-more./</guid>
+         <description>&lt;p&gt;&lt;strong&gt;Disclaimer:&lt;/strong&gt; samples provided in this post were tested both in &lt;a href=&#34;https://docs.microsoft.com/en-us/azure/aks/&#34;&gt;Azure Container Services (AKS)&lt;/a&gt; and &lt;a href=&#34;https://blog.docker.com/2018/01/docker-windows-desktop-now-kubernetes/&#34;&gt;Kubernetes provided by Docker for Windows&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In previous posts I showed you how to [Run a Precompiled .NET Core Azure Function in a Container]({{ site.baseurl }}{% post_url 2017-12-28-run-a-precomplied-net-core-azure-function-in-a-container %}) and how to [Deploy your first Service to Azure Container Services (AKS)]({{ site.baseurl }}{% post_url 2017-12-01-deploy-your-first-service-to-azure-container-services-aks %}).&lt;/p&gt;
+&lt;p&gt;By now you should be able to run your own services in Kubernetes and starting to wonder about how can you give answers to questions such as:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Is there an easy way add TLS support to my services?&lt;/li&gt;
+&lt;li&gt;Can I add whitelisting and other nice features such as rate limits (&amp;ldquo;throtling&amp;rdquo;)?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Through this post I&#39;ll walk you through a series of samples to show you how you can answer those questions by deploying a &lt;a href=&#34;https://github.com/kubernetes/ingress-nginx&#34;&gt;NGINX Ingress Controller&lt;/a&gt; to your Kubernetes cluster.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Prerequisites&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/&#34;&gt;Kubernetes&lt;/a&gt; deployed and working experience.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/tasks/tools/install-kubectl/&#34;&gt;kubectl&lt;/a&gt; installed&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/kubernetes/helm&#34;&gt;helm&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;1-expose-a-service-with-public-ip&#34;&gt;1. Expose a service with public IP&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Let&#39;s start by deploying the following service to your Kubernetes cluster, by saving the following content yaml content to a file named &lt;strong&gt;dni-function.yaml&lt;/strong&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yml&#34; data-lang=&#34;yml&#34;&gt;apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: dni-function
+spec:
+  replicas: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+  template:
+    metadata:
+      labels:
+        app: dni-function
+    spec:
+      containers:
+      - name: dni-function
+        image: cmendibl3/dni:&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;.0&lt;/span&gt;
+        ports:
+        - containerPort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dni-function
+spec:
+  type: LoadBalancer
+  ports:
+  - name:
+    port: &lt;span style=&#34;color:#ae81ff&#34;&gt;9000&lt;/span&gt;
+    targetPort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+  selector:
+    app: dni-function
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now deploy it to Kubernetes:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;kubectl apply &lt;span style=&#34;color:#f92672&#34;&gt;-f&lt;/span&gt; ./dni-function.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In a few seconds you&#39;ll have a working Web API (Validates Spanish National Identification Numbers) with the service type set to &lt;strong&gt;LoadBalancer&lt;/strong&gt; which means that the solution is exposed to the world using a public IP.&lt;/p&gt;
+&lt;p&gt;If you are running on localhost, you can try it executing:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;curl -k http://localhost:9000/api/validate?dni&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;88410248L
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;which should return &lt;strong&gt;true&lt;/strong&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;2-make-the-service-private-no-public-ip&#34;&gt;2. Make the service private (No public IP)&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Now in order to secure the API let&#39;s make the service private changing it&#39;s type to &lt;strong&gt;ClusterIP&lt;/strong&gt;. So update the contents of &lt;strong&gt;dni-function.yaml&lt;/strong&gt; as follows:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yml&#34; data-lang=&#34;yml&#34;&gt;apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: dni-function
+spec:
+  replicas: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+  template:
+    metadata:
+      labels:
+        app: dni-function
+    spec:
+      containers:
+      - name: dni-function
+        image: cmendibl3/dni:&lt;span style=&#34;color:#ae81ff&#34;&gt;1.0&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;.0&lt;/span&gt;
+        ports:
+        - containerPort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dni-function
+spec:
+  type: ClusterIP
+  ports:
+  - name:
+    port: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+  selector:
+    app: dni-function
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and redeploy:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;kubectl delete &lt;span style=&#34;color:#f92672&#34;&gt;-f&lt;/span&gt; ./dni-function.yaml
+kubectl apply &lt;span style=&#34;color:#f92672&#34;&gt;-f&lt;/span&gt; ./dni-function.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now you don&#39;t have a public endpoint and therefore any attempt to query the service will result in a Service Unavailable response.&lt;/p&gt;
+&lt;h2 id=&#34;3-deploy-the-nginx-ingress-controllerhttpsgithubcomkubernetesingress-nginx&#34;&gt;3. Deploy the &lt;a href=&#34;https://github.com/kubernetes/ingress-nginx&#34;&gt;NGINX Ingress Controller&lt;/a&gt;&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;It&#39;s time to deploy the &lt;a href=&#34;https://github.com/kubernetes/ingress-nginx&#34;&gt;NGINX Ingress Controller&lt;/a&gt;: a daemon, deployed as a Kubernetes Pod which provides a simple yet effective way to configure features such as TLS, Whitelisting, rate limits, etc&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Let&#39;s use Helm to deploy the ingress controller:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-powershell&#34; data-lang=&#34;powershell&#34;&gt;helm install stable/nginx-ingress --name my-nginx `
+    --set controller.ingressClass=nginx `
+    --set controller.service.externalTrafficPolicy=Local `
+    --set controller.service.loadBalancerIP=127.0.0.1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If you test again with:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;curl -k http://localhost/api/validate?dni&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;88410248L
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and because there is no rule specified to route the traffic from the ingress endpoint to the private service, you&#39;ll get a response coming from a &lt;strong&gt;default backend!&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;4-deploy-the-first-ingress-rule&#34;&gt;4. Deploy the first Ingress Rule&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Create a file named &lt;strong&gt;ingress_rules.yaml&lt;/strong&gt; with the following contents and deploy:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-rules
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: dni-function
+          servicePort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl appply -f ingress_rules.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If everything is ok and you query the service again you should get a response from the Web API, so we are back to square one, but with a great difference: all traffic goes through the &lt;a href=&#34;https://github.com/kubernetes/ingress-nginx&#34;&gt;NGINX Ingress Controller&lt;/a&gt; and that fact will let us add new features to the solution.&lt;/p&gt;
+&lt;p&gt;Please note that with this rules you can use different paths to expose diferent services.&lt;/p&gt;
+&lt;h2 id=&#34;5-tls&#34;&gt;5. TLS&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;To add TLS to the service you&#39;ll first need a certificate which you can generate with &lt;a href=&#34;https://github.com/kubernetes/ingress-nginx/blob/master/docs/examples/PREREQUISITES.md#tls-certificates&#34;&gt;openssl&lt;/a&gt;. In order to speed things up save the following contents to a file named &lt;strong&gt;tls-secret.yaml&lt;/strong&gt;, which provides a certificate for localhost (just for testing) and will add a &lt;a href=&#34;https://kubernetes.io/docs/concepts/configuration/secret/&#34;&gt;secret&lt;/a&gt; to your Kubernetes cluster:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yml&#34; data-lang=&#34;yml&#34;&gt;apiVersion: v1
+data:
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMrekNDQWVPZ0F3SUJBZ0lKQVBBVlNoS1d5NWw1TUEwR0NTcUdTSWIzRFFFQkN3VUFNQlF4RWpBUUJnTlYKQkFNTUNXeHZZMkZzYUc5emREQWVGdzB4T0RBeU1qVXhOelUzTURSYUZ3MHhPVEF5TWpVeE56VTNNRFJhTUJReApFakFRQmdOVkJBTU1DV3h2WTJGc2FHOXpkRENDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFEZ2dFUEFEQ0NBUW9DCmdnRUJBT012c25IOEhmT2dSSnE5UDRLdGRudnNkWEtaa0tYMHpNclpNdURHWnppeXFucEMwVzdwRVZOV0lmK2kKcFNpcGU2RWNBeDlWakNmUWxZbHJuNnZBLzFLUTlLRW84SURicUF3ZTloVGFLK2dRV21IblJGaFhFcCs5ZmxqbQptcVRQS3JHNEgydnlZTWQwYnpacUlJQUZHMTV3NzZLODZNRzhxVUR0V0NRNWxvWFNBZUtUVzcwSVNMSXVNZ016CklpV2lsVjB4Ly9MS2RHZDJKRi9wZVVBUGhqT05SNUJ2cHArUXlhQ3gvTDNFaGFuWE56amZXUi8zZ084SUZwN0IKcmhpcWwzWWNCZHJES2xTaE8raTFDY3FnbGZUdEdkaXVENWZHYXB3QUQ5eVNwV081bTFSR1NTaHZmTktHR05XVApOeDczemQ4b0FMckFHbHR6K2I4VjlSaTMrNThDQXdFQUFhTlFNRTR3SFFZRFZSME9CQllFRlB2S1BFT0U2VUFnCnVLTFA5QjRDczkzc2d3SnRNQjhHQTFVZEl3UVlNQmFBRlB2S1BFT0U2VUFndUtMUDlCNENzOTNzZ3dKdE1Bd0cKQTFVZEV3UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFDYVM0eTFZMnVjdzRsOEJMVGJ0NW9QVApnQXpKSW5iYTVET3NWZElEcmZEa0FOOUJhcVh2Y011dzlmN0xYc0dlenNiMmdCSm1GbllpcUxLcTBYdmVBU2x2ClJoS0R5OVJhTThpeTV0eVdVZEJXSzJFZWtvUEJHOFhMVHhScnorbEpoQmpMNXhTS3dSMDN3MW45OEVQbWRFOUkKTS90OWdHKzdZYnZyaVZhdTFINURiZWtTZld0L2pIZG9UU2hwNEJFTVNxelJSaHpqbmNUamZoR0J2KzR2cGFCRAo1aHZ0WHFsekZHODdRR05LQWdHK01hdFFLY1JCTFppNndkRDk4djdMV2NROGhydWxGT2lxeXNmNDh3bzZodEhyCm14S3BnVWpHbE52dVdKZmhNWTZCdlkyeFlveHB2R0d3Z1hnNWsxQUFldzNjK0RRTWpUUjU3dnVTZ2tnTGZVaz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2Z0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktnd2dnU2tBZ0VBQW9JQkFRRGpMN0p4L0Izem9FU2EKdlQrQ3JYWjc3SFZ5bVpDbDlNeksyVExneG1jNHNxcDZRdEZ1NlJGVFZpSC9vcVVvcVh1aEhBTWZWWXduMEpXSgphNStyd1A5U2tQU2hLUENBMjZnTUh2WVUyaXZvRUZwaDUwUllWeEtmdlg1WTVwcWt6eXF4dUI5cjhtREhkRzgyCmFpQ0FCUnRlY08raXZPakJ2S2xBN1Zna09aYUYwZ0hpazF1OUNFaXlMaklETXlJbG9wVmRNZi95eW5SbmRpUmYKNlhsQUQ0WXpqVWVRYjZhZmtNbWdzZnk5eElXcDF6YzQzMWtmOTREdkNCYWV3YTRZcXBkMkhBWGF3eXBVb1R2bwp0UW5Lb0pYMDdSbllyZytYeG1xY0FBL2NrcVZqdVp0VVJra29iM3pTaGhqVmt6Y2U5ODNmS0FDNndCcGJjL20vCkZmVVl0L3VmQWdNQkFBRUNnZ0VCQUpqbEhza0xqZlRLSmFHbVA3bm9sOWJxMmxnWDlYdGE5d0NGa0hJcDFJb1oKNUJXSUpuN29LQnJYMnVXNlJrREpYMFNjSDVYVTh4QlFsbkwzbFd2MzVWMWg1T0VaTmxMaWdZUTJ5aEphaWpZUgoyMklNVExqUFVOOWtua1dpWE8wUjUzL1hsSDRIanc1czAvUGhGS0pUelltUHBCYjM0QVdTdkszUGpnUkRKWVJFCi9ybEF0SzZSaHFKNThBS0dPOGp3OEd5WEJhTzJRVkVJSTVVdUM1QTBhTGMvUjJxS1ZpdzJ6bGJ6TVRNUVpKc2QKVjRubklYS29oL1R6WWZjdk90OVZKOTRqWlRmSGtRdHBHbzgwbFVhNGtFMXY2b2gyZG5GcThtZ3M5a3ZDV2ZLSwpTTlVhNkU2UGlMenFzR01VRE85enVHRmpUQm9xMDdBamNSVHMvS1NaOEdFQ2dZRUEvUGlkTUtGQnRaMHp6TnpOClB0Q1FrMzZkZ3VMZ2xhSVl5Qk5JSXl5SG84WW5wS3dONWJ1ZjM2ZktIWmZMeUt3SnNFMkhiNWQ0aXI1RzNFaVAKYzBhYjJFQnpQMTdyaUVVb2htVkJZTUNjY1ZlMi9qWnduZ2ducjBpcFEvc3ZqSFdrYlBTcFozam9ySjV4Z1owYQpXM21yN0U1Mi85THQxTGFYeXdRMkIydDAvR2tDZ1lFQTVlZ01yVzIzMlIyS3NrQVRDWDV3UDNwYk9SUkJkaEU5Cmh0a2JDTXc0ZDFHU1hBOElWSEVKRkZVdkFjODhiY0ZlckxXQzZkd0V1N2pTRnUyRUwwcEdKWmFTQ2NoTllrUkIKQ1F1MFhOdDBzUzRoRzhoUFRiejZROVZ6RzBjVm91RUlsdlVEc0dCU3pOV2FYck5lSDY5MktPMWM5akd4RzVITgozTC9VdzM2STFzY0NnWUJYMUhHdkNxM253bmJUciszSzIxcjIrc1R4UnBnM0c1cURETDdGQjVib2M4b2IwR2phCjFIUERrVndKUGtUUW5YcVhyYk5TT1VMdTJQVjlVZXdNVi8yUDdZQ1dCZnk4eVZZeW8wRTV1R1lZckIycTBYZjAKUmx5UTdTZG5wUFJ6VGYwU256ZVo1MDdSY0FsMHVQa0h2WXpGZE5DNExhSEpjc1B0QnI5RGdEbVQwUUtCZ0NDbQpPcDZxZFRCdEpKUTV5enBPN1d2bVdXd2F0MDBvRjUrOTF6d0JuSWM5VzFhZGYrWldBeDhURmREZytFang3QnNFCnorbWNLRVBzZEZGek81Rm5yOXlJcklhZEhuZzFEek5VcVRHQ3JPaTRqMVVkdGoxbzkvV0lLNGVWS2JwdTBNUjMKV1NYRUdCNGt1MzUxWkltRlpuZGJkaGMwYVYxcjhGdElGdFFJZFRCakFvR0JBSXV1dGFzQjFFT2dUZUVtTGJqYgpKdWVlZVRtSUQvWHpLMldpSE1ydG5HOHN0TWF0ai9VWjZUcTJMQnh4SkJqdVRFOHF5dUtYeG1KTmUxSnRkbUdKClU2bkZmWXo4OW1QSmlWK2dtSWU1L1VNNGJRbnB2SFNJdEtyNHFCREgvTkY0Z21xdGQ3MDlnTm5XRS9jdk1sQWkKQndYNWh2TzFWdndzZmRNeE0rSGIwVUxPCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K
+kind: Secret
+metadata:
+  name: tls-secret
+  namespace: default
+type: Opaque
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now modify the &lt;strong&gt;ingress_rules.yaml&lt;/strong&gt; from previous steps to include the &lt;strong&gt;tls&lt;/strong&gt; section as shown below:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-rules
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - localhost
+    secretName: tls-secret
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: dni-function
+          servicePort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Deploy both files:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl apply -f ./tls-secret.yaml
+kubectl apply -f ./ingress_rules.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this new state, if you query the service you should get redirects to the TLS endpoint, so try:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;https://localhost/api/validate?dni&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;88410248L;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and yes! the service is responding and only accesible through the TLS endpoint!&lt;/p&gt;
+&lt;h2 id=&#34;6-whitelisting&#34;&gt;6. Whitelisting&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;To restrict the service in a way that only a list of IPs can access it, modify the &lt;strong&gt;ingress_rules.yaml&lt;/strong&gt; to add the &lt;strong&gt;whitelist-source-range&lt;/strong&gt; annotation:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yml&#34; data-lang=&#34;yml&#34;&gt;apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-rules
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/whitelist-source-range: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;192.168.65.3/32&amp;#39;&lt;/span&gt;
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - localhost
+    secretName: tls-secret
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: dni-function
+          servicePort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and deploy:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl apply -f ./ingress_rules.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Feel free to try different ranges and understand how you can block or enable access to your service.&lt;/p&gt;
+&lt;h2 id=&#34;7-rate-limits&#34;&gt;7. Rate limits&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Now it&#39;s time to protect the service applying some kind of throtling. Modify the &lt;strong&gt;ingress_rules.yaml&lt;/strong&gt; to add the &lt;strong&gt;limit-connections&lt;/strong&gt; and &lt;strong&gt;limit-rps&lt;/strong&gt; annotations:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yml&#34; data-lang=&#34;yml&#34;&gt;apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-rules
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/whitelist-source-range: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;192.168.65.3/32&amp;#39;&lt;/span&gt;
+    nginx.ingress.kubernetes.io/limit-connections: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;10&amp;#39;&lt;/span&gt;
+    nginx.ingress.kubernetes.io/limit-rps: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;1&amp;#39;&lt;/span&gt;
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - localhost
+    secretName: tls-secret
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: dni-function
+          servicePort: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and deploy:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl apply -f ./ingress_rules.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You just limited the number of concurrent connections from a given client to 10 and it&#39;s allowed number of requests per second to 1. You see the power here don&#39;t you?&lt;/p&gt;
+&lt;p&gt;That one wraps it up for today. Hope you enjoyed the ride!&lt;/p&gt;
+&lt;p&gt;Please download all code and files &lt;a href=&#34;https://github.com/cmendible/kubernetes.samples&#34;&gt;here&lt;/a&gt; and be sure to check the &lt;a href=&#34;https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md&#34;&gt;online documentation&lt;/a&gt; to learn more about the annotations and available features.&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>My kubectl Cheat Sheet</title>
+         <link>https://carlos.mendible.com/2018/03/17/my-kubectl-cheat-sheet/</link>
+         <pubDate>Sat, 17 Mar 2018 17:23:14 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2018/03/17/my-kubectl-cheat-sheet/</guid>
+         <description>&lt;p&gt;This is a small &lt;strong&gt;&lt;a href=&#34;https://kubernetes.io/docs/reference/kubectl/overview/&#34;&gt;kubectl&lt;/a&gt; Cheat Sheet&lt;/strong&gt; with the list of commands and settings I use, almost on a daily basis, when working with kubernetes.&lt;/p&gt;
+&lt;h2 id=&#34;get-version-and-cluster-information&#34;&gt;Get version and cluster information&lt;/h2&gt;
+&lt;h3 id=&#34;get-kubectl-version&#34;&gt;Get kubectl version&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl --version
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;get-cluster-information&#34;&gt;Get cluster information&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl cluster-info
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;check-cluster-nodes&#34;&gt;Check cluster nodes&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl get nodes
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;get-running-services&#34;&gt;Get running services&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl get services -w --all-namespaces
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;context&#34;&gt;Context&lt;/h2&gt;
+&lt;h3 id=&#34;list-all-available-contexts&#34;&gt;List all available contexts&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl config get-contexts
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;get-current-context&#34;&gt;Get current context&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl config current-context
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;change-the-context&#34;&gt;Change the context&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl config use-context &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;context name&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;deployment&#34;&gt;Deployment&lt;/h2&gt;
+&lt;h3 id=&#34;deploy&#34;&gt;Deploy&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl apply -f &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;yaml definition file&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;get-deployment-definition&#34;&gt;Get deployment definition&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl get deployment &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;deployment name&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; -o yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;update-the-image-of-a-deployment&#34;&gt;Update the image of a deployment&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl set image deployment/&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;deployment name&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;container name&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;image tag&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;set-autoscale-for-a-deployment&#34;&gt;Set autoscale for a deployment&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl autoscale deployment &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;deployment name&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; --min&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; --max&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; --cpu-percent&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;delete-a-deployment&#34;&gt;Delete a deployment&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl delete -f &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;yaml definition file&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;get-secret-definition&#34;&gt;Get secret definition&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl get secret &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;secret name&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; -o yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;force-delete-a-pod&#34;&gt;Force delete a pod&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl delete pod &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;pod name&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; --grace-period&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; --force
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;logs&#34;&gt;Logs&lt;/h2&gt;
+&lt;h3 id=&#34;read-a-pods-log&#34;&gt;Read a pod&#39;s log&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl logs &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;pod name&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; -n &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;namespace name&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;misc&#34;&gt;Misc&lt;/h2&gt;
+&lt;h3 id=&#34;install-kubernetes-dashboard&#34;&gt;Install kubernetes dashboard&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hope it helps!&lt;/p&gt;
+</description>
+       </item>
+       
+     </channel>
+   </rss>

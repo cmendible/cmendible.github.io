@@ -1,0 +1,245 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Use PowerShell to create a Microsoft Teams Channel" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Use PowerShell to create a Microsoft Teams Channel</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2017-11-14T02:15:00Z">Nov 14, 2017</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/devops">DevOps</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>One minute read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>For those of you who have been trying to automate anything related to Microsoft Teams, let me tell you that there is a new PowerShell Module in town: <a href="https://www.powershellgallery.com/packages/MicrosoftTeams/0.9.0">Microsoft Teams 0.9.0</a> which you can install with the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">    Install-Module MicrosoftTeams
+</code></pre></div><p>Now to automate the channel creation In A Team you can simply:</p>
+<h2 id="1-create-a-file-createteamchannelps1-with-the-following-contents">1. Create a file createTeamChannel.ps1 with the following contents:</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">    <span style="color:#66d9ef">Param</span>
+    (
+        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]<span style="color:#66d9ef">[string]</span>$username,
+        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]<span style="color:#66d9ef">[securestring]</span>$password,
+        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]<span style="color:#66d9ef">[string]</span>$tenantId,
+        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]<span style="color:#66d9ef">[string]</span>$teamName,
+        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]<span style="color:#66d9ef">[string]</span>$channelName)
+
+    <span style="color:#75715e"># Create PSCredential</span>
+    $credential = New-Object System.Management.Automation.PSCredential($username, $password)
+
+    <span style="color:#75715e"># Connect to Microsoft Teams</span>
+    Connect-MicrosoftTeams -TenantId $tenantId -Credential $credential
+
+    <span style="color:#75715e"># Get the Team</span>
+    $team = Get-Team | Where-Object { $_.DisplayName <span style="color:#f92672">-eq</span> $teamName}
+
+    <span style="color:#66d9ef">if</span> ($team) {
+        <span style="color:#75715e"># Create the new Team Channel</span>
+        New-TeamChannel -GroupId $team.GroupId -DisplayName $channelName -Description $channelName
+    }
+    <span style="color:#66d9ef">else</span> {
+        <span style="color:#66d9ef">throw</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Team: </span><span style="color:#e6db74">$</span><span style="color:#e6db74">teamName does not exist.</span><span style="color:#e6db74">&#34;</span>
+    }
+</code></pre></div><h2 id="2-run-the-following-command-in-powershell">2. Run the following command in PowerShell</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">    $password = ConvertTo-SecureString <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">YOUR PASSWORD</span><span style="color:#e6db74">&#34;</span> -AsPlainText -Force
+    .\createTeamChannel.ps1 username@tenant.com $password $tenantId MonitoringIssues Incident101
+</code></pre></div><p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/11/02/use-powershell-to-enable-azure-storage-account-firewall-rules/"><i class="fa fa-chevron-circle-left"></i> Use PowerShell to enable Azure Storage Account Firewall Rules</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/12/01/deploy-your-first-service-to-azure-container-services-aks/">Deploy your first Service to Azure Container Services (AKS) <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,305 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Stop or Start all WebApps in your Azure subscription" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Stop or Start all WebApps in your Azure subscription</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2016-06-05T19:08:30Z">Jun 5, 2016</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/devops">DevOps</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p><strong>Stop or Start all WebApps in your Azure subscription</strong> with <a href="https://gallery.technet.microsoft.com/scriptcenter/Stop-or-Start-all-WebApps-9533dda6/file/153545/1/Stop-Start-All-WebApps.ps1">Stop-Start-All-WebApps.ps1</a> a simple PowerShell workflow runbook that will help you automate the process of stopping or starting every single WebApp (Website) you've deployed.</p>
+<p>The script receives two required parameters:</p>
+<ul>
+<li><strong>Stop</strong>: If set to true stop the WebApps (Websites) otherwise start the WebApps (Websites)</li>
+<li><strong>CredentialAssetName</strong>: The name of a valid Credential Asset (AutomationPSCredential) you must have previously configured.</li>
+</ul>
+<p>As you can see below, the script is quite simple and uses the following PowerShell Activities and Cmdlets:</p>
+<!-- raw HTML omitted -->
+<p>Here is the script:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e">&lt;#</span><span style="color:#75715e"> 
+</span><span style="color:#75715e">    </span><span style="color:#e6db74">.SYNOPSIS</span><span style="color:#75715e">  
+</span><span style="color:#75715e">        Start or Stop all WebApps (Websites) in your subscription</span><span style="color:#75715e">.</span><span style="color:#75715e"> 
+</span><span style="color:#75715e"> 
+</span><span style="color:#75715e">    </span><span style="color:#e6db74">.DESCRIPTION</span><span style="color:#75715e"> 
+</span><span style="color:#75715e">        Runbook which allows you to start/stop all WebApps (Websites) in your subscription</span><span style="color:#75715e">.</span><span style="color:#75715e"> 
+</span><span style="color:#75715e"> 
+</span><span style="color:#75715e">    </span><span style="color:#e6db74">.PARAMETER</span><span style="color:#75715e"> Stop 
+</span><span style="color:#75715e">        If set to true: stop the WebApps (Websites)</span><span style="color:#75715e">.</span><span style="color:#75715e"> Otherwise start the WebApps (Websites) 
+</span><span style="color:#75715e"> 
+</span><span style="color:#75715e">    </span><span style="color:#e6db74">.PARAMETER</span><span style="color:#75715e"> CredentialAssetName 
+</span><span style="color:#75715e">        The name of a working AutomationPSCredential 
+</span><span style="color:#75715e">         
+</span><span style="color:#75715e">    </span><span style="color:#e6db74">.NOTES</span><span style="color:#75715e"> 
+</span><span style="color:#75715e">        AUTHOR: Carlos Mendible 
+</span><span style="color:#75715e">        LASTEDIT: June 2, 2016 
+</span><span style="color:#75715e"></span><span style="color:#75715e">#&gt;</span> 
+Workflow Stop-Start-All-WebApps  
+{ 
+    <span style="color:#75715e"># Parameters </span>
+    <span style="color:#66d9ef">Param</span>( 
+        [<span style="color:#66d9ef">Parameter</span> (<span style="color:#66d9ef">Mandatory</span>= $true)] 
+        <span style="color:#66d9ef">[bool]</span>$Stop, 
+         
+        [<span style="color:#66d9ef">Parameter</span> (<span style="color:#66d9ef">Mandatory</span>= $true)] 
+        <span style="color:#66d9ef">[string]</span>$CredentialAssetName 
+       )   
+        
+    <span style="color:#75715e">#The name of the Automation Credential Asset this runbook will use to authenticate to Azure. </span>
+    $CredentialAssetName = $CredentialAssetName; 
+     
+    <span style="color:#75715e">#Get the credential with the above name from the Automation Asset store </span>
+    $Cred = Get-AutomationPSCredential -Name $CredentialAssetName 
+    <span style="color:#66d9ef">if</span>(!$Cred) { 
+        <span style="color:#66d9ef">Throw</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Could not find an Automation Credential Asset named &#39;</span><span style="color:#e6db74">$</span><span style="color:#e6db74">{CredentialAssetName}&#39;. Make sure you have created one in this Automation Account.</span><span style="color:#e6db74">&#34;</span> 
+    } 
+ 
+    <span style="color:#75715e">#Connect to your Azure Account        </span>
+    Add-AzureRmAccount -Credential $Cred 
+    Add-AzureAccount -Credential $Cred 
+     
+    $status = <span style="color:#e6db74">&#39;Stopped&#39;</span> 
+    <span style="color:#66d9ef">if</span> ($Stop) 
+    { 
+        $status = <span style="color:#e6db74">&#39;Running&#39;</span> 
+    } 
+ 
+    <span style="color:#75715e"># Get Running WebApps (Websites) </span>
+    $websites = Get-AzureWebsite | where-object -FilterScript{$_.state <span style="color:#f92672">-eq</span> $status } 
+     
+    <span style="color:#66d9ef">foreach</span> -parallel ($website <span style="color:#66d9ef">In</span> $websites) 
+    { 
+        <span style="color:#66d9ef">if</span> ($Stop) 
+        { 
+            $result = Stop-AzureWebsite $website.Name 
+            <span style="color:#66d9ef">if</span>($result) 
+            { 
+                Write-Output <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">- </span>$($website.Name)<span style="color:#e6db74"> did not shutdown successfully</span><span style="color:#e6db74">&#34;</span> 
+            } 
+            <span style="color:#66d9ef">else</span> 
+            { 
+                Write-Output <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">+ </span>$($website.Name)<span style="color:#e6db74"> shutdown successfully</span><span style="color:#e6db74">&#34;</span> 
+            } 
+        } 
+        <span style="color:#66d9ef">else</span> 
+        { 
+            $result = Start-AzureWebsite $website.Name 
+            <span style="color:#66d9ef">if</span>($result) 
+            { 
+                Write-Output <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">- </span>$($website.Name)<span style="color:#e6db74"> did not start successfully</span><span style="color:#e6db74">&#34;</span> 
+            } 
+            <span style="color:#66d9ef">else</span> 
+            { 
+                Write-Output <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">+ </span>$($website.Name)<span style="color:#e6db74"> started successfully</span><span style="color:#e6db74">&#34;</span> 
+            } 
+        }  
+    }     
+}
+</code></pre></div><p>You can download the script from the <!-- raw HTML omitted -->Technet Script Gallery<!-- raw HTML omitted -->, import it as a runbook for your automation account in the Azure portal or simply copy the code from this post.</p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/06/01/backup-your-team-services-git-repositories-with-vsts-vault/"><i class="fa fa-chevron-circle-left"></i> Backup your Team Services Git Repositories with VSTS Vault</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/06/12/remove-ravendbs-api-from-swagger/">Remove RavenDb&#39;s API from Swagger <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

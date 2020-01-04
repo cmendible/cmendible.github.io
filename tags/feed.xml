@@ -1,0 +1,15 @@
+
+   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+     <channel>
+       <title>Tags on Code it Yourself...</title>
+       <link>https://carlos.mendible.com/tags/</link>
+       <description>Recent content in Tags on Code it Yourself...</description>
+       <generator>Hugo -- gohugo.io</generator>
+       <language>en-us</language>
+       <copyright>Copyright &amp;copy; 2019 - Carlos Mendible</copyright>
+       
+           <atom:link href="https://carlos.mendible.com/tags/feed.xml" rel="self" type="application/rss+xml" />
+       
+       
+     </channel>
+   </rss>

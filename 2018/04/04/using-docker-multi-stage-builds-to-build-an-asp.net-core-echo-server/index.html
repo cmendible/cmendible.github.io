@@ -1,0 +1,308 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2018-04-04T15:00:00Z">Apr 4, 2018</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>Today I'll show you how to create a simple Echo Server with ASP.NET Core and then a Docker Image using <a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build</a>:</p>
+<h2 id="1-create-the-application">1. Create the Application</h2>
+<hr>
+<p>Open a PowerShell promt and run:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">mkdir echoserver
+cd echoserver
+dotnet new console
+dotnet add package Microsoft.AspNetCore -v 2.0.2
+</code></pre></div><h2 id="2-replace-the-contents-of-programcs">2. Replace the contents of Program.cs</h2>
+<hr>
+<p>Replace the contents of the <strong>Program.cs</strong> file with the following code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">namespace</span> EchoServer
+{
+    <span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Hosting;
+    <span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Builder;
+    <span style="color:#66d9ef">using</span> Microsoft.AspNetCore;
+
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+    {
+        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> Main(<span style="color:#66d9ef">string</span>[] args)
+        {
+            WebHost.CreateDefaultBuilder()
+                .UseKestrel()
+                .Configure(app =&gt;
+                    {
+                        app.Run(httpContext =&gt;
+                        {
+                            <span style="color:#66d9ef">var</span> request = httpContext.Request;
+                            <span style="color:#66d9ef">var</span> response = httpContext.Response;
+
+                            <span style="color:#75715e">// Echo the Headers
+</span><span style="color:#75715e"></span>                            <span style="color:#66d9ef">foreach</span> (<span style="color:#66d9ef">var</span> header <span style="color:#66d9ef">in</span> request.Headers)
+                            {
+                                response.Headers.Add(header);
+                            }
+
+                            <span style="color:#75715e">// Echo the body
+</span><span style="color:#75715e"></span>                            <span style="color:#66d9ef">return</span> request.Body.CopyToAsync(response.Body);
+                        });
+                    })
+                .Build()
+                .Run();
+
+            <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+        }
+    }
+}
+</code></pre></div><h2 id="3-build-and-test">3. Build and Test</h2>
+<hr>
+<p>Run the folowing commands to build the application:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet build
+dotnet run
+</code></pre></div><p>The Echo Server will be running on: <a href="http://localhost:5000">http://localhost:5000</a> and to test it just send any request and the server should return it back to you.</p>
+<p>Let's try sending a GET request with a custom header:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -H <span style="color:#e6db74">&#34;Custom-Header: echo&#34;</span> http://localhost:5000/ -i
+</code></pre></div><p>the response should read:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">HTTP/1.1 <span style="color:#ae81ff">200</span> OK
+Date: Wed, <span style="color:#ae81ff">04</span> Apr <span style="color:#ae81ff">2018</span> 10:10:55 GMT
+Server: Kestrel
+Content-Length: <span style="color:#ae81ff">0</span>
+Accept: */*
+Host: localhost:5000
+User-Agent: curl/7.35.0
+Custom-Header: echo
+</code></pre></div><h2 id="4-create-a-dockerfile">4. Create a Dockerfile</h2>
+<hr>
+<p>In order to run the Echo Server in a container create a Dockerfile with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-docker" data-lang="docker"><span style="color:#75715e"># This stage builds the application</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> microsoft/dotnet:2.0.6-sdk-2.1.101-jessie AS builder</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> . src<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> src</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> dotnet restore<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> dotnet publish -c release<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># This stages uses the output from the build</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> microsoft/dotnet:2.0.6-runtime-jessie</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>builder src/bin/release/netcoreapp2.0/publish app<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> app</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> ASPNETCORE_URLS http://*:80<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 80</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;dotnet&#34;</span>, <span style="color:#e6db74">&#34;echoserver.dll&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>Note: The previous Dockerfile defines a <a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build</a>:</p>
+<ul>
+<li>The first stage copies the source code to the image and builds the application.</li>
+<li>The second stage uses the output of the first stage (builder) to create the final and optimized image (i.e. No need to remove the sdk or the source code).</li>
+<li>Docker 17.05 or higher is needed in order to build and image based on a multi-stage Dockerfile.</li>
+</ul>
+<h2 id="5-build-and-test-the-image">5. Build and test the image</h2>
+<hr>
+<p>Run the folowing commands to build and run the docker image:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">docker build -t echoserver .
+docker run -p 5000<span style="color:#960050;background-color:#1e0010">:</span>80 echoserver
+</code></pre></div><p>To test the image just repeat the tests from step 3.</p>
+<p>Hope it helps!</p>
+<p>Feel free to get the code <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/echoserver">here</a>.</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2018/03/20/secure-your-kubernetes-services-with-nginx-ingress-controller-tls-and-more./"><i class="fa fa-chevron-circle-left"></i> Secure your Kubernetes services with NGINX ingress controller, tls and more.</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2018/04/05/adding-code-analysis-and-stylecop-checks-to-.net-core-projects-with-dotnet-addcasa/">Adding Code Analysis and StyleCop checks to .NET Core projects with dotnet-addcasa <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

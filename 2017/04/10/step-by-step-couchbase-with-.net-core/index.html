@@ -1,0 +1,294 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Step by step: Couchbase with .Net Core" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Step by step: Couchbase with .Net Core</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2017-04-10T17:11:15Z">Apr 10, 2017</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/dotnet">dotNet</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>This week I started to read an understand how <strong><a href="http://www.couchbase.com">Couchbase</a></strong> works and that's the reason I decided to write: <strong>Step by step: Couchbase with .Net Core</strong></p>
+<p><strong>Tip:</strong> I'll be using <strong>Docker</strong> to install and run <strong><a href="http://www.couchbase.com">Couchbase</a></strong></p>
+<p>Now let's start:</p>
+<h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project</h2>
+<hr>
+<p>Open a command prompt an run</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">mkdir couchbase.console
+cd couchbase.console
+</code></pre></div><h2 id="2-create-a-console-project">2. Create a console project</h2>
+<hr>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet new console
+</code></pre></div><h2 id="3-add-the-couchbase-nuget-package">3. Add the Couchbase nuget package</h2>
+<hr>
+<p>Add the <strong><!-- raw HTML omitted -->Couchbase<!-- raw HTML omitted --></strong> nuget package to your project:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet add package CouchbaseNetClient
+dotnet restore
+</code></pre></div><h2 id="4-replace-the-contents-of-programcs">4. Replace the contents of Program.cs</h2>
+<hr>
+<p>Replace the contents of the <strong>Program.cs</strong> file with the following code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">namespace</span> couchbase.console
+{
+    <span style="color:#66d9ef">using</span> System;
+    <span style="color:#66d9ef">using</span> Couchbase;
+
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+    {
+        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
+        {
+            <span style="color:#75715e">// Connect to cluster. Defaults to localhost
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">using</span> (<span style="color:#66d9ef">var</span> cluster = <span style="color:#66d9ef">new</span> Cluster())
+            {
+                <span style="color:#75715e">// Open the beer sample bucket
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">using</span> (<span style="color:#66d9ef">var</span> bucket = cluster.OpenBucket(<span style="color:#e6db74">&#34;beer-sample&#34;</span>))
+                {
+                    <span style="color:#75715e">// Create a new beer document
+</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">var</span> document = <span style="color:#66d9ef">new</span> Document&lt;<span style="color:#66d9ef">dynamic</span>&gt;
+                    {
+                        Id = <span style="color:#e6db74">&#34;Polar Ice&#34;</span>,
+                        Content = <span style="color:#66d9ef">new</span>
+                        {
+                            name = <span style="color:#e6db74">&#34;Polar Ice&#34;</span>,
+                            brewery_id = <span style="color:#e6db74">&#34;Polar&#34;</span>
+                        }
+                    };
+
+                    <span style="color:#75715e">// Insert the beer document
+</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">var</span> result = bucket.Insert(document);
+                    <span style="color:#66d9ef">if</span> (result.Success)
+                    {
+                        Console.WriteLine(<span style="color:#e6db74">&#34;Inserted document &#39;{0}&#39;&#34;</span>, document.Id);
+                    }
+
+                    <span style="color:#75715e">// Query the beer sample bucket and find the beer we just added.
+</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">using</span> (<span style="color:#66d9ef">var</span> queryResult = bucket.Query&lt;<span style="color:#66d9ef">dynamic</span>&gt;(<span style="color:#e6db74">&#34;SELECT name FROM `beer-sample` WHERE brewery_id =\&#34;Polar\&#34;&#34;</span>))
+                    {
+                        <span style="color:#66d9ef">foreach</span> (<span style="color:#66d9ef">var</span> row <span style="color:#66d9ef">in</span> queryResult.Rows)
+                        {
+                            Console.WriteLine(row);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+</code></pre></div><h2 id="5-setup-couchbase-with-docker">5. Setup Couchbase with Docker</h2>
+<hr>
+<p>Run the following commands:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">docker pull couchbase/server
+docker run -d --name db -p 8091-8094<span style="color:#960050;background-color:#1e0010">:</span>8091-8094 -p 11210<span style="color:#960050;background-color:#1e0010">:</span>11210 couchbase
+</code></pre></div><p>Browse to: <!-- raw HTML omitted -->http://localhost:8091<!-- raw HTML omitted --> and setup <strong>Couchbase</strong>.</p>
+<p>Be sure to add the Beer Sample bucket and check the documentation here: <!-- raw HTML omitted --><a href="https://hub.docker.com/r/couchbase/server/%3C/a%3E">https://hub.docker.com/r/couchbase/server/&lt;/a&gt;</a></p>
+<h2 id="6-run-the-program">6. Run the program</h2>
+<hr>
+<p>Run the program and enjoy!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet run
+</code></pre></div><p>Get the code here: <!-- raw HTML omitted --><a href="https://github.com/cmendible/dotnetcore.samples/tree/master/couchbase.console%3C/a%3E">https://github.com/cmendible/dotnetcore.samples/tree/master/couchbase.console&lt;/a&gt;</a></p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/03/26/raspberry-pi-run-asp.net-core-on-startup/"><i class="fa fa-chevron-circle-left"></i> Raspberry Pi: Run ASP.NET Core on Startup</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/04/29/step-by-step-couchbase-lite-with-.net-core/">Step by step: Couchbase Lite with .Net Core <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

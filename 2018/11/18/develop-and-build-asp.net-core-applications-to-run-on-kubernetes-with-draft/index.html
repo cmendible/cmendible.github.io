@@ -1,0 +1,268 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Develop and build ASP.NET Core applications to run on Kubernetes with Draft" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Develop and build ASP.NET Core applications to run on Kubernetes with Draft</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2018-11-18T10:00:00Z">Nov 18, 2018</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/kubernetes">kubernetes</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>You start developing an ASP.NET Core application to run it in Kubernetes and suddenly you find yourself creating a docker file, building an image, pushing the image to a registry, creating both a deployment and a service definition for Kubernetes and you wonder if there is a tool out there to help you streamline the whole process.</p>
+<p>Meet <a href="https://github.com/Azure/draft">Draft</a> a tool that will not only help you create the artifacts needed to build and run applications in Kubernetes but to also build the container image and deploy it.</p>
+<h2 id="prerequisites">Prerequisites:</h2>
+<ol>
+<li>A Kubernetes cluster and the <a href="https://kubernetes.io/docs/reference/kubectl/kubectl/">kubectl</a> CLI tool</li>
+<li>Installation of <a href="https://github.com/Kubernetes/helm">Helm</a> on your Kubernetes cluster</li>
+<li>A Container Registry</li>
+</ol>
+<h2 id="install-and-configure-draft">Install and Configure Draft</h2>
+<p>To install Draft I run the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">cinst -y draft
+</code></pre></div><p>Then configure it:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">draft config set registry &lt;registry full name&gt;
+</code></pre></div><p>Be sure to log on to the Container Registry:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">docker login &lt;registry full name&gt;
+</code></pre></div><p>or if working with Azure Container Registry:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">az acr login --name &lt;acrName&gt;
+</code></pre></div><h2 id="create-and-prepare-the-application">Create and prepare the application</h2>
+<p>Creat an ASP.NET Core MVC application and create the artifacts with Draft:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">dotnet new mvc
+draft create --pack<span style="color:#f92672">=</span>csharp -a mvcdraft
+</code></pre></div><p>Note that I've specified two parameters:</p>
+<ul>
+<li><strong>pack</strong> to tell draft that we are using C# as the language.</li>
+<li><strong>a</strong> to specify the name of the Helm release we will run on Kubernetes</li>
+</ul>
+<h2 id="deploy-and-test-your-application">Deploy and test your application</h2>
+<p>Run the following command to build the container image and then deploy the application to Kubernetes:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">draft up
+</code></pre></div><p>The first time you run the command it will take a while. The output should look similar to this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Draft Up Started: <span style="color:#e6db74">&#39;netcoredraft&#39;</span>: 01CWKAZ79WR6W66PHHR2AFRSGC
+netcoredraft: Building Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</span>1.0008s<span style="color:#f92672">)</span>
+netcoredraft: Pushing Docker Image: SUCCESS ⚓  <span style="color:#f92672">(</span>3.2891s<span style="color:#f92672">)</span>
+netcoredraft: Releasing Application: SUCCESS ⚓  <span style="color:#f92672">(</span>2.7629s<span style="color:#f92672">)</span>
+Inspect the logs with <span style="color:#e6db74">`</span>draft logs 01CWKAZ79WR6W66PHHR2AFRSGC<span style="color:#e6db74">`</span>
+</code></pre></div><p>To test the application run:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">draft connect
+</code></pre></div><p>The output should look similar to:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Connect to netcoredraft:80 on localhost:50998
+<span style="color:#f92672">[</span>netcoredraft<span style="color:#f92672">]</span>:       No XML encryptor configured. Key <span style="color:#f92672">{</span>ea9dac08-e7af-468c-9e00-cbe38ab40fa8<span style="color:#f92672">}</span> may be persisted to storage in unencrypted form.
+<span style="color:#f92672">[</span>netcoredraft<span style="color:#f92672">]</span>: Hosting environment: Production
+<span style="color:#f92672">[</span>netcoredraft<span style="color:#f92672">]</span>: Content root path: /app
+<span style="color:#f92672">[</span>netcoredraft<span style="color:#f92672">]</span>: Now listening on: http://<span style="color:#f92672">[</span>::<span style="color:#f92672">]</span>:80
+<span style="color:#f92672">[</span>netcoredraft<span style="color:#f92672">]</span>: Application started. Press Ctrl+C to shut down.
+</code></pre></div><p>Browse to the url shown in the output (i.e. http://localhost:50998) and you should be good to go!!!</p>
+<h2 id="cleaning-up">Cleaning up</h2>
+<p>Once you finish your tests you can cleanup with the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">draft delete
+</code></pre></div><p>Hope it helps!!!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2018/10/14/deploying-elastic-search-fluentd-kibana-on-aks-with-helm/"><i class="fa fa-chevron-circle-left"></i> Deploying Elastic Search, Fluentd, Kibana on AKS with Helm</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2018/12/19/prepare-yourself-to-work-in-cloud/">Prepare yourself to work in Cloud <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,264 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Step by step: ASP.NET Core on Docker" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Step by step: ASP.NET Core on Docker</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2016-09-26T06:59:08Z">Sep 26, 2016</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>This week I have to give an introductory talk on DevOps and <!-- raw HTML omitted -->Docker<!-- raw HTML omitted --> and therefore I decided to prepare a simple <strong>Step by step: ASP.NET Core on <!-- raw HTML omitted -->Docker<!-- raw HTML omitted --></strong> sample.</p>
+<p>Assuming you have <!-- raw HTML omitted -->Docker<!-- raw HTML omitted --> installed and running, follow these 4 simple steps:</p>
+<h2 id="1-create-a-dockerfile">1. Create a dockerfile</h2>
+<hr>
+<p>On your Docker box create a dockerfile with the following contents</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    <span style="color:#75715e"># We use the microsoft/dotnet image as a starting point.</span>
+    FROM microsoft/dotnet
+
+    <span style="color:#75715e"># Install git</span>
+    RUN apt-get install git -y
+
+    <span style="color:#75715e"># Create a folder to clone our source code</span>
+    RUN mkdir repositories
+
+    <span style="color:#75715e"># Set our working folder</span>
+    WORKDIR repositories
+
+    <span style="color:#75715e"># Clone the source code</span>
+    RUN git clone https://github.com/cmendible/aspnet-core-helloworld.git
+
+    <span style="color:#75715e"># Set our working folder</span>
+    WORKDIR aspnet-core-helloworld/src/dotnetstarter
+
+    <span style="color:#75715e"># Expose port 5000 for the application.</span>
+    EXPOSE <span style="color:#ae81ff">5000</span>
+
+    <span style="color:#75715e"># Restore nuget packages</span>
+    RUN dotnet restore
+
+    <span style="color:#75715e"># Start the application using dotnet!!!</span>
+    ENTRYPOINT dotnet run
+</code></pre></div><h2 id="2-create-a-docker-image">2. Create a docker image</h2>
+<hr>
+<p>With the dockerfile in place run the following command</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">   sudo docker buildÂ -t hello_world .
+</code></pre></div><p>Now you have an image named <!-- raw HTML omitted -->hello_world<!-- raw HTML omitted --> with all the dependencies and code needed to run the sample.</p>
+<h2 id="3-test-the-docker-image">3. Test the Docker image</h2>
+<hr>
+<p>To test the Docker image run the following command</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">   docker run -it -p 5000<span style="color:#960050;background-color:#1e0010">:</span>5000 hello_world
+</code></pre></div><p>If everything runs as expected you can head to your browser and navigate to http://localhost:5000 and confirm that the application is running!</p>
+<h2 id="4-run-the-docker-image-as-a-daemon-process">4. Run the Docker image as a daemon process</h2>
+<hr>
+<p>Now that you know that everything is working as expected use the following command to run the Docker image as a daemon process</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">   docker run -t -d -p 5000<span style="color:#960050;background-color:#1e0010">:</span>5000 hello_world
+</code></pre></div><p>Feel free to logout or close the connection with your Docker box and the application will keep running.</p>
+<p>You can get a copy of the docker file here: <!-- raw HTML omitted --><a href="https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld%3C/a%3E">https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld&lt;/a&gt;</a></p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/09/19/step-by-step-serilog-with-asp.net-core/"><i class="fa fa-chevron-circle-left"></i> Step by step: Serilog with ASP.NET Core</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/10/02/get-ready-exam-70-533-implementing-microsoft-azure-infrastructure-solutions/">Get Ready: Exam 70-533 Implementing Microsoft Azure Infrastructure Solutions <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

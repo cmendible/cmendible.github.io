@@ -1,0 +1,215 @@
+
+   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+     <channel>
+       <title>Certifications on Code it Yourself...</title>
+       <link>https://carlos.mendible.com/categories/certifications/</link>
+       <description>Recent content in Certifications on Code it Yourself...</description>
+       <generator>Hugo -- gohugo.io</generator>
+       <language>en-us</language>
+       <copyright>Copyright &amp;copy; 2019 - Carlos Mendible</copyright>
+       <lastBuildDate>Sun, 02 Oct 2016 09:54:40 +0000</lastBuildDate>
+       
+           <atom:link href="https://carlos.mendible.com/categories/certifications/feed.xml" rel="self" type="application/rss+xml" />
+       
+       
+       <item>
+         <title>Get Ready: Exam 70-533 Implementing Microsoft Azure Infrastructure Solutions</title>
+         <link>https://carlos.mendible.com/2016/10/02/get-ready-exam-70-533-implementing-microsoft-azure-infrastructure-solutions/</link>
+         <pubDate>Sun, 02 Oct 2016 09:54:40 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2016/10/02/get-ready-exam-70-533-implementing-microsoft-azure-infrastructure-solutions/</guid>
+         <description>&lt;p&gt;This week I cleared the &lt;strong&gt;&lt;!-- raw HTML omitted --&gt;70-533 Implementing Microsoft Azure Infrastructure Solutions&lt;!-- raw HTML omitted --&gt;&lt;/strong&gt; exam, and I want to share with you tips about the exam and the resources I used to study:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Should you take the exam?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;If you are an &lt;strong&gt;Infrastructure Geek&lt;/strong&gt;, &lt;strong&gt;Developer&lt;/strong&gt; or &lt;strong&gt;Software Architect&lt;/strong&gt; looking to validate your &lt;!-- raw HTML omitted --&gt;Microsoft Azure &lt;!-- raw HTML omitted --&gt;skills then this exam is for you. Also note that Microsoft expects you to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Have experience implementing and monitoring cloud and hybrid solutions.&lt;/li&gt;
+&lt;li&gt;Have experience supporting application lifecycle management.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Skills measured:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Implement WebApps (15-20%)&lt;/li&gt;
+&lt;li&gt;Implement virtual machines (15-20%)&lt;/li&gt;
+&lt;li&gt;Implement cloud services (15-20%)&lt;/li&gt;
+&lt;li&gt;Implement storage (15-20%)&lt;/li&gt;
+&lt;li&gt;Implement an Azure Active Directory (15-20%)&lt;/li&gt;
+&lt;li&gt;Implement virtual networks(15-20%)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Books:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;!-- raw HTML omitted --&gt;Exam Ref 70-533 Implementing Microsoft Azure Infrastructure Solutions&lt;!-- raw HTML omitted --&gt;&lt;/strong&gt; the book is out of date and does not cover important things such as the new ARM model, but it&#39;s still an important resource for studying. Be sure to read and practice with other resources.&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Microsoft Azure Essentials: Fundamentals of Azure&lt;!-- raw HTML omitted --&gt; and &lt;!-- raw HTML omitted --&gt;Microsoft Azure Essentials Azure Web Apps for Developers&lt;!-- raw HTML omitted --&gt;, both great introductory books that you can find in the &lt;!-- raw HTML omitted --&gt;Microsoft Virtual Academy&lt;!-- raw HTML omitted --&gt; along with many other free e-books&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Courses:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;!-- raw HTML omitted --&gt;Microsoft Virtual Academy&lt;!-- raw HTML omitted --&gt; is a place filled with great training material and best of all it&#39;s free! Here is the list of courses I completed before the exam:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Microsoft Azure IaaS Deep Dive Jump Start&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;The Microsoft Hybrid Cloud: Best Practices Guidance&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Practice tests:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Just like for any certification exam, studying with practice tests is key to success.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;MesureUp 70-533 Practice Test&lt;!-- raw HTML omitted --&gt;: contains 178 questions.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Hands On:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Be sure to have hands on experience!&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Learn those Powershell commands and don&#39;t forget that Azure CLI does exists.&lt;/li&gt;
+&lt;li&gt;Experience with VNETs, Virtual Machines, ARM templates and Site to Site VPNs was key for my success&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Hope it helps!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Get Ready: Exam 70-532 Developing Microsoft Azure Solutions</title>
+         <link>https://carlos.mendible.com/2016/04/01/get-ready-exam-70-532-developing-microsoft-azure-solutions/</link>
+         <pubDate>Fri, 01 Apr 2016 09:39:59 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2016/04/01/get-ready-exam-70-532-developing-microsoft-azure-solutions/</guid>
+         <description>&lt;p&gt;Yesterday I cleared the &lt;strong&gt;&lt;!-- raw HTML omitted --&gt;70-532 Develping Microsoft Azure Solutions &lt;!-- raw HTML omitted --&gt;&lt;/strong&gt;exam, and I want to share with you tips about the exam and the resources I used to study:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Should you take the exam?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;If you are a &lt;strong&gt;Developer&lt;/strong&gt; &lt;strong&gt;or Software Architect&lt;/strong&gt; looking to validate your &lt;!-- raw HTML omitted --&gt;Microsoft Azure &lt;!-- raw HTML omitted --&gt;skills then this exam is for you. Also note that Microsoft expects you to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Be proficient with Azure development tools and techniques.&lt;/li&gt;
+&lt;li&gt;Have experience developing scalable and resilient solutions with Azure.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Skills measured:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Design and implement websites (15-20%)&lt;/li&gt;
+&lt;li&gt;Create and manage virtual machines (20-25%)&lt;/li&gt;
+&lt;li&gt;Design and implement cloud services (20-25%)&lt;/li&gt;
+&lt;li&gt;Design and implement a storage strategy (20-25%)&lt;/li&gt;
+&lt;li&gt;Manage application and network services (15-20%)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Books:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;!-- raw HTML omitted --&gt;Exam Ref 70-532 Develping Microsoft Azure Solutions&lt;!-- raw HTML omitted --&gt;&lt;/strong&gt; as all Exam Ref books it&#39;s an important resource for studying but it&#39;s not a complete Training Guide so reading and practicing with other resources is important.&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Microsoft Azure Essentials: Fundamentals of Azure&lt;!-- raw HTML omitted --&gt; and &lt;!-- raw HTML omitted --&gt;Microsoft Azure Essentials Azure Web Apps for Developers&lt;!-- raw HTML omitted --&gt;, both great introductory books that you can find in the &lt;!-- raw HTML omitted --&gt;Microsoft Virtual Academy&lt;!-- raw HTML omitted --&gt; along with many other free e-books&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Courses:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;!-- raw HTML omitted --&gt;Microsoft Virtual Academy&lt;!-- raw HTML omitted --&gt; is a place filled with great training material and best of all it&#39;s free! Here is the list of courses I completed before the exam:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Developing Microsoft Azure Solutions&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Microsoft Azure Fundamentals&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Microsoft Azure Fundamentals: WebSites&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Practice tests:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Just like for any certification exam, studying with practice tests is key to success.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;MesureUp 70-532 Practice Test&lt;!-- raw HTML omitted --&gt;: contains 152 questions.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Hands On:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Be sure to get some hands on experience!&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Learn those PowerShell commands and don&#39;t forget that Azure CLI does exists.&lt;/li&gt;
+&lt;li&gt;Developing &lt;!-- raw HTML omitted --&gt;AzureBus&lt;!-- raw HTML omitted --&gt; was key to understand and master &lt;!-- raw HTML omitted --&gt;Azure Service Bus Topics, Queues and Subscriptions&lt;!-- raw HTML omitted --&gt; concepts.&lt;/li&gt;
+&lt;li&gt;I also created my own storage samples to get experience with &lt;!-- raw HTML omitted --&gt;Shared Access Signatures (SAS)&lt;!-- raw HTML omitted --&gt; and custom policies.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Hope it helps!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Get Ready: Exam 70-534 Architecting Microsoft Azure Solutions</title>
+         <link>https://carlos.mendible.com/2016/03/06/get-ready-exam-70-534-architecting-microsoft-azure-solutions/</link>
+         <pubDate>Sun, 06 Mar 2016 12:07:02 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2016/03/06/get-ready-exam-70-534-architecting-microsoft-azure-solutions/</guid>
+         <description>&lt;p&gt;I recently passed the &lt;!-- raw HTML omitted --&gt;70-534 Architecting Microsoft Azure Solutions&lt;!-- raw HTML omitted --&gt; exam, and I want to share with you tips about the exam and the resources I used to study:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Should you take the exam?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;If you are a &lt;strong&gt;Solutions or Software Architect&lt;/strong&gt; looking to validate your &lt;!-- raw HTML omitted --&gt;Microsoft Azure &lt;!-- raw HTML omitted --&gt;skills then this exam is for you. Also note that Microsoft expects you to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Know the features and capabilities of Azure services to be able to design cloud solutions.&lt;/li&gt;
+&lt;li&gt;Be able to define the appropriate infrastructure and platform solutions to meet the required functional, operational and deployment requirements through the solution life cycle.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Skills measured:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Design Microsoft Azure infrastructure and networking (15-20%)&lt;/li&gt;
+&lt;li&gt;Secure resources (15-20%)&lt;/li&gt;
+&lt;li&gt;Design an application storage and data access strategy (15-20%)&lt;/li&gt;
+&lt;li&gt;Design an advanced application (15-20%)&lt;/li&gt;
+&lt;li&gt;Design websites (15-20%)&lt;/li&gt;
+&lt;li&gt;Design a management, monitoring, and business continuity strategy (15-20%)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Books:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Exam Ref 70-534 Architecting Microsoft Azure Solutions&lt;!-- raw HTML omitted --&gt; as all Exam Ref books it&#39;s an important resource for studying but it&#39;s not a complete Training Guide so reading and practicing with other resources is important.&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Microsoft Azure Essentials: Fundamentals of Azure&lt;!-- raw HTML omitted --&gt; a book you can find in the &lt;!-- raw HTML omitted --&gt;Microsoft Virtual Academy&lt;!-- raw HTML omitted --&gt; along with many other free e-books&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Courses:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;!-- raw HTML omitted --&gt;Microsoft Virtual Academy&lt;!-- raw HTML omitted --&gt; is a place filled with great training material and best of all it&#39;s free! Here is the list of courses I completed before the exam:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Architecting Microsoft Azure Solutions&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Get Started with Windows Azure Today Jump Start&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;The Microsoft Hybrid Cloud: Best Practices Guidance&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Microsoft Azure IaaS Deep Dive Jump Start&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;Establish Microsoft Azure IaaS Technical Fundamentals&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Practice tests:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Just like for any certification exam, studying with practice tests is key to success.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;!-- raw HTML omitted --&gt;MesureUp 70-534 Practice Test&lt;!-- raw HTML omitted --&gt;: contains 150 questions and I really like the new online format!&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Hands On:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Be sure to get some hands on experience!&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;For instance I can tell you that I&#39;m not a great Powershell fan so I had to open the console and start playing and trying the commands in order to learn and understand them.&lt;/li&gt;
+&lt;li&gt;Coming from the &lt;strong&gt;Dev&lt;/strong&gt; side of the world I really took time to play with &lt;!-- raw HTML omitted --&gt;Virtual Networks&lt;!-- raw HTML omitted --&gt;, &lt;!-- raw HTML omitted --&gt;ACL&lt;!-- raw HTML omitted --&gt;‘s and &lt;!-- raw HTML omitted --&gt;NSG&lt;!-- raw HTML omitted --&gt;‘s&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Hope it helps!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Book: PMP Rapid Review by Sean Whitaker</title>
+         <link>https://carlos.mendible.com/2016/02/29/book-pmp-rapid-review-by-sean-whitaker/</link>
+         <pubDate>Mon, 29 Feb 2016 23:55:57 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2016/02/29/book-pmp-rapid-review-by-sean-whitaker/</guid>
+         <description>&lt;p&gt;&lt;img src=&#34;https://carlos.mendible.com/wp-content/uploads/2016/02/PMP_Rapid_Review.jpg&#34; alt=&#34;PMP RAPID REVIEW&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Four months ago I cleared the &lt;strong&gt;PMP&lt;/strong&gt; exam as part of a program launched by &lt;!-- raw HTML omitted --&gt;@SogetiSpain&lt;!-- raw HTML omitted --&gt; and I want to share with you that the book: &lt;strong&gt;&lt;!-- raw HTML omitted --&gt;“PMP Rapid Review&amp;rdquo; by Sean Whitaker&lt;!-- raw HTML omitted --&gt;&lt;/strong&gt; was key to success.&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Many books are structured by Knowledge Areas defined in the &lt;!-- raw HTML omitted --&gt;PMBOK Guide&lt;!-- raw HTML omitted --&gt; but not by the &lt;!-- raw HTML omitted --&gt;PMP Exam Content Outline&lt;!-- raw HTML omitted --&gt; as&amp;quot;PMP Rapid Review&amp;rdquo; does.&lt;/p&gt;
+&lt;p&gt;Reading the book you&#39;ll find one chapter for each Process Group:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Initiating the project&lt;/li&gt;
+&lt;li&gt;Planning the project&lt;/li&gt;
+&lt;li&gt;Executing the project&lt;/li&gt;
+&lt;li&gt;Monitoring and controlling the project&lt;/li&gt;
+&lt;li&gt;Closing the project&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;and also that it&#39;s a great and interesting resource because:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It&#39;s really easy to follow.&lt;/li&gt;
+&lt;li&gt;It&#39;s not a full and cumbersome study guide.&lt;/li&gt;
+&lt;li&gt;It&#39;s a book published by &lt;!-- raw HTML omitted --&gt;Microsoft Press&lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
+&lt;li&gt;Each section contains some exam tips and five questions designed to make you understand the PMP processes and concepts.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;In my opinion this book is a must have, both as a quick guide when studying and as a checklist once you become a PMP.&lt;/p&gt;
+&lt;p&gt;Hope it helps!&lt;/p&gt;
+</description>
+       </item>
+       
+       <item>
+         <title>Do IT Certifications help?</title>
+         <link>https://carlos.mendible.com/2013/08/27/do-it-certifications-help/</link>
+         <pubDate>Tue, 27 Aug 2013 18:03:32 +0000</pubDate>
+         
+         <guid>https://carlos.mendible.com/2013/08/27/do-it-certifications-help/</guid>
+         <description>&lt;p&gt;Recently I&#39;ve been discussing with my friends and coworkers the importance of IT Certifications, which lead us to ask if in today&#39;s highly competitive world, certifications really help Software Developers improve skills or even find their dream job or the rewards they desire.&lt;/p&gt;
+&lt;p&gt;My answer: of course!&lt;/p&gt;
+&lt;p&gt;I studied Chemical Engineering at Universidad Simon Bolivar, Caracas, Venezuela. Throughout my carreer I worked at the university as a programmer. In 1999 I graduated and started to work for a small IT consultant firm and shortly after the first year we had finished the software I was hired to write and it was time to go out to the world install it, give support and the best service we could.&lt;/p&gt;
+&lt;p&gt;Soon I noticed that my&amp;quot;chemical&amp;rdquo; background was of no help getting the clients to trust my skills or expertise and this was the reason why in December of that same year I passed my first Microsoft certification exam.&lt;/p&gt;
+&lt;p&gt;Since then I&#39;ve passed 13 exams and I currently hold the following certifications: CISA, ITILF, MCSD, MCTS, MCP, dCAA, and dCSP.&lt;/p&gt;
+&lt;p&gt;During this 13 years I&#39;ve become a huge certification fan, starving for knowledge. What once started as a need for &lt;strong&gt;showing my value to clients and peers&lt;/strong&gt; has evolved into my preferred method of &lt;strong&gt;keeping up to date&lt;/strong&gt; and in recent years as an &lt;strong&gt;excellent way of marketing myself&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Today in Spain where there are over 5 million without work and also a huge possibility of a slowdown, takeover, merger or even a close down of the company you work for, I get (on a weekly basis) offers from many companies that find in IT Certifications the factor which differentiates me from my peers.&lt;/p&gt;
+&lt;p&gt;Finally there is, of course, the &lt;strong&gt;personal satisfaction&lt;/strong&gt; (Important for soft skills) I get from having mastered a new skill or technology.&lt;/p&gt;
+&lt;p&gt;Hope it helps,&lt;/p&gt;
+</description>
+       </item>
+       
+     </channel>
+   </rss>

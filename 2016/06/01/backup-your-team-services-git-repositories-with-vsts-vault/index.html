@@ -1,0 +1,255 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Backup your Team Services Git Repositories with VSTS Vault" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Backup your Team Services Git Repositories with VSTS Vault</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2016-06-01T13:17:22Z">Jun 1, 2016</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/devops">DevOps</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p><strong>Backup your Team Services Git Repositories with VSTS Vault</strong>: A simple windows service or console application designed to keep a local copy of all your code.</p>
+<p>Since January 2016 we've moved the source code of more than 30 projects to Git repositories hosted by <!-- raw HTML omitted -->Visual Studio Team Services<!-- raw HTML omitted -->.</p>
+<p>Moving to the cloud has some downsides and one thing that kept us thinking was the need to be sure that in the event of an internet connection failure or a Team Services outage we would be able to access our code and deploy hot fixes for our applications as part of our data protection plan.</p>
+<p>Surfing on the web I found this post: <!-- raw HTML omitted -->Free Visual studio online backup tool<!-- raw HTML omitted --> that talks about <!-- raw HTML omitted -->VSOBackup<!-- raw HTML omitted --> a free tool to create backups of your code by dates.</p>
+<p>We needed a solution capable of minimizing the RPO (Recovery Point Objetive) and where the backups could be connected to an on-premises Git Server such as <!-- raw HTML omitted -->GitBlit<!-- raw HTML omitted -->.</p>
+<p>Those are the main reason we could not use <!-- raw HTML omitted -->VSOBackup<!-- raw HTML omitted --> and why, inspired by such a great code base, I created a Windows service: <!-- raw HTML omitted -->VSTS.Vault<!-- raw HTML omitted --> with the capability of cloning your Git repositories and then pulling for changes every 5 minutes which is the default setting.</p>
+<p>Vsts.Vault is a Windows Service and to use it you'll need to follow these steps:</p>
+<h2 id="1-create-alternate-credentials-for-your-visual-studio-team-services-account">1. Create Alternate Credentials for your Visual Studio Team Services Account</h2>
+<hr>
+<p>If you haven't setup alternate credentials for your <!-- raw HTML omitted -->Visual Studio Team Services<!-- raw HTML omitted --> Account follow the instructions of the Alternate Access Credentials section of the following doc: <!-- raw HTML omitted -->Client Authentication Options<!-- raw HTML omitted --></p>
+<h2 id="2-configure-vstsvault-settings">2. Configure VSTS.Vault Settings</h2>
+<hr>
+<p>Modify as needed the following parameters in the Vsts.Vault.exe.config file</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">   <span style="color:#f92672">&lt;applicationSettings</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;Vsts.Vault.WindowsService.Properties.Settings</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;setting</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;BackupInterval&#34;</span> <span style="color:#a6e22e">serializeAs=</span><span style="color:#e6db74">&#34;String&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>300000<span style="color:#f92672">&lt;/value&gt;</span>
+      <span style="color:#f92672">&lt;/setting&gt;</span>
+      <span style="color:#f92672">&lt;setting</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;ServiceName&#34;</span> <span style="color:#a6e22e">serializeAs=</span><span style="color:#e6db74">&#34;String&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>Vsts.Vault<span style="color:#f92672">&lt;/value&gt;</span>
+      <span style="color:#f92672">&lt;/setting&gt;</span>
+    <span style="color:#f92672">&lt;/Vsts.Vault.WindowsService.Properties.Settings&gt;</span>
+  <span style="color:#f92672">&lt;/applicationSettings&gt;</span>
+ 
+  <span style="color:#f92672">&lt;VaultConfiguration</span>
+    <span style="color:#a6e22e">Username=</span><span style="color:#e6db74">&#34;[User name as specified in your Team Services Alternate Authentication Credentials]&#34;</span>
+    <span style="color:#a6e22e">UserEmail=</span><span style="color:#e6db74">&#34;[An email required just required by Git pull through LibGit2Sharp]&#34;</span>
+    <span style="color:#a6e22e">Password=</span><span style="color:#e6db74">&#34;[Password as specified in your Team Services Alternate Authentication Credentials]&#34;</span>
+    <span style="color:#a6e22e">Account=</span><span style="color:#e6db74">&#34;[The name of your Team Services account (Not the full Url)]&#34;</span>
+    <span style="color:#a6e22e">TargetFolder=</span><span style="color:#e6db74">&#34;[Full path of the folder where the copy of your repositories will live]&#34;</span> <span style="color:#f92672">/&gt;</span>
+</code></pre></div><h2 id="3-install-the-vstsvault-service">3. Install the VSTS.Vault service</h2>
+<hr>
+<p>Run the following command</p>
+<pre><code class="language-powershellinstallutil" data-lang="powershellinstallutil"></code></pre><p>If you look through the <a href="https://github.com/cmendible/Vsts.Vault">VSTS.Vault</a> code base you'll see some interesting features:</p>
+<ol>
+<li>Use of MEF as to implement dependency injection</li>
+<li>Use of <a href="https://github.com/libgit2/libgit2sharp">LibGit2Sharp</a></li>
+<li>Use of <!-- raw HTML omitted -->Visual Studio Team Services<!-- raw HTML omitted --> REST API</li>
+<li>And the use of the Retry Pattern</li>
+</ol>
+<p>To finish this post I have to say that We've been running the service now for more than a month and connected the resulting repository backups to <!-- raw HTML omitted -->GitBlit<!-- raw HTML omitted --> without issues.</p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/05/06/nhinsights-an-oraclemanageddataclientdriver-for-nhibernate-and-application-insights/"><i class="fa fa-chevron-circle-left"></i> NHInsights an OracleManagedDataClientDriver for NHibernate and Application Insights</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/06/05/stop-or-start-all-webapps-in-your-azure-subscription/">Stop or Start all WebApps in your Azure subscription <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

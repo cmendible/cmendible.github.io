@@ -1,0 +1,245 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Consuming Azure Event Hubs Events With Kafka Connect" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Consuming Azure Event Hubs Events With Kafka Connect</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2018-02-18T17:00:00Z">Feb 18, 2018</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>So last week I was in a rush to find a fast and easy way to consume events from Azure Event Hubs and send them to a Kafka topic.</p>
+<p>After googling a bit I found this project: <a href="https://github.com/Azure/toketi-kafka-connect-iothub/releases">Kafka Connect Azure IoT Hub</a>. Yes the name of the project can be misleading, but since IoT Hub is a service which relies on Event Hubs and also taking a close look to the code showed that it uses the Event Hubs client for java, I decided to give it a try.</p>
+<p>I will asume not only that you have working knowledge with Event Hubs, but also that you have an instance deployed, plus a working Kafka and Kafka Connect (Distributed mode) setup.</p>
+<p>Let's kick it:</p>
+<h1 id="1-download-the-kafka-connect-azure-iot-hub">1. Download the Kafka Connect Azure IoT Hub</h1>
+<p>Download the <a href="https://github.com/Azure/toketi-kafka-connect-iothub/releases/tag/v0.6">Kafka Connect Azure IoT Hub 0.6 jar</a> and copy the file in the Kafka installation libs folder (usually under KAFKA_HOME/libs).</p>
+<p>Be sure to start Zookeper, Kafka and Kafka connect.</p>
+<h1 id="2-create-a-connect-eventhub-sourcejson-file">2. Create a connect-eventhub-source.json file</h1>
+<p>Update the following json and save it as <strong>connect-eventhub-source.json</strong>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;eventhub-source&#34;</span>,
+    <span style="color:#f92672">&#34;config&#34;</span>: {
+        <span style="color:#f92672">&#34;connector.class&#34;</span>: <span style="color:#e6db74">&#34;com.microsoft.azure.iot.kafka.connect.IotHubSourceConnector&#34;</span>,
+        <span style="color:#f92672">&#34;tasks.max&#34;</span>: <span style="color:#e6db74">&#34;[Number of task == Number Event Hub Partitions]&#34;</span>,
+        <span style="color:#f92672">&#34;Kafka.Topic&#34;</span>: <span style="color:#e6db74">&#34;[Target Kafka Topic]&#34;</span>,
+        <span style="color:#f92672">&#34;IotHub.EventHubCompatibleName&#34;</span>: <span style="color:#e6db74">&#34;[Event Hubs Name]&#34;</span>,
+        <span style="color:#f92672">&#34;IotHub.EventHubCompatibleEndpoint&#34;</span>: <span style="color:#e6db74">&#34;sb://[Event Hubs Namespace].servicebus.windows.net/&#34;</span>,
+        <span style="color:#f92672">&#34;IotHub.AccessKeyName&#34;</span>: <span style="color:#e6db74">&#34;[Access key name for the Event Hub]&#34;</span>,
+        <span style="color:#f92672">&#34;IotHub.AccessKeyValue&#34;</span>: <span style="color:#e6db74">&#34;[Access key value for the Event Hub]&#34;</span>,
+        <span style="color:#f92672">&#34;IotHub.ConsumerGroup&#34;</span>: <span style="color:#e6db74">&#34;[Consumer group (Can use $Default)]&#34;</span>,
+        <span style="color:#f92672">&#34;IotHub.Partitions&#34;</span>: <span style="color:#e6db74">&#34;[Number of Event Hub Partitions]&#34;</span>,
+        <span style="color:#f92672">&#34;IotHub.StartTime&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+        <span style="color:#f92672">&#34;IotHub.Offsets&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>,
+        <span style="color:#f92672">&#34;BatchSize&#34;</span>: <span style="color:#e6db74">&#34;100&#34;</span>
+    }
+}
+</code></pre></div><p>I've submited a <a href="https://github.com/Azure/toketi-kafka-connect-iothub/pull/16">pull request</a> to fix some of the descriptions you'll find for the fields <a href="https://github.com/Azure/toketi-kafka-connect-iothub/blob/master/README_Source.md">here</a></p>
+<h1 id="3-post-the-configuration-to-the-kafka-connect-endpoint">3. Post the configuration to the Kafka Connect endpoint</h1>
+<p>Assuming your Kafka Connect is running on <strong>localhost</strong> and listening to the default port <strong>8083</strong> execute the followinmg command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> -d @connect-eventhub-source.json -X POST http://127.0.0.1:8083/connectors
+</code></pre></div><p>After a while you should start receiving the events in the Kafka Topic you configured.</p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2018/01/14/run-a-durable-azure-function-in-a-container/"><i class="fa fa-chevron-circle-left"></i> Run a Durable Azure Function in a Container</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2018/03/13/microsoft-mvp-global-summit-2018-experience/">Microsoft MVP Global Summit 2018 Experience <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,407 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Run a Durable Azure Function in a Container" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Run a Durable Azure Function in a Container</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2018-01-14T15:19:00Z">Jan 14, 2018</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>4 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>Greetings readers! Hope you all a Happy New Year!</p>
+<p>Last post I was about [running a Precompiled .NET Core Azure Function in a Container]({{ site.baseurl }}{% post_url 2017-12-28-run-a-precomplied-net-core-azure-function-in-a-container %}). This time let's go one step further and <strong>Run a Durable Azure Function in a Container</strong></p>
+<p><strong>Prerequisites</strong>:</p>
+<ul>
+<li><a href="https://www.docker.com">Docker</a> installed and basic knowledge.</li>
+<li><a href="https://www.microsoft.com/net/download/">.NET Core</a></li>
+<li><a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account">Azure Storage Account</a></li>
+<li><a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-overview">Azure Durable Functions Knowledge</a></li>
+</ul>
+<h2 id="1-create-a-net-core-lib-project">1. Create a .NET Core lib project</h2>
+<p>Create a .NET Core lib project.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet new lib --name durable
+cd dni
+rm .\Class1.cs
+</code></pre></div><h2 id="2-add-the-required-references-to-be-able-to-use-azure-functions-api-and-the-durable-task-extensions">2. Add the required references to be able to use Azure Functions API and the Durable Task Extensions</h2>
+<p>Be sure to add the following packages to the project. Sample code will not work with the latest versions of some of the Microsoft.AspNetCore.* packages, so pay special attention to the version parameter.</p>
+<p><strong>Note:</strong></p>
+<ul>
+<li><strong>Microsoft.AspNetCore.Mvc.WebApiCompatShim</strong> is needed to use the <strong>ReadAsAsync</strong> extension (Assembly: System.Net.Http.Formatting) in one of the functions.</li>
+<li><strong>Microsoft.Azure.WebJobs.Script.ExtensionsMetadataGenerator</strong> is need to generate, during build time, the extension file needed to run durable fucntions.</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.AspNetCore.Http -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc.WebApiCompatShim -v 2.0.0
+dotnet add package Microsoft.Azure.WebJobs -v 3.0.0-beta4
+dotnet add package Microsoft.Azure.WebJobs.Extensions.DurableTask -v 1.0.0-beta
+dotnet add package Microsoft.Azure.WebJobs.Script.ExtensionsMetadataGenerator -v 1.0.0-beta2
+</code></pre></div><h2 id="3-create-the-wwwroot-and-the-folders-needed-to-hold-the-functions">3. Create the wwwroot and the folders needed to hold the functions</h2>
+<p>Create some foders. The first one <strong>wwwroot</strong> will hold all the functions and global configuration. The others will hold the specific files for each of the 3 azure functions you'll deploy:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">md wwwroot
+md wwwroot/httpstart
+md wwwroot/activity
+md wwwroot/orchestrator
+</code></pre></div><h2 id="4-create-hostjson-file-in-the-wwwroot-folder">4. Create host.json file in the wwwroot folder</h2>
+<p>Create a <strong>host.json</strong> file in the <strong>wwwroot</strong> folder with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{ }
+</code></pre></div><h2 id="5-create-the-activity-function">5. Create the activity function</h2>
+<p>In the <strong>wwwroot/activity</strong> folder create a <strong>functions.json</strong> file with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;bindings&#34;</span>: [
+        {
+            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;name&#34;</span>,
+            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;activityTrigger&#34;</span>,
+            <span style="color:#f92672">&#34;direction&#34;</span>: <span style="color:#e6db74">&#34;in&#34;</span>
+        }
+    ],
+    <span style="color:#f92672">&#34;disabled&#34;</span>: <span style="color:#66d9ef">false</span>,
+    <span style="color:#f92672">&#34;scriptFile&#34;</span>: <span style="color:#e6db74">&#34;..//bin//durable.dll&#34;</span>,
+    <span style="color:#f92672">&#34;entryPoint&#34;</span>: <span style="color:#e6db74">&#34;DurableFunctions.Activity.Run&#34;</span>
+}
+</code></pre></div><p>Now create a <strong>Activity.cs</strong> file with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> System.Collections.Generic;
+<span style="color:#66d9ef">using</span> System.Threading.Tasks;
+<span style="color:#66d9ef">using</span> Microsoft.Azure.WebJobs;
+
+<span style="color:#66d9ef">namespace</span> DurableFunctions
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Activity</span>
+    {
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">string</span> Run(<span style="color:#66d9ef">string</span> name)
+        {
+            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">$&#34;Hello {name}!&#34;</span>;
+        }
+    }
+}
+</code></pre></div><p><strong>Note</strong>: this function uses an <a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Activity Trigger</a>.</p>
+<h2 id="6-create-an-orchestrator-function">6. Create an orchestrator function</h2>
+<p>In the <strong>wwwroot/orchestrator</strong> folder create a <strong>functions.json</strong> file with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;bindings&#34;</span>: [
+        {
+            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;context&#34;</span>,
+            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;orchestrationTrigger&#34;</span>,
+            <span style="color:#f92672">&#34;direction&#34;</span>: <span style="color:#e6db74">&#34;in&#34;</span>
+        }
+    ],
+    <span style="color:#f92672">&#34;disabled&#34;</span>: <span style="color:#66d9ef">false</span>,
+    <span style="color:#f92672">&#34;scriptFile&#34;</span>: <span style="color:#e6db74">&#34;..//bin//durable.dll&#34;</span>,
+    <span style="color:#f92672">&#34;entryPoint&#34;</span>: <span style="color:#e6db74">&#34;DurableFunctions.Orchestrator.Run&#34;</span>
+}
+</code></pre></div><p>Now create a <strong>Orchestrator.cs</strong> file with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> System.Collections.Generic;
+<span style="color:#66d9ef">using</span> System.Threading.Tasks;
+<span style="color:#66d9ef">using</span> Microsoft.Azure.WebJobs;
+
+<span style="color:#66d9ef">namespace</span> DurableFunctions
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Orchestrator</span>
+    {
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">async</span> Task&lt;List&lt;<span style="color:#66d9ef">string</span>&gt;&gt; Run(
+            DurableOrchestrationContext context)
+        {
+            <span style="color:#66d9ef">var</span> outputs = <span style="color:#66d9ef">new</span> List&lt;<span style="color:#66d9ef">string</span>&gt;();
+
+            outputs.Add(<span style="color:#66d9ef">await</span> context.CallActivityAsync&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;activity&#34;</span>, <span style="color:#e6db74">&#34;Tokyo&#34;</span>));
+            outputs.Add(<span style="color:#66d9ef">await</span> context.CallActivityAsync&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;activity&#34;</span>, <span style="color:#e6db74">&#34;Seattle&#34;</span>));
+            outputs.Add(<span style="color:#66d9ef">await</span> context.CallActivityAsync&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;activity&#34;</span>, <span style="color:#e6db74">&#34;London&#34;</span>));
+
+            <span style="color:#75715e">// returns [&#34;Hello Tokyo!&#34;, &#34;Hello Seattle!&#34;, &#34;Hello London!&#34;]
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> outputs;
+        }
+    }
+}
+</code></pre></div><p><strong>Note</strong>: this function uses an <a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Orchestration Trigger</a>.</p>
+<h2 id="7-create-the-orchestrator-client">7. Create the Orchestrator Client</h2>
+<p>In the <strong>wwwroot/httpstart</strong> folder create a <strong>functions.json</strong> file with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;bindings&#34;</span>: [
+        {
+            <span style="color:#f92672">&#34;authLevel&#34;</span>: <span style="color:#e6db74">&#34;anonymous&#34;</span>,
+            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;req&#34;</span>,
+            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;httpTrigger&#34;</span>,
+            <span style="color:#f92672">&#34;direction&#34;</span>: <span style="color:#e6db74">&#34;in&#34;</span>,
+            <span style="color:#f92672">&#34;route&#34;</span>: <span style="color:#e6db74">&#34;orchestrators/{functionName}&#34;</span>,
+            <span style="color:#f92672">&#34;methods&#34;</span>: [
+                <span style="color:#e6db74">&#34;post&#34;</span>
+            ]
+        },
+        {
+            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;starter&#34;</span>,
+            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;orchestrationClient&#34;</span>,
+            <span style="color:#f92672">&#34;direction&#34;</span>: <span style="color:#e6db74">&#34;in&#34;</span>
+        }
+    ],
+    <span style="color:#f92672">&#34;disabled&#34;</span>: <span style="color:#66d9ef">false</span>,
+    <span style="color:#f92672">&#34;scriptFile&#34;</span>: <span style="color:#e6db74">&#34;..//bin//durable.dll&#34;</span>,
+    <span style="color:#f92672">&#34;entryPoint&#34;</span>: <span style="color:#e6db74">&#34;DurableFunctions.HttpStart.Run&#34;</span>
+}
+</code></pre></div><p>Now create a <strong>HttpStart.cs</strong> file with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> System;
+<span style="color:#66d9ef">using</span> System.Net.Http;
+<span style="color:#66d9ef">using</span> System.Net.Http.Headers;
+<span style="color:#66d9ef">using</span> System.Threading.Tasks;
+<span style="color:#66d9ef">using</span> Microsoft.Azure.WebJobs;
+<span style="color:#66d9ef">using</span> Microsoft.Azure.WebJobs.Host;
+
+<span style="color:#66d9ef">namespace</span> DurableFunctions
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HttpStart</span>
+    {
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">async</span> Task&lt;HttpResponseMessage&gt; Run(
+            HttpRequestMessage req,
+            DurableOrchestrationClient starter,
+            <span style="color:#66d9ef">string</span> functionName,
+            TraceWriter log)
+        {
+            <span style="color:#75715e">// Function input comes from the request content.
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">dynamic</span> eventData = <span style="color:#66d9ef">await</span> req.Content.ReadAsAsync&lt;<span style="color:#66d9ef">object</span>&gt;();
+            <span style="color:#66d9ef">string</span> instanceId = <span style="color:#66d9ef">await</span> starter.StartNewAsync(functionName, eventData);
+
+            log.Info(<span style="color:#e6db74">$&#34;Started orchestration with ID = &#39;{instanceId}&#39;.&#34;</span>);
+
+            <span style="color:#66d9ef">var</span> res = starter.CreateCheckStatusResponse(req, instanceId);
+            res.Headers.RetryAfter = <span style="color:#66d9ef">new</span> RetryConditionHeaderValue(TimeSpan.FromSeconds(<span style="color:#ae81ff">1</span><span style="color:#ae81ff">0</span>));
+            <span style="color:#66d9ef">return</span> res;
+        }
+    }
+}
+</code></pre></div><p><strong>Note</strong>: this function uses an http trigger and an <a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Orchestration client</a>.</p>
+<h2 id="8-create-a-dockerfile">8. Create a dockerfile</h2>
+<p>Create a <strong>dockerfile</strong> with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> microsoft/azure-functions-runtime:2.0.0-jessie</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># If we don&#39;t set WEBSITE_HOSTNAME Azure Function triggers other than HttpTrigger won&#39;t run. (FunctionInvocationException: Webhooks are not configured)</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># I&#39;ve created a pull request to add this variable to the original dockerfile: https://github.com/Azure/azure-webjobs-sdk-script/pull/2285</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> WEBSITE_HOSTNAME<span style="color:#f92672">=</span>localhost:80<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Copy all Function files and binaries to /home/site/wwwroot</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ADD</span> wwwroot /home/site/wwwroot<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Functions must live in: /home/site/wwwroot</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># We expect to receive the Storage Account Connection String from the command line.</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ARG</span> STORAGE_ACCOUNT<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Set the AzureWebJobsStorage Environment Variable. Otherwise Durable Functions Extensions won&#39;t work.</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> AzureWebJobsStorage<span style="color:#f92672">=</span>$STORAGE_ACCOUNT<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>Note that once you execute a docker build on the file all the contents of the <strong>wwwroot</strong> folder will be copied to the <strong>/home/site/wwwroot</strong> inside the image.</p>
+<h2 id="9-build-the-project-and-the-docker-image">9. Build the project and the docker image</h2>
+<p>Build the .NET Core project so you get the precompiled funtions and then build the docker image:</p>
+<p>Note: you'll need a valid Azure Storage Account connection string.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet build -o .\wwwroot\bin\
+docker build --build-arg STORAGE_ACCOUNT=<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">[Valid Azure Storage Account Connection String]</span><span style="color:#e6db74">&#34;</span> -t durable .
+</code></pre></div><h2 id="10-create-a-container-and-test-the-function">10. Create a container and test the function</h2>
+<p>Run the following to run the Azure Function in a container:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">docker run -p 5000<span style="color:#960050;background-color:#1e0010">:</span>80 durable
+</code></pre></div><p>Now POST to the orchestrator client to start the durable functions:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -X POST http://localhost:5000/api/orchestrators/orchestrator -i -H <span style="color:#e6db74">&#34;Content-Length: 0&#34;</span>
+</code></pre></div><p>You can download all code and files <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/azure.durable.function.docker">here</a>.</p>
+<p><strong>Note</strong>: The function code is based on the original <a href="https://github.com/Azure/azure-functions-durable-extension">Azure Functions Samples</a>.</p>
+<p>Happy coding!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/12/28/run-a-precompiled-.net-core-azure-function-in-a-container/"><i class="fa fa-chevron-circle-left"></i> Run a Precompiled .NET Core Azure Function in a Container</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2018/02/18/consuming-azure-event-hubs-events-with-kafka-connect/">Consuming Azure Event Hubs Events With Kafka Connect <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

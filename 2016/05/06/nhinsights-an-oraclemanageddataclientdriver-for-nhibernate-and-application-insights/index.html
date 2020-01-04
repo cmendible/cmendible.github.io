@@ -1,0 +1,253 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="NHInsights an OracleManagedDataClientDriver for NHibernate and Application Insights" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>NHInsights an OracleManagedDataClientDriver for NHibernate and Application Insights</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2016-05-06T07:18:05Z">May 6, 2016</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/dotnet">dotNet</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>Let's talk about <strong><!-- raw HTML omitted -->NHInsights<!-- raw HTML omitted --> an OracleManagedDataClientDriver for NHibernate and Application Insights</strong></p>
+<p>If you use Oracle and NHibernate and you are trying to use Application Insights to diagnose issues with your database calls you will notice that for ASP.NET applications <!-- raw HTML omitted -->the out-of-the-box dependency monitor currently reports calls to these types of dependencies<!-- raw HTML omitted -->:</p>
+<ul>
+<li>SQL databases</li>
+<li>ASP.NET web and WCF services that use HTTP-based bindings</li>
+<li>Local or remote HTTP calls</li>
+<li>Azure DocumentDb, table, blob storage, and queue</li>
+</ul>
+<p>So how can you track your queries as a dependency?</p>
+<p>Well I checked the <!-- raw HTML omitted -->Track Dependency API<!-- raw HTML omitted --> which is really simple and also remembered that some time ago I had used <!-- raw HTML omitted -->MiniProfiler<!-- raw HTML omitted --> together with NHibernate and managed to track SQL Server response times.</p>
+<p>I downloaded <!-- raw HTML omitted -->MiniProfiler<!-- raw HTML omitted --> source code and learned how they implemented their <!-- raw HTML omitted -->ProfiledDbCommand<!-- raw HTML omitted --> and also the <!-- raw HTML omitted -->MiniProfilerSql2008ClientDriver<!-- raw HTML omitted -->.</p>
+<p>Based on those two great pieces of code and the original <!-- raw HTML omitted -->OracleManagedDataClientDriver<!-- raw HTML omitted --> code I managed to create <!-- raw HTML omitted -->NHInsights<!-- raw HTML omitted -->.</p>
+<p>What's the secret? to create a driver capable of returning a profiled DbCommand (i.e. <!-- raw HTML omitted -->InsightsDbCommand<!-- raw HTML omitted -->):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OracleManagedDataClientDriver</span> : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
+{
+    ...
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">override</span> IDbCommand CreateCommand()
+    {
+       <span style="color:#66d9ef">var</span> command = <span style="color:#66d9ef">base</span>.CreateCommand();
+
+       command = <span style="color:#66d9ef">new</span> **InsightsDbCommand**((DbCommand)command, (DbConnection)command.Connection) <span style="color:#66d9ef">as</span> IDbCommand;
+
+       <span style="color:#66d9ef">return</span> command;
+    }
+}
+</code></pre></div><p>Go ahead and try it! To start sending your queries as dependencies just install the nuget package:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Install-Package NHInsights
+</code></pre></div><p>And then reference the NHInsights.OracleManagedDataClientDriver in your NHibernate configuration:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;hibernate-configuration</span> <span style="color:#a6e22e">xmlns=</span><span style="color:#e6db74">&#34;urn:nhibernate-configuration-2.2&#34;</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;session-factory</span><span style="color:#f92672">&gt;</span>
+    ...
+    <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;connection.driver_class&#34;</span><span style="color:#f92672">&gt;</span>NHInsights.OracleManagedDataClientDriver, NHInsights, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null<span style="color:#f92672">&lt;/property&gt;</span>
+    ...
+  <span style="color:#f92672">&lt;/session-factory&gt;</span>
+<span style="color:#f92672">&lt;/hibernate-configuration&gt;</span>
+</code></pre></div><p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/05/02/create-an-azure-site-to-site-vpn/"><i class="fa fa-chevron-circle-left"></i> Create an Azure Site to Site VPN</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/06/01/backup-your-team-services-git-repositories-with-vsts-vault/">Backup your Team Services Git Repositories with VSTS Vault <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

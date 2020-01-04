@@ -1,0 +1,272 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Accepting Azure Marketplace Terms with Ansible" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Accepting Azure Marketplace Terms with Ansible</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2018-08-14T11:27:39Z">Aug 14, 2018</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/devops">DevOps</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>Last May I wrote: [Accepting Azure Marketplace Terms with Azure CLI]({{ site.baseurl }}{% post_url 2018-05-21-accepting-azure-marketplace-terms-with-azure-cli %}) and this time we'll accomplish the same task with Ansible.</p>
+<p>Turns out that Ansible 2.6 comes with a handy new module: <a href="https://docs.ansible.com/ansible/latest/modules/azure_rm_resource_module.html?highlight=azure_rm_resource">azure_rm_resource</a> which lets you create, update or delete any Azure resource using Azure REST API. So I decided to take it for a test drive with the &ldquo;Accepting Terms&rdquo; sample.</p>
+<p>I've hard coded Palo Alto Networks offer for the following playbook but feel free to use another offer:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    subscriptionId: <span style="color:#e6db74">&#34;[REPLACE WITH YOUR OWN VALUES]&#34;</span>
+    az_client_id: <span style="color:#e6db74">&#34;[REPLACE WITH YOUR OWN VALUES]&#34;</span>
+    az_tenant: <span style="color:#e6db74">&#34;[REPLACE WITH YOUR OWN VALUES]&#34;</span>
+    az_secret: <span style="color:#e6db74">&#34;[REPLACE WITH YOUR OWN VALUES]&#34;</span>
+    region: <span style="color:#e6db74">&#34;westeurope&#34;</span>
+    publisher: <span style="color:#e6db74">&#34;paloaltonetworks&#34;</span>
+    offer: <span style="color:#e6db74">&#34;vmseries1&#34;</span>
+    sku: <span style="color:#e6db74">&#34;bundle1&#34;</span>
+  tasks:
+    - name: Get Agreements for given Image parameters
+      azure_rm_resource:
+        subscription_id: <span style="color:#e6db74">&#34;{{ subscriptionId }}&#34;</span>
+        client_id: <span style="color:#e6db74">&#34;{{ az_client_id }}&#34;</span>
+        tenant: <span style="color:#e6db74">&#34;{{ az_tenant }}&#34;</span>
+        secret: <span style="color:#e6db74">&#34;{{ az_secret }}&#34;</span>
+        url: <span style="color:#e6db74">&#34;https://management.azure.com/subscriptions/{{ subscriptionId }}/providers/Microsoft.MarketplaceOrdering/offerTypes/virtualmachine/publishers/{{ publisher }}/offers/{{ offer }}/plans/{{ sku }}/agreements/current?api-version=2015-06-01&#34;</span>
+        method: GET
+        api_version: <span style="color:#e6db74">&#34;2015-06-01&#34;</span>
+      register: agreement_result
+
+    - name: Register Agreement properties as fact
+      set_fact:
+        agreement: <span style="color:#e6db74">&#34;{{ agreement_result.response.properties }}&#34;</span>
+
+    - name: Accept Terms for given Image parameters
+      azure_rm_resource:
+        subscription_id: <span style="color:#e6db74">&#34;{{ subscriptionId }}&#34;</span>
+        client_id: <span style="color:#e6db74">&#34;{{ az_client_id }}&#34;</span>
+        tenant: <span style="color:#e6db74">&#34;{{ az_tenant }}&#34;</span>
+        secret: <span style="color:#e6db74">&#34;{{ az_secret }}&#34;</span>
+        url: <span style="color:#e6db74">&#34;https://management.azure.com/subscriptions/{{ subscriptionId }}/providers/Microsoft.MarketplaceOrdering/offerTypes/virtualmachine/publishers/{{ publisher }}/offers/{{ offer }}/plans/{{ sku }}/agreements/current?api-version=2015-06-01&#34;</span>
+        method: PUT
+        api_version: <span style="color:#e6db74">&#34;2015-06-01&#34;</span>
+        body:
+          properties:
+            publisher: <span style="color:#e6db74">&#34;{{agreement.publisher}}&#34;</span>
+            product: <span style="color:#e6db74">&#34;{{agreement.product}}&#34;</span>
+            plan: <span style="color:#e6db74">&#34;{{agreement.plan}}&#34;</span>
+            licenseTextLink: <span style="color:#e6db74">&#34;{{agreement.licenseTextLink}}&#34;</span>
+            privacyPolicyLink: <span style="color:#e6db74">&#34;{{agreement.privacyPolicyLink}}&#34;</span>
+            retrieveDatetime: <span style="color:#e6db74">&#34;{{agreement.retrieveDatetime}}&#34;</span>
+            signature: <span style="color:#e6db74">&#34;{{agreement.signature}}&#34;</span>
+            accepted: <span style="color:#e6db74">&#34;true&#34;</span>
+      register: result
+
+    - name: Accept Terms output
+      debug:
+        msg: <span style="color:#e6db74">&#34;{{result}}&#34;</span>
+</code></pre></div><p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2018/08/10/installing-azure-cli-and-ansible-on-ubuntu/"><i class="fa fa-chevron-circle-left"></i> Installing Azure CLI and Ansible on Ubuntu</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2018/08/16/.net-core-benchmarkdotnet-and-string-compare-performance/">.NET Core, BenchmarkDotNet and string compare performance <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

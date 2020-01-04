@@ -1,0 +1,306 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Create vCard QR Codes using Azure Functions" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Create vCard QR Codes using Azure Functions</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2016-08-28T18:45:28Z">Aug 28, 2016</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/dotnet">dotNet</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>3 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>Today I'll show you how to develop a Web API to <strong>Create vCard QR Codes using <!-- raw HTML omitted -->Azure Functions<!-- raw HTML omitted --></strong>.</p>
+<p>But wait what are <!-- raw HTML omitted -->Azure Functions<!-- raw HTML omitted -->?</p>
+<p>As defined by Microsoft:</p>
+<blockquote>
+<p><!-- raw HTML omitted -->Azure Functions<!-- raw HTML omitted --> is a serverless event driven experience that extends the existing Azure App Service platform. These nano-services can scale based on demand and you pay only for the resources you consume.</p>
+</blockquote>
+<p>And what does serverless means? I really like the definition given by Scot Hanselman in his post <!-- raw HTML omitted -->What is Serverless Computing? Exploring Azure Functions<!-- raw HTML omitted -->:</p>
+<blockquote>
+<p><strong>Serverless Computing is like this – Your code, a slider bar, and your credit card</strong>. You just have your function out there and it will scale as long as you can pay for it. It's as close to&quot;cloudy&rdquo; as The Cloud can get.</p>
+</blockquote>
+<p>Now let's start:</p>
+<h2 id="1-create-a-function-app">1. Create a Function App</h2>
+<hr>
+<p>Head to <!-- raw HTML omitted -->portal.azure.com<!-- raw HTML omitted --> and hit the New button. Search for <strong>Function App</strong> and create one. You'll be asked for an app name, resource group, app service plan and storage account where the code will live.</p>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<h2 id="2-create-the-function">2. Create the function</h2>
+<hr>
+<p>Create a new Function, selecting the empty C# template and give it a name: (i.e QRCoder)</p>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<h2 id="3-add-the-code">3. Add the code</h2>
+<hr>
+<p>Replace the contents of the <strong>Code (run.csx)</strong> section with the following code and save it:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#960050;background-color:#1e0010">#</span>r <span style="color:#e6db74">&#34;System.Drawing&#34;</span>
+<span style="color:#960050;background-color:#1e0010">#</span>r <span style="color:#e6db74">&#34;QRCoder.dll&#34;</span>
+
+<span style="color:#66d9ef">using</span> System.Drawing;
+<span style="color:#66d9ef">using</span> System.Drawing.Imaging;
+<span style="color:#66d9ef">using</span> System.IO;
+<span style="color:#66d9ef">using</span> System.Net;
+<span style="color:#66d9ef">using</span> System.Net.Http;
+<span style="color:#66d9ef">using</span> System.Net.Http.Headers;
+<span style="color:#66d9ef">using</span> QRCoder;
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">async</span> Task&lt;HttpResponseMessage&gt; Run(HttpRequestMessage req, TraceWriter log)
+{
+    <span style="color:#75715e">// Read the json request
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> qrRequest = <span style="color:#66d9ef">await</span> req.Content.ReadAsAsync&lt;SimpleVCardRequest&gt;();
+
+    <span style="color:#75715e">// Create the vCard string
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> vCard = <span style="color:#e6db74">&#34;BEGIN:VCARD\n&#34;</span>;
+    vCard += <span style="color:#e6db74">$&#34;FN:{qrRequest.Name}\n&#34;</span>;
+    vCard += <span style="color:#e6db74">$&#34;TEL;WORK;VOICE:{qrRequest.Phone}\n&#34;</span>;
+    vCard += <span style="color:#e6db74">&#34;END:VCARD&#34;</span>;
+
+    <span style="color:#75715e">// Generate de QRCode
+</span><span style="color:#75715e"></span>    QRCodeGenerator qrGenerator = <span style="color:#66d9ef">new</span> QRCodeGenerator();
+    QRCodeData qrCodeData = qrGenerator.CreateQrCode(vCard, QRCodeGenerator.ECCLevel.Q);
+    QRCode qrCode = <span style="color:#66d9ef">new</span> QRCode(qrCodeData);
+
+    <span style="color:#75715e">// Save the QRCode as a jpeg image and send it in the response.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">using</span> (Bitmap qrCodeImage = qrCode.GetGraphic(<span style="color:#ae81ff">2</span><span style="color:#ae81ff">0</span>))
+    <span style="color:#66d9ef">using</span> (MemoryStream ms = <span style="color:#66d9ef">new</span> MemoryStream())
+    {
+        qrCodeImage.Save(ms, ImageFormat.Jpeg);
+
+        <span style="color:#66d9ef">var</span> response = <span style="color:#66d9ef">new</span> HttpResponseMessage()
+        {
+            Content = <span style="color:#66d9ef">new</span> ByteArrayContent(ms.ToArray()),
+            StatusCode = HttpStatusCode.OK,
+        };
+        response.Content.Headers.ContentType = <span style="color:#66d9ef">new</span> MediaTypeHeaderValue(<span style="color:#e6db74">&#34;image/jpeg&#34;</span>);
+        <span style="color:#66d9ef">return</span> response;
+    }    
+}
+
+<span style="color:#75715e">// Request class to hold the Name and Phone number used to generated the vCard QR Code
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SimpleVCardRequest</span>
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> Name { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> Phone { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+}
+</code></pre></div><h2 id="4-fixing-the-missing-references">4. Fixing the missing references</h2>
+<p>If you read the log you'll notice the compiler can't resolve the references to <strong><!-- raw HTML omitted -->QRCoder<!-- raw HTML omitted --></strong> and that's because we are using a 3rd party library to generate the QR codes.</p>
+<p>We need to upload the assemblies to the <strong>Functions App</strong>. Connect to your App via SFTP or your favorite method.</p>
+<p>You'll need to create a <strong>bin</strong> folder under the folder with your function's name (i.e. QRCoder) and upload the <strong>QRCoder.dll</strong> and <strong>UnityEngine.dll</strong> files to it.</p>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<h2 id="6-create-an-html-endpoint-for-the-function">6. Create an HTML endpoint for the function</h2>
+<hr>
+<p>Head to the Integrate tab and add a new HTML trigger and save it with the default values.</p>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<h2 id="7-test-the-web-api">7. Test the Web API</h2>
+<hr>
+<p>Head to the Develop tab and copy the Function Url:</p>
+<p><!-- raw HTML omitted -->&lt;img src=&rdquo;/wp-content/uploads/2016/08/functionUrl.png&rdquo; alt=&quot;functionUrl&rdquo; class=&quot;aligncenter&rdquo; size-medium wp-image-5662&rdquo; srcset=&rdquo;/wp-content/uploads/2016/08/functionUrl.png 1800w, /wp-content/uploads/2016/08/functionUrl-300x28.png 300w, /wp-content/uploads/2016/08/functionUrl-768x70.png 768w, /wp-content/uploads/2016/08/functionUrl-1024x94.png 1024w, /wp-content/uploads/2016/08/functionUrl-250x23.png 250w&rdquo; sizes=&rdquo;(max-width: 1800px) 100vw, 1800px&rdquo; /&gt;<!-- raw HTML omitted --></p>
+<p>Now use <!-- raw HTML omitted -->postman <!-- raw HTML omitted -->to send payload to the Web API and get a QR Code</p>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>The response should show a working QR code like the following:</p>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>You can grab the code for the function here: <!-- raw HTML omitted --><a href="https://gist.github.com/cmendible/4b6627bcf288b94af9be4d25f6e66d5f%3C/a%3E">https://gist.github.com/cmendible/4b6627bcf288b94af9be4d25f6e66d5f&lt;/a&gt;</a></p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/08/26/benefits-and-risks-you-need-to-know-about-cloud-computing/"><i class="fa fa-chevron-circle-left"></i> Benefits and Risks You Need to Know about Cloud Computing</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/09/11/.net-core-and-microsoft-bot-framework/">.NET Core and Microsoft Bot Framework <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

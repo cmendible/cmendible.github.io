@@ -1,0 +1,279 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Step by step: Scale ASP.NET Core with Docker Swarm" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Step by step: Scale ASP.NET Core with Docker Swarm</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2016-10-30T15:16:29Z">Oct 30, 2016</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>A few weeks ago I posted <!-- raw HTML omitted -->Step by step: ASP.NET Core on Docker<!-- raw HTML omitted --> were I showed how to build and run a <!-- raw HTML omitted -->Docker<!-- raw HTML omitted --> image with an ASP.NET Core application.</p>
+<p>Today I bring you: <strong>Step by step: Scale ASP.NET Core with Docker Swarm</strong> so you can scale out or in the same <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld">application</a>.</p>
+<p>Assuming you have <!-- raw HTML omitted -->Docker 1.12 or later<!-- raw HTML omitted --> installed and running, follow this steps:</p>
+<h2 id="1-create-a-dockerfile">1. Create a dockerfile</h2>
+<hr>
+<p>On your Docker box create a dockerfile with the following contents</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    <span style="color:#75715e"># We use the microsoft/dotnet image as a starting point.</span>
+    FROM microsoft/dotnet
+
+    <span style="color:#75715e"># Install git</span>
+    RUN apt-get install git -y
+
+    <span style="color:#75715e"># Create a folder to clone our source code </span>
+    RUN mkdir repositories
+
+    <span style="color:#75715e"># Set our working folder</span>
+    WORKDIR repositories
+
+    <span style="color:#75715e"># Clone the source code</span>
+    RUN git clone https://github.com/cmendible/aspnet-core-helloworld.git
+
+    <span style="color:#75715e"># Set our working folder</span>
+    WORKDIR aspnet-core-helloworld/src/dotnetstarter
+
+    <span style="color:#75715e"># Expose port 5000 for the application.    </span>
+    EXPOSE <span style="color:#ae81ff">5000</span>
+
+    <span style="color:#75715e"># Restore nuget packages</span>
+    RUN dotnet restore
+
+    <span style="color:#75715e"># Start the application using dotnet!!!</span>
+    ENTRYPOINT dotnet run
+</code></pre></div><h2 id="2-create-a-docker-image">2. Create a Docker image</h2>
+<hr>
+<p>With the dockerfile in place run the following command</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">sudo docker build -t hello_world .
+</code></pre></div><p>Now you have an image named <!-- raw HTML omitted -->hello_world<!-- raw HTML omitted --> with all the dependencies and code needed to run the sample.</p>
+<h2 id="3-initialize-a-swarm">3. Initialize a Swarm</h2>
+<hr>
+<p>Initialize <!-- raw HTML omitted -->Docker Swarm<!-- raw HTML omitted -->.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">docker swarm init
+</code></pre></div><h2 id="4-create-a-docker-service">4. Create a Docker Service</h2>
+<hr>
+<p>Now that you have setup everything use the following command to create a service named <!-- raw HTML omitted -->hello_service<!-- raw HTML omitted --> based on the <!-- raw HTML omitted -->hello_world<!-- raw HTML omitted --> image and start it</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">docker service create --name hello_service --publish 5000<span style="color:#960050;background-color:#1e0010">:</span>5000 hello_world
+</code></pre></div><p>Wait a few seconds and navigate to <!-- raw HTML omitted -->http://localhost:5000<!-- raw HTML omitted --> and you should be able to reach the web application.</p>
+<p>If you want to learn more about Docker services, start here: <!-- raw HTML omitted -->Service Create/<!-- raw HTML omitted --></p>
+<h2 id="5-scale-up-your-application">5. Scale up your application</h2>
+<hr>
+<p>Let's scale your service up to 3 instances with the following command</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">docker service scale hello_service=3
+</code></pre></div><p>If you want to see how many replicas your service is running issue the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">docker service ls
+</code></pre></div><p>Note that it takes some seconds before all new replicas start.</p>
+<h2 id="6-scale-down-your-application">6. Scale down your application</h2>
+<hr>
+<p>Let's scale your service down to 1 instance with the following command</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">docker service scale hello_service=1
+</code></pre></div><h2 id="7-optional-remove-the-service">7. Optional: Remove the service</h2>
+<p>If you are don't want the service anymore, remove it from the Swarm with the following command</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">docker service rm hello_service
+</code></pre></div><p>You can get a copy of the docker file here: <!-- raw HTML omitted --><a href="https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld%3C/a%3E">https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld&lt;/a&gt;</a></p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/10/24/use-.net-core-to-create-azure-blob-storage-sas-keys/"><i class="fa fa-chevron-circle-left"></i> Use .NET Core to Create Azure Blob Storage SAS Keys</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/11/06/step-by-step-expose-asp.net-core-over-https-with-docker/">Step by step: Expose ASP.NET Core over HTTPS with Docker <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

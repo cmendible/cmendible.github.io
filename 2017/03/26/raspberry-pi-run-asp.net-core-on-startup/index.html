@@ -1,0 +1,245 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Raspberry Pi: Run ASP.NET Core on Startup" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Raspberry Pi: Run ASP.NET Core on Startup</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2017-03-26T12:37:16Z">Mar 26, 2017</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/dotnet">dotNet</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>One minute read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>Last week I wrote: <strong><a href="https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/">Step by step: Running ASP.NET Core on Raspberry Pi</a></strong> and didn't have the time to write about running the application on startup.</p>
+<p>After browsing for a while I found this great post: <a href="https://microsoft.hackster.io/en-US/falafel-software/windows-iot-core-running-a-powershell-script-on-startup-0aa534">Windows IoT Core: Running a PowerShell Script on Startup</a> which showed me the way!</p>
+<p>As a prerequisite read and run the sample provided here: <strong><a href="https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/">Step by step: Running ASP.NET Core on Raspberry Pi</a></strong></p>
+<p>Let's start:</p>
+<h2 id="1-create-startupps1">1. Create startup.ps1</h2>
+<hr>
+<p>Create <strong>startup.ps1</strong> with the following contents</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Set-Location C<span style="color:#960050;background-color:#1e0010">:</span>\publish\
+.\aspnet.on.rpi.exe
+</code></pre></div><h2 id="2-create-startupbat">2. Create startup.bat</h2>
+<hr>
+<p>Create <strong>startup.bat</strong> with the following contents</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">powershell -command <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">C:\startup.ps1</span><span style="color:#e6db74">&#34;</span>
+</code></pre></div><h2 id="3-copy-the-files-to-your-raspberry">3. Copy the files to your Raspberry</h2>
+<hr>
+<p>Connect to Raspberry using powershell, start the ftp server</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Enter-PSSession -ComputerName &lt;Raspberry IP&gt; -Credential &lt;Raspberry IP&gt;\Administrator
+start C<span style="color:#960050;background-color:#1e0010">:</span>\Windows\System32\ftpd.exe
+</code></pre></div><p>Open the <strong>File Explorer</strong> ftp://&lt;TARGET_DEVICE&gt; and copy both <strong>startup.ps1</strong> and <strong>startup.cmd</strong> to your Raspberry</p>
+<h2 id="4-schedule-the-command-to-run-on-startup">4. Schedule the command to run on Startup</h2>
+<hr>
+<p>Connect to Raspberry using powershell and run</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Enter-PSSession -ComputerName &lt;Raspberry IP&gt; -Credential &lt;Raspberry IP&gt;\Administrator
+schtasks /create /tn <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Startup Web</span><span style="color:#e6db74">&#34;</span> /tr c<span style="color:#960050;background-color:#1e0010">:</span>\Startup.bat /sc onstart /ru SYSTEM
+</code></pre></div><h2 id="5-restart-and-verify">5. Restart and verify</h2>
+<hr>
+<p>Restart your Raspberry and after a bit your ASP.NET Core app should be up and running.</p>
+<p>Get the code here: <!-- raw HTML omitted --><a href="https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.on.rpi.startup%3C/a%3E">https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.on.rpi.startup&lt;/a&gt;</a></p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/03/21/step-by-step-running-asp.net-core-on-raspberry-pi/"><i class="fa fa-chevron-circle-left"></i> Step by step: Running ASP.NET Core on Raspberry Pi</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/04/10/step-by-step-couchbase-with-.net-core/">Step by step: Couchbase with .Net Core <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

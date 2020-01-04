@@ -1,0 +1,326 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Step by step: Running ASP.NET Core on Raspberry Pi" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Step by step: Running ASP.NET Core on Raspberry Pi</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2017-03-21T11:24:05Z">Mar 21, 2017</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/dotnet">dotNet</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>After reading <!-- raw HTML omitted -->.NET Core on Raspberry Pi<!-- raw HTML omitted --> and successfully running a console application on <strong>Windows 10 IoT Core</strong> on my <strong>Raspberry Pi 3</strong> I decided to write: <strong>Step by step: Running ASP.NET Core on Raspberry Pi</strong>.</p>
+<p>First be aware of the following prerequisites:</p>
+<ul>
+<li><strong><!-- raw HTML omitted -->Windows 10 IoT Core<!-- raw HTML omitted --></strong> I'm running Insider Preview v.10.0.15058.0</li>
+<li><strong><!-- raw HTML omitted -->.NET Core 2.0 SDK<!-- raw HTML omitted --></strong></li>
+</ul>
+<p>Now let's start:</p>
+<h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project</h2>
+<hr>
+<p>Open a command prompt an run</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">mkdir aspnet.on.rpi
+cd aspnet.on.rpi
+code .
+</code></pre></div><h2 id="2-create-a-globaljson-file">2. Create a global.json file</h2>
+<hr>
+<p>To specify the correct sdk create a <strong>global.json</strong> with the following contents</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;sdk&#34;</span>: {
+        <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;2.0.0-preview1-005448&#34;</span>
+    }
+}
+</code></pre></div><h2 id="3-create-the-aspnet-core-project">3. Create the ASP.NET Core project</h2>
+<hr>
+<p>Create the ASP.NET Core project with the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet new mvc
+</code></pre></div><h2 id="4-modify-the-project-file">4. Modify the project file</h2>
+<hr>
+<p>Modify the <strong>aspnet.on.rpi.csproj</strong> to add the correct <strong>OutputType</strong>, <strong>TargetFramework</strong>, <strong>RuntimeFrameworkVersion</strong>and <strong>RuntimeIdentifiers</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;Project</span> <span style="color:#a6e22e">Sdk=</span><span style="color:#e6db74">&#34;Microsoft.NET.Sdk.Web&#34;</span><span style="color:#f92672">&gt;</span>
+
+  <span style="color:#f92672">&lt;PropertyGroup</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;OutputType</span><span style="color:#f92672">&gt;</span>Exe<span style="color:#f92672">&lt;/OutputType&gt;</span>
+    <span style="color:#f92672">&lt;TargetFramework</span><span style="color:#f92672">&gt;</span>netcoreapp2.0<span style="color:#f92672">&lt;/TargetFramework&gt;</span>
+    <span style="color:#f92672">&lt;RuntimeFrameworkVersion</span><span style="color:#f92672">&gt;</span>2.0.0-beta-001776-00<span style="color:#f92672">&lt;/RuntimeFrameworkVersion&gt;</span>
+    <span style="color:#f92672">&lt;RuntimeIdentifiers</span><span style="color:#f92672">&gt;</span>win8-arm<span style="color:#f92672">&lt;/RuntimeIdentifiers&gt;</span>
+  <span style="color:#f92672">&lt;/PropertyGroup&gt;</span>
+
+  <span style="color:#f92672">&lt;ItemGroup</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.AspNetCore&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.0.3&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.AspNetCore.Mvc&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.0.2&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.AspNetCore.StaticFiles&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.0.1&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.Extensions.Logging.Debug&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.0.1&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Microsoft.VisualStudio.Web.BrowserLink&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.0.1&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;PackageReference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;Libuv&#34;</span> <span style="color:#a6e22e">Version=</span><span style="color:#e6db74">&#34;1.10.0-preview1-22036&#34;</span> <span style="color:#f92672">/&gt;</span>
+  <span style="color:#f92672">&lt;/ItemGroup&gt;</span>
+<span style="color:#f92672">&lt;/Project&gt;</span>
+</code></pre></div><h2 id="5-add-a-nugetconfig-file-and-restore-packages">5. Add a Nuget.config file and restore packages</h2>
+<p>Create a <strong>Nuget.config</strong> file with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;packageSources</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;add</span> <span style="color:#a6e22e">key=</span><span style="color:#e6db74">&#34;dotnet-core&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;https://dotnet.myget.org/F/dotnet-core/api/v3/index.json&#34;</span> <span style="color:#f92672">/&gt;</span>
+  <span style="color:#f92672">&lt;/packageSources&gt;</span>
+<span style="color:#f92672">&lt;/configuration&gt;</span>
+</code></pre></div><p>Now restore the packages:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet restore
+</code></pre></div><h2 id="6-modify-programcs">6. Modify Program.cs</h2>
+<hr>
+<p>Replace the contents of the <strong>Program.cs</strong> file with the following code</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> System;
+<span style="color:#66d9ef">using</span> System.Collections.Generic;
+<span style="color:#66d9ef">using</span> System.IO;
+<span style="color:#66d9ef">using</span> System.Linq;
+<span style="color:#66d9ef">using</span> System.Threading.Tasks;
+<span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Hosting;
+
+<span style="color:#66d9ef">namespace</span> aspnet.on.rpi
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+    {
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
+        {
+            <span style="color:#66d9ef">var</span> host = <span style="color:#66d9ef">new</span> WebHostBuilder()
+                .UseKestrel()
+                .UseUrls(<span style="color:#e6db74">&#34;http://*:5000&#34;</span>) <span style="color:#75715e">// Using * to bind to all network interfaces
+</span><span style="color:#75715e"></span>                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                .UseStartup&lt;Startup&gt;()
+                .Build();
+
+            host.Run();
+        }
+    }
+}
+</code></pre></div><h2 id="7-publish-the-application">7. Publish the application</h2>
+<hr>
+<p>Publish the application with the following commands</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet publish -r win8-arm
+</code></pre></div><p><!-- raw HTML omitted -->We need to publish for win7-arm as a workaround to copy the correct <strong>libuv.dll</strong> in the next step.<!-- raw HTML omitted --></p>
+<ol start="8">
+<li>Copy libuv.dll</li>
+</ol>
+<hr>
+<p><!-- raw HTML omitted -->Copy <strong>libuv.dll</strong> from <strong>\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win7-arm\publish</strong> to <strong>\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win8-arm\publish</strong><!-- raw HTML omitted --></p>
+<p>This step is no longer needed cause we added <strong>libuv</strong> as a dependency in the <strong>csproj</strong> file</p>
+<h2 id="9-copy-the-files-to-your-raspberry">9. Copy the files to your Raspberry</h2>
+<hr>
+<p>Connect to Raspberry using PowerShell, start the ftp server and open port 5000 on the Raspberry</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Enter-PSSession -ComputerName &lt;Raspberry IP&gt; -Credential &lt;Raspberry IP&gt;\Administrator
+start C<span style="color:#960050;background-color:#1e0010">:</span>\Windows\System32\ftpd.exe
+netsh advfirewall firewall add rule name=<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Open Port 5000</span><span style="color:#e6db74">&#34;</span> dir=<span style="color:#66d9ef">in</span> action=allow protocol=TCP localport=5000
+</code></pre></div><p>Open the <strong>File Explorer</strong> ftp://&lt;TARGET_DEVICE&gt; and copy the contents of <strong>\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win8-arm\publish</strong> to a folder on your Raspberry (i.e. c:\publish).</p>
+<h2 id="10-run-the-application">10. Run the application</h2>
+<hr>
+<p>Connect to Raspberry using PowerShell and run</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">cd c<span style="color:#960050;background-color:#1e0010">:</span>\publish\
+.\aspnet.on.rpi.exe
+</code></pre></div><p>You should be good to go and be able to browse on port 5000 of you RPi.</p>
+<p>Get the code here: <!-- raw HTML omitted --><a href="https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.on.rpi%3C/a%3E">https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.on.rpi&lt;/a&gt;</a></p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/03/02/twilio-with-.net-core/"><i class="fa fa-chevron-circle-left"></i> Twilio with .NET Core</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/03/26/raspberry-pi-run-asp.net-core-on-startup/">Raspberry Pi: Run ASP.NET Core on Startup <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

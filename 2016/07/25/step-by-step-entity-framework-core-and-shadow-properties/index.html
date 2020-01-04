@@ -1,0 +1,471 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Step by step: Entity Framework Core and Shadow Properties" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Step by step: Entity Framework Core and Shadow Properties</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2016-07-25T16:07:49Z">Jul 25, 2016</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>5 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>Today I'll show you how to create a small console application with a <strong>Step by step: Entity Framework Core and Shadow Properties</strong> example.</p>
+<p>We'll be modifying the code from my previous post: Step by step: <!-- raw HTML omitted -->.NET Core and Entity Framework Core<!-- raw HTML omitted --> to make the Student entity auditable without creating public/protected properties or private fields to hold the typical audit info (CreatedBy, CreatedAt, UpdatedBy and UpdatedAt) database fields.</p>
+<p>This means that your domain entities won't expose the audit information which almost in every case is not part of the business behavior you'll be trying to model.</p>
+<p>First be aware of the following prerequisites:</p>
+<!-- raw HTML omitted -->
+<p>Now let's start:</p>
+<h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project</h2>
+<hr>
+<p>Open a command promt an run</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">mkdir efcore.shadowproperties.console
+</code></pre></div><h2 id="2-create-the-project">2. Create the project</h2>
+<hr>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">cd efcore.shadowproperties.console
+dotnet new
+</code></pre></div><h2 id="3-create-a-settings-file">3. Create a settings file</h2>
+<hr>
+<p>Create an <strong>appsettings.json</strong> file to hold your connection string information. We'll be using **SQLite **for this example, so add these lines:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;ConnectionStrings&#34;</span>: {
+    <span style="color:#f92672">&#34;Sample&#34;</span>: <span style="color:#e6db74">&#34;Data Source=sample.db&#34;</span>
+  }
+}
+</code></pre></div><h2 id="4-modify-the-project-file">4. Modify the project file</h2>
+<hr>
+<p>Modify the <strong>project.json</strong> to add the <strong>EntityFrameworkCore</strong> dependencies and also specify that the <strong>appsettings.json</strong> file must be copied to the output (<strong>buildOptions</strong>section) so it becomes available to the application once you build it.</p>
+<p>Note that you'll also have to add <strong>System.Security.Claims</strong> to simulate an authenticated user:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.0.0-*&#34;</span>,
+  <span style="color:#f92672">&#34;buildOptions&#34;</span>: {
+    <span style="color:#f92672">&#34;debugType&#34;</span>: <span style="color:#e6db74">&#34;portable&#34;</span>,
+    <span style="color:#f92672">&#34;emitEntryPoint&#34;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#f92672">&#34;copyToOutput&#34;</span>: {
+      <span style="color:#f92672">&#34;include&#34;</span>: <span style="color:#e6db74">&#34;appsettings.json&#34;</span>
+    }
+  },
+  <span style="color:#f92672">&#34;dependencies&#34;</span>: {
+    <span style="color:#f92672">&#34;Microsoft.Extensions.Configuration&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>,
+    <span style="color:#f92672">&#34;Microsoft.Extensions.Configuration.Json&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>,
+    <span style="color:#f92672">&#34;Microsoft.EntityFrameworkCore&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>,
+    <span style="color:#f92672">&#34;Microsoft.EntityFrameworkCore.Sqlite&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>,
+    <span style="color:#f92672">&#34;System.Security.Claims&#34;</span>: <span style="color:#e6db74">&#34;4.0.1&#34;</span>
+  },
+  <span style="color:#f92672">&#34;frameworks&#34;</span>: {
+    <span style="color:#f92672">&#34;netcoreapp1.0&#34;</span>: {
+      <span style="color:#f92672">&#34;dependencies&#34;</span>: {
+        <span style="color:#f92672">&#34;Microsoft.NETCore.App&#34;</span>: {
+          <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;platform&#34;</span>,
+          <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>
+        }
+      },
+      <span style="color:#f92672">&#34;imports&#34;</span>: <span style="color:#e6db74">&#34;dnxcore50&#34;</span>
+    }
+  }
+}
+</code></pre></div><h2 id="5-restore-packages">5. Restore packages</h2>
+<hr>
+<p>You just modified the <strong>project.json</strong> file with new dependencies so please restore the packages with the following command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet restore
+</code></pre></div><h2 id="6-create-a-marker-interface-in-order-to-make-your-entities-auditable">6. Create a marker interface in order to make your entities auditable</h2>
+<hr>
+<p>Every entity you mark with this interface will save audit info to the database.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">namespace</span> ConsoleApplication
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> IAuditable
+    {
+
+    }   
+}
+</code></pre></div><h2 id="7-create-the-entity-framework-context">7. Create the Entity Framework context</h2>
+<hr>
+<p>Create a <strong>SampleContext.cs</strong> file and copy the following code</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">namespace</span> ConsoleApplication
+{
+    <span style="color:#66d9ef">using</span> System;
+    <span style="color:#66d9ef">using</span> System.Linq;
+    <span style="color:#66d9ef">using</span> System.Reflection;
+    <span style="color:#66d9ef">using</span> Microsoft.EntityFrameworkCore;
+    <span style="color:#66d9ef">using</span> Microsoft.EntityFrameworkCore.ChangeTracking;
+    <span style="color:#66d9ef">using</span> System.Security.Claims;
+
+    <span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">/// The entity framework context with a Students DbSet 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">StudentsContext</span> : DbContext
+    {
+        <span style="color:#66d9ef">public</span> StudentsContext(DbContextOptions&lt;StudentsContext&gt; options)
+            : <span style="color:#66d9ef">base</span>(options)
+        { }
+
+        <span style="color:#66d9ef">public</span> DbSet&lt;Student&gt; Students { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+
+        <span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">/// We overrride OnModelCreating to map the audit properties for every entity marked with the 
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">/// IAuditable interface.
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">/// 
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">void</span> OnModelCreating(ModelBuilder modelBuilder)
+        {
+            <span style="color:#66d9ef">foreach</span> (<span style="color:#66d9ef">var</span> entityType <span style="color:#66d9ef">in</span> modelBuilder.Model.GetEntityTypes()
+                .Where(e =&gt; <span style="color:#66d9ef">typeof</span>(IAuditable).IsAssignableFrom(e.ClrType)))
+            {
+                    modelBuilder.Entity(entityType.ClrType)
+                        .Property&lt;DateTime&gt;(<span style="color:#e6db74">&#34;CreatedAt&#34;</span>);
+
+                    modelBuilder.Entity(entityType.ClrType)
+                        .Property&lt;DateTime&gt;(<span style="color:#e6db74">&#34;UpdatedAt&#34;</span>);
+
+                    modelBuilder.Entity(entityType.ClrType)
+                        .Property&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;CreatedBy&#34;</span>);
+
+                    modelBuilder.Entity(entityType.ClrType)
+                        .Property&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;UpdatedBy&#34;</span>);
+            }
+
+            <span style="color:#66d9ef">base</span>.OnModelCreating(modelBuilder);
+        }
+
+        <span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">/// Override SaveChanges so we can call the new AuditEntities method.
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">/// &lt;returns&gt;&lt;/returns&gt;
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">int</span> SaveChanges()
+        {
+            <span style="color:#66d9ef">this</span>.AuditEntities();
+
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">base</span>.SaveChanges();
+        }
+        
+        <span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">/// Method that will set the Audit properties for every added or modified Entity marked with the 
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">/// IAuditable interface.
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> AuditEntities()
+        {
+
+            <span style="color:#75715e">// Get the authenticated user name 
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">string</span> userName = <span style="color:#66d9ef">string</span>.Empty;
+
+            <span style="color:#66d9ef">var</span> user = ClaimsPrincipal.Current;
+            <span style="color:#66d9ef">if</span> (user != <span style="color:#66d9ef">null</span>)
+            {
+                <span style="color:#66d9ef">var</span> identity = user.Identity;
+                <span style="color:#66d9ef">if</span> (identity != <span style="color:#66d9ef">null</span>)
+                {
+                    userName = identity.Name;
+                }
+            }
+
+            <span style="color:#75715e">// Get current date &amp; time
+</span><span style="color:#75715e"></span>            DateTime now = DateTime.Now;
+
+            <span style="color:#75715e">// For every changed entity marked as IAditable set the values for the audit properties
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">foreach</span> (EntityEntry&lt;IAuditable&gt; entry <span style="color:#66d9ef">in</span> ChangeTracker.Entries&lt;IAuditable&gt;())
+            {
+                <span style="color:#75715e">// If the entity was added.
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> (entry.State == EntityState.Added)
+                {
+                    entry.Property(<span style="color:#e6db74">&#34;CreatedBy&#34;</span>).CurrentValue = userName;
+                    entry.Property(<span style="color:#e6db74">&#34;CreatedAt&#34;</span>).CurrentValue = now;
+                }
+                <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (entry.State == EntityState.Modified) <span style="color:#75715e">// If the entity was updated
+</span><span style="color:#75715e"></span>                {
+                    entry.Property(<span style="color:#e6db74">&#34;UpdatedBy&#34;</span>).CurrentValue = userName;
+                    entry.Property(<span style="color:#e6db74">&#34;UpdatedAt&#34;</span>).CurrentValue = now;
+                }
+            }
+        }
+    }
+
+    <span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">/// A factory to create an instance of the StudentsContext 
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">StudentsContextFactory</span>
+    {
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> StudentsContext Create(<span style="color:#66d9ef">string</span> connectionString)
+        {
+            <span style="color:#66d9ef">var</span> optionsBuilder = <span style="color:#66d9ef">new</span> DbContextOptionsBuilder&lt;StudentsContext&gt;();
+            optionsBuilder.UseSqlite(connectionString);
+
+            <span style="color:#66d9ef">var</span> context = <span style="color:#66d9ef">new</span> StudentsContext(optionsBuilder.Options);
+            context.Database.EnsureCreated();
+
+            <span style="color:#66d9ef">return</span> context;
+        }
+    }
+
+    <span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">/// A simple class representing a Student.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">/// We&#39;ve marked this entity as IAditable so we can save audit info for the entity.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Student</span> : IAuditable
+    {
+        <span style="color:#66d9ef">public</span> Student()
+        {
+        }
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> Id { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> Name { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> LastName { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+    }
+}
+</code></pre></div><p>Note that the beauty of shadow properties is that both the IAuditable interface and the Student entity don't expose Audit info. We are mapping properties that are not represented in our domain model!</p>
+<h2 id="8-modify-programcs">8. Modify Program.cs</h2>
+<hr>
+<p>Replace the contents of the <strong>Program.cs</strong> file with the following code</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">namespace</span> ConsoleApplication
+{
+    <span style="color:#66d9ef">using</span> System;
+    <span style="color:#66d9ef">using</span> Microsoft.Extensions.Configuration;
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+    {
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
+        {
+            <span style="color:#75715e">// Enable to app to read json setting files
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">var</span> builder = <span style="color:#66d9ef">new</span> ConfigurationBuilder()
+                .AddJsonFile(<span style="color:#e6db74">&#34;appsettings.json&#34;</span>, optional: <span style="color:#66d9ef">false</span>, reloadOnChange: <span style="color:#66d9ef">true</span>);
+
+            <span style="color:#66d9ef">var</span> configuration = builder.Build();
+
+            <span style="color:#75715e">// Get the connection string
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">string</span> connectionString = configuration.GetConnectionString(<span style="color:#e6db74">&#34;Sample&#34;</span>);
+
+            <span style="color:#75715e">// With this code we are going to simulate an authenticated user.
+</span><span style="color:#75715e"></span>            ClaimsPrincipal.ClaimsPrincipalSelector = () =&gt;
+                {
+                    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> ClaimsPrincipal(<span style="color:#66d9ef">new</span> ClaimsIdentity(<span style="color:#66d9ef">new</span> GenericIdentity(<span style="color:#e6db74">&#34;cmendibl3&#34;</span>)));
+                };
+
+            <span style="color:#75715e">// Create a Student instance
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">var</span> user = <span style="color:#66d9ef">new</span> Student() { Name = <span style="color:#e6db74">&#34;Carlos&#34;</span>, LastName = <span style="color:#e6db74">&#34;Mendible&#34;</span> };
+
+            <span style="color:#75715e">// Add and Save the student in the database
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">using</span> (<span style="color:#66d9ef">var</span> context = StudentsContextFactory.Create(connectionString))
+            {
+                context.Add(user);
+                context.SaveChanges();
+            }
+
+            Console.WriteLine(<span style="color:#e6db74">$&#34;Student was saved in the database with id: {user.Id}&#34;</span>);
+        }
+    }
+}
+</code></pre></div><p>Line 22 is the one were we simulate an authenticated user.</p>
+<h2 id="9-build">9. Build</h2>
+<hr>
+<p>Build the application with the following command</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet build
+</code></pre></div><h2 id="10-run">10. Run</h2>
+<hr>
+<p>You are good to go so run the application</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet run
+</code></pre></div><p>If you check your SQlite database with a tool such as <!-- raw HTML omitted -->DB Browser for SQlite<!-- raw HTML omitted --> you'll see the four Audit properties in the Students table as shown in the following picture:</p>
+<p><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
+<p>You can get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/efcore.shadowproperties.console">https://github.com/cmendible/dotnetcore.samples/tree/master/efcore.shadowproperties.console</a></p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/07/17/step-by-step-.net-core-azure-service-bus-and-amqp/"><i class="fa fa-chevron-circle-left"></i> Step by step: .NET Core, Azure Service Bus and AMQP</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2016/07/30/detect-and-blur-faces-with-.net-core-and-face-api/">Detect and Blur Faces with .NET Core and Face API <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

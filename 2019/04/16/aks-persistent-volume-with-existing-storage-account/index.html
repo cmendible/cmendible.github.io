@@ -1,0 +1,328 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="AKS: Persistent Volume with existing Storage Account" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>AKS: Persistent Volume with existing Storage Account</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2019-04-16T05:00:00Z">Apr 16, 2019</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/kubernetes">kubernetes</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>3 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>In order to deploy a Persistent Volume in your AKS cluster using an existing Storage Account you should take the following steps:</p>
+<ol>
+<li>Create a <strong>Storage Class</strong> with a reference to the Storage Account.</li>
+<li>Create a <strong>Secret</strong> with the credentials used to access the Storage Account.</li>
+<li>Create a <strong>Persistent Volume</strong> with a reference to the Storage Class, the secret and the File Share.</li>
+<li>Create a <strong>Persistent Volume Claim</strong> with a reference to the volume by name.</li>
+</ol>
+<p>Use the following <strong>yaml</strong> as a template for the resources described above. Save the contents as <strong>aks-existing-storage-account-pv.yaml</strong>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+<span style="color:#75715e"># Create a StorageClass object pointing to the existing Storage Account</span>
+<span style="color:#75715e"># Remember: that the Storage account must be in the same Resource Group where the AKS cluster is deployed</span>
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: azurefile
+provisioner: kubernetes.io/azure-file
+mountOptions:
+  - dir_mode=<span style="color:#ae81ff">0777</span>
+  - file_mode=<span style="color:#ae81ff">0777</span>
+parameters:
+  storageAccount: &lt;storage account name<span style="color:#e6db74">&gt;
+</span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">location: &lt;storage account location&gt;</span>
+
+---
+<span style="color:#75715e"># Create a Secret to hold the name and key of the Storage Account</span>
+<span style="color:#75715e"># Remember: values are base64 encoded</span>
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azurefile-secret
+type: Opaque
+data:
+  azurestorageaccountname: &lt;base64 encoded storage account name<span style="color:#e6db74">&gt;
+</span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">azurestorageaccountkey: &lt;base64 encoded storage account key&gt;</span>
+
+---
+<span style="color:#75715e"># Create a persistent volume, with the corresponding StorageClass and the reference to the Azure File secret.</span>
+<span style="color:#75715e"># Remember: Create the share in the storage account otherwise the pods will fail with a &#34;No such file or directory&#34;</span>
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: azurefile
+  azureFile:
+    secretName: azurefile-secret
+    shareName: &lt;Share Name (must already exist in the storage account)<span style="color:#e6db74">&gt;
+</span><span style="color:#e6db74">   </span><span style="color:#e6db74"> </span><span style="color:#e6db74">readOnly: false</span>
+  mountOptions:
+  - dir_mode=<span style="color:#ae81ff">0777</span>
+  - file_mode=<span style="color:#ae81ff">0777</span>
+  - uid=<span style="color:#ae81ff">1000</span>
+  - gid=<span style="color:#ae81ff">1000</span>
+
+---
+<span style="color:#75715e"># Create a PersistentVolumeClaim referencing the StorageClass and the volume</span>
+<span style="color:#75715e"># Remember: this is a static scenario. The volume was created in the previous step.</span>
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce  
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: azurefile
+  volumeName: nginx-pv
+</code></pre></div><p>Deploy to your cluster and verify that the Private Volume Claim status is <strong>Bound</strong>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kubectl apply -f aks-existing-storage-account-pv.yaml
+kubectl get pvc
+</code></pre></div><p>Result should show something like:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">NAME                              STATUS    VOLUME                      CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+nginx-pvc                         Bound     nginx-pv                    5Gi        RWO            azurefile      ...
+</code></pre></div><p>That's it! now you can mount a volume in a container with a reference to the Private Volume Claim as in the following deployment:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+<span style="color:#75715e"># Deploy an nginx mounting a volume and referencing the persisten volume claim</span>
+<span style="color:#75715e"># Remember: using pvc decouples your deployment from the volume implementations</span>
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx
+spec:  
+  template:
+    metadata:
+      labels:
+        app: nginx-storage
+    spec:
+      containers:
+      - name: nginx-pod
+        image: nginx:<span style="color:#ae81ff">1.15</span><span style="color:#ae81ff">.5</span>
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        volumeMounts:
+        - mountPath: <span style="color:#e6db74">&#34;/mnt/azure&#34;</span>
+          name: volume
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: nginx-pvc
+</code></pre></div><p>Hope it helps.</p>
+<p>Please download all code and files <a href="https://github.com/cmendible/kubernetes.samples/tree/master/16.aks-pv-with-existing-storage-account">here</a>.</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2019/02/10/kubernetes-mount-a-file-in-your-pod-using-a-configmap/"><i class="fa fa-chevron-circle-left"></i> Kubernetes: Mount a file in your Pod using a ConfigMap</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2019/04/16/aks-application-gateway-expose-more-than-one-service-in-an-ingress-resource/">AKS &amp; Application Gateway: Expose more than one service in an ingress resource <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

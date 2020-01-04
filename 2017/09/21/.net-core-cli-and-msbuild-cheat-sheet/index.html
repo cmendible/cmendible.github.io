@@ -1,0 +1,267 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content=".NET Core CLI and MSBUILD Cheat Sheet" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>.NET Core CLI and MSBUILD Cheat Sheet</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2017-09-21T17:23:14Z">Sep 21, 2017</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>2 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>This is a small <strong>.NET Core CLI and MSBUILD Cheat Sheet</strong> with the list of commands and settings I use almost on daily basis when working with .NET Core, the command line and Visual Studio Code.</p>
+<h2 id="checks">Checks</h2>
+<h3 id="check-installed-cli-version">Check installed CLI version:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet --version
+</code></pre></div><h3 id="show-available-templates">Show available templates:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet new
+</code></pre></div><h2 id="solutions">Solutions</h2>
+<h3 id="create-a-solution-with-the-name-of-current-the-folder">Create a solution with the name of current the folder:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet new sln
+</code></pre></div><h3 id="create-a-solution-with-a-specific-name">Create a solution with a specific name:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet new sln --name <span style="color:#66d9ef">[solution name]</span>
+</code></pre></div><h3 id="add-a-project-to-a-solution">Add a project to a solution:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet add sln <span style="color:#66d9ef">[relative path to csproj file]</span>
+</code></pre></div><h2 id="packages">Packages</h2>
+<h3 id="add-package-reference-to-the-project-in-the-current-folder">Add package reference to the project in the current folder:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet add package <span style="color:#66d9ef">[package name]</span>
+</code></pre></div><h3 id="remove-a-package-reference-from-the-project-in-the-current-folder">Remove a package reference from the project in the current folder:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet remove package <span style="color:#66d9ef">[package name]</span>
+</code></pre></div><h3 id="add-a-specific-package-version-reference-to-the-project-in-the-current-folder">Add a specific package version reference to the project in the current folder:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet add package <span style="color:#66d9ef">[package name]</span>-v <span style="color:#66d9ef">[version]</span>
+</code></pre></div><h3 id="restore-packages">Restore packages:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet restore
+</code></pre></div><h3 id="create-a-nuget-package-for-the-project-in-current-folder">Create a nuget package for the project in current folder:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet pack
+</code></pre></div><h2 id="project-templates">Project Templates</h2>
+<h3 id="install-a-new-project-template">Install a new project template:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet new --install <span style="color:#66d9ef">[dotnet template name]</span>
+</code></pre></div><h3 id="remove-a-project-template">Remove a project template:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet new --uninstall <span style="color:#66d9ef">[dotnet template name]</span>
+</code></pre></div><h3 id="run-test-defined-in-current-folder-project">Run test defined in current folder project</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet test
+</code></pre></div><h2 id="builds">Builds</h2>
+<h3 id="build-currents-folder-solution-or-project">Build current's folder solution or project</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet build
+</code></pre></div><h3 id="build-currents-folder-solution-or-project-with-release-configuration">Build current's folder solution or project with release configuration</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet build -c Release
+</code></pre></div><h3 id="publish-artifacts-for-currents-folder-solution-or-project">Publish artifacts for current's folder solution or project.</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet publish 
+</code></pre></div><h2 id="msbuild">MSBUILD</h2>
+<h3 id="to-add-a-reference-to-a-local-assembly-without-nuget-package-edit-your-csproj-and-add-a-reference-as-shown-in-the-following-sample">To add a reference to a local assembly without nuget package, edit your csproj and add a Reference as shown in the following sample:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;code</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;ItemGroup</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;Reference</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;[Relative path to the Assembly dll file]&#34;</span> <span style="color:#f92672">/&gt;</span>
+  <span style="color:#f92672">&lt;/ItemGroup&gt;</span>
+<span style="color:#f92672">&lt;/code&gt;</span>
+</code></pre></div><h3 id="force-a-file-to-be-copied-to-the-output-folder-edit-your-csproj-and-add-a-content-section-as-shown-in-the-following-sample">Force a file to be copied to the output folder, edit your csproj and add a Content section as shown in the following sample:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;code</span><span style="color:#f92672">&gt;</span>
+ <span style="color:#f92672">&lt;ItemGroup</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;Content</span> <span style="color:#a6e22e">Include=</span><span style="color:#e6db74">&#34;[name of the file]&#34;</span><span style="color:#f92672">&gt;</span>
+   <span style="color:#f92672">&lt;CopyToOutputDirectory</span><span style="color:#f92672">&gt;</span>PreserveNewest<span style="color:#f92672">&lt;/CopyToOutputDirectory&gt;</span>
+  <span style="color:#f92672">&lt;/Content&gt;</span>
+ <span style="color:#f92672">&lt;/ItemGroup&gt;</span>
+<span style="color:#f92672">&lt;/code&gt;</span>
+</code></pre></div><p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/09/01/toggle-raspberry-pi-gpio-pins-with-asp.net-core-2.0/"><i class="fa fa-chevron-circle-left"></i> Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/10/06/use-powershell-to-enable-azure-analysis-services-firewall/">Use PowerShell to Enable Azure Analysis Services Firewall <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

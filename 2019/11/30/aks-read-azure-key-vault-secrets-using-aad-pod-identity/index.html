@@ -1,0 +1,356 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="AKS: Read Azure Key Vault secrets using AAD Pod Identity" />
+<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>AKS: Read Azure Key Vault secrets using AAD Pod Identity</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2019-11-30T00:00:00Z">Nov 30, 2019</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/kubernetes">kubernetes</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>3 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p>What if I tell you that it's possible to connect you AKS pods to an <strong>Azure Key Vault</strong> using identities but without having to use credentials in an explicit way?</p>
+<p>Well with <strong>AAD Pod Identities</strong> you can enable your Kubernetes applications to access Azure cloud resources securely using <strong>Azure Active Directory</strong> (AAD) including <strong>Azure Key Vault</strong>.</p>
+<p>The following <a href="https://gist.github.com/cmendible/4dd5c48a45480d5a0db0d6ed68e4cd01">gist</a> show a <strong>PowerShell</strong> script that will help you setup everything inside your RBAC enabled AKS cluster. You will also need to have <strong>Azure CLI</strong> installed on your box and an <strong>Azure Key Vault</strong> deployed in the same resource group where your AKS lives.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#66d9ef">param</span>(
+  <span style="color:#66d9ef">[string]</span>
+  [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]
+  $resourceGroupName,
+  <span style="color:#66d9ef">[string]</span>
+  [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]
+  $identityName,
+  <span style="color:#66d9ef">[string]</span>
+  [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]
+  $identitySelector,
+  <span style="color:#66d9ef">[string]</span>
+  [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]
+  $aksName,
+  <span style="color:#66d9ef">[string]</span>
+  [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]
+  $keyVaultName 
+)
+
+<span style="color:#75715e"># Get the current subscription</span>
+$subscriptionId = (az account show | ConvertFrom-Json).id
+
+<span style="color:#75715e"># Get aks so we can extract it&#39;s Service Princpal later</span>
+$aks = az aks show `
+  -g $resourceGroupName `
+  -n $aksName | ConvertFrom-Json
+
+<span style="color:#75715e"># Create Managed Identity</span>
+$identity = az identity create `
+  -g $resourceGroupName `
+  -n $identityName `
+  -o json | ConvertFrom-Json
+
+<span style="color:#75715e"># Assign the Reader role to the Managed Identity</span>
+az role assignment create `
+  --role <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Reader</span><span style="color:#e6db74">&#34;</span> `
+  --assignee $identity.principalId `
+  --scope /subscriptions/$subscriptionId/resourcegroups/$resourceGroupName
+
+<span style="color:#75715e"># Assign the Managed Identity Operator role to the AKS Service Principal</span>
+az role assignment create `
+  --role <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Managed Identity Operator</span><span style="color:#e6db74">&#34;</span> `
+  --assignee $aks.servicePrincipalProfile.clientId `
+  --scope $identity.id
+
+<span style="color:#75715e"># Add policy to the Key Vault so the Managed Identity can read secrets</span>
+az keyvault set-policy `
+  --name $keyVaultName `
+  --spn $identity.clientId `
+  --secret-permissions get list
+
+<span style="color:#75715e"># Enable AAD Pod Identity on AKS</span>
+kubectl apply <span style="color:#f92672">-f</span> https<span style="color:#960050;background-color:#1e0010">:</span>//raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml
+
+<span style="color:#75715e"># Create the Azure Identity and AzureIdentityBinding yaml on the fly</span>
+$k8sAzureIdentityandBinding = <span style="color:#e6db74">@&#34;
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">a</span><span style="color:#e6db74">p</span><span style="color:#e6db74">i</span><span style="color:#e6db74">V</span><span style="color:#e6db74">e</span><span style="color:#e6db74">r</span><span style="color:#e6db74">s</span><span style="color:#e6db74">i</span><span style="color:#e6db74">o</span><span style="color:#e6db74">n</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">a</span><span style="color:#e6db74">d</span><span style="color:#e6db74">p</span><span style="color:#e6db74">o</span><span style="color:#e6db74">d</span><span style="color:#e6db74">i</span><span style="color:#e6db74">d</span><span style="color:#e6db74">e</span><span style="color:#e6db74">n</span><span style="color:#e6db74">t</span><span style="color:#e6db74">i</span><span style="color:#e6db74">t</span><span style="color:#e6db74">y</span><span style="color:#e6db74">.</span><span style="color:#e6db74">k</span><span style="color:#e6db74">8</span><span style="color:#e6db74">s</span><span style="color:#e6db74">.</span><span style="color:#e6db74">i</span><span style="color:#e6db74">o</span><span style="color:#e6db74">/</span><span style="color:#e6db74">v</span><span style="color:#e6db74">1</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">k</span><span style="color:#e6db74">i</span><span style="color:#e6db74">n</span><span style="color:#e6db74">d</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span><span style="color:#e6db74">A</span><span style="color:#e6db74">z</span><span style="color:#e6db74">u</span><span style="color:#e6db74">r</span><span style="color:#e6db74">e</span><span style="color:#e6db74">I</span><span style="color:#e6db74">d</span><span style="color:#e6db74">e</span><span style="color:#e6db74">n</span><span style="color:#e6db74">t</span><span style="color:#e6db74">i</span><span style="color:#e6db74">t</span><span style="color:#e6db74">y</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">m</span><span style="color:#e6db74">e</span><span style="color:#e6db74">t</span><span style="color:#e6db74">a</span><span style="color:#e6db74">d</span><span style="color:#e6db74">a</span><span style="color:#e6db74">t</span><span style="color:#e6db74">a</span><span style="color:#e6db74">:</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">n</span><span style="color:#e6db74">a</span><span style="color:#e6db74">m</span><span style="color:#e6db74">e</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span>$($identityName)<span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">s</span><span style="color:#e6db74">p</span><span style="color:#e6db74">e</span><span style="color:#e6db74">c</span><span style="color:#e6db74">:</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">t</span><span style="color:#e6db74">y</span><span style="color:#e6db74">p</span><span style="color:#e6db74">e</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span><span style="color:#e6db74">0</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">R</span><span style="color:#e6db74">e</span><span style="color:#e6db74">s</span><span style="color:#e6db74">o</span><span style="color:#e6db74">u</span><span style="color:#e6db74">r</span><span style="color:#e6db74">c</span><span style="color:#e6db74">e</span><span style="color:#e6db74">I</span><span style="color:#e6db74">D</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span>$($identity.id)<span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">C</span><span style="color:#e6db74">l</span><span style="color:#e6db74">i</span><span style="color:#e6db74">e</span><span style="color:#e6db74">n</span><span style="color:#e6db74">t</span><span style="color:#e6db74">I</span><span style="color:#e6db74">D</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span>$($identity.clientId)<span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">-</span><span style="color:#e6db74">-</span><span style="color:#e6db74">-</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">a</span><span style="color:#e6db74">p</span><span style="color:#e6db74">i</span><span style="color:#e6db74">V</span><span style="color:#e6db74">e</span><span style="color:#e6db74">r</span><span style="color:#e6db74">s</span><span style="color:#e6db74">i</span><span style="color:#e6db74">o</span><span style="color:#e6db74">n</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">a</span><span style="color:#e6db74">d</span><span style="color:#e6db74">p</span><span style="color:#e6db74">o</span><span style="color:#e6db74">d</span><span style="color:#e6db74">i</span><span style="color:#e6db74">d</span><span style="color:#e6db74">e</span><span style="color:#e6db74">n</span><span style="color:#e6db74">t</span><span style="color:#e6db74">i</span><span style="color:#e6db74">t</span><span style="color:#e6db74">y</span><span style="color:#e6db74">.</span><span style="color:#e6db74">k</span><span style="color:#e6db74">8</span><span style="color:#e6db74">s</span><span style="color:#e6db74">.</span><span style="color:#e6db74">i</span><span style="color:#e6db74">o</span><span style="color:#e6db74">/</span><span style="color:#e6db74">v</span><span style="color:#e6db74">1</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">k</span><span style="color:#e6db74">i</span><span style="color:#e6db74">n</span><span style="color:#e6db74">d</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span><span style="color:#e6db74">A</span><span style="color:#e6db74">z</span><span style="color:#e6db74">u</span><span style="color:#e6db74">r</span><span style="color:#e6db74">e</span><span style="color:#e6db74">I</span><span style="color:#e6db74">d</span><span style="color:#e6db74">e</span><span style="color:#e6db74">n</span><span style="color:#e6db74">t</span><span style="color:#e6db74">i</span><span style="color:#e6db74">t</span><span style="color:#e6db74">y</span><span style="color:#e6db74">B</span><span style="color:#e6db74">i</span><span style="color:#e6db74">n</span><span style="color:#e6db74">d</span><span style="color:#e6db74">i</span><span style="color:#e6db74">n</span><span style="color:#e6db74">g</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">m</span><span style="color:#e6db74">e</span><span style="color:#e6db74">t</span><span style="color:#e6db74">a</span><span style="color:#e6db74">d</span><span style="color:#e6db74">a</span><span style="color:#e6db74">t</span><span style="color:#e6db74">a</span><span style="color:#e6db74">:</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">n</span><span style="color:#e6db74">a</span><span style="color:#e6db74">m</span><span style="color:#e6db74">e</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span>$($identityName)<span style="color:#e6db74">-</span><span style="color:#e6db74">i</span><span style="color:#e6db74">d</span><span style="color:#e6db74">e</span><span style="color:#e6db74">n</span><span style="color:#e6db74">t</span><span style="color:#e6db74">i</span><span style="color:#e6db74">t</span><span style="color:#e6db74">y</span><span style="color:#e6db74">-</span><span style="color:#e6db74">b</span><span style="color:#e6db74">i</span><span style="color:#e6db74">n</span><span style="color:#e6db74">d</span><span style="color:#e6db74">i</span><span style="color:#e6db74">n</span><span style="color:#e6db74">g</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">s</span><span style="color:#e6db74">p</span><span style="color:#e6db74">e</span><span style="color:#e6db74">c</span><span style="color:#e6db74">:</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">A</span><span style="color:#e6db74">z</span><span style="color:#e6db74">u</span><span style="color:#e6db74">r</span><span style="color:#e6db74">e</span><span style="color:#e6db74">I</span><span style="color:#e6db74">d</span><span style="color:#e6db74">e</span><span style="color:#e6db74">n</span><span style="color:#e6db74">t</span><span style="color:#e6db74">i</span><span style="color:#e6db74">t</span><span style="color:#e6db74">y</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span>$($identityName)<span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">S</span><span style="color:#e6db74">e</span><span style="color:#e6db74">l</span><span style="color:#e6db74">e</span><span style="color:#e6db74">c</span><span style="color:#e6db74">t</span><span style="color:#e6db74">o</span><span style="color:#e6db74">r</span><span style="color:#e6db74">:</span><span style="color:#e6db74"> </span>$($identitySelector)<span style="color:#e6db74">
+</span><span style="color:#e6db74">&#34;@</span>
+
+<span style="color:#75715e"># Deploy the yamls </span>
+$k8sAzureIdentityandBinding | kubectl apply <span style="color:#f92672">-f</span> -
+</code></pre></div><p>The script creates a Manged Identity, assigns some permissions to it and creates a policy inside the Key Vault enabling the Identity to list and get secrets.</p>
+<p>Then the <strong><a href="https://github.com/Azure/aad-pod-identity#components">Managed Identity Controller (MIC) deployment and the Node Managed Identity (NMI) daemon set</a></strong> are deployed inside the cluster.</p>
+<p>In the last step, two resources are deployed. The first one is an <strong>AzureIdentity</strong> that will be used to identify the Managed Identity inside your cluster and the second one is an <strong>AzureIdentityBinding</strong> that binds the azure Identity with a Selector.</p>
+<p>Let's run the PowerShell command with the following parameters:</p>
+<ul>
+<li><strong>Resource Group</strong>: myResourceGroup</li>
+<li><strong>Managed Identity Name</strong>: myId</li>
+<li><strong>Identity Selector</strong>: requires-vault</li>
+<li><strong>AKS Name</strong>: myAKS</li>
+<li><strong>Key Vault Name</strong>: myKeyVault</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">.\SetupPodIdentityKeyVaultIntegration.ps1 myResourceGroup myId requires-vault myAKS myKeyVault
+</code></pre></div><p>Once the command is done, any pod marked with the <em><strong>aadpodidbinding: requires-vault</strong></em> label will get an Identity assigned.</p>
+<p>To check that everything is working as expected you can create a <strong>deployment.yaml</strong> with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: az-keyvault-reader-test
+spec:
+  replicas: <span style="color:#ae81ff">1</span>
+  template:
+    metadata:
+      labels:
+        app: az-keyvault-reader-test
+        aadpodidbinding: requires-vault
+    spec:
+      containers:
+        - name: busybox
+          image: busybox
+          command:
+            [
+              <span style="color:#e6db74">&#34;sh&#34;</span>,
+              <span style="color:#e6db74">&#34;-c&#34;</span>,
+              <span style="color:#e6db74">&#34;wget --tries=70 -qO- http://127.0.0.1:8333/secrets/&lt;SECRET_NAME&gt;/&#34;</span>,
+            ]
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: <span style="color:#e6db74">&#34;4Mi&#34;</span>
+              cpu: <span style="color:#e6db74">&#34;100m&#34;</span>
+            limits:
+              memory: <span style="color:#e6db74">&#34;8Mi&#34;</span>
+              cpu: <span style="color:#e6db74">&#34;200m&#34;</span>
+        - name: az-keyvault-reader-sidecar
+          image: cmendibl3/az-keyvault-reader:<span style="color:#ae81ff">0.2</span>
+          imagePullPolicy: Always
+          env:
+            - name: AZURE_KEYVAULT_NAME
+              value: &lt;AZURE_KEYVAULT_NAME<span style="color:#e6db74">&gt;
+</span><span style="color:#e6db74">         </span><span style="color:#e6db74"> </span><span style="color:#e6db74">resources:</span>
+            requests:
+              memory: <span style="color:#e6db74">&#34;8Mi&#34;</span>
+              cpu: <span style="color:#e6db74">&#34;100m&#34;</span>
+            limits:
+              memory: <span style="color:#e6db74">&#34;16Mi&#34;</span>
+              cpu: <span style="color:#e6db74">&#34;200m&#34;</span>
+      restartPolicy: Always
+</code></pre></div><p><strong>Note</strong>: Replace the values for &lt;AZURE_KEYVAULT_NAME&gt; with the name of your Key Vault and &lt;SECRET_NAME&gt; with the name of an existing secret stored in your Key Vault:</p>
+<p>Now deploy to Kubernetes:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">kubectl apply <span style="color:#f92672">-f</span> ./deployment.yaml
+</code></pre></div><p>and check the logs for the <strong>busybox</strong> pod:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">kubectl logs <span style="color:#f92672">-f</span> $(kubectl get po --selector=app=az-keyvault-reader-test -o jsonpath=<span style="color:#e6db74">&#39;{.items[*].metadata.name}&#39;</span>) -c busybox -w
+</code></pre></div><p>If everything is OK you should see the value of your secret dumped in the logs (Bad security practice here)!!! And yes you did all this without knowing any credentials!</p>
+<p>Please  find the code used to connect to the <strong>Azure KeyVault</strong> here: <a href="https://github.com/cmendible/az-keyvault-reader/blob/master/src/az-keyvault-reader.go">az-keyvault-reader.go</a> and check <a href="https://github.com/Azure/aad-pod-identity">AAD Pod Identity</a> for more information on how this &ldquo;magic&rdquo; works.</p>
+<p>Hope it helps!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2019/11/24/kubernetes-despliegue-en-azure/"><i class="fa fa-chevron-circle-left"></i> Kubernetes: Despliegue en Azure</a>
+        </li>
+        
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>

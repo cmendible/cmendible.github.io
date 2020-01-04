@@ -1,0 +1,428 @@
+<!doctype html>
+
+<html lang="en-us">
+
+<head>
+  <title>Code it Yourself...</title>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Step by step: .Net Core and Azure Search" />
+<meta name="author" content="Robert Bermejo" /><meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@cmendibl3">
+<meta name="twitter:creator" content="@cmendibl3">
+
+<meta name="generator" content="Hugo 0.62.1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
+  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
+
+<body>
+  <div id="container">
+    <header>
+      <h1>
+                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
+            </h1>
+
+      <ul id="social-media">
+        
+        
+        
+        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+         
+        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
+           
+        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
+        
+      </ul>
+      
+      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
+      
+    </header>
+
+    
+<nav>
+    <ul>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/">
+                <i class="fa-li fa  fa-lg"></i><span>Home</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/posts/">
+                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/categories/">
+                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
+            </a>
+        </li>
+        
+        <li>
+            <a class="" href="https://carlos.mendible.com/about">
+                <i class="fa-li fa  fa-lg"></i><span>About</span>
+            </a>
+        </li>
+        
+    </ul>
+</nav>
+
+    <main>
+
+
+
+
+<article>
+
+    <h1>Step by step: .Net Core and Azure Search</h1>
+
+    
+        <aside>
+    <ul>
+        <li>
+            <time class="post-date" datetime="2017-08-09T15:51:07Z">Aug 9, 2017</time>
+        </li>
+        
+        <li>
+            Categories:
+            <em>
+                
+                    
+                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
+                
+                    , 
+                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
+                
+            </em>
+        </li>
+        
+
+        
+
+        <li>4 minutes read</li>
+    </ul>
+</aside>
+
+    
+
+    <p><strong>Step by step: .Net Core and Azure Search</strong> is small introduction on how to connect to <!-- raw HTML omitted -->Azure Search<!-- raw HTML omitted -->, create and delete indexes, models, add documents and perform basic queries.</p>
+<p>Let's go for it:</p>
+<h2 id="1-create-an-azure-search-service">1. Create an Azure Search service</h2>
+<hr>
+<p>Create an <!-- raw HTML omitted -->Azure Search<!-- raw HTML omitted --> service in your Azure subscription, and get the Azure Search name and primary Read-Write key.</p>
+<p>Find the steps <!-- raw HTML omitted -->here<!-- raw HTML omitted -->.</p>
+<h2 id="2-create-a-folder-for-your-project">2. Create a folder for your project</h2>
+<hr>
+<p>Open a command prompt and run:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">mkdir netCoreAzureSearch
+</code></pre></div><h2 id="3-create-the-project">3. Create the project</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">cd netCoreAzureSearch
+dotnet new console
+</code></pre></div><h2 id="4-add-a-reference-to-microsoftazuresearch">4. Add a reference to Microsoft.Azure.Search</h2>
+<hr>
+<p><!-- raw HTML omitted -->Microsoft.Azure.Search<!-- raw HTML omitted --> will allow your application to talk with Azure Search.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet add package  Microsoft.Azure.Search -v 3.0.4
+dotnet restore
+</code></pre></div><h2 id="5-replace-the-content-of-programcs">5. Replace the content of Program.cs</h2>
+<hr>
+<p>Replace the content of Program.cs with the following contents and be sure to replace the values in lines 13 and 16 with the Azure Search service name and key from step 1:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">namespace</span> netCoreAzureSearch
+{
+    <span style="color:#66d9ef">using</span> System;
+    <span style="color:#66d9ef">using</span> Microsoft.Azure.Search;
+    <span style="color:#66d9ef">using</span> System.Linq;
+    <span style="color:#66d9ef">using</span> System.Collections.Generic;
+    <span style="color:#66d9ef">using</span> Microsoft.Azure.Search.Models;
+    
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+    {
+        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
+        {
+            <span style="color:#66d9ef">var</span> azureSearchName = <span style="color:#e6db74">&#34;[Your Azure Search Name]&#34;</span>;
+ 
+            <span style="color:#75715e">// The key to you cosmosdb
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">var</span> azureSearchKey = <span style="color:#e6db74">&#34;[Your Azure Search Key]&#34;</span>;
+
+            <span style="color:#75715e">// Index name variable
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">string</span> indexName = <span style="color:#e6db74">&#34;books&#34;</span>;
+            
+            <span style="color:#75715e">// Create a service client connection
+</span><span style="color:#75715e"></span>            ISearchServiceClient azureSearchService = <span style="color:#66d9ef">new</span> SearchServiceClient(azureSearchName, <span style="color:#66d9ef">new</span> SearchCredentials(azureSearchKey));
+             
+            <span style="color:#75715e">// Get the Azure Search Index
+</span><span style="color:#75715e"></span>            ISearchIndexClient indexClient = azureSearchService.Indexes.GetClient(indexName);
+
+            <span style="color:#75715e">// If the Azure Search Index exists delete it.
+</span><span style="color:#75715e"></span>            Console.WriteLine( <span style="color:#e6db74">&#34;Deleting index...\n&#34;</span>); 
+            <span style="color:#66d9ef">if</span> (azureSearchService.Indexes.Exists(indexName))
+            {
+                 azureSearchService.Indexes.Delete(indexName);
+            }
+
+            <span style="color:#75715e">// Create an Index Model
+</span><span style="color:#75715e"></span>            Console.WriteLine( <span style="color:#e6db74">&#34;Creating index Model...\n&#34;</span>); 
+            Index indexModel = <span style="color:#66d9ef">new</span> Index()
+            {
+                Name = indexName,
+                Fields = <span style="color:#66d9ef">new</span>[]
+                {
+                    <span style="color:#66d9ef">new</span> Field(<span style="color:#e6db74">&#34;ISBN&#34;</span>, DataType.String) { IsKey = <span style="color:#66d9ef">true</span>, IsRetrievable = <span style="color:#66d9ef">true</span>, IsFacetable = <span style="color:#66d9ef">false</span> },
+                    <span style="color:#66d9ef">new</span> Field(<span style="color:#e6db74">&#34;Titulo&#34;</span>, DataType.String) {IsRetrievable = <span style="color:#66d9ef">true</span>, IsSearchable = <span style="color:#66d9ef">true</span>, IsFacetable = <span style="color:#66d9ef">false</span> },
+                    <span style="color:#66d9ef">new</span> Field(<span style="color:#e6db74">&#34;Autores&#34;</span>, DataType.Collection(DataType.String)) {IsSearchable = <span style="color:#66d9ef">true</span>, IsRetrievable = <span style="color:#66d9ef">true</span>, IsFilterable = <span style="color:#66d9ef">true</span>, IsFacetable = <span style="color:#66d9ef">false</span> },
+                    <span style="color:#66d9ef">new</span> Field(<span style="color:#e6db74">&#34;FechaPublicacion&#34;</span>, DataType.DateTimeOffset) { IsFilterable = <span style="color:#66d9ef">true</span>, IsRetrievable = <span style="color:#66d9ef">false</span>, IsSortable = <span style="color:#66d9ef">true</span>, IsFacetable = <span style="color:#66d9ef">false</span> },
+                    <span style="color:#66d9ef">new</span> Field(<span style="color:#e6db74">&#34;Categoria&#34;</span>, DataType.String) { IsFacetable = <span style="color:#66d9ef">true</span>, IsFilterable= <span style="color:#66d9ef">true</span>, IsRetrievable = <span style="color:#66d9ef">true</span> }
+
+                }                   
+            };
+            
+            <span style="color:#75715e">// Create the Index in AzureSearch
+</span><span style="color:#75715e"></span>            Console.WriteLine( <span style="color:#e6db74">&#34;Creating index...\n&#34;</span>); 
+            <span style="color:#66d9ef">var</span> resultIndex = azureSearchService.Indexes.Create(indexModel);
+
+            <span style="color:#75715e">// Add documents to the Index
+</span><span style="color:#75715e"></span>            Console.WriteLine( <span style="color:#e6db74">&#34;Add documents...\n&#34;</span>);
+            <span style="color:#66d9ef">var</span> listBooks = <span style="color:#66d9ef">new</span> BookModel().GetBooks();
+            indexClient.Documents.Index(IndexBatch.MergeOrUpload&lt;BookModel&gt;(listBooks));
+            System.Threading.Thread.Sleep(<span style="color:#ae81ff">1</span><span style="color:#ae81ff">0</span><span style="color:#ae81ff">0</span><span style="color:#ae81ff">0</span>);
+
+            <span style="color:#75715e">// Search by word
+</span><span style="color:#75715e"></span>            Console.WriteLine(<span style="color:#e6db74">&#34;{0}&#34;</span>, <span style="color:#e6db74">&#34;Searching documents &#39;Cloud&#39;...\n&#34;</span>);
+            Search(indexClient, searchText: <span style="color:#e6db74">&#34;Cloud&#34;</span>);
+            System.Threading.Thread.Sleep(<span style="color:#ae81ff">1</span><span style="color:#ae81ff">0</span><span style="color:#ae81ff">0</span><span style="color:#ae81ff">0</span>);
+
+            <span style="color:#75715e">// Search everything and filter
+</span><span style="color:#75715e"></span>            Console.WriteLine(<span style="color:#e6db74">&#34;\n{0}&#34;</span>, <span style="color:#e6db74">&#34;Filter documents by Autores &#39;Eugenio Betts&#39;...\n&#34;</span>);
+            Search(indexClient, searchText: <span style="color:#e6db74">&#34;*&#34;</span>, filter: <span style="color:#e6db74">&#34;Autores / any(t: t eq &#39;Eugenio Betts&#39;)&#34;</span>);
+            System.Threading.Thread.Sleep(<span style="color:#ae81ff">1</span><span style="color:#ae81ff">0</span><span style="color:#ae81ff">0</span><span style="color:#ae81ff">0</span>);
+
+            <span style="color:#75715e">// Search everything and order
+</span><span style="color:#75715e"></span>            Console.WriteLine(<span style="color:#e6db74">&#34;\n{0}&#34;</span>, <span style="color:#e6db74">&#34;order by FechaPublicacion\n&#34;</span>);
+            Search(indexClient, searchText: <span style="color:#e6db74">&#34;*&#34;</span>, order: <span style="color:#66d9ef">new</span> List&lt;<span style="color:#66d9ef">string</span>&gt;() { <span style="color:#e6db74">&#34;FechaPublicacion&#34;</span> });
+            System.Threading.Thread.Sleep(<span style="color:#ae81ff">1</span><span style="color:#ae81ff">0</span><span style="color:#ae81ff">0</span><span style="color:#ae81ff">0</span>);
+
+            <span style="color:#75715e">//Search everything and facet
+</span><span style="color:#75715e"></span>            Console.WriteLine(<span style="color:#e6db74">&#34;\n{0}&#34;</span>, <span style="color:#e6db74">&#34;Facet by Categoria \n&#34;</span>);
+            Search(indexClient, searchText: <span style="color:#e6db74">&#34;*&#34;</span>, facets: <span style="color:#66d9ef">new</span> List&lt;<span style="color:#66d9ef">string</span>&gt;() { <span style="color:#e6db74">&#34;Categoria&#34;</span> });
+            System.Threading.Thread.Sleep(<span style="color:#ae81ff">1</span><span style="color:#ae81ff">0</span><span style="color:#ae81ff">0</span><span style="color:#ae81ff">0</span>);
+        }
+
+         <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Search(ISearchIndexClient indexClient, <span style="color:#66d9ef">string</span> searchText, <span style="color:#66d9ef">string</span> filter = <span style="color:#66d9ef">null</span>, List&lt;<span style="color:#66d9ef">string</span>&gt; order = <span style="color:#66d9ef">null</span>, List&lt;<span style="color:#66d9ef">string</span>&gt; facets = <span style="color:#66d9ef">null</span>)
+        {
+            <span style="color:#75715e">// Execute search based on search text and optional filter
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">var</span> sp = <span style="color:#66d9ef">new</span> SearchParameters();
+
+            <span style="color:#75715e">// Add Filter
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (!String.IsNullOrEmpty(filter))
+            {
+                sp.Filter = filter;
+            }
+
+            <span style="color:#75715e">// Order
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (order != <span style="color:#66d9ef">null</span> &amp;&amp; order.Count &gt; <span style="color:#ae81ff">0</span>)
+            {
+                sp.OrderBy = order;
+            }
+
+            <span style="color:#75715e">// facets
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (facets != <span style="color:#66d9ef">null</span> &amp;&amp; facets.Count &gt; <span style="color:#ae81ff">0</span>)
+            {
+                sp.Facets = facets;
+            }
+
+            <span style="color:#75715e">// Search
+</span><span style="color:#75715e"></span>            DocumentSearchResult&lt;BookModel&gt; response = indexClient.Documents.Search&lt;BookModel&gt;(searchText, sp);
+           
+            <span style="color:#66d9ef">foreach</span> (SearchResult&lt;BookModel&gt; result <span style="color:#66d9ef">in</span> response.Results)
+            {
+                Console.WriteLine(result.Document + <span style="color:#e6db74">&#34; - Score: &#34;</span> + result.Score);
+            }
+
+            <span style="color:#66d9ef">if</span> (response.Facets != <span style="color:#66d9ef">null</span>)
+            {
+                <span style="color:#66d9ef">foreach</span> (<span style="color:#66d9ef">var</span> facet <span style="color:#66d9ef">in</span> response.Facets)
+                {
+                    Console.WriteLine(<span style="color:#e6db74">&#34;\n Facet Name: &#34;</span> + facet.Key);
+                    <span style="color:#66d9ef">foreach</span> (<span style="color:#66d9ef">var</span> <span style="color:#66d9ef">value</span> <span style="color:#66d9ef">in</span> facet.Value)
+                    {
+                        Console.WriteLine(<span style="color:#e6db74">&#34;Value :&#34;</span> + <span style="color:#66d9ef">value</span>.Value + <span style="color:#e6db74">&#34; - Count: &#34;</span> + <span style="color:#66d9ef">value</span>.Count);
+                    }
+                }
+            }
+        }
+    }
+
+    <span style="color:#75715e">/// &lt;summary&gt;
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">/// A simple class representing a book
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">/// &lt;/summary&gt;
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span>  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BookModel</span>
+    {
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> ISBN { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> Titulo { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+        <span style="color:#66d9ef">public</span> List&lt;<span style="color:#66d9ef">string</span>&gt; Autores { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+        <span style="color:#66d9ef">public</span> DateTimeOffset FechaPublicacion { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> Categoria { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>; }
+
+        <span style="color:#66d9ef">public</span> List&lt;BookModel&gt; GetBooks()
+        {
+            <span style="color:#66d9ef">var</span> listBooks = <span style="color:#66d9ef">new</span> List&lt;BookModel&gt;();
+            listBooks.Add(<span style="color:#66d9ef">new</span> BookModel()
+            {
+                ISBN = <span style="color:#e6db74">&#34;9781430224792&#34;</span>,
+                Titulo = <span style="color:#e6db74">&#34;Windows Azure Platform (Expert&#39;s Voice in .NET)&#34;</span>,
+                Categoria = <span style="color:#e6db74">&#34;Comic&#34;</span>,
+                Autores = <span style="color:#66d9ef">new</span> List&lt;<span style="color:#66d9ef">string</span>&gt;() {<span style="color:#e6db74">&#34;Redkar&#34;</span>, <span style="color:#e6db74">&#34;Tejasw&#34;</span> },
+                FechaPublicacion = DateTimeOffset.Now.AddDays(-<span style="color:#ae81ff">2</span>)
+            });
+
+            listBooks.Add(<span style="color:#66d9ef">new</span> BookModel()
+            {
+                ISBN = <span style="color:#e6db74">&#34;9780470506387&#34;</span>,
+                Titulo = <span style="color:#e6db74">&#34;Cloud Computing with the Windows Azure Platform&#34;</span>,
+                Categoria = <span style="color:#e6db74">&#34;Terror&#34;</span>,
+                Autores = <span style="color:#66d9ef">new</span> List&lt;<span style="color:#66d9ef">string</span>&gt;() { <span style="color:#e6db74">&#34;Roger Jennings&#34;</span>},
+                FechaPublicacion = DateTimeOffset.Now
+            });
+
+            listBooks.Add(<span style="color:#66d9ef">new</span> BookModel()
+            {
+                ISBN = <span style="color:#e6db74">&#34;9780889222861&#34;</span>,
+                Titulo = <span style="color:#e6db74">&#34;Azure Blues&#34;</span>,
+                Categoria = <span style="color:#e6db74">&#34;Terror&#34;</span>,
+                Autores = <span style="color:#66d9ef">new</span> List&lt;<span style="color:#66d9ef">string</span>&gt;() { <span style="color:#e6db74">&#34;Gilbert&#34;</span>, <span style="color:#e6db74">&#34;Gerry&#34;</span>, <span style="color:#e6db74">&#34;Rogery Landing&#34;</span>},                
+                FechaPublicacion = DateTimeOffset.Now.AddMonths(-<span style="color:#ae81ff">3</span>)
+            });
+
+            listBooks.Add(<span style="color:#66d9ef">new</span> BookModel()
+            {
+                ISBN = <span style="color:#e6db74">&#34;9780735649675&#34;</span>,
+                Titulo = <span style="color:#e6db74">&#34;Moving Applications to the Cloud on the Microsoft Azure(TM) Platform&#34;</span>,
+                Categoria = <span style="color:#e6db74">&#34;Fiction&#34;</span>,
+                Autores = <span style="color:#66d9ef">new</span> List&lt;<span style="color:#66d9ef">string</span>&gt;() { <span style="color:#e6db74">&#34;Pace&#34;</span>, <span style="color:#e6db74">&#34;Eugenio Betts&#34;</span>, <span style="color:#e6db74">&#34;Dominic Densmore&#34;</span>, <span style="color:#e6db74">&#34;Scott; Dunn&#34;</span>, <span style="color:#e6db74">&#34;Ryan Narumoto&#34;</span>, <span style="color:#e6db74">&#34;Masashi Woloski&#34;</span>, <span style="color:#e6db74">&#34;Matias&#34;</span> },
+                FechaPublicacion = DateTimeOffset.Now
+            });
+
+            <span style="color:#66d9ef">return</span> listBooks;
+        }
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">string</span> ToString()
+        {
+            <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;ISBN: &#34;</span> + <span style="color:#66d9ef">this</span>.ISBN + <span style="color:#e6db74">&#34; - titulo: &#34;</span> + <span style="color:#66d9ef">this</span>.Titulo + <span style="color:#e6db74">&#34; - Autores: &#34;</span> + String.Join(<span style="color:#e6db74">&#34;, &#34;</span>, <span style="color:#66d9ef">this</span>.Autores);     
+        }
+    }
+}
+</code></pre></div><h2 id="6-run-the-application">6. Run the application</h2>
+<hr>
+<p>Run the following commands:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet build
+dotnet run
+</code></pre></div><p>You can get the code <!-- raw HTML omitted -->here<!-- raw HTML omitted -->.</p>
+<p>See you soon!</p>
+
+
+</article>
+
+
+<section class="post-nav">
+    <ul>
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/08/04/read-azure-service-health-activity-logs-with-.net-core/"><i class="fa fa-chevron-circle-left"></i> Read Azure Service Health Activity Logs with .NET Core</a>
+        </li>
+        
+        
+        <li>
+            <a href="https://carlos.mendible.com/2017/08/24/.net-core-code-analysis-and-stylecop/">.NET Core, Code Analysis and StyleCop <i class="fa fa-chevron-circle-right"></i> </a>
+        </li>
+        
+    </ul>
+</section>
+    
+        <section class="comments-block">
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+</section>
+
+<section id="disqus_thread"></section>
+
+<script>
+      (function () {
+            
+            
+            if (window.location.hostname == "localhost")
+                  return;
+
+            var disqus_loaded = false;
+            var disqus_shortname = 'codeityourself';
+            var disqus_button = document.getElementById("show-comments");
+
+            disqus_button.style.display = "";
+            disqus_button.addEventListener("click", disqus, false);
+
+            function disqus() {
+
+                  if (!disqus_loaded) {
+                        disqus_loaded = true;
+
+                        var e = document.createElement("script");
+                        e.type = "text/javascript";
+                        e.async = true;
+                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
+                        (document.getElementsByTagName("head")[0] ||
+                              document.getElementsByTagName("body")[0])
+                        .appendChild(e);
+
+                        
+                        document.getElementById("show-comments").style.display = "none";
+                  }
+            }
+
+            
+            var hash = window.location.hash.substr(1);
+            if (hash.length > 8) {
+                  if (hash.substring(0, 8) == "comment-") {
+                        disqus();
+                  }
+            }
+
+            
+            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
+                  disqus();
+            }
+      })();
+</script>
+    
+
+
+
+
+
+</main>
+<footer>
+    <h6>Copyright © 2019 - Carlos Mendible |
+        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
+        <a href="https://carlos.mendible.comfeed.xml">Subscribe</a></h6>
+</footer>
+</div>
+<script src="https://carlos.mendible.com/js/scripts.js"></script>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-11243417-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+</body>
+
+</html>
