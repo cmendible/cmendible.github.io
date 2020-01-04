@@ -1,0 +1,13 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="{{ .Title | default .Site.Params.description }}" />
+<meta name="author" content="{{ .Params.Author | default .Site.Author.name }}" />
+{{- with .OutputFormats.Get "rss" -}}
+{{ printf `<link rel="%s" type="%s+%s" href="%s" title="%s" />` .Rel .MediaType.Type .MediaType.Suffix .Permalink $.Site.Title | safeHTML }}
+{{- end -}}
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@{{ .Site.Author.twitter  }}">
+<meta name="twitter:creator" content="@{{ .Site.Author.twitter  }}">
+
+{{ hugo.Generator -}}
