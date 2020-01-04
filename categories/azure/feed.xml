@@ -3204,10 +3204,10 @@ ENTRYPOINT dotnet run
        
        <item>
          <title>Use .NET Core to Create Azure Blob Storage SAS Keys</title>
-         <link>https://carlos.mendible.com/2016/10/24/use-.net-core-to-create-azure-blob-storage-sas-keys/</link>
+         <link>https://carlos.mendible.com/2016/10/24/use-net-core-create-azure-blob-storage-sas-keys/</link>
          <pubDate>Mon, 24 Oct 2016 10:11:58 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2016/10/24/use-.net-core-to-create-azure-blob-storage-sas-keys/</guid>
+         <guid>https://carlos.mendible.com/2016/10/24/use-net-core-create-azure-blob-storage-sas-keys/</guid>
          <description>&lt;p&gt;If you intend to use the &lt;!-- raw HTML omitted --&gt;WindowsAzure.Storage&lt;!-- raw HTML omitted --&gt; library with .Net Core you&#39;ll hit a&amp;quot;compatibility wall&amp;rdquo; trying to make it work.&lt;/p&gt;
 &lt;p&gt;So how can we use .Net Core to Create Azure Blob Storage SAS Keys?&lt;/p&gt;
 &lt;h2 id=&#34;1-add-the-systemsecuritycryptographyalgorithms-dependency&#34;&gt;1. Add the System.Security.Cryptography.Algorithms dependency&lt;/h2&gt;
@@ -3724,10 +3724,10 @@ Done!!!
        
        <item>
          <title>Step by step: .NET Core, Azure Service Bus and AMQP</title>
-         <link>https://carlos.mendible.com/2016/07/17/step-by-step-.net-core-azure-service-bus-and-amqp/</link>
+         <link>https://carlos.mendible.com/2016/07/17/step-by-step-net-core-azure-service-bus-and-amqp/</link>
          <pubDate>Sun, 17 Jul 2016 15:21:03 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2016/07/17/step-by-step-.net-core-azure-service-bus-and-amqp/</guid>
+         <guid>https://carlos.mendible.com/2016/07/17/step-by-step-net-core-azure-service-bus-and-amqp/</guid>
          <description>&lt;p&gt;Today I&#39;ll show you how to create a small console application with a &lt;strong&gt;Step by step: .NET Core, Azure Service Bus and AMQP&lt;/strong&gt; example.&lt;/p&gt;
 &lt;p&gt;First be aware of the following prerequisites:&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;

@@ -131,10 +131,10 @@ curl -k -i -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Content-Type: a
        
        <item>
          <title>Updated Step by step: Serilog with ASP.NET Core</title>
-         <link>https://carlos.mendible.com/2019/01/14/updated-step-by-step-serilog-with-asp.net-core/</link>
+         <link>https://carlos.mendible.com/2019/01/14/updated-step-step-serilog-asp-net-core/</link>
          <pubDate>Mon, 14 Jan 2019 18:00:00 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2019/01/14/updated-step-by-step-serilog-with-asp.net-core/</guid>
+         <guid>https://carlos.mendible.com/2019/01/14/updated-step-step-serilog-asp-net-core/</guid>
          <description>&lt;p&gt;Many of you come to my site to read the post &lt;a href=&#34;https://carlos.mendible.com/2016/09/19/step-step-serilog-asp-net-core/&#34;&gt;Step by step: Serilog with ASP.NET Core&lt;/a&gt; which I wrote in 2016 and is completely out of date, so with this post I will show you how to setup &lt;a href=&#34;https://serilog.net/&#34;&gt;Serilog&lt;/a&gt; to work with your ASP.NET Core 2.2 applications.&lt;/p&gt;
 &lt;h2 id=&#34;1-create-an-aspnet-core-project&#34;&gt;1. Create an ASP.NET Core project&lt;/h2&gt;
 &lt;hr&gt;
@@ -2558,10 +2558,10 @@ docker run -d -p 9200&lt;span style=&#34;color:#960050;background-color:#1e0010&
        
        <item>
          <title>Step by step: Kafka Pub/Sub with Docker and .Net Core</title>
-         <link>https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub/sub-with-docker-and-.net-core/</link>
+         <link>https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/</link>
          <pubDate>Mon, 08 May 2017 10:55:32 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub/sub-with-docker-and-.net-core/</guid>
+         <guid>https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/</guid>
          <description>&lt;p&gt;Last week I attended to a &lt;!-- raw HTML omitted --&gt;Kafka&lt;!-- raw HTML omitted --&gt; workshop and this is my attempt to show you a simple &lt;strong&gt;Step by step: Kafka Pub/Sub with Docker and .Net Core&lt;/strong&gt; tutorial.&lt;/p&gt;
 &lt;p&gt;Let&#39;s start:&lt;/p&gt;
 &lt;h2 id=&#34;1-create-a-folder-for-your-new-project&#34;&gt;1. Create a folder for your new project&lt;/h2&gt;
@@ -2905,10 +2905,10 @@ schtasks /create /tn &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/spa
        
        <item>
          <title>Step by step: Running ASP.NET Core on Raspberry Pi</title>
-         <link>https://carlos.mendible.com/2017/03/21/step-by-step-running-asp.net-core-on-raspberry-pi/</link>
+         <link>https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/</link>
          <pubDate>Tue, 21 Mar 2017 11:24:05 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2017/03/21/step-by-step-running-asp.net-core-on-raspberry-pi/</guid>
+         <guid>https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/</guid>
          <description>&lt;p&gt;After reading &lt;!-- raw HTML omitted --&gt;.NET Core on Raspberry Pi&lt;!-- raw HTML omitted --&gt; and successfully running a console application on &lt;strong&gt;Windows 10 IoT Core&lt;/strong&gt; on my &lt;strong&gt;Raspberry Pi 3&lt;/strong&gt; I decided to write: &lt;strong&gt;Step by step: Running ASP.NET Core on Raspberry Pi&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;First be aware of the following prerequisites:&lt;/p&gt;
 &lt;ul&gt;
@@ -3126,10 +3126,10 @@ netsh advfirewall firewall add rule name=&lt;span style=&#34;color:#e6db74&#34;&
        
        <item>
          <title>Create a class with .NET Core and Roslyn</title>
-         <link>https://carlos.mendible.com/2017/03/02/create-a-class-with-.net-core-and-roslyn/</link>
+         <link>https://carlos.mendible.com/2017/03/02/create-a-class-with-net-core-and-roslyn/</link>
          <pubDate>Thu, 02 Mar 2017 07:28:14 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2017/03/02/create-a-class-with-.net-core-and-roslyn/</guid>
+         <guid>https://carlos.mendible.com/2017/03/02/create-a-class-with-net-core-and-roslyn/</guid>
          <description>&lt;p&gt;After my post first post on: &lt;strong&gt;&lt;!-- raw HTML omitted --&gt;Code Generation&lt;!-- raw HTML omitted --&gt;&lt;/strong&gt; I decided to go a bit further, so today we&#39;ll &lt;strong&gt;Create a class with .NET Core and Roslyn&lt;/strong&gt; and write the output to the console.&lt;/p&gt;
 &lt;p&gt;Let&#39;s see:&lt;/p&gt;
 &lt;h2 id=&#34;1-create-the-application&#34;&gt;1. Create the application&lt;/h2&gt;
@@ -3608,10 +3608,10 @@ Namespace replaced...
        
        <item>
          <title>.Net Core and NancyFX: can writing a WebApi get any simpler?</title>
-         <link>https://carlos.mendible.com/2017/01/16/.net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/</link>
+         <link>https://carlos.mendible.com/2017/01/16/net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/</link>
          <pubDate>Mon, 16 Jan 2017 14:54:55 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2017/01/16/.net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/</guid>
+         <guid>https://carlos.mendible.com/2017/01/16/net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/</guid>
          <description>&lt;p&gt;Last Thursday I attended a Meetup hosted by my friends of &lt;!-- raw HTML omitted --&gt;@MsCodersMadrid&lt;!-- raw HTML omitted --&gt; in Madrid where, thanks to &lt;!-- raw HTML omitted --&gt;@snavarropino&lt;!-- raw HTML omitted --&gt;, I learned a bit about the &lt;strong&gt;&lt;!-- raw HTML omitted --&gt;NancyFX&lt;!-- raw HTML omitted --&gt;&lt;/strong&gt; open source framework.&lt;/p&gt;
 &lt;p&gt;I really couldn&#39;t believe my eyes when I saw how simple it is to use &lt;strong&gt;&lt;!-- raw HTML omitted --&gt;NancyFX&lt;!-- raw HTML omitted --&gt;&lt;/strong&gt; to write a Web API. Two of the things that got my attention were: the out of the box content negotiation and zero configuration dependency injection.&lt;/p&gt;
 &lt;p&gt;What are we waiting for? Lets&#39;s put in the mix &lt;strong&gt;.Net Core and &lt;!-- raw HTML omitted --&gt;NancyFX&lt;!-- raw HTML omitted --&gt;&lt;/strong&gt; and ask ourselves: &lt;strong&gt;can a WebApi get any simpler?&lt;/strong&gt;.&lt;/p&gt;
@@ -4161,10 +4161,10 @@ ENTRYPOINT dotnet run
        
        <item>
          <title>Use .NET Core to Create Azure Blob Storage SAS Keys</title>
-         <link>https://carlos.mendible.com/2016/10/24/use-.net-core-to-create-azure-blob-storage-sas-keys/</link>
+         <link>https://carlos.mendible.com/2016/10/24/use-net-core-create-azure-blob-storage-sas-keys/</link>
          <pubDate>Mon, 24 Oct 2016 10:11:58 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2016/10/24/use-.net-core-to-create-azure-blob-storage-sas-keys/</guid>
+         <guid>https://carlos.mendible.com/2016/10/24/use-net-core-create-azure-blob-storage-sas-keys/</guid>
          <description>&lt;p&gt;If you intend to use the &lt;!-- raw HTML omitted --&gt;WindowsAzure.Storage&lt;!-- raw HTML omitted --&gt; library with .Net Core you&#39;ll hit a&amp;quot;compatibility wall&amp;rdquo; trying to make it work.&lt;/p&gt;
 &lt;p&gt;So how can we use .Net Core to Create Azure Blob Storage SAS Keys?&lt;/p&gt;
 &lt;h2 id=&#34;1-add-the-systemsecuritycryptographyalgorithms-dependency&#34;&gt;1. Add the System.Security.Cryptography.Algorithms dependency&lt;/h2&gt;
@@ -4424,10 +4424,10 @@ dotnet new -t xunittest
        
        <item>
          <title>Step by step: Serilog with ASP.NET Core</title>
-         <link>https://carlos.mendible.com/2016/09/19/step-by-step-serilog-with-asp.net-core/</link>
+         <link>https://carlos.mendible.com/2016/09/19/step-step-serilog-asp-net-core/</link>
          <pubDate>Mon, 19 Sep 2016 09:32:57 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2016/09/19/step-by-step-serilog-with-asp.net-core/</guid>
+         <guid>https://carlos.mendible.com/2016/09/19/step-step-serilog-asp-net-core/</guid>
          <description>&lt;h2 id=&#34;note-this-post-is-out-of-date-please-read-updated-step-by-step-serilog-with-aspnet-corehttpscarlosmendiblecom20190114updated-step-step-serilog-asp-net-core-for-an-update&#34;&gt;&lt;strong&gt;NOTE&lt;/strong&gt;: This post is out of date. Please read: &lt;a href=&#34;https://carlos.mendible.com/2019/01/14/updated-step-step-serilog-asp-net-core/&#34;&gt;Updated Step by step: Serilog with ASP.NET Core&lt;/a&gt; for an update.&lt;/h2&gt;
 &lt;p&gt;Last week I wrote about &lt;!-- raw HTML omitted --&gt;.NET Core and Microsoft Bot Framework&lt;!-- raw HTML omitted --&gt; and I&#39;m still learning and playing with it. The thing is that once I implemented more features and deployed the bot to Azure it didn&#39;t work. So I had to find a way to log and trace what was happening in order to diagnose and fix the problem.&lt;/p&gt;
 &lt;p&gt;This time I decided to give a chance to &lt;!-- raw HTML omitted --&gt;Serilog&lt;!-- raw HTML omitted --&gt; and as you should know by now, getting the correct dependencies to work with .Net Core is not always easy, so here is my &lt;strong&gt;Step by step: Serilog with ASP.NET Core&lt;/strong&gt;&lt;/p&gt;
@@ -5185,10 +5185,10 @@ dotnet new
        
        <item>
          <title>Step by step: .NET Core, Azure Service Bus and AMQP</title>
-         <link>https://carlos.mendible.com/2016/07/17/step-by-step-.net-core-azure-service-bus-and-amqp/</link>
+         <link>https://carlos.mendible.com/2016/07/17/step-by-step-net-core-azure-service-bus-and-amqp/</link>
          <pubDate>Sun, 17 Jul 2016 15:21:03 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2016/07/17/step-by-step-.net-core-azure-service-bus-and-amqp/</guid>
+         <guid>https://carlos.mendible.com/2016/07/17/step-by-step-net-core-azure-service-bus-and-amqp/</guid>
          <description>&lt;p&gt;Today I&#39;ll show you how to create a small console application with a &lt;strong&gt;Step by step: .NET Core, Azure Service Bus and AMQP&lt;/strong&gt; example.&lt;/p&gt;
 &lt;p&gt;First be aware of the following prerequisites:&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;

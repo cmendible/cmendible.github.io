@@ -36,10 +36,10 @@
        
        <item>
          <title>Step by step: Kafka Pub/Sub with Docker and .Net Core</title>
-         <link>https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub/sub-with-docker-and-.net-core/</link>
+         <link>https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/</link>
          <pubDate>Mon, 08 May 2017 10:55:32 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub/sub-with-docker-and-.net-core/</guid>
+         <guid>https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/</guid>
          <description>&lt;p&gt;Last week I attended to a &lt;!-- raw HTML omitted --&gt;Kafka&lt;!-- raw HTML omitted --&gt; workshop and this is my attempt to show you a simple &lt;strong&gt;Step by step: Kafka Pub/Sub with Docker and .Net Core&lt;/strong&gt; tutorial.&lt;/p&gt;
 &lt;p&gt;Let&#39;s start:&lt;/p&gt;
 &lt;h2 id=&#34;1-create-a-folder-for-your-new-project&#34;&gt;1. Create a folder for your new project&lt;/h2&gt;
@@ -383,10 +383,10 @@ schtasks /create /tn &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/spa
        
        <item>
          <title>Step by step: Running ASP.NET Core on Raspberry Pi</title>
-         <link>https://carlos.mendible.com/2017/03/21/step-by-step-running-asp.net-core-on-raspberry-pi/</link>
+         <link>https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/</link>
          <pubDate>Tue, 21 Mar 2017 11:24:05 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2017/03/21/step-by-step-running-asp.net-core-on-raspberry-pi/</guid>
+         <guid>https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/</guid>
          <description>&lt;p&gt;After reading &lt;!-- raw HTML omitted --&gt;.NET Core on Raspberry Pi&lt;!-- raw HTML omitted --&gt; and successfully running a console application on &lt;strong&gt;Windows 10 IoT Core&lt;/strong&gt; on my &lt;strong&gt;Raspberry Pi 3&lt;/strong&gt; I decided to write: &lt;strong&gt;Step by step: Running ASP.NET Core on Raspberry Pi&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;First be aware of the following prerequisites:&lt;/p&gt;
 &lt;ul&gt;
@@ -1465,10 +1465,10 @@ dotnet new
        
        <item>
          <title>Running Apache behind an IIS server. .Net Solution</title>
-         <link>https://carlos.mendible.com/2010/02/23/running-apache-behind-an-iis-server.-.net-solution/</link>
+         <link>https://carlos.mendible.com/2010/02/23/running-apache-behind-an-iis-server-net-solution/</link>
          <pubDate>Tue, 23 Feb 2010 15:17:00 +0000</pubDate>
          
-         <guid>https://carlos.mendible.com/2010/02/23/running-apache-behind-an-iis-server.-.net-solution/</guid>
+         <guid>https://carlos.mendible.com/2010/02/23/running-apache-behind-an-iis-server-net-solution/</guid>
          <description>&lt;p&gt;Yesterday I had the challenge to redirect – rewrite an url from my public IIS7 server to an internal Apache server. For instance a request to &lt;strong&gt;&lt;a href=&#34;http://www.mysite.com/app&#34;&gt;http://www.mysite.com/app&lt;/a&gt;&lt;/strong&gt; handled by IIS should be redirected (using a reverse proxy) to ; &lt;strong&gt;http://127.0.0.1:8080/app&lt;/strong&gt; where the internal Apache is listening.&lt;/p&gt;
 &lt;p&gt;Trying to configure it with the new &lt;a href=&#34;http://www.iis.net/expand/ApplicationRequestRouting&#34;&gt;Application Request Routing (ARR)&lt;/a&gt; module from Microsoft was a disappointing task. Once installed, my server stopped serving pages, and I could not find a way to make it work.&lt;/p&gt;
 &lt;p&gt;So I started googling for another solution, finding out that most of the internet articles tell you that is almost impossible to do the work the way ; I wanted, recommending to use Apache as your public server and then redirect – rewrite requests to an internal IIS server.&lt;/p&gt;
