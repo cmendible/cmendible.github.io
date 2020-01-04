@@ -8,6 +8,7 @@ description: Start with Elasticssearch, Kibana and ASP.NET Core
 image: /wp-content/uploads/2017/05/datalake.png
 # tags: aspNetCore Docker elasticsearch kibana SeriLog
 title: Start with Elasticssearch, Kibana and ASP.NET Core
+url: /2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/
 ---
 You want to **Start with <a href="https://www.elastic.co/products/elasticsearch" target="_blank">Elasticssearch</a>, <a href="https://www.elastic.co/products/kibana" target="_blank">Kibana</a> and ASP.NET Core** and also want to do it fast? Let's use Docker and find out how easy it can be:
 
