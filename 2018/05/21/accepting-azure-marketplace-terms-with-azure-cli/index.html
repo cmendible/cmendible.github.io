@@ -140,7 +140,7 @@
 </section>
     
         <section class="comments-block">
-      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+
 </section>
 
 <section id="disqus_thread"></section>
@@ -156,9 +156,6 @@
             var disqus_shortname = 'codeityourself';
             var disqus_button = document.getElementById("show-comments");
 
-            disqus_button.style.display = "";
-            disqus_button.addEventListener("click", disqus, false);
-
             function disqus() {
 
                   if (!disqus_loaded) {
@@ -170,20 +167,11 @@
                         e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
                         (document.getElementsByTagName("head")[0] ||
                               document.getElementsByTagName("body")[0])
-                        .appendChild(e);
-
-                        
-                        document.getElementById("show-comments").style.display = "none";
+                              .appendChild(e);
                   }
             }
 
-            
-            var hash = window.location.hash.substr(1);
-            if (hash.length > 8) {
-                  if (hash.substring(0, 8) == "comment-") {
-                        disqus();
-                  }
-            }
+            disqus();
 
             
             if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
