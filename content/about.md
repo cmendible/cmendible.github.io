@@ -5,7 +5,10 @@ author: Carlos Mendible
 layout: page
 disableComments: true
 ---
-My name is **Carlos Mendible**. I was born in Caracas, Venezuela. I'm a Solutions Architect, Project Manager and Microsoft MVP, Azure and Developer Technologies, certified as: PMP, CISA, MCSE, MCSD, ITIL and MCP.
+
+![Me](/assets/img/about_me.jpg#float-right)
+
+My name is **Carlos Mendible**. I was born in Caracas, Venezuela. I'm a Solutions Architect and Azure and Developer Technologies Microsoft MVP, certified as: PMP, CISA, MCSE, MCSD, ITIL and MCP.
 
 I currently work for everis Spain as Technical Manager and I also own HexaSystems Inc. together with my partners Roberto and Luis.
 
