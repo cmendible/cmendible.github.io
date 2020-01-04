@@ -496,7 +496,7 @@ aks-agentpool-14502547-2   Ready,SchedulingDisabled   agent     3d        v1.12.
          <pubDate>Tue, 16 Apr 2019 06:00:00 +0000</pubDate>
          
          <guid>https://carlos.mendible.com/2019/04/16/aks-application-gateway-expose-more-than-one-service-in-an-ingress-resource/</guid>
-         <description>&lt;p&gt;If you install the Azure Aplication Gateway Ingress Controller for your AKS clusters you may want to expose more than one service through the same Public IP just changing the url path. In order to make this work you must use the &lt;a href=&#34;https://github.com/Azure/application-gateway-kubernetes-ingress/blob/master/docs/annotations.md#backend-path-prefix&#34;&gt;backend-path-prefix&lt;/a&gt; annotation.&lt;/p&gt;
+         <description>&lt;p&gt;If you install the Azure Application Gateway Ingress Controller for your AKS clusters you may want to expose more than one service through the same Public IP just changing the url path. In order to make this work you must use the &lt;a href=&#34;https://github.com/Azure/application-gateway-kubernetes-ingress/blob/master/docs/annotations.md#backend-path-prefix&#34;&gt;backend-path-prefix&lt;/a&gt; annotation.&lt;/p&gt;
 &lt;p&gt;In the following sample I create an ingress with the following behavior:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Calls to &lt;strong&gt;http://[Waf Pulic IP or DNS]/inventory&lt;/strong&gt; are sent to the &lt;strong&gt;inventory&lt;/strong&gt; service&lt;/li&gt;

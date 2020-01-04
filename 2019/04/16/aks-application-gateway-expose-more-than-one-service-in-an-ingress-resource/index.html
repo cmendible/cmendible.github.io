@@ -111,7 +111,7 @@
 
     
 
-    <p>If you install the Azure Aplication Gateway Ingress Controller for your AKS clusters you may want to expose more than one service through the same Public IP just changing the url path. In order to make this work you must use the <a href="https://github.com/Azure/application-gateway-kubernetes-ingress/blob/master/docs/annotations.md#backend-path-prefix">backend-path-prefix</a> annotation.</p>
+    <p>If you install the Azure Application Gateway Ingress Controller for your AKS clusters you may want to expose more than one service through the same Public IP just changing the url path. In order to make this work you must use the <a href="https://github.com/Azure/application-gateway-kubernetes-ingress/blob/master/docs/annotations.md#backend-path-prefix">backend-path-prefix</a> annotation.</p>
 <p>In the following sample I create an ingress with the following behavior:</p>
 <ol>
 <li>Calls to <strong>http://[Waf Pulic IP or DNS]/inventory</strong> are sent to the <strong>inventory</strong> service</li>
