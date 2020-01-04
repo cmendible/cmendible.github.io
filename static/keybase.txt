@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/cmendibl3
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://carlos.mendible.com
+  * I am cmendibl3 (https://keybase.io/cmendibl3) on keybase.
+  * I have a public key ASBwnxwgDetacVf0YkvAEmq3V6_RiQWBcMqOKAqU3kYH4go
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "012009c1007598c5c194f6525584dec047076132f238a577c14d9931742d777159e80a",
+      "host": "keybase.io",
+      "kid": "0120709f1c200deb5a7157f4624bc0126ab757afd189058170ca8e280a94de4607e20a",
+      "uid": "83d57d03d4cb9d4bc01498a725ce3919",
+      "username": "cmendibl3"
+    },
+    "merkle_root": {
+      "ctime": 1564037720,
+      "hash": "9dd7068982e49b86f7c04c1e63b3ed83b57b685b9f2976f3156ba63f0039a5038ae1b567ef0b1374eefafd748b1f866c47a214ee41768dadafbeb67a96706000",
+      "hash_meta": "5fffe8774805fcbfa0d5dec3363c8052f97c58e110dc76b3b0e8fcdc8fdd8464",
+      "seqno": 5848560
+    },
+    "service": {
+      "entropy": "OtyyKRvodT+MXApRl6oSRIJG",
+      "hostname": "carlos.mendible.com",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "4.2.0"
+  },
+  "ctime": 1564037731,
+  "expire_in": 504576000,
+  "prev": "41fa5043c0db1882ef742f1729344fe9894336aff31f0be307278c9c002d58af",
+  "seqno": 10,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgcJ8cIA3rWnFX9GJLwBJqt1ev0YkFgXDKjigKlN5GB+IKp3BheWxvYWTESpcCCsQgQfpQQ8DbGILvdC8XKTRP6YlDNq/zHwvjByeMnAAtWK/EIM/cpXPt8GE5UPsq/RatvcejoR8/+ODqJkhFTUSATuxnAgHCo3NpZ8RAQ4W2RE57UyAagAGe6WpzBcSAO2A8RyrqJG2lAjLN9gldDZUxnqoUGBy2exe14XKL5ZYELMDBeIX9oEkoqTaYAKhzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIBpS+llv+Lx9ISVbDQKMOJXt7eCrJY+KU+CL8PsZB8l3o3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/cmendibl3
+
+==================================================================

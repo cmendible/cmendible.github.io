@@ -1,0 +1,56 @@
+baseURL = "https://carlos.mendible.com/"
+disablePathToLower = false
+languageCode = "en-us"
+title = "Code it Yourself..."
+copyright = "Copyright &copy; 2019 - Carlos Mendible"
+
+canonifyurls = true
+theme = "kiera"
+themesDir = "./themes"
+
+paginate = 10
+
+summaryLength = 30
+enableEmoji = true
+pygmentsCodeFences = true
+
+disqusShortname = "codeityourself"
+googleAnalytics = "UA-11243417-1"
+
+[permalinks]
+  posts = "/:year/:month/:day/:title/"
+
+[author]
+    name = "Carlos Mendible"
+    github = "cmendible"
+    gitlab = ""
+    linkedin = "carlosmendible"
+    facebook = ""
+    twitter = "cmendibl3"
+    instagram = "cmendibl3"
+
+[params]
+    tagline = "A blog on Microsoft Azure and .NET by Carlos Mendible"
+    description = "A blog on Microsoft Azure and .NET by Carlos Mendible"
+
+[[menu.main]]
+    name = "Home" #Name in the navigation bar
+    weight = 10 #The larger the weight, the more on the right this item will be
+    url = "/" #URL address
+[[menu.main]]
+    name = "Posts"
+    weight = 20
+    url = "/posts/"
+[[menu.main]]
+    name = "Categories"
+    weight = 30
+    url = "/categories/"
+[[menu.main]]
+    name = "About"
+    weight = 40
+    url = "/about"
+
+[outputFormats]
+[outputFormats.RSS]
+mediatype = "application/rss"
+baseName = "feed"
