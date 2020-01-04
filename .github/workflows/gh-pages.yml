@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@hugo
 
       - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2.2.0
+        uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: "latest"
 
@@ -23,7 +23,7 @@ jobs:
         run: cp ./public/posts/feed.xml ./public/feed.xml
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v2.4.0
+        uses: peaceiris/actions-gh-pages@v2
         env:
           ACTIONS_DEPLOY_KEY: ${{ secrets.github }}
           PUBLISH_BRANCH: master
