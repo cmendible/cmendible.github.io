@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
+- azure
+- devops
 date: "2016-05-02T18:30:24Z"
 description: Create an Azure Site to Site VPN
 image: /wp-content/uploads/2016/05/Cloud-Azure.jpg

@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
-- dotNetCore
+- dotnet
+- dotnetcore
 date: "2016-11-29T12:49:28Z"
 description: First steps with .NET Core Tools MSBuild "alpha"
 image: /wp-content/uploads/2016/11/netcoremsbuild.jpg

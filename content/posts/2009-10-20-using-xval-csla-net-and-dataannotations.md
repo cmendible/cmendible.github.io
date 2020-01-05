@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
+- dotnet
 date: "2009-10-20T14:59:00Z"
 description: Using xVal, CSLA.NET and DataAnnotations.
 tags: ["ASP.Net", "CSLA", "WebForms", "xVal"]

@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNetCore
+- dotnetcore
 crosspost_to_medium: true
 date: "2017-08-24T17:01:39Z"
 description: .NET Core, Code Analysis and StyleCop

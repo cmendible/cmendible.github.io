@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
+- dotnet
 date: "2009-10-19T15:18:00Z"
 description: Upgrade xVal.WebForms 0.1 to use xVal.1.0 (Validation Summary Support)
 tags: ["ASP.Net", "Validation", "WebForms", "xVal"]

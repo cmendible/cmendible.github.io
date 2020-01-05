@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- dotNetCore
+- azure
+- dotnetcore
 date: "2016-10-30T15:16:29Z"
 description: 'Step by step: Scale ASP.NET Core with Docker Swarm'
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg

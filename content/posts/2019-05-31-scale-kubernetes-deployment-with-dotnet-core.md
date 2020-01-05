@@ -1,9 +1,9 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNetCore
+- dotnetcore
 - kubernetes
-- DevOps
+- devops
 crosspost_to_medium: true
 date: "2019-05-31T09:12:00Z"
 description: Scale a Kubernetes Deployment with .NET Core

@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
+- dotnet
 date: "2010-05-06T16:02:00Z"
 description: netDumbster another .Net Fake SMTP server based on Dumbster
 tags: ["netDumbster", "SMTP"]

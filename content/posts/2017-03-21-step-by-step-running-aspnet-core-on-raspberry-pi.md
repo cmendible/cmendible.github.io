@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
-- dotNetCore
+- dotnet
+- dotnetcore
 crosspost_to_medium: true
 date: "2017-03-21T11:24:05Z"
 description: 'Step by step: Running ASP.NET Core on Raspberry Pi'

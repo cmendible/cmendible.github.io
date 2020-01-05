@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- dotNet
+- azure
+- dotnet
 crosspost_to_medium: true
 date: "2018-03-13T17:00:00Z"
 description: Microsoft MVP Global Summit 2018 Experience

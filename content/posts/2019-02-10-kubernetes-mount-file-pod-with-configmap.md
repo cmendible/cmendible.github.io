@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-- Azure
+- azure
 crosspost_to_medium: true
 date: "2019-02-10T15:12:00Z"
 description: 'Kubernetes: Mount a file in your Pod using a ConfigMap'

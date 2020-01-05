@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
+- dotnet
 date: "2009-11-19T14:44:00Z"
 description: Officially now I'm part of xVal.WebForms developers team.
 tags: ["WebForms", "xVal"]

@@ -2,8 +2,8 @@
 ate: "2019-07-06T10:30:00+00:00"
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
+- azure
+- devops
 crosspost_to_medium: true
 date: "2019-07-06T00:00:00Z"
 description: 'Visual Studio Code Remote Containers: Azure Blockchain'

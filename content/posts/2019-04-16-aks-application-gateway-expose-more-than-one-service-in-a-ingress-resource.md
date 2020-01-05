@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-- Azure
+- azure
 crosspost_to_medium: true
 date: "2019-04-16T06:00:00Z"
 description: 'AKS & Application Gateway: Expose more than one service in an ingress resource'

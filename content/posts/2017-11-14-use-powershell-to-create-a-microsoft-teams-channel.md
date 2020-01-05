@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- DevOps
+- devops
 crosspost_to_medium: true
 date: "2017-11-14T02:15:00Z"
 description: Use PowerShell to create a Microsoft Teams Channel

@@ -2,9 +2,9 @@
 ate: "2019-07-28T17:00:00+00:00"
 author: Carlos Mendible
 categories:
-- Azure
+- azure
 - kubernetes
-- DevOps
+- devops
 crosspost_to_medium: true
 date: "2019-07-28T00:00:00Z"
 description: 'Kured: Restart your Azure Kubernetes Service Nodes'

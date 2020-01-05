@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNetCore
+- dotnetcore
 crosspost_to_medium: true
 date: "2017-05-30T11:58:00Z"
 description: Start with Elasticssearch, Kibana and ASP.NET Core

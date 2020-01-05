@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Management
+- management
 date: "2016-12-18T20:31:41Z"
 description: The Value of Online Influencer
 image: /assets/img/posts/onlineinfluence.jpg

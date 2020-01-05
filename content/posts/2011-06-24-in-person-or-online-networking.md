@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Management
+- management
 date: "2011-06-24T15:49:19Z"
 description: In-Person or online Networking?
 tags: ["Project"]

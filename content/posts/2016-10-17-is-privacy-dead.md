@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Management
+- management
 date: "2016-10-17T20:31:41Z"
 description: Is Privacy Dead?
 image: /assets/img/posts/privacydead.jpg

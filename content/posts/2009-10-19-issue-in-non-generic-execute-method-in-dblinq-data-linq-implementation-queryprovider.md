@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
+- dotnet
 date: "2009-10-19T15:07:00Z"
 description: Issue in non Generic Execute Method in DbLinq.Data.Linq.Implementation.QueryProvider
 tags: ["DbLinq", "SQLite"]

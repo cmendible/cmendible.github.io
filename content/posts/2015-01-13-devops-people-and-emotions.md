@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- DevOps
+- devops
 date: "2015-01-13T18:03:32Z"
 description: DevOps, People and Emotions
 title: DevOps, People and Emotions

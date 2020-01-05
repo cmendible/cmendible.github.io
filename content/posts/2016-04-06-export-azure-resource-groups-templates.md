@@ -1,9 +1,9 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
-- dotNet
+- azure
+- devops
+- dotnet
 date: "2016-04-06T10:30:28Z"
 description: Export Azure Resource Groups Templates
 image: /wp-content/uploads/2016/04/ExportAzureRmResourceGroup.png

@@ -1,9 +1,9 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNetCore
+- dotnetcore
 - kubernetes
-- Azure
+- azure
 crosspost_to_medium: true
 date: "2018-11-18T10:00:00Z"
 description: Develop and build ASP.NET Core applications to run on Kubernetes with

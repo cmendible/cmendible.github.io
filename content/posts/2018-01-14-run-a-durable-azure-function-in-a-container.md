@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- dotNetCore
+- azure
+- dotnetcore
 crosspost_to_medium: true
 date: "2018-01-14T15:19:00Z"
 description: Run a Durable Azure Function in a Container

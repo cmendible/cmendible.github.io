@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Management
+- management
 date: "2016-08-26T20:31:41Z"
 description: Is Privacy Dead?
 # tags: Security Privacy

@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNetCore
+- dotnetcore
 date: "2016-09-11T09:15:32Z"
 description: .NET Core and Microsoft Bot Framework
 image: /wp-content/uploads/2016/09/bot-framework-default-8.png

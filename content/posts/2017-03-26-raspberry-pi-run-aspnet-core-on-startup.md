@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
-- dotNetCore
+- dotnet
+- dotnetcore
 crosspost_to_medium: true
 date: "2017-03-26T12:37:16Z"
 description: 'Raspberry Pi: Run ASP.NET Core on Startup'

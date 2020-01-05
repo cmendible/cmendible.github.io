@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
+- azure
 date: "2010-10-01T11:05:49Z"
 description: SQL Azure Requires Clustered Indexes in all tables
 tags: ["SQL"]

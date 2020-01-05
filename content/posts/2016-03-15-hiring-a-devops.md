@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Management
-- DevOps
+- management
+- devops
 date: "2016-03-15T20:31:41Z"
 description: Hiring a DevOps?
 title: Hiring a DevOps?

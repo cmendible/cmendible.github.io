@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
+- azure
+- devops
 crosspost_to_medium: true
 date: "2019-05-16T15:00:00Z"
 description: 'ARM: Enable Container Monitoring Solution on an existing Log Analytics

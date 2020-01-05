@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
+- azure
 crosspost_to_medium: true
 date: "2017-05-15T18:33:40Z"
 description: Use Azure Media Services to Find Filler Words

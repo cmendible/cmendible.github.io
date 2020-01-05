@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
+- azure
+- devops
 date: "2016-06-05T19:08:30Z"
 description: Stop or Start all WebApps in your Azure subscription
 image: /wp-content/uploads/2016/06/automation1.png

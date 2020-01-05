@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
-- dotNetCore
+- dotnet
+- dotnetcore
 date: "2016-07-11T15:14:26Z"
 description: 'Step by step: .NET Core and Entity Framework Core'
 image: /wp-content/uploads/2016/07/efsqlite.png

@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- Certifications
+- azure
+- certifications
 date: "2016-04-01T09:39:59Z"
 description: 'Get Ready: Exam 70-532 Developing Microsoft Azure Solutions'
 image: /wp-content/uploads/2016/04/70-532.jpg

@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNetCore
+- dotnetcore
 crosspost_to_medium: true
 date: "2017-02-12T14:06:42Z"
 description: .NET Core Health Endpoint Monitoring Middleware

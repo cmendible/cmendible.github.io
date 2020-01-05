@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Management
+- management
 date: "2015-06-03T18:03:32Z"
 description: When will Singularity happen?
 title: When will Singularity happen?

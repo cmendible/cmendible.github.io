@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- dotNetCore
+- azure
+- dotnetcore
 date: "2016-09-26T06:59:08Z"
 description: 'Step by step: ASP.NET Core on Docker'
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg

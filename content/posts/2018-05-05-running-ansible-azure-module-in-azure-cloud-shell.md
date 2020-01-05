@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
+- azure
+- devops
 date: "2018-05-05T07:21:39Z"
 description: Running Ansible Azure playbook in Azure Cloud Shell
 image: /assets/img/posts/ansible.png

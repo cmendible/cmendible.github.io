@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-- Azure
+- azure
 crosspost_to_medium: true
 date: "2019-04-16T05:00:00Z"
 description: 'AKS: Persistent Volume with existing Storage Account'

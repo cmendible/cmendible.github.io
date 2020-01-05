@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- dotNet
+- azure
+- dotnet
 date: "2016-04-13T15:34:11Z"
 description: 'Cloud Design Patterns: Prepara tu aplicación para Azure'
 image: /wp-content/uploads/2016/04/Slide01.jpg

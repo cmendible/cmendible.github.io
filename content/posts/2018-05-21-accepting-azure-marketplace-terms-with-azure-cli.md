@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
+- azure
+- devops
 crosspost_to_medium: true
 date: "2018-05-21T19:21:39Z"
 description: Accepting Azure Marketplace Terms with Azure CLI

@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-- Azure
+- azure
 crosspost_to_medium: true
 date: "2018-10-14T14:00:00Z"
 description: Deploying Elastic Search, Fluentd, Kibana on AKS with Helm

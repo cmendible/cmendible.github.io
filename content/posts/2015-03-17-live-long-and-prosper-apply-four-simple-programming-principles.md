@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Management
+- management
 date: "2015-03-17T18:03:32Z"
 description: 'Live Long and Prosper: Apply Four Simple Programming Principles'
 title: 'Live Long and Prosper: Apply Four Simple Programming Principles'

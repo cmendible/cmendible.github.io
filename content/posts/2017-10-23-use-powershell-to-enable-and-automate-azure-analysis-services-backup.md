@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
+- azure
+- devops
 crosspost_to_medium: true
 date: "2017-10-23T20:53:16Z"
 description: Enable-AzureRmAnalysisServicesBackup is a small PowerShell script that

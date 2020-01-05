@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- DevOps
+- devops
 date: "2016-06-01T13:17:22Z"
 description: Backup your Team Services Git Repositories with VSTS Vault
 image: /wp-content/uploads/2016/06/vault.jpg

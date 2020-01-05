@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
+- azure
+- devops
 crosspost_to_medium: true
 date: "2018-08-10T00:18:30Z"
 description: Installing Azure CLI and Ansible on Ubuntu

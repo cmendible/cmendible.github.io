@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
+- dotnet
 date: "2009-12-10T12:15:00Z"
 description: Rhino Mocks Method &#8216;YYY' requires a return value or an exception
   to throw.

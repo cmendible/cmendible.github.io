@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNetCore
+- dotnetcore
 crosspost_to_medium: true
 date: "2017-09-01T09:39:08Z"
 description: Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0

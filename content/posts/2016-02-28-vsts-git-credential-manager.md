@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- DevOps
+- devops
 date: "2016-02-28T22:12:41Z"
 description: VSTS Git Credential Manager
 tags: ["Git", "VSTS"]

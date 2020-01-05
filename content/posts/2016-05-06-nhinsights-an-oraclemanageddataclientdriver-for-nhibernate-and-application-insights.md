@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- dotNet
+- azure
+- dotnet
 date: "2016-05-06T07:18:05Z"
 description: NHInsights an OracleManagedDataClientDriver for NHibernate and Application
   Insights

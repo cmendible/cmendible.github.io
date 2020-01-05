@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
+- azure
 crosspost_to_medium: false
 date: "2018-12-19T10:00:00Z"
 description: Prepare yourself to work in Cloud
@@ -34,8 +34,8 @@ Now that you have an idea of what's going on in the wild, you are probably askin
 * [EDX Azure](https://www.edx.org/learn/azure)
 * [Microsoft Learning](https://docs.microsoft.com/en-us/learn/azure)
 * [Cloud Academy](https://cloudacademy.com/library/azure/)
-* [Microsoft Virtual Academy - Azure](https://mva.microsoft.com/product-training/microsoft-azure#!lang=1033)
-* [Microsoft Virtual Academy - DevOps](https://mva.microsoft.com/training-topics/devops#!lang=1033)
+* [Microsoft Virtual Academy - azure](https://mva.microsoft.com/product-training/microsoft-azure#!lang=1033)
+* [Microsoft Virtual Academy - devops](https://mva.microsoft.com/training-topics/devops#!lang=1033)
 * [Azure Certifications](https://www.microsoft.com/en-us/learning/azure-exams.aspx)
 
 **Amazon Web Services**
@@ -52,7 +52,7 @@ Now that you have an idea of what's going on in the wild, you are probably askin
 
 **Docker**
 
-* [Docker for the Absolute Beginner - Hands On - DevOps](https://www.udemy.com/learn-docker)
+* [Docker for the Absolute Beginner - Hands On - devops](https://www.udemy.com/learn-docker)
 * [Get Started](https://docs.docker.com/get-started/)
 
 **Kubernetes**

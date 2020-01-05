@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
+- azure
 crosspost_to_medium: true
 date: "2017-12-01T15:13:00Z"
 description: Deploy your first Service to Azure Container Services (AKS)

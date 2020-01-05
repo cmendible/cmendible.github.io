@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
+- azure
+- devops
 crosspost_to_medium: true
 date: "2017-06-17T15:01:53Z"
 description: Use PowerShell to Enable Logging for Azure RM Web Apps

@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
-- dotNetCore
+- dotnet
+- dotnetcore
 crosspost_to_medium: true
 date: "2017-04-10T17:11:15Z"
 description: 'Step by step: Couchbase with .Net Core'

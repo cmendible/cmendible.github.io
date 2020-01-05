@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
+- dotnet
 date: "2009-10-28T15:22:00Z"
 description: xVal.WebForms, Validation Groups and CausesValidation Part II
 tags: ["ASP.Net", "CausesValidation", "ValidationGroups", "WebForms", "xVal"]

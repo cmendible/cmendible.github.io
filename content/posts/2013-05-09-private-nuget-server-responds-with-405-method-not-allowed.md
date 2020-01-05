@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNet
+- dotnet
 date: "2013-05-09T10:31:14Z"
 description: Private Nuget Server responds with (405) Method Not Allowed while pushing
   or deleting a package

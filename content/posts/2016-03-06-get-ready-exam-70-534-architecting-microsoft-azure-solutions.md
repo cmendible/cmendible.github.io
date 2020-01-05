@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- Certifications
+- azure
+- certifications
 date: "2016-03-06T12:07:02Z"
 description: 'Get Ready: Exam 70-534 Architecting Microsoft Azure Solutions'
 image: /wp-content/uploads/2016/02/ExamRef_70_534.jpg

@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- DevOps
+- azure
+- devops
 crosspost_to_medium: true
 date: "2017-07-13T11:07:13Z"
 description: 'HDInsight: Scale Horizontally'

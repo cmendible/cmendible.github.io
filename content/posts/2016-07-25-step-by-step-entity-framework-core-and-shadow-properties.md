@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotNetCore
+- dotnetcore
 date: "2016-07-25T16:07:49Z"
 description: 'Step by step: Entity Framework Core and Shadow Properties'
 image: /wp-content/uploads/2016/07/efsqlite.png

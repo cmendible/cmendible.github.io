@@ -1,8 +1,8 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- dotNetCore
+- azure
+- dotnetcore
 crosspost_to_medium: true
 date: "2017-08-04T08:50:13Z"
 description: Read Azure Service Health Activity Logs with .NET Core

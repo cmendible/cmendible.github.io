@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Management
+- management
 date: "2015-09-15T18:03:32Z"
 description: Help! I just Inherited Code
 title: Help! I just Inherited Code

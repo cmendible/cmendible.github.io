@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Certifications
+- certifications
 date: "2013-08-27T18:03:32Z"
 description: Do IT Certifications help?
 title: Do IT Certifications help?

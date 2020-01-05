@@ -1,9 +1,9 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
-- dotNet
-- dotNetCore
+- azure
+- dotnet
+- dotnetcore
 date: "2016-11-06T08:00:49Z"
 description: 'Step by step: Expose ASP.NET Core over HTTPS with Docker'
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg

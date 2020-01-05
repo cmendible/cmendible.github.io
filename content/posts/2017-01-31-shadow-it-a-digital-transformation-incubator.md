@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Management
+- management
 crosspost_to_medium: true
 date: "2017-01-31T20:31:41Z"
 description: Shadow IT a Digital Transformation Incubator

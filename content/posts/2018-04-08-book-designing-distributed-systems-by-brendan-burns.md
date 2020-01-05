@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-- Azure
+- azure
 crosspost_to_medium: true
 date: "2018-04-08T15:00:00Z"
 description: 'Book: Designing Distributed Systems by Brendan Burns'

@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Management
+- management
 date: "2014-11-17T18:03:32Z"
 description: Continuum and The Surveillance State
 title: Continuum and The Surveillance State

@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- Azure
+- azure
 crosspost_to_medium: true
 date: "2017-10-06T10:15:52Z"
 description: Use PowerShell to Enable Azure Analysis Services Firewall

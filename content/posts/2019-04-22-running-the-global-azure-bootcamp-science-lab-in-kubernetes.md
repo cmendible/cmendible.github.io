@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-- Azure
+- azure
 crosspost_to_medium: false
 date: "2019-04-22T05:00:00Z"
 description: Running the Global Azure Bootcamp Science Lab in Kubernetes

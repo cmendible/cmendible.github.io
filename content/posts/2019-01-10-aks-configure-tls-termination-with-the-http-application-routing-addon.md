@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-- Azure
+- azure
 crosspost_to_medium: true
 date: "2019-01-10T15:20:00Z"
 description: 'AKS: Configure TLS termination with the http application routing addon'
