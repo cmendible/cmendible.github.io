@@ -6,7 +6,7 @@ crosspost_to_medium: true
 date: "2017-03-02T07:59:30Z"
 description: Twilio with .NET Core
 image: /wp-content/uploads/2017/03/twilio-csharp-blog-logo.png
-# tags: SMS Twilio
+tags: ["SMS", "Twilio"]
 title: Twilio with .NET Core
 ---
 Last night after reading this tweet, I decided to try out **<a href="https://www.twilio.com/" target="_blank">Twilio</a> with .NET Core** 

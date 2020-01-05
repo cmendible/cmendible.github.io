@@ -7,7 +7,7 @@ date: "2018-08-25T11:27:39Z"
 description: Adding SourceLink to your .NET Core Library
 image: /wp-content/uploads/2017/07/dotnetcore.png
 published: true
-# tags: sourcelink debug
+tags: ["sourcelink", "debug"]
 title: Adding SourceLink to your .NET Core Library
 ---
 

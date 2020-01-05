@@ -7,7 +7,7 @@ date: "2018-04-04T15:00:00Z"
 description: Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server
 image: /assets/img/posts/docker.png
 published: true
-# tags: aspNetCore Docker Dockerfile
+tags: ["aspNetCore", "Docker", "Dockerfile"]
 title: Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server
 ---
 

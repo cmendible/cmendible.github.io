@@ -4,7 +4,7 @@ categories:
 - management
 date: "2016-08-26T20:31:41Z"
 description: Is Privacy Dead?
-# tags: Security Privacy
+tags: ["Security", "Privacy"]
 title: Benefits and Risks You Need to Know about Cloud Computing
 ---
 
