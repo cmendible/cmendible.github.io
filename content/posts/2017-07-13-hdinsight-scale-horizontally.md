@@ -7,7 +7,7 @@ crosspost_to_medium: true
 date: "2017-07-13T11:07:13Z"
 description: 'HDInsight: Scale Horizontally'
 image: /wp-content/uploads/2016/06/automation1.png
-# tags: Automation HDInsight PowerShell
+tags: ["Automation", "HDInsight", "PowerShell"]
 title: 'HDInsight: Scale Horizontally'
 ---
 **HDInsight: Scale Horizontally** with [Scale-HDInsightClusterNodes.ps1](https://gallery.technet.microsoft.com/Scale-your-HDInsight-f57bb4d8) a PowerShell workflow that will help you automate the process of scaling your cluster.

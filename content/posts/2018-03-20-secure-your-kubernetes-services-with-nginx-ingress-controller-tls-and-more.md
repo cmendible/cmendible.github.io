@@ -9,7 +9,7 @@ description: Secure your Kubernetes services with NGINX ingress controller, tls 
   more.
 image: /assets/img/posts/kubernetes.png
 published: true
-# tags: nginx ingress whitelist tls ratelimit
+tags: ["nginx", "ingress", "whitelist", "tls", "ratelimit"]
 title: Secure your Kubernetes services with NGINX ingress controller, tls and more.
 ---
 

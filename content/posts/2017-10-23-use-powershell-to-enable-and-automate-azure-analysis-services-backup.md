@@ -9,7 +9,7 @@ description: Enable-AzureRmAnalysisServicesBackup is a small PowerShell script t
   uses the the Set-AzureRmResource cmdlet to enable backup location to an Azure Analysis
   Service instance.
 image: /wp-content/uploads/2017/06/powershell.png
-# tags: AnalysisServices Automation BackUp PowerShell
+tags: ["AnalysisServices", "Automation", "BackUp", "PowerShell"]
 title: Use PowerShell to Enable and Automate Azure Analysis Services Backup
 ---
 In this post I'll show you how to **Use PowerShell to Enable and Automate Azure Analysis Backup**.

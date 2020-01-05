@@ -8,7 +8,7 @@ date: "2018-01-14T15:19:00Z"
 description: Run a Durable Azure Function in a Container
 image: /assets/img/posts/azurefunctions.jpg
 published: true
-# tags: Docker AzureFunctions Dockerfile Serverless
+tags: ["Docker", "AzureFunctions", "Dockerfile", "Serverless"]
 title: Run a Durable Azure Function in a Container
 ---
 

@@ -7,7 +7,7 @@ date: "2018-03-17T17:23:14Z"
 description: My kubectl Cheat Sheet
 image: /assets/img/posts/kubernetes.png
 published: true
-# tags: CheatSheet kubectl
+tags: ["CheatSheet", "kubectl"]
 title: My kubectl Cheat Sheet
 ---
 This is a small **[kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) Cheat Sheet** with the list of commands and settings I use, almost on a daily basis, when working with kubernetes.

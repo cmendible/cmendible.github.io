@@ -7,7 +7,7 @@ crosspost_to_medium: true
 date: "2017-11-02T20:53:16Z"
 description: Use PowerShell to enable Azure Storage Account Firewall Rules
 image: /wp-content/uploads/2017/06/powershell.png
-# tags: StorageAccount Automation Firewall PowerShell
+tags: ["StorageAccount", "Automation", "Firewall", "PowerShell"]
 title: Use PowerShell to enable Azure Storage Account Firewall Rules
 ---
 In this post I'll show you how to **Use PowerShell to enable Azure Storage Account Firewall Rules**.

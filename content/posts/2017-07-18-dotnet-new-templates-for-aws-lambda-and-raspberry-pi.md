@@ -6,7 +6,7 @@ crosspost_to_medium: true
 date: "2017-07-18T08:56:48Z"
 description: dotnet new templates for AWS Lambda and Raspberry Pi
 image: /wp-content/uploads/2017/07/dotnetcore.png
-# tags: AWS Lambda RaspberryPi Template
+tags: ["AWS", "Lambda", "RaspberryPi", "Template"]
 title: dotnet new templates for AWS Lambda and Raspberry Pi
 ---
 

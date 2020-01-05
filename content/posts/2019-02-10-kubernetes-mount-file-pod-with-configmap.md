@@ -8,7 +8,7 @@ date: "2019-02-10T15:12:00Z"
 description: 'Kubernetes: Mount a file in your Pod using a ConfigMap'
 image: /assets/img/posts/kubernetes.png
 published: true
-# tags: configmap volume pod
+tags: ["configmap", "volume", "pod"]
 title: 'Kubernetes: Mount a file in your Pod using a ConfigMap'
 ---
 

@@ -6,7 +6,7 @@ categories:
 date: "2016-10-11T07:37:35Z"
 description: Deal with time dependencies in Tests
 image: /wp-content/uploads/2016/10/SystemDateTime.jpg
-# tags: DateTime UnitTests xUnit
+tags: ["DateTime", "UnitTests", "xUnit"]
 title: Deal with time dependencies in Tests
 ---
 Las week we discovered that some of our test would"randomly" fail depending of the time of the day. After investigating the issue we found that the culprit was that the service being tested was taking decisions based on the current system time (DateTime.Now) leading to different outcomes through the day. So how **do we deal with time dependencies in tests**?

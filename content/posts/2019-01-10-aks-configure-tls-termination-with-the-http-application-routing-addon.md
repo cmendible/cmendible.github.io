@@ -8,7 +8,7 @@ date: "2019-01-10T15:20:00Z"
 description: 'AKS: Configure TLS termination with the http application routing addon'
 image: /assets/img/posts/kubernetes.png
 published: true
-# tags: nginx ingress tls routing
+tags: ["nginx", "ingress", "tls", "routing"]
 title: 'AKS: Configure TLS termination with the http application routing addon'
 ---
 

@@ -7,7 +7,7 @@ categories:
 date: "2016-11-06T08:00:49Z"
 description: 'Step by step: Expose ASP.NET Core over HTTPS with Docker'
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg
-# tags: aspNetCore Docker https Kestrel openssl
+tags: ["aspNetCore", "Docker", "https", "Kestrel", "openssl"]
 title: 'Step by step: Expose ASP.NET Core over HTTPS with Docker'
 ---
 This week I decided to modify the sample of my previous post: <a href="https://carlos.mendible.com/2016/10/30/step-by-step-scale-asp-net-core-with-docker-swarm/" target="_blank">Step by step: Scale ASP.NET Core with Docker Swarm</a> so you can add TLS to your ASP.NET Core applications and Dockerize it.

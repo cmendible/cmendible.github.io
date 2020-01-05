@@ -8,7 +8,7 @@ date: "2018-07-19T00:21:00Z"
 description: 'At last: Network Policies in AKS with kube-router'
 image: /assets/img/posts/kubernetes.png
 published: true
-# tags: kube-router network_policies
+tags: ["kube-router", "network_policies"]
 title: 'At last: Network Policies in AKS with kube-router'
 ---
 
