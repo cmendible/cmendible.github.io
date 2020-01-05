@@ -9,7 +9,7 @@ description: 'ARM: Enable Container Monitoring Solution on an existing Log Analy
   Workspace'
 image: /assets/img/posts/azure.png
 published: true
-# tags: ["ARM", "Automation", "LogAnalytics"]
+tags: ["ARM", "Automation", "LogAnalytics"]
 title: 'ARM: Enable Container Monitoring Solution on an existing Log Analytics Workspace'
 ---
 

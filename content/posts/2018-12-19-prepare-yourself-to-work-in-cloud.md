@@ -6,7 +6,7 @@ crosspost_to_medium: false
 date: "2018-12-19T10:00:00Z"
 description: Prepare yourself to work in Cloud
 published: true
-# tags: cloud
+tags: ["cloud"]
 title: Prepare yourself to work in Cloud
 ---
 

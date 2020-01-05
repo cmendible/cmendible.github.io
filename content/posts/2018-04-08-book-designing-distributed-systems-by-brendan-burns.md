@@ -8,7 +8,7 @@ date: "2018-04-08T15:00:00Z"
 description: 'Book: Designing Distributed Systems by Brendan Burns'
 image: /assets/img/posts/books/designing_distributed_systems.jpg
 published: false
-# tags: Book
+tags: ["Book"]
 title: 'Book: Designing Distributed Systems by Brendan Burns'
 ---
 

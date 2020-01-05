@@ -9,7 +9,7 @@ date: "2019-11-24T00:00:00Z"
 description: 'Kubernetes: Despliegue en Azure'
 image: /assets/img/posts/linkedin_learning/Kubernetes_Despliegue_en_Azure.png
 published: true
-# tags: ["aks"]
+tags: ["aks"]
 title: 'Kubernetes: Despliegue en Azure'
 ---
 

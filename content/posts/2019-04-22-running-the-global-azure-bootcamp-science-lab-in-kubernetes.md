@@ -8,7 +8,7 @@ date: "2019-04-22T05:00:00Z"
 description: Running the Global Azure Bootcamp Science Lab in Kubernetes
 image: /assets/img/posts/kubernetes.png
 published: true
-# tags: GlobalAzure
+tags: ["GlobalAzure"]
 title: Running the Global Azure Bootcamp Science Lab in Kubernetes
 ---
 

@@ -9,7 +9,7 @@ date: "2019-11-30T00:00:00Z"
 description: 'AKS: Read Azure Key Vault secrets using AAD Pod Identity'
 image: /assets/img/posts/aks.png
 published: true
-# tags: ["aks", "keyvault"]
+tags: ["aks", "keyvault"]
 title: 'AKS: Read Azure Key Vault secrets using AAD Pod Identity'
 ---
 

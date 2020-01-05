@@ -8,7 +8,7 @@ date: "2019-07-05T23:30:00Z"
 description: 'Visual Studio Code Remote Containers: Azure Ansible'
 image: /assets/img/posts/code.png
 published: true
-# tags: ansible Docker
+tags: ["ansible", "Docker"]
 title: 'Visual Studio Code Remote Containers: Azure Ansible'
 ---
 

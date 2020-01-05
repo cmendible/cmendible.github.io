@@ -7,7 +7,7 @@ crosspost_to_medium: true
 date: "2017-06-25T18:52:22Z"
 description: 'Step by step: .NET Core and Azure Cosmos DB'
 image: /wp-content/uploads/2017/06/cosmos.png
-# tags: CosmosDB
+tags: ["CosmosDB"]
 title: 'Step by step: .NET Core and Azure Cosmos DB'
 ---
 **Step by step: .NET Core and Azure Cosmos DB** is a short post on how to connect to Cosmos DB, save a document and then query to find it.

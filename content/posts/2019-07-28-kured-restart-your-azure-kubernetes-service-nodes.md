@@ -10,7 +10,7 @@ date: "2019-07-28T00:00:00Z"
 description: 'Kured: Restart your Azure Kubernetes Service Nodes'
 image: /assets/img/posts/aks.png
 published: true
-# tags: aks
+tags: ["aks"]
 title: 'Kured: Restart your Azure Kubernetes Service Nodes'
 ---
 

@@ -10,7 +10,7 @@ description: Develop and build ASP.NET Core applications to run on Kubernetes wi
   Draft
 image: /assets/img/posts/draft-logo.png
 published: true
-# tags: ["aks", "acr", "draft"]
+tags: ["aks", "acr", "draft"]
 title: Develop and build ASP.NET Core applications to run on Kubernetes with Draft
 ---
 

@@ -7,7 +7,7 @@ crosspost_to_medium: true
 date: "2017-04-10T17:11:15Z"
 description: 'Step by step: Couchbase with .Net Core'
 image: /wp-content/uploads/2017/04/Couchbase_Inc._official_logo.png
-# tags: couchbase Docker NoSQL
+tags: ["couchbase", "Docker", "NoSQL"]
 title: 'Step by step: Couchbase with .Net Core'
 ---
 This week I started to read an understand how **[Couchbase](http://www.couchbase.com)** works and that's the reason I decided to write: **Step by step: Couchbase with .Net Core**
