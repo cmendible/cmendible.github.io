@@ -1,13 +1,64 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="{{ .Title | default .Site.Params.description }}" />
+
+<meta property="og:title" content="{{ .Title }} | {{ .Site.Title }}" />
+<meta name="twitter:title" content="{{ .Title }} | {{ .Site.Title }}" />
+<meta itemprop="name" content="{{ .Title }} | {{ .Site.Title }}" />
+<meta name="application-name" content="{{ .Title }} | {{ .Site.Title }}" />
+<meta property="og:site_name" content="{{ .Site.Title }}" />
+
+<meta name="description" content="{{ .Params.description | default .Site.Params.description  }}" />
+<meta itemprop="description" content="{{ .Params.description | default .Site.Params.description  }}" />
+<meta property="og:description" content="{{ .Params.description | default .Site.Params.description  }}" />
+<meta name="twitter:description" content="{{ .Params.description | default .Site.Params.description  }}" />
+
 <meta name="author" content="{{ .Params.Author | default .Site.Author.name }}" />
+<meta property="og:locale" content="{{ .Language.Lang }}">
+<meta name="language" content="{{ .Language.LanguageName }}">
+
+{{ with .Params.image }}
+<meta itemprop="image" content="{{ . | absURL }}" />
+<meta property="og:image" content="{{ . | absURL }}" />
+<meta name="twitter:image" content="{{ . | absURL }}" />
+<meta name="twitter:image:src" content="{{ . | absURL }}" />
+{{ else }}
+<meta itemprop="image" content="{{ .Site.Params.ogimage | absURL }}" />
+<meta property="og:image" content="{{ .Site.Params.ogimage | absURL }}" />
+<meta name="twitter:image" content="{{ .Site.Params.ogimage | absURL }}" />
+<meta name="twitter:image:src" content="{{ .Site.Params.ogimage | absURL }}" />
+{{ end }}
+
+<base href="{{ .Permalink }}">
+<link rel="canonical" href="{{ .Permalink }}" itemprop="url" />
+<meta name="url" content="{{ .Permalink }}" />
+<meta name="twitter:url" content="{{ .Permalink }}" />
+<meta property="og:url" content="{{ .Permalink }}" />
+
+<meta property="og:updated_time" content={{ .Lastmod.Format "2006-01-02T15:04:05Z0700" | safeHTML }} />
+<link rel="sitemap" type="application/xml" title="Sitemap" href="{{ .Site.BaseURL }}sitemap.xml" />
+
 {{- with .OutputFormats.Get "rss" -}}
 {{ printf `<link rel="%s" type="%s+%s" href="%s" title="%s" />` .Rel .MediaType.Type .MediaType.Suffix .Permalink $.Site.Title | safeHTML }}
 {{- end -}}
 
 <meta name="twitter:card" content="summary">
-<meta name="twitter:site" content="@{{ .Site.Author.twitter  }}">
-<meta name="twitter:creator" content="@{{ .Site.Author.twitter  }}">
+<meta name="twitter:site" content="@{{ .Site.Author.twitter }}">
+<meta name="twitter:creator" content="@{{ .Site.Author.twitter }}">
+
+{{ if eq .Type "posts" }}
+<meta name="og:type" content="article">
+
+{{ with.Params.author }}
+<meta property="og:article:author" content="{{humanize . }}" />
+<meta property="article:author" content="{{humanize . }}" />
+{{ end }}
+
+{{ with.Params.categories }}
+<meta name="news_keywords" content="{{ index . 0 }}" />
+<meta property="article:section" content="{{ index . 0 }}" />
+{{ end }}
+{{ else }}
+<meta name="og:type" content="website">
+{{ end }}
 
 {{ hugo.Generator -}}
