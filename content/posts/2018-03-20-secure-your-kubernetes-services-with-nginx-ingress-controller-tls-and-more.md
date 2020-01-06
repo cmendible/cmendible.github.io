@@ -11,6 +11,7 @@ image: /assets/img/posts/kubernetes.png
 published: true
 tags: ["nginx", "ingress", "whitelist", "tls", "ratelimit"]
 title: Secure your Kubernetes services with NGINX ingress controller, tls and more.
+url: /2018/03/20/secure-your-kubernetes-services-with-nginx-ingress-controller-tls-and-more/
 ---
 
 **Disclaimer:** samples provided in this post were tested both in [Azure Container Services (AKS)](https://docs.microsoft.com/en-us/azure/aks/) and [Kubernetes provided by Docker for Windows](https://blog.docker.com/2018/01/docker-windows-desktop-now-kubernetes/).

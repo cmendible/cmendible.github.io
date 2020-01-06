@@ -9,6 +9,7 @@ description: 'Raspberry Pi: Run ASP.NET Core on Startup'
 image: /wp-content/uploads/2017/03/windows_10_iot_core_launch.jpg
 tags: ["ARM", "aspNetCore", "PowerShell", "RaspberryPi", "Windows10", "IoT"]
 title: 'Raspberry Pi: Run ASP.NET Core on Startup'
+url: /2017/03/26/raspberry-pi-run-aspnet-core-on-startup/
 ---
 Last week I wrote: **[Step by step: Running ASP.NET Core on Raspberry Pi](https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/)** and didn't have the time to write about running the application on startup.
 

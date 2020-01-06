@@ -9,6 +9,7 @@ image: /assets/img/posts/docker.png
 published: true
 tags: ["aspNetCore", "Docker", "Dockerfile"]
 title: Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server
+url: /2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/
 ---
 
 Today I'll show you how to create a simple Echo Server with ASP.NET Core and then a Docker Image using [multi-stage build](https://docs.docker.com/develop/develop-images/multistage-build/):
