@@ -8,6 +8,7 @@ description: .NET Core, Roslyn and Code Generation
 image: /wp-content/uploads/2017/01/roslyn.png
 tags: ["Roslyn"]
 title: .NET Core, Roslyn and Code Generation
+url: /2017/01/29/net-core-roslyn-and-code-generation/
 ---
 For ages I've been using T4 templates as main tool for code generation and scaffolding, but now that I'm an absolute fan of Visual Studio Code and .Net Core I need to explore other options such as Yeoman, Scripty and Roslyn. This post is just the result of my first and simplest experiment with **.Net Core, Roslyn and Code Generation**.
 
