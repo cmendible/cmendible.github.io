@@ -1,5 +1,4 @@
 ---
-ate: "2019-11-30T07:00:00+00:00"
 author: Carlos Mendible
 categories:
 - azure
