@@ -10,6 +10,7 @@ image: /assets/img/posts/code.png
 published: true
 tags: ["ansible", "Docker"]
 title: 'Visual Studio Code Remote Containers: Azure Ansible'
+url: /2019/07/05/vs-code-remote-containers-azure-ansible/
 ---
 
 Last year I was working on a project for deploying Azure services using Ansible, and let me tell you something: Back then a feature like [Visual Studio Remote Containers](https://github.com/microsoft/vscode-dev-containers) would have helped us so much!

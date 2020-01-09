@@ -9,6 +9,7 @@ description: 'Step by step: Couchbase with .Net Core'
 image: /wp-content/uploads/2017/04/Couchbase_Inc._official_logo.png
 tags: ["couchbase", "Docker", "NoSQL"]
 title: 'Step by step: Couchbase with .Net Core'
+url: /2017/04/10/step-by-step-couchbase-with-net-core/
 ---
 This week I started to read an understand how **[Couchbase](http://www.couchbase.com)** works and that's the reason I decided to write: **Step by step: Couchbase with .Net Core**
 

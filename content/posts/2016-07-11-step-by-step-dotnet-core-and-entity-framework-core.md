@@ -8,6 +8,7 @@ description: 'Step by step: .NET Core and Entity Framework Core'
 image: /wp-content/uploads/2016/07/efsqlite.png
 tags: ["EntityFrameworkCore", "SQLite"]
 title: 'Step by step: .NET Core and Entity Framework Core'
+url: /2016/07/11/step-by-step-dotnet-core-and-entity-framework-core/
 ---
 Today I'll show you how to create a small console application with a **Step by step: .NET Core and Entity Framework Core** example.
 

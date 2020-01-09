@@ -8,6 +8,7 @@ description: 'Step by step: ASP.NET Core on Docker'
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg
 tags: ["aspNetCore", "Docker"]
 title: 'Step by step: ASP.NET Core on Docker'
+url: /2016/09/26/step-by-step-asp-net-core-on-docker/
 ---
 This week I have to give an introductory talk on DevOps and <a href="https://www.docker.com/" target="_blank">Docker</a> and therefore I decided to prepare a simple **Step by step: ASP.NET Core on <a href="https://www.docker.com/" target="_blank">Docker</a>** sample.
 

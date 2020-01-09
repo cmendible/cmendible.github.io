@@ -10,6 +10,7 @@ description: Create a Service Principal and write required parameters to a .azur
 image: /wp-content/uploads/2016/06/automation1.png
 tags: ["Automation", "AzureAD", "PowerShell", "Service", "Principal"]
 title: Create a Service Principal and write required parameters to a .azureauth file
+url: /2017/08/02/create-service-principal-write-required-parameters-to-azureauth-file/
 ---
 This week I had to repeat the process of creating a Service Principal in order to use the **Microsoft.Azure.Management.Fluent** lib with **.NET Core** so I decided it was time to script the process. With the following script you can **Create a Service Principal and write required parameters to a .azureauth file**.
 

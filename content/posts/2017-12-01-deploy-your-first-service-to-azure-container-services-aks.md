@@ -9,6 +9,7 @@ image: /assets/img/posts/aks.png
 published: true
 tags: ["Docker", "kubernetes"]
 title: Deploy your first Service to Azure Container Services (AKS)
+url: /2017/12/01/deploy-your-first-service-to-azure-container-services-aks/
 ---
 
 In this post I'll show you how to **Deploy your first Service to [Azure Container Services (AKS)](https://docs.microsoft.com/en-us/azure/aks/)**.

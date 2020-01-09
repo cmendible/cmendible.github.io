@@ -9,6 +9,7 @@ description: The following code shows you the structure of the console app we cr
 image: /wp-content/uploads/2017/07/dotnetcore.png
 tags: ["Docker", "Sidecar", "Container"]
 title: Prepare a .Net Core Console App for Docker
+url: /2017/10/15/prepare-a-net-core-console-app-for-docker/
 ---
 Last week I had the luck to attend the <a href="https://www.microsoftevents.com/profile/form/index.cfm?PKformID=0x2564678abcd" rel="noopener" target="_blank">Microsoft Azure OpenHack in Amsterdam</a>. We spent two and a half days learning a lot about kubernetes, Azure Container Services, Azure Container Registry, Azure OMS and Minecraft! 
 

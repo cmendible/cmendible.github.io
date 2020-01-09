@@ -9,6 +9,7 @@ description: 'Step by step: .NET Core and Azure Cosmos DB'
 image: /wp-content/uploads/2017/06/cosmos.png
 tags: ["CosmosDB"]
 title: 'Step by step: .NET Core and Azure Cosmos DB'
+url: /2017/06/25/step-by-step-net-core-and-azure-cosmos-db/
 ---
 **Step by step: .NET Core and Azure Cosmos DB** is a short post on how to connect to Cosmos DB, save a document and then query to find it.
 

@@ -9,6 +9,7 @@ description: Read Azure Service Health Activity Logs with .NET Core
 image: /wp-content/uploads/2017/08/loganalytics.png
 tags: ["ActivityLogs", "HealthEndpoint", "LogAnalytics", "ServiceHealth"]
 title: Read Azure Service Health Activity Logs with .NET Core
+url: /2017/08/04/read-azure-service-health-activity-logs-with-net-core/
 ---
 This week there was a small outage within the Azure Data Lake Store service and as consequence I wondered how could I **Read Azure Service Health Activity Logs with .NET Core.**
 

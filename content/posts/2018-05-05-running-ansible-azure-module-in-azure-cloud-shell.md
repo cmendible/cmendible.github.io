@@ -9,6 +9,7 @@ image: /assets/img/posts/ansible.png
 published: true
 tags: ["ansible", "cloudshell"]
 title: Running Ansible Azure playbook in Azure Cloud Shell
+url: /2018/05/05/running-ansible-azure-module-in-azure-cloud-shell/
 ---
 
 ## **NOTE: The issue described in this post was fixed!!! (ansible 2.5.2 and Azure CLI 2.0.34)**

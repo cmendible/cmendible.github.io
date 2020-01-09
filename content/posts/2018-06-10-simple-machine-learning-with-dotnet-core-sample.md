@@ -9,6 +9,7 @@ image: /wp-content/uploads/2017/07/dotnetcore.png
 published: true
 tags: ["MachineLearning", "Titanic", "BinaryClassifier", "Classifier"]
 title: Simple Machine Learning with .NET Core Sample
+url: /2018/06/10/simple-machine-learning-with-dotnet-core-sample/
 ---
 
 I think that more than a year and a half ago I read ["Real-World Machine Learning"](https://www.manning.com/books/real-world-machine-learning) by Henrik Brink, Joseph

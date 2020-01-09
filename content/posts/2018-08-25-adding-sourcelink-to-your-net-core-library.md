@@ -9,6 +9,7 @@ image: /wp-content/uploads/2017/07/dotnetcore.png
 published: true
 tags: ["sourcelink", "debug"]
 title: Adding SourceLink to your .NET Core Library
+url: /2018/08/25/adding-sourcelink-to-your-net-core-library/
 ---
 
 Last week I read this tweets from Maxime Rouiller ([@MaximRouiller](https://twitter.com/MaximRouiller)):

@@ -9,6 +9,7 @@ descripton: 'Step by step: .Net Core and Azure Search'
 image: /wp-content/uploads/2017/08/Azure-Search.png
 tags: ["AzureSearch"]
 title: 'Step by step: .Net Core and Azure Search'
+url: /2017/08/09/step-by-step-net-core-and-azure-search/
 ---
 **Step by step: .Net Core and Azure Search** is small introduction on how to connect to <a href="https://azure.microsoft.com/en-us/services/search/" target="_blank">Azure Search</a>, create and delete indexes, models, add documents and perform basic queries.
 

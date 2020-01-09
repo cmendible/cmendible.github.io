@@ -11,6 +11,7 @@ image: /assets/img/posts/azure.png
 published: true
 tags: ["ARM", "Automation", "LogAnalytics"]
 title: 'ARM: Enable Container Monitoring Solution on an existing Log Analytics Workspace'
+url: /2019/05/16/arm-enable-container-solution-on-an-existing-loganalytics-workspace/
 ---
 
 Recently I had to update a bunch of [Log Analytics Workspaces](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=2ahUKEwiFrof58qDiAhXqyIUKHWPuBaIQFjAAegQIARAB&url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fazure%2Fazure-monitor%2Flearn%2Fquick-create-workspace&usg=AOvVaw3DvKwidPs8__aX0fQ0vjQf) resources to enable the [Container Monitoring Solution](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/containers). So I came up with this ARM Template that I want to share with you:

@@ -12,6 +12,7 @@ image: /assets/img/posts/aks.png
 published: true
 tags: ["git", "gitops", "aks"]
 title: 'GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux'
+url: /2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/
 ---
 
 Recently I learned about GitOps which is a way to manage your Kubernetes clusters and the applications you run on top using Git. The idea is that you can declaratively describe the desired state of your systems in Git and roll out changes as soon as merges occur.

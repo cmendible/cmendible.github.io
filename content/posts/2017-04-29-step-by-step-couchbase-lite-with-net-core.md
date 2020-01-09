@@ -9,6 +9,7 @@ description: 'Step by step: Couchbase Lite with .Net Core'
 image: /wp-content/uploads/2017/04/Couchbase_Inc._official_logo.png
 tags: ["couchbase", "Docker", "NoSQL"]
 title: 'Step by step: Couchbase Lite with .Net Core'
+url: /2017/04/29/step-by-step-couchbase-lite-with-net-core/
 ---
 Not long after writing **Step by step: Couchbase with .Net Core** I discovered Couchbase Lite, which is still in development, but it looks like a great solution for embedded NoSQL scenarios.
 

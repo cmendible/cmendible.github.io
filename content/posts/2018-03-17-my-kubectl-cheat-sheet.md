@@ -9,6 +9,7 @@ image: /assets/img/posts/kubernetes.png
 published: true
 tags: ["CheatSheet", "kubectl"]
 title: My kubectl Cheat Sheet
+url: /2018/03/17/my-kubectl-cheat-sheet/
 ---
 This is a small **[kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) Cheat Sheet** with the list of commands and settings I use, almost on a daily basis, when working with kubernetes.
 

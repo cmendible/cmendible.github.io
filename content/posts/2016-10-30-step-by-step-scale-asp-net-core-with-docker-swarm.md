@@ -8,6 +8,7 @@ description: 'Step by step: Scale ASP.NET Core with Docker Swarm'
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg
 tags: ["aspNetCore", "Docker", "Swarm"]
 title: 'Step by step: Scale ASP.NET Core with Docker Swarm'
+url: /2016/10/30/step-by-step-scale-asp-net-core-with-docker-swarm/
 ---
 A few weeks ago I posted <a href="https://carlos.mendible.com/2016/09/26/step-by-step-asp-net-core-on-docker/" target="_blank">Step by step: ASP.NET Core on Docker</a> were I showed how to build and run a <a href="https://www.docker.com/" target="_blank">Docker</a> image with an ASP.NET Core application.
 

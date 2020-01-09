@@ -6,6 +6,7 @@ date: "2009-10-20T14:59:00Z"
 description: Using xVal, CSLA.NET and DataAnnotations.
 tags: ["ASP.Net", "CSLA", "WebForms", "xVal"]
 title: Using xVal, CSLA.NET and DataAnnotations.
+url: /2009/10/20/using-xval-csla-net-and-dataannotations/
 ---
 I've been working for years with CSLA to create business layer objects. Recently I started using XVal 1.0 and XVal.WebForms 0.1 for client side validation.
 

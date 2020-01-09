@@ -6,13 +6,13 @@ date: "2010-05-06T14:08:00Z"
 description: NHibernate.Linq Issue when a query is executed having the same alias
   but with different associations paths
 tags: ["Linq", "NHibernate"]
-title: NHibernate.Linq Issue when a query is executed having the same alias but with
-  different associations paths
+title: NHibernate.Linq Issue when a query is executed having the same alias but with different associations paths
+url: /2010/05/06/nhibernate-linq-issue-when-a-query-is-executed-having-the-same-alias-but-with-different-associations-paths/
 ---
 When running a query like the following:
 
 ``` chsharp 
-var query = nhib.Arms.Where(a => a.LeftHand.Thumb.Length == 1 || a.RightHand.Thumb.Length == 1);
+var query = nhib-Arms.Where(a => a.LeftHand.Thumb.Length == 1 || a.RightHand.Thumb.Length == 1);
 ```
 
 Thumb alias was always taken as part of the a.LeftHand association path, therefore leading to wrong results.

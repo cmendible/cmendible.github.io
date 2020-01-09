@@ -7,6 +7,7 @@ description: Backup your Team Services Git Repositories with VSTS Vault
 image: /wp-content/uploads/2016/06/vault.jpg
 tags: ["BackUp", "Git", "VSTS"]
 title: Backup your Team Services Git Repositories with VSTS Vault
+url: /2016/06/01/backup-team-services-git-repositories-vsts-vault/
 ---
 **Backup your Team Services Git Repositories with VSTS Vault**: A simple windows service or console application designed to keep a local copy of all your code.
 

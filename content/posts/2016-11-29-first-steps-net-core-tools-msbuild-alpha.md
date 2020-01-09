@@ -8,6 +8,7 @@ description: First steps with .NET Core Tools MSBuild "alpha"
 image: /wp-content/uploads/2016/11/netcoremsbuild.jpg
 tags: ["msbuild"]
 title: First steps with .NET Core Tools MSBuild "alpha"
+url: /2016/11/29/first-steps-net-core-tools-msbuild-alpha/
 ---
 On November 16th, Microsoft announced the <a href="https://blogs.msdn.microsoft.com/dotnet/2016/11/16/announcing-net-core-tools-msbuild-alpha/?Wt.mc_id=DX_MVP8656" target="_blank">.NET Core Tools MSBuild"alpha"</a>. I've been developing .Net Core applications with Visual Studio Code for a while now, and I needed to try the new tooling.
 

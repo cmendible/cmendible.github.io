@@ -10,6 +10,7 @@ image: /assets/img/posts/azurefunctions.jpg
 published: true
 tags: ["Docker", "AzureFunctions", "Dockerfile", "Serverless"]
 title: Run a Precompiled .NET Core Azure Function in a Container
+url: /2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/
 ---
 
 So this morning I found my self browsing through the images Microsoft has published in the [Docker Hub](https://hub.docker.com/u/microsoft/) and then I saw this one: [microsoft/azure-functions-runtime](https://hub.docker.com/r/microsoft/azure-functions-runtime/) and decided to **Run a Precompiled .NET Core Azure Function in a Container**.

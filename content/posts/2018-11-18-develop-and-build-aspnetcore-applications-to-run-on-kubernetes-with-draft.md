@@ -12,6 +12,7 @@ image: /assets/img/posts/draft-logo.png
 published: true
 tags: ["aks", "acr", "draft"]
 title: Develop and build ASP.NET Core applications to run on Kubernetes with Draft
+url: /2018/11/18/develop-and-build-aspnetcore-applications-to-run-on-kubernetes-with-draft/
 ---
 
 You start developing an ASP.NET Core application to run it in Kubernetes and suddenly you find yourself creating a docker file, building an image, pushing the image to a registry, creating both a deployment and a service definition for Kubernetes and you wonder if there is a tool out there to help you streamline the whole process.

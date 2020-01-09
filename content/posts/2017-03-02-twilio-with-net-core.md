@@ -8,6 +8,7 @@ description: Twilio with .NET Core
 image: /wp-content/uploads/2017/03/twilio-csharp-blog-logo.png
 tags: ["SMS", "Twilio"]
 title: Twilio with .NET Core
+url: /2017/03/02/twilio-with-net-core/
 ---
 Last night after reading this tweet, I decided to try out **<a href="https://www.twilio.com/" target="_blank">Twilio</a> with .NET Core** 
 

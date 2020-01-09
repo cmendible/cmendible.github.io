@@ -8,6 +8,7 @@ description: Debug ASP.NET Core on Docker with Visual Studio Code
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg
 tags: ["aspNetCore", "Debug", "Docker", "VisualStudioCode"]
 title: Debug ASP.NET Core on Docker with Visual Studio Code
+url: /2016/12/11/debug-asp-net-core-on-docker-with-visual-studio-code/
 ---
 Last Thursday I started reading the Free eBook: <a href="https://aka.ms/dockerlifecycleebook" target="_blank">"Containerized Docker Application Lifecycle with Microsoft Tools and Platform"</a> by Cesar de la Torre. The book is really easy to read and really gives the reader a glimpse on the way to approach the overall application lifecycle when using containers and Microsoft Technologies. One of the interesting things he mentions is the ability to debug your source code inside a container using Visual Studio or Visual Studio Code, so I decided to try it out and **Debug ASP.NET Core on Docker with Visual Studio Code**
 

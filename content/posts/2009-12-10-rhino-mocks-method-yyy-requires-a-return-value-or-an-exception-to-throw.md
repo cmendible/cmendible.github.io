@@ -7,6 +7,7 @@ description: Rhino Mocks Method &#8216;YYY' requires a return value or an except
   to throw.
 tags: ["RhinoMocks", "UnitTests"]
 title: Rhino Mocks Method &#8216;YYY' requires a return value or an exception to throw.
+url: /2009/12/10/rhino-mocks-method-yyy-requires-a-return-value-or-an-exception-to-throw/
 ---
 Yesterday I found myself stucked with a strange exception while programming a unit test using Rhino Mocks.
 

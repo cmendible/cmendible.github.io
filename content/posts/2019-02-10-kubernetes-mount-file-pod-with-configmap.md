@@ -10,6 +10,7 @@ image: /assets/img/posts/kubernetes.png
 published: true
 tags: ["configmap", "volume", "pod"]
 title: 'Kubernetes: Mount a file in your Pod using a ConfigMap'
+url: /2019/02/10/kubernetes-mount-file-pod-with-configmap/
 ---
 
 Lately I've been learning Go and this week I started a side project named [kube-sherlock](https://github.com/cmendible/kube-sherlock). The purpose of this small program is to list any pod that does not have the **labels** that your organization requires.

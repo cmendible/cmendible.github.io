@@ -11,6 +11,7 @@ image: /assets/img/posts/code.png
 published: true
 tags: ["blockchain", "truffle", "ganache", "nodejs", "ethereum", "Docker"]
 title: 'Visual Studio Code Remote Containers: Azure Blockchain'
+url: /2019/07/06/vs-code-remote-containers-azure-blockchain/
 ---
 
 After collaborating with the [Azure Ansible](https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-ansible) container I decided to also develop a Developer Container for those who want or need to use the [Azure Blockchain Development Kit for Ethereum](https://marketplace.visualstudio.com/items?itemName=AzBlockchain.azure-blockchain) to create smart contracts, taking away the burden of installing Python, Truffle, Ganache and NodeJS on your machine.

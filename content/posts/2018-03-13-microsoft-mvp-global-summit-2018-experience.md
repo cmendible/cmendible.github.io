@@ -10,6 +10,7 @@ image: /assets/img/posts/mvpsummit18/me_msft.jpg
 published: true
 tags: ["mvp"]
 title: Microsoft MVP Global Summit 2018 Experience
+url: /2018/02/18/microsoft-mvp-global-summit-2018-experience/
 ---
 
 **Disclaimer**: For those of you who are expecting to learn or read about new technical information and cool new product features or roadmaps I have bad news: almost everything that Microsoft shares with MVPs during the Summit is under an NDA (Non-Disclosure Agreement) which means that what I've learned in Redmond stays with me, inside my head.
