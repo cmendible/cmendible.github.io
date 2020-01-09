@@ -53,9 +53,13 @@
 <meta property="article:author" content="{{ . }}" />
 {{ end }}
 
+{{ if .Params.categories }}
 <meta name="keywords" content="{{ .Title }}, {{ delimit .Params.categories ", " }}" />
 <meta name="news_keywords" content="{{ delimit .Params.categories ", " }}" />
 <meta property="article:section" content="{{ index .Params.categories 0 }}" />
+{{ else }}
+<meta property="keywords" content="{{ .Title }} | {{ .Site.Title }}" />
+{{ end }}
 
 {{ with.Params.tags }}
 <meta property="article:tag" content="{{ index . 0 }}" />
