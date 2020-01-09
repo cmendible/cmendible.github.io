@@ -6,7 +6,6 @@ copyright = "Copyright &copy; 2019 - Carlos Mendible"
 
 canonifyurls = true
 theme = "kiera"
-themesDir = "./themes"
 
 paginate = 10
 
