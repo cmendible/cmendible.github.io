@@ -49,14 +49,18 @@
 <meta name="og:type" content="article">
 
 {{ with.Params.author }}
-<meta property="og:article:author" content="{{humanize . }}" />
-<meta property="article:author" content="{{humanize . }}" />
+<meta property="og:article:author" content="{{ . }}" />
+<meta property="article:author" content="{{ . }}" />
 {{ end }}
 
-{{ with.Params.categories }}
-<meta name="news_keywords" content="{{ index . 0 }}" />
-<meta property="article:section" content="{{ index . 0 }}" />
+<meta name="keywords" content="{{ .Title }}, {{ delimit .Params.categories ", " }}" />
+<meta name="news_keywords" content="{{ delimit .Params.categories ", " }}" />
+<meta property="article:section" content="{{ index .Params.categories 0 }}" />
+
+{{ with.Params.tags }}
+<meta property="article:tag" content="{{ index . 0 }}" />
 {{ end }}
+
 {{ else }}
 <meta name="og:type" content="website">
 {{ end }}
