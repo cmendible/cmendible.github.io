@@ -270,6 +270,6 @@ You are good to go so run the application
 dotnet run
 ```
 
-You can get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/azureservicebus.amqp.console">https://github.com/cmendible/dotnetcore.samples/tree/master/azureservicebus.amqp.console</a>
+You can get the code [here]("https://github.com/cmendible/dotnetcore.samples/tree/master/azureservicebus.amqp.console")
 
 Hope it helps!
