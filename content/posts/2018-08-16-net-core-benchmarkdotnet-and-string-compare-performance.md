@@ -9,6 +9,7 @@ image: /wp-content/uploads/2017/07/dotnetcore.png
 published: true
 tags: ["benchmarkdotnet", "string"]
 title: .NET Core, BenchmarkDotNet and string compare performance
+url: /2018/08/16/dotnet-core-benchmarkdotnet-and-string-compare-performance/
 ---
 
 You have to choose between using **string.compare** or **==** to compare strings. How would you know which method performs faster?

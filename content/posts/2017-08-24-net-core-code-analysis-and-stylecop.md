@@ -8,6 +8,7 @@ description: .NET Core, Code Analysis and StyleCop
 image: /wp-content/uploads/2017/07/dotnetcore.png
 tags: ["CodeAnalysis", "FxCop", "StyleCop"]
 title: .NET Core, Code Analysis and StyleCop
+url: /2017/08/24/dotnet-core-code-analysis-and-stylecop/
 ---
 So now that .NET Core and .NET Standard 2.0 have been released some of you may be migrating applications or even creating new ones with it. As you progress you are starting to worry about the quality of your code so what you want is to at least check your code against design and style guidelines don't you? 
 

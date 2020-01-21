@@ -7,6 +7,7 @@ description: .NET Core and Microsoft Bot Framework
 image: /wp-content/uploads/2016/09/bot-framework-default-8.png
 tags: ["aspNetCore", "BotFramewok", "REST"]
 title: .NET Core and Microsoft Bot Framework
+url: /2016/09/11/dotnetcore-and-microsoft-bot-framework/
 ---
 Today I'll show you how to create a simple Skype bot that will reply with the same text message you send to it. 
 
