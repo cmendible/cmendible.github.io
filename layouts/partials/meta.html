@@ -61,8 +61,8 @@
 <meta property="keywords" content="{{ .Title }} | {{ .Site.Title }}" />
 {{ end }}
 
-{{ with.Params.tags }}
-<meta property="article:tag" content="{{ index . 0 }}" />
+{{ if .Params.tags }}
+<meta property="article:tag" content="{{ delimit .Params.tags ", " }}" />
 {{ end }}
 
 {{ else }}
