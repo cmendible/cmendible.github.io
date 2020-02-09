@@ -14,7 +14,7 @@ title: 'MongoDB Enterprise Operator: Deploying MongoDB in AKS'
 url: /2020/02/09/mongodb-enterprise-operator-deploying-mongodb-in-aks/
 ---
 
-a couple of weeks ago I was trying to deploy MongoDB in AKS using the [MongoDB Enterprise Operator]https://docs.mongodb.com/kubernetes-operator/master/tutorial/install-k8s-operator/) and had trouble finding a simple tutorial to make the thing work. This post intends to fill that gap with a straight to the point approach.
+a couple of weeks ago I was trying to deploy MongoDB in AKS using the [MongoDB Enterprise Operator](https://docs.mongodb.com/kubernetes-operator/master/tutorial/install-k8s-operator/) and had trouble finding a simple tutorial to make the thing work. This post intends to fill that gap with a straight to the point approach.
 
 ## Prerequisites
 
