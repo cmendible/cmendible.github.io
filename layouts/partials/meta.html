@@ -45,7 +45,7 @@
 <meta name="twitter:site" content="@{{ .Site.Author.twitter }}">
 <meta name="twitter:creator" content="@{{ .Site.Author.twitter }}">
 
-{{ if eq .Type "posts" }}
+{{ if eq .Type "posts" | eq .Type "events" }}
 <meta name="og:type" content="article">
 
 {{ with.Params.author }}

@@ -48,12 +48,16 @@ googleAnalytics = "UA-11243417-1"
     weight = 20
     url = "/posts/"
 [[menu.main]]
-    name = "Categories"
+    name = "Events"
     weight = 30
+    url = "/events/"
+[[menu.main]]
+    name = "Categories"
+    weight = 40
     url = "/categories/"
 [[menu.main]]
     name = "About"
-    weight = 40
+    weight = 50
     url = "/about"
 
 [outputFormats]
