@@ -1,4 +1,5 @@
 ---
+disableComments: true
 author: Carlos Mendible
 categories:
 - azure
