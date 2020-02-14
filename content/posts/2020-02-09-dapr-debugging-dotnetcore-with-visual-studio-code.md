@@ -13,7 +13,7 @@ title: 'Dapr: Debugging .NET Core with Visual Studio Code'
 url: /2020/02/09/dapr-debugging-dotnetcore-with-visual-studio-code/
 ---
 
-So you are new to [Dapr](https://dapr.io) and you are trying to understand how it works with you .NET Core application. You already tried launching your app with the Dapr CLI and you then you find yourself wondering on how to debug the mix with Visual Studio Code.
+So you are new to [Dapr](https://dapr.io) and you are trying to understand how it works with you .NET Core application. You already tried launching your app with the Dapr CLI and then you find yourself wondering on how to debug the mix with Visual Studio Code.
 
 Well, follow this simple steps and you'll be ready:
 
