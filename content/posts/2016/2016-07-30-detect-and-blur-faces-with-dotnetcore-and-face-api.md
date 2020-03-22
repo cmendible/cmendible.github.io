@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - azure
-- dotnetcore
+- dotnet
 date: "2016-07-30T16:07:18Z"
 description: Detect and Blur Faces with .NET Core and Face API
 image: /wp-content/uploads/2016/07/detectedfaces.jpg

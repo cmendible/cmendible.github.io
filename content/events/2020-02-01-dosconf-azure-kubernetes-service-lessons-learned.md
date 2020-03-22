@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-- dotnetcore
+- dotnet
 - kubernetes
 date: "2020-02-01T00:00:00Z"
 description: "DOSConf - Azure Kuberentes Service: Lessons Learned"

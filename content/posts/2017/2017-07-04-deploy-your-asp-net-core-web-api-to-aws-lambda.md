@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotnetcore
+- dotnet
 crosspost_to_medium: true
 date: "2017-07-04T12:59:05Z"
 description: Deploy your ASP.NET Core Web API to AWS Lambda

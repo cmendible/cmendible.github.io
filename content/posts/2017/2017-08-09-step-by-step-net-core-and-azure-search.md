@@ -2,7 +2,7 @@
 author: Robert Bermejo
 categories:
 - azure
-- dotnetcore
+- dotnet
 crosspost_to_medium: true
 date: "2017-08-09T15:51:07Z"
 descripton: 'Step by step: .Net Core and Azure Search'

@@ -3,7 +3,7 @@ disableComments: true
 author: Carlos Mendible
 categories:
 - azure
-- dotnetcore
+- dotnet
 - kubernetes
 date: "2020-02-11T00:00:00Z"
 description: ".NET Core and Azure without credentials? Impossible is nothing!"

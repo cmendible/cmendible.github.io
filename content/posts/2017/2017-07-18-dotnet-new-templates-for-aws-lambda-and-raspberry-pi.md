@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotnetcore
+- dotnet
 crosspost_to_medium: true
 date: "2017-07-18T08:56:48Z"
 description: dotnet new templates for AWS Lambda and Raspberry Pi

@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotnetcore
+- dotnet
 crosspost_to_medium: true
 date: "2018-08-16T11:27:39Z"
 description: .NET Core, BenchmarkDotNet and string compare performance

@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - azure
-- dotnetcore
+- dotnet
 crosspost_to_medium: true
 date: "2017-06-25T18:52:22Z"
 description: 'Step by step: .NET Core and Azure Cosmos DB'

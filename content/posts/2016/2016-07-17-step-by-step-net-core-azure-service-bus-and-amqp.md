@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - azure
-- dotnetcore
+- dotnet
 date: "2016-07-17T15:21:03Z"
 description: 'Step by step: .NET Core, Azure Service Bus and AMQP'
 image: /wp-content/uploads/2016/02/Microsoft-Service-Bus-logo.png

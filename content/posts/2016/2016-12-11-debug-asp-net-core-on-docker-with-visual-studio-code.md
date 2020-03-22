@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - devops
-- dotnetcore
+- dotnet
 date: "2016-12-11T12:49:54Z"
 description: Debug ASP.NET Core on Docker with Visual Studio Code
 image: /wp-content/uploads/2016/09/dotnetdocker.jpg

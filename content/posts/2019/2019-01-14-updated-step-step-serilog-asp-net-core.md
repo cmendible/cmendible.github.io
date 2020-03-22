@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotnetcore
+- dotnet
 crosspost_to_medium: true
 date: "2019-01-14T18:00:00Z"
 description: 'Updated Step by step: Serilog with ASP.NET Core'

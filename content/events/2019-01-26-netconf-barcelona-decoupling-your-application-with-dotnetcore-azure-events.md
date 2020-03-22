@@ -2,7 +2,7 @@
 disableComments: true
 author: Carlos Mendible
 categories:
-- dotnetcore
+- dotnet
 - azure
 date: "2019-01-26T00:00:00Z"
 description: "NetConf Barcelona - Decoupling your Application with .NET Core, Azure and Events"

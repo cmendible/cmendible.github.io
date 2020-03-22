@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotnetcore
+- dotnet
 - azure
 crosspost_to_medium: true
 date: "2020-02-09T00:00:00Z"

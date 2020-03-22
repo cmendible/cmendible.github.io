@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotnetcore
+- dotnet
 - kubernetes
 - devops
 crosspost_to_medium: true

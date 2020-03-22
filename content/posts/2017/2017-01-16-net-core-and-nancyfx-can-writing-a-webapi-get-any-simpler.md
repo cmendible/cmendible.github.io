@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotnetcore
+- dotnet
 date: "2017-01-16T14:54:55Z"
 description: '.Net Core and NancyFX: can writing a WebApi get any simpler?'
 image: /wp-content/uploads/2017/01/nancy.jpg

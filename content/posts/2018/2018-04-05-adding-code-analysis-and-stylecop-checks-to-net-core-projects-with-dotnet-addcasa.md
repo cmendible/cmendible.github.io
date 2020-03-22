@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotnetcore
+- dotnet
 crosspost_to_medium: true
 date: "2018-04-05T07:21:39Z"
 description: .NET Core, Code Analysis and StyleCop with dotnet-addcasa

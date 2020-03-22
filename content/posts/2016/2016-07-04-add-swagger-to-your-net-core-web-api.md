@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-- dotnetcore
 date: "2016-07-04T08:20:15Z"
 description: Add Swagger to your .NET Core Web API
 image: /wp-content/uploads/2016/07/AddSwaggerHttp.png

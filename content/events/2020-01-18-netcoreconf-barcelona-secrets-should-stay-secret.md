@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-- dotnetcore
+- dotnet
 - kubernetes
 date: "2020-01-18T00:00:00Z"
 description: "Netcoreconf Barcelona - Shhhhh: Secrets Should Stay Secret"

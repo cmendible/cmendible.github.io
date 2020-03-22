@@ -3,7 +3,7 @@ disableComments: true
 author: Carlos Mendible
 categories:
 - azure
-- dotnetcore
+- dotnet
 date: "2020-02-28T00:00:00Z"
 description: "Introduction to Dapr: a runtime for building microservices on cloud and edge"
 tags: ["dapr", "keyvault", "managedidentity", "secretmanager"]

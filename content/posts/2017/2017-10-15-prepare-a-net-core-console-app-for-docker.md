@@ -1,7 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- dotnetcore
+- dotnet
 crosspost_to_medium: true
 date: "2017-10-15T12:16:08Z"
 description: The following code shows you the structure of the console app we created

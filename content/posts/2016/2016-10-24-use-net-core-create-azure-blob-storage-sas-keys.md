@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - azure
-- dotnetcore
+- dotnet
 date: "2016-10-24T10:11:58Z"
 description: Use .NET Core to Create Azure Blob Storage SAS Keys
 image: /wp-content/uploads/2016/10/SAS.jpg

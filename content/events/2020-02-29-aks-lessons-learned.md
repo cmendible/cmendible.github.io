@@ -3,7 +3,7 @@ disableComments: true
 author: Carlos Mendible
 categories:
 - azure
-- dotnetcore
+- dotnet
 date: "2020-02-28T00:00:00Z"
 description: "Azure Kubernetes Service: Lessons Learned"
 tags: ["dapr", "keyvault", "managedidentity", "secretmanager"]
