@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-- dotnet
 crosspost_to_medium: true
 date: "2020-04-05T00:00:00Z"
 description: 'Kubernetes NGINX ingress controller with Dapr'
