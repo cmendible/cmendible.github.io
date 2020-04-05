@@ -14,7 +14,7 @@ url: /2018/04/05/adding-code-analysis-and-stylecop-checks-to-net-core-projects-w
 
 Today I'll show you how to use [dotnet-addcasa](https://github.com/cmendible/dotnet-addcasa): a .NET Core global tool to add CodeAnalysis and Stylecop checks to your projects.
 
-If you want to manually add those checks or understand the tool internals check my post: [.NET Core, Code Analysis and StyleCop]({{ site.baseurl }}{% post_url 2017-08-24-net-core-code-analysis-and-stylecop %})
+If you want to manually add those checks or understand the tool internals check my post: [.NET Core, Code Analysis and StyleCop](https://carlos.mendible.com/2017/08/24/dotnet-core-code-analysis-and-stylecop/)
 
 ## 1. Prerequisites
 ---

@@ -16,7 +16,7 @@ url: /2018/03/20/secure-your-kubernetes-services-with-nginx-ingress-controller-t
 
 **Disclaimer:** samples provided in this post were tested both in [Azure Container Services (AKS)](https://docs.microsoft.com/en-us/azure/aks/) and [Kubernetes provided by Docker for Windows](https://blog.docker.com/2018/01/docker-windows-desktop-now-kubernetes/).
 
-In previous posts I showed you how to [Run a Precompiled .NET Core Azure Function in a Container]({{ site.baseurl }}{% post_url 2017-12-28-run-a-precomplied-net-core-azure-function-in-a-container %}) and how to [Deploy your first Service to Azure Container Services (AKS)]({{ site.baseurl }}{% post_url 2017-12-01-deploy-your-first-service-to-azure-container-services-aks %}).
+In previous posts I showed you how to [Run a Precompiled .NET Core Azure Function in a Container](https://carlos.mendible.com//2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container) and how to [Deploy your first Service to Azure Container Services (AKS)](https://carlos.mendible.com/2017/12/01/deploy-your-first-service-to-azure-container-services-aks).
 
 By now you should be able to run your own services in Kubernetes and starting to wonder about how can you give answers to questions such as:
 

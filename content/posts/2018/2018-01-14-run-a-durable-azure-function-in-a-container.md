@@ -14,7 +14,7 @@ title: Run a Durable Azure Function in a Container
 
 Greetings readers! Hope you all a Happy New Year!
 
-Last post I was about [running a Precompiled .NET Core Azure Function in a Container]({{ site.baseurl }}{% post_url 2017-12-28-run-a-precomplied-net-core-azure-function-in-a-container %}). This time let's go one step further and **Run a Durable Azure Function in a Container**
+Last post I was about [running a Precompiled .NET Core Azure Function in a Container](https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container). This time let's go one step further and **Run a Durable Azure Function in a Container**
 
 **Prerequisites**:
 

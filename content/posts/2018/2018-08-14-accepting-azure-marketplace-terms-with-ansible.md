@@ -12,7 +12,7 @@ tags: ["ansible"]
 title: Accepting Azure Marketplace Terms with Ansible
 ---
 
-Last May I wrote: [Accepting Azure Marketplace Terms with Azure CLI]({{ site.baseurl }}{% post_url 2018-05-21-accepting-azure-marketplace-terms-with-azure-cli %}) and this time we'll accomplish the same task with Ansible.
+Last May I wrote: [Accepting Azure Marketplace Terms with Azure CLI](https://carlos.mendible.com/2018/05/21/accepting-azure-marketplace-terms-with-azure-cli) and this time we'll accomplish the same task with Ansible.
 
 Turns out that Ansible 2.6 comes with a handy new module: [azure_rm_resource](https://docs.ansible.com/ansible/latest/modules/azure_rm_resource_module.html?highlight=azure_rm_resource) which lets you create, update or delete any Azure resource using Azure REST API. So I decided to take it for a test drive with the "Accepting Terms" sample.
 

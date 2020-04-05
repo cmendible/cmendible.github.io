@@ -12,7 +12,7 @@ title: Revisiting Docker Multi Stage Builds to build an ASP.NET Core Echo Server
 url: /2018/09/25/revisiting-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/
 ---
 
-On April I wrote a post about [Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server]({{ site.baseurl }}{% post_url 2018-04-04-using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server %}) and these days while preparing a talk, on CI/CD and kubernetes, I started to play with the [simple sample](https://github.com/cmendible/dotnetcore.samples/tree/master/echoserver) I wrote back then.
+On April I wrote a post about [Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server](https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server) and these days while preparing a talk, on CI/CD and kubernetes, I started to play with the [simple sample](https://github.com/cmendible/dotnetcore.samples/tree/master/echoserver) I wrote back then.
 
 Soon enough I noticed that with each ```docker build``` command I issued the dependencies for the echoserver were always restored, even if no changes were made to the project file (csproj).
 

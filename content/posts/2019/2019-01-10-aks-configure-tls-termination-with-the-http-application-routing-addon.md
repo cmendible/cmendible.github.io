@@ -19,7 +19,7 @@ Either way you end up with an [NGINX Ingress Controller](https://github.com/kube
 * *ingress-class: addon-http-application-routing*
 * *annotations-prefix: nginx.ingress.kubernetes.io*
 
-Does this means that you can use this controller for TLS termination? The answer is yes! And you can also use rate limits, and whitelisting as described in my post [Secure your Kubernetes services with NGINX ingress controller, tls and more.]({{ site.baseurl }}{% post_url 2018-03-20-secure-your-kubernetes-services-with-nginx-ingress-controller-tls-and-more %})
+Does this means that you can use this controller for TLS termination? The answer is yes! And you can also use rate limits, and whitelisting as described in my post [Secure your Kubernetes services with NGINX ingress controller, tls and more.](https://carlos.mendible.com/2018/03/20/secure-your-kubernetes-services-with-nginx-ingress-controller-tls-and-more/)
 
 So to try it out, follow steps **2** and **5** of the previous post, but be sure to replace the contents of the **ingress_rules.yaml** file with the following yaml (Don't forget to replace the DNS Zone Name):
 
