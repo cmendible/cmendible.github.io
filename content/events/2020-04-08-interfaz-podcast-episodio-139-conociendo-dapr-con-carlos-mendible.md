@@ -3,12 +3,12 @@ disableComments: true
 author: Carlos Mendible
 categories:
 - azure
-- devops
+- dotnet
 - kubernetes
 date: "2020-04-08T00:00:00Z"
-description: "Interfaz Podcast Episodio 129 – En vivo desde Microsoft Ignite 2019 – Novedades en AKS y Contenedores con Carlos Mendible"
-tags: ["alexa", "chatops"]
-title: "Interfaz Podcast Episodio 129 – En vivo desde Microsoft Ignite 2019 – Novedades en AKS y Contenedores con Carlos Mendible"
+description: "Interfaz Podcast Episodio 139 – Conociendo Dapr con Carlos Mendible"
+tags: ["dapr"]
+title: "Interfaz Podcast Episodio 139 – Conociendo Dapr con Carlos Mendible"
 url: /events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/
 ---
 
