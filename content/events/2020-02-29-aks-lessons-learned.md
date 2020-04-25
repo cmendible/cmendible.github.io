@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - dotnet
-date: "2020-02-28T00:00:00Z"
+date: "2020-02-29T00:00:00Z"
 description: "Azure Kubernetes Service: Lessons Learned"
 tags: ["dapr", "keyvault", "managedidentity", "secretmanager"]
 title: "Azure Kubernetes Service: Lessons Learned"
