@@ -7,7 +7,7 @@ crosspost_to_medium: true
 date: "2019-05-16T15:00:00Z"
 description: 'ARM: Enable Container Monitoring Solution on an existing Log Analytics
   Workspace'
-image: /assets/img/posts/azure.png
+images: ["/assets/img/posts/azure.png"]
 published: true
 tags: ["ARM", "Automation", "LogAnalytics"]
 title: 'ARM: Enable Container Monitoring Solution on an existing Log Analytics Workspace'

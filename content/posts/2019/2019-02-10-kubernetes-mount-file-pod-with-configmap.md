@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2019-02-10T15:12:00Z"
 description: 'Kubernetes: Mount a file in your Pod using a ConfigMap'
-image: /assets/img/posts/kubernetes.png
+images: ["/assets/img/posts/aks.png"]
 published: true
 tags: ["configmap", "volume", "pod"]
 title: 'Kubernetes: Mount a file in your Pod using a ConfigMap'
@@ -17,7 +17,7 @@ Lately I've been learning Go and this week I started a side project named [kube-
 
 For [kube-sherlock](https://github.com/cmendible/kube-sherlock) I created a [dockerfile](https://github.com/cmendible/kube-sherlock/blob/master/dockerfile) were both the program (kube-sherlock) and the default configuration (config.yaml) are placed in the **app** folder:
 
-``` docker
+```docker
 FROM golang:1.11.5 AS build
 WORKDIR /src
 ADD go.mod go.sum ./

@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2019-01-14T18:00:00Z"
 description: 'Updated Step by step: Serilog with ASP.NET Core'
-image: /wp-content/uploads/2016/09/serilog.png
+images: ["/wp-content/uploads/2016/09/serilog.png"]
 published: true
 tags: ["aspNetCore", "SeriLog"]
 title: 'Updated Step by step: Serilog with ASP.NET Core'

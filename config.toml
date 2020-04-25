@@ -22,10 +22,10 @@ googleAnalytics = "UA-11243417-1"
 [author]
     name = "Carlos Mendible"
     github = "cmendible"
-    gitlab = ""
     linkedin = "carlosmendible"
-    facebook = ""
     twitter = "cmendibl3"
+    reddit = "cmendibl3"
+    stackoverflow = "users/332127"
     instagram = "cmendibl3"
 
 [params]

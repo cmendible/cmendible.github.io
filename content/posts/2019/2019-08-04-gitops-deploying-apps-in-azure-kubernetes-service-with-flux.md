@@ -7,7 +7,7 @@ categories:
 crosspost_to_medium: true
 date: "2019-08-04T00:00:00Z"
 description: 'GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux'
-image: /assets/img/posts/aks.png
+images: ["/assets/img/posts/aks.png"]
 published: true
 tags: ["git", "gitops", "aks"]
 title: 'GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux'

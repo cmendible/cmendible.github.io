@@ -1,5 +1,5 @@
 <section class="comments-block">
-      <button id="show-comments" style="display: none;"><i class="fa fa-comments-o"></i> Add/View Comments</button>
+      <button id="show-comments" style="display: none;"><i class="fa fa-comments"></i> {{ T "comments "}}</button>
 </section>
 
 <section id="disqus_thread"></section>
@@ -15,8 +15,14 @@
             var disqus_shortname = '{{ .Site.DisqusShortname }}';
             var disqus_button = document.getElementById("show-comments");
 
+            var disqus_autoload = {{ .Site.Params.CommentAutoload }};
             disqus_button.style.display = "";
-            disqus_button.addEventListener("click", disqus, false);
+
+            if (disqus_autoload){
+                  disqus();
+            }else{
+                  disqus_button.addEventListener("click", disqus, false);
+            }
 
             function disqus() {
 

@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2020-02-09T00:00:00Z"
 description: 'Dapr: Debugging .NET Core with Visual Studio Code'
-image: /assets/img/posts/aks.png
+images: []
 published: true
 tags: ["dapr", "code", "debug"]
 title: 'Dapr: Debugging .NET Core with Visual Studio Code'

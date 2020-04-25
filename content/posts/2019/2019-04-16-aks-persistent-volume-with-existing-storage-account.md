@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2019-04-16T05:00:00Z"
 description: 'AKS: Persistent Volume with existing Storage Account'
-image: /assets/img/posts/kubernetes.png
+images: ["/assets/img/posts/aks.png"]
 published: true
 tags: ["StorageAccount", "persistentvolume", "persistentvolumeclaim", "storageclass"]
 title: 'AKS: Persistent Volume with existing Storage Account'

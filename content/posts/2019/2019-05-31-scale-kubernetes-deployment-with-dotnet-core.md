@@ -7,7 +7,7 @@ categories:
 crosspost_to_medium: true
 date: "2019-05-31T09:12:00Z"
 description: Scale a Kubernetes Deployment with .NET Core
-image: /assets/img/posts/kubernetes.png
+images: ["/assets/img/posts/aks.png"]
 published: true
 tags: ["aspNetCore"]
 title: Scale a Kubernetes Deployment with .NET Core

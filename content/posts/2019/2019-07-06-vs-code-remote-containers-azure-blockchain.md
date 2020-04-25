@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2019-07-06T00:00:00Z"
 description: 'Visual Studio Code Remote Containers: Azure Blockchain'
-image: /assets/img/posts/code.png
+images: ["/assets/img/posts/code.png"]
 published: true
 tags: ["blockchain", "truffle", "ganache", "nodejs", "ethereum", "Docker"]
 title: 'Visual Studio Code Remote Containers: Azure Blockchain'

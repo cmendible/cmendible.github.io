@@ -7,7 +7,7 @@ categories:
 crosspost_to_medium: true
 date: "2020-02-09T00:00:00Z"
 description: 'MongoDB Enterprise Operator: Deploying MongoDB in AKS'
-image: /assets/img/posts/aks.png
+images: ["/assets/img/posts/aks.png"]
 published: true
 tags: ["mongodb"]
 title: 'MongoDB Enterprise Operator: Deploying MongoDB in AKS'

@@ -1,74 +1,17 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-<meta property="og:title" content="{{ .Title }} | {{ .Site.Title }}" />
-<meta name="twitter:title" content="{{ .Title }} | {{ .Site.Title }}" />
-<meta itemprop="name" content="{{ .Title }} | {{ .Site.Title }}" />
-<meta name="application-name" content="{{ .Title }} | {{ .Site.Title }}" />
-<meta property="og:site_name" content="{{ .Site.Title }}" />
-
-<meta name="description" content="{{ .Params.description | default .Site.Params.description  }}" />
-<meta itemprop="description" content="{{ .Params.description | default .Site.Params.description  }}" />
-<meta property="og:description" content="{{ .Params.description | default .Site.Params.description  }}" />
-<meta name="twitter:description" content="{{ .Params.description | default .Site.Params.description  }}" />
-
+<meta name="description" content="{{ .Site.Params.description | default "The HTML5 Herald" }}" />
 <meta name="author" content="{{ .Params.Author | default .Site.Author.name }}" />
-<meta property="og:locale" content="{{ .Language.Lang }}">
-<meta name="language" content="{{ .Language.LanguageName }}">
-
-{{ with .Params.image }}
-<meta itemprop="image" content="{{ . | absURL }}" />
-<meta property="og:image" content="{{ . | absURL }}" />
-<meta name="twitter:image" content="{{ . | absURL }}" />
-<meta name="twitter:image:src" content="{{ . | absURL }}" />
-{{ else }}
-<meta itemprop="image" content="{{ .Site.Params.ogimage | absURL }}" />
-<meta property="og:image" content="{{ .Site.Params.ogimage | absURL }}" />
-<meta name="twitter:image" content="{{ .Site.Params.ogimage | absURL }}" />
-<meta name="twitter:image:src" content="{{ .Site.Params.ogimage | absURL }}" />
-{{ end }}
-
-<base href="{{ .Permalink }}">
-<link rel="canonical" href="{{ .Permalink }}" itemprop="url" />
-<meta name="url" content="{{ .Permalink }}" />
-<meta name="twitter:url" content="{{ .Permalink }}" />
-<meta property="og:url" content="{{ .Permalink }}" />
-
-<meta property="og:updated_time" content={{ .Lastmod.Format "2006-01-02T15:04:05Z0700" | safeHTML }} />
-<link rel="sitemap" type="application/xml" title="Sitemap" href="{{ .Site.BaseURL }}sitemap.xml" />
-
-{{- with .OutputFormats.Get "rss" -}}
-{{ printf `<link rel="%s" type="%s+%s" href="%s" title="%s" />` .Rel .MediaType.Type .MediaType.Suffix .Permalink $.Site.Title | safeHTML }}
-{{- end -}}
-
-<meta name="twitter:card" content="summary">
-<meta name="twitter:site" content="@{{ .Site.Author.twitter }}">
-<meta name="twitter:creator" content="@{{ .Site.Author.twitter }}">
-
-{{ if eq .Type "posts" | eq .Type "events" }}
-<meta name="og:type" content="article">
-
-{{ with.Params.author }}
-<meta property="og:article:author" content="{{ . }}" />
-<meta property="article:author" content="{{ . }}" />
-{{ end }}
-
+<meta name="google-site-verification" content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE" />
 {{ if .Params.categories }}
 <meta name="keywords" content="{{ .Title }}, {{ delimit .Params.categories ", " }}" />
 <meta name="news_keywords" content="{{ delimit .Params.categories ", " }}" />
-<meta property="article:section" content="{{ index .Params.categories 0 }}" />
 {{ else }}
 <meta property="keywords" content="{{ .Title }} | {{ .Site.Title }}" />
 {{ end }}
-
-{{ if .Params.tags }}
-<meta property="article:tag" content="{{ delimit .Params.tags ", " }}" />
-{{ end }}
-
-{{ else }}
-<meta name="og:type" content="website">
-{{ end }}
-
-<meta name="google-site-verification" content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE" />
-
+{{- with .OutputFormats.Get "rss" -}}
+{{ printf `<link rel="%s" type="%s+%s" href="%s" title="%s" />` .Rel .MediaType.Type .MediaType.Suffix .Permalink $.Site.Title | safeHTML }}
+{{- end -}}
+{{ template "_internal/opengraph.html" . }}
+{{ template "_internal/twitter_cards.html" . }}
 {{ hugo.Generator -}}

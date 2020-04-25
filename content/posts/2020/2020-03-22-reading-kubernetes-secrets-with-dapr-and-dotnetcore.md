@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2020-03-22T00:00:00Z"
 description: 'Reading Kubernetes Secrets with Dapr and .NET Core'
-image: /assets/img/posts/aks.png
+images: ["/assets/img/posts/aks.png"]
 published: true
 tags: ["dapr"]
 title: 'Reading Kubernetes Secrets with Dapr and .NET Core'
