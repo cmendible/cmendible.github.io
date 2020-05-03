@@ -2,7 +2,7 @@ baseURL = "https://carlos.mendible.com/"
 disablePathToLower = false
 languageCode = "en-us"
 title = "Code it Yourself..."
-copyright = "Copyright &copy; 2019 - Carlos Mendible"
+copyright = "Copyright &copy; 2020 - Carlos Mendible"
 
 canonifyurls = true
 theme = "kiera"
@@ -32,6 +32,8 @@ googleAnalytics = "UA-11243417-1"
     tagline = "A blog on Microsoft Azure and .NET by Carlos Mendible"
     description = "A blog on Microsoft Azure and .NET by Carlos Mendible"
     ogimage = "/assets/img/about_me.jpg"
+    commentAutoload = true
+
 
 [languages]
   [languages.en]
