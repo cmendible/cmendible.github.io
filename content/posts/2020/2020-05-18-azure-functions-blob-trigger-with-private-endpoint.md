@@ -351,7 +351,7 @@ nameresolver <name of the storage account>.blob.core.windows.net
 
 The output of the command should show **10.0.2.4** as the IP address. If that's not the case you probably misconfigured something. [[3]](#references)
 
-Hope it helps!
+Hope it helps and please find a copy of all the code [here](https://github.com/cmendible/azure.samples/tree/master/function_sa_private_endpoint)
 
 ## References
 
