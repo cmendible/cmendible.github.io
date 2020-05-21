@@ -5,7 +5,7 @@ categories:
 - devops
 date: "2016-06-05T19:08:30Z"
 description: Stop or Start all WebApps in your Azure subscription
-image: /wp-content/uploads/2016/06/automation1.png
+images: ["/wp-content/uploads/2016/06/automation1.png"]
 tags: ["Automation", "PowerShell", "WebApp", "WebSite"]
 title: Stop or Start all WebApps in your Azure subscription
 url: /2016/06/05/stop-start-webapps-azure-subscription/

@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2018-08-16T11:27:39Z"
 description: .NET Core, BenchmarkDotNet and string compare performance
-image: /wp-content/uploads/2017/07/dotnetcore.png
+images: ["/wp-content/uploads/2017/07/dotnetcore.png"]
 published: true
 tags: ["benchmarkdotnet", "string"]
 title: .NET Core, BenchmarkDotNet and string compare performance

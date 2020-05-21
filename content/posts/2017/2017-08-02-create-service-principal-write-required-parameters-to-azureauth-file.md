@@ -7,7 +7,7 @@ crosspost_to_medium: true
 date: "2017-08-02T16:57:08Z"
 description: Create a Service Principal and write required parameters to a .azureauth
   file
-image: /wp-content/uploads/2016/06/automation1.png
+images: ["/wp-content/uploads/2016/06/automation1.png"]
 tags: ["Automation", "AzureAD", "PowerShell", "Service", "Principal"]
 title: Create a Service Principal and write required parameters to a .azureauth file
 url: /2017/08/02/create-service-principal-write-required-parameters-to-azureauth-file/

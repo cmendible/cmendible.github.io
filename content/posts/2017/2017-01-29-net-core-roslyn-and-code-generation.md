@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-01-29T20:31:41Z"
 description: .NET Core, Roslyn and Code Generation
-image: /wp-content/uploads/2017/01/roslyn.png
+images: ["/wp-content/uploads/2017/01/roslyn.png"]
 tags: ["Roslyn"]
 title: .NET Core, Roslyn and Code Generation
 url: /2017/01/29/net-core-roslyn-and-code-generation/

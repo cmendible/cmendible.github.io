@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2018-06-10T20:39:00Z"
 description: Simple Machine Learning with .NET Core Sample
-image: /wp-content/uploads/2017/07/dotnetcore.png
+images: ["/wp-content/uploads/2017/07/dotnetcore.png"]
 published: true
 tags: ["MachineLearning", "Titanic", "BinaryClassifier", "Classifier"]
 title: Simple Machine Learning with .NET Core Sample

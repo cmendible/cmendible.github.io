@@ -7,7 +7,7 @@ crosspost_to_medium: true
 date: "2018-03-20T15:13:00Z"
 description: Secure your Kubernetes services with NGINX ingress controller, tls and
   more.
-image: /assets/img/posts/kubernetes.png
+images: ["/assets/img/posts/kubernetes.png"]
 published: true
 tags: ["nginx", "ingress", "whitelist", "tls", "ratelimit"]
 title: Secure your Kubernetes services with NGINX ingress controller, tls and more.

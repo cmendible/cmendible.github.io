@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2016-09-11T09:15:32Z"
 description: .NET Core and Microsoft Bot Framework
-image: /wp-content/uploads/2016/09/bot-framework-default-8.png
+images: ["/wp-content/uploads/2016/09/bot-framework-default-8.png"]
 tags: ["aspNetCore", "BotFramewok", "REST"]
 title: .NET Core and Microsoft Bot Framework
 url: /2016/09/11/dotnetcore-and-microsoft-bot-framework/

@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-08-04T08:50:13Z"
 description: Read Azure Service Health Activity Logs with .NET Core
-image: /wp-content/uploads/2017/08/loganalytics.png
+images: ["/wp-content/uploads/2017/08/loganalytics.png"]
 tags: ["ActivityLogs", "HealthEndpoint", "LogAnalytics", "ServiceHealth"]
 title: Read Azure Service Health Activity Logs with .NET Core
 url: /2017/08/04/read-azure-service-health-activity-logs-with-net-core/

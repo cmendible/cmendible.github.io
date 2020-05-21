@@ -5,7 +5,7 @@ categories:
 - dotnet
 date: "2016-03-13T14:39:25Z"
 description: 'EasyAzureServiceBus: easy Service Bus 1.1 for Windows Server'
-image: /wp-content/uploads/2016/02/Microsoft-Service-Bus-logo.png
+images: ["/wp-content/uploads/2016/02/Microsoft-Service-Bus-logo.png"]
 tags: ["ESB", "ServiceBus"]
 title: 'EasyAzureServiceBus: easy Service Bus 1.1 for Windows Server'
 url: /2016/03/13/easyazureservicebus-easy-service-bus-1-1-windows-server/

@@ -8,7 +8,7 @@ crosspost_to_medium: true
 date: "2018-11-18T10:00:00Z"
 description: Develop and build ASP.NET Core applications to run on Kubernetes with
   Draft
-image: /assets/img/posts/draft-logo.png
+images: ["/assets/img/posts/draft-logo.png"]
 published: true
 tags: ["aks", "acr", "draft"]
 title: Develop and build ASP.NET Core applications to run on Kubernetes with Draft

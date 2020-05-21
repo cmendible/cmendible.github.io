@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2016-09-19T09:32:57Z"
 description: 'Step by step: Serilog with ASP.NET Core'
-image: /wp-content/uploads/2016/09/serilog.png
+images: ["/wp-content/uploads/2016/09/serilog.png"]
 tags: ["aspNetCore", "aspNetCore"]
 title: 'Step by step: Serilog with ASP.NET Core'
 url: /2016/09/19/step-step-serilog-asp-net-core/

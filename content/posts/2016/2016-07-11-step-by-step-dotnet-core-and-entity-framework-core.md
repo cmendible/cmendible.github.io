@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2016-07-11T15:14:26Z"
 description: 'Step by step: .NET Core and Entity Framework Core'
-image: /wp-content/uploads/2016/07/efsqlite.png
+images: ["/wp-content/uploads/2016/07/efsqlite.png"]
 tags: ["EntityFrameworkCore", "SQLite"]
 title: 'Step by step: .NET Core and Entity Framework Core'
 url: /2016/07/11/step-by-step-dotnet-core-and-entity-framework-core/

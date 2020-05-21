@@ -5,7 +5,7 @@ categories:
 - devops
 date: "2016-05-02T18:30:24Z"
 description: Create an Azure Site to Site VPN
-image: /wp-content/uploads/2016/05/Cloud-Azure.jpg
+images: ["/wp-content/uploads/2016/05/Cloud-Azure.jpg"]
 tags: ["HybridCloud", "PowerShell", "VPN", "Site-to-Site"]
 title: Create an Azure Site to Site VPN
 ---

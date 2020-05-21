@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-04-29T19:51:45Z"
 description: 'Step by step: Couchbase Lite with .Net Core'
-image: /wp-content/uploads/2017/04/Couchbase_Inc._official_logo.png
+images: ["/wp-content/uploads/2017/04/Couchbase_Inc._official_logo.png"]
 tags: ["couchbase", "Docker", "NoSQL"]
 title: 'Step by step: Couchbase Lite with .Net Core'
 url: /2017/04/29/step-by-step-couchbase-lite-with-net-core/

@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2018-05-21T19:21:39Z"
 description: Accepting Azure Marketplace Terms with Azure CLI
-image: /assets/img/posts/azure.png
+images: ["/assets/img/posts/azure.png"]
 published: true
 tags: ["CLI"]
 title: Accepting Azure Marketplace Terms with Azure CLI

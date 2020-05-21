@@ -6,7 +6,7 @@ categories:
 - dotnet
 date: "2016-04-06T10:30:28Z"
 description: Export Azure Resource Groups Templates
-image: /wp-content/uploads/2016/04/ExportAzureRmResourceGroup.png
+images: ["/wp-content/uploads/2016/04/ExportAzureRmResourceGroup.png"]
 tags: ["ARM", "Templates", "Export", "PowerShell"]
 title: Export Azure Resource Groups Templates
 ---

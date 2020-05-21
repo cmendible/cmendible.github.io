@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-11-14T02:15:00Z"
 description: Use PowerShell to create a Microsoft Teams Channel
-image: /wp-content/uploads/2017/06/powershell.png
+images: ["/wp-content/uploads/2017/06/powershell.png"]
 tags: ["PowerShell", "MicrosoftTeams"]
 title: Use PowerShell to create a Microsoft Teams Channel
 ---

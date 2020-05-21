@@ -4,7 +4,7 @@ categories:
 - management
 date: "2016-10-17T20:31:41Z"
 description: Is Privacy Dead?
-image: /assets/img/posts/privacydead.jpg
+images: ["/assets/img/posts/privacydead.jpg"]
 tags: ["Security", "Privacy"]
 title: Is Privacy Dead?
 ---

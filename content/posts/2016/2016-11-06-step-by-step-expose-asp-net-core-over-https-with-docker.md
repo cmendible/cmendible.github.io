@@ -5,7 +5,7 @@ categories:
 - dotnet
 date: "2016-11-06T08:00:49Z"
 description: 'Step by step: Expose ASP.NET Core over HTTPS with Docker'
-image: /wp-content/uploads/2016/09/dotnetdocker.jpg
+images: ["/wp-content/uploads/2016/09/dotnetdocker.jpg"]
 tags: ["aspNetCore", "Docker", "https", "Kestrel", "openssl"]
 title: 'Step by step: Expose ASP.NET Core over HTTPS with Docker'
 url: /2016/11/06/step-by-step-expose-asp-net-core-over-https-with-docker/

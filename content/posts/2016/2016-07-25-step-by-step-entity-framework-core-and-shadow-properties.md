@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2016-07-25T16:07:49Z"
 description: 'Step by step: Entity Framework Core and Shadow Properties'
-image: /wp-content/uploads/2016/07/efsqlite.png
+images: ["/wp-content/uploads/2016/07/efsqlite.png"]
 tags: ["EntityFrameworkCore"]
 title: 'Step by step: Entity Framework Core and Shadow Properties'
 ---

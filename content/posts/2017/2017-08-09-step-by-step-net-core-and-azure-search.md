@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-08-09T15:51:07Z"
 descripton: 'Step by step: .Net Core and Azure Search'
-image: /wp-content/uploads/2017/08/Azure-Search.png
+images: ["/wp-content/uploads/2017/08/Azure-Search.png"]
 tags: ["AzureSearch"]
 title: 'Step by step: .Net Core and Azure Search'
 url: /2017/08/09/step-by-step-net-core-and-azure-search/

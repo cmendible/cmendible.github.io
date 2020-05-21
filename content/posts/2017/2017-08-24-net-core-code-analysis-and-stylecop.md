@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-08-24T17:01:39Z"
 description: .NET Core, Code Analysis and StyleCop
-image: /wp-content/uploads/2017/07/dotnetcore.png
+images: ["/wp-content/uploads/2017/07/dotnetcore.png"]
 tags: ["CodeAnalysis", "FxCop", "StyleCop"]
 title: .NET Core, Code Analysis and StyleCop
 url: /2017/08/24/dotnet-core-code-analysis-and-stylecop/

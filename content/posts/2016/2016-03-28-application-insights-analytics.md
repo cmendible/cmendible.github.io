@@ -5,7 +5,7 @@ categories:
 - devops
 date: "2016-03-28T12:01:42Z"
 description: Application Insights Analytics
-image: /wp-content/uploads/2016/03/query-1.png
+images: ["/wp-content/uploads/2016/03/query-1.png"]
 tags: ["ApplicationInsights"]
 title: Application Insights Analytics
 ---

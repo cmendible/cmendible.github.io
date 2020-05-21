@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2018-10-14T14:00:00Z"
 description: Deploying Elastic Search, Fluentd, Kibana on AKS with Helm
-image: /assets/img/posts/kubernetes.png
+images: ["/assets/img/posts/kubernetes.png"]
 published: true
 tags: ["aks", "elasticsearch", "kibana", "fluentd"]
 title: Deploying Elastic Search, Fluentd, Kibana on AKS with Helm

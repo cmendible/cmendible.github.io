@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-09-21T17:23:14Z"
 description: A small .NET Core CLI and MSBUILD Cheat Sheet
-image: /wp-content/uploads/2017/07/dotnetcore.png
+images: ["wp-content/uploads/2017/07/dotnetcore.png"]
 tags: ["CheatSheet", "CLI", "msbuild"]
 title: .NET Core CLI and MSBUILD Cheat Sheet
 url: /2017/09/21/dotnet-core-cli-and-msbuild-cheat-sheet/

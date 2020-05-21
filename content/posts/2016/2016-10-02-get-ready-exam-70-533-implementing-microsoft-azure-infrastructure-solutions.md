@@ -5,7 +5,7 @@ categories:
 - certifications
 date: "2016-10-02T09:54:40Z"
 description: 'Get Ready: Exam 70-533 Implementing Microsoft Azure Infrastructure Solutions'
-image: /wp-content/uploads/2016/10/70-533.jpg
+images: ["/wp-content/uploads/2016/10/70-533.jpg"]
 tags: ["70-533", "Developer", "Exam"]
 title: 'Get Ready: Exam 70-533 Implementing Microsoft Azure Infrastructure Solutions'
 ---

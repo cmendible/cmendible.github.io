@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-03-02T07:28:14Z"
 description: Create a class with .NET Core and Roslyn
-image: /wp-content/uploads/2017/01/roslyn.png
+images: ["/wp-content/uploads/2017/01/roslyn.png"]
 tags: ["Roslyn"]
 title: Create a class with .NET Core and Roslyn
 url: /2017/03/02/create-a-class-with-net-core-and-roslyn/

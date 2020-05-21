@@ -5,7 +5,7 @@ categories:
 - dotnet
 date: "2016-09-26T06:59:08Z"
 description: 'Step by step: ASP.NET Core on Docker'
-image: /wp-content/uploads/2016/09/dotnetdocker.jpg
+images: ["/wp-content/uploads/2016/09/dotnetdocker.jpg"]
 tags: ["aspNetCore", "Docker"]
 title: 'Step by step: ASP.NET Core on Docker'
 url: /2016/09/26/step-by-step-asp-net-core-on-docker/

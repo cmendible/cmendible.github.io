@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-06-25T18:52:22Z"
 description: 'Step by step: .NET Core and Azure Cosmos DB'
-image: /wp-content/uploads/2017/06/cosmos.png
+images: ["/wp-content/uploads/2017/06/cosmos.png"]
 tags: ["CosmosDB"]
 title: 'Step by step: .NET Core and Azure Cosmos DB'
 url: /2017/06/25/step-by-step-net-core-and-azure-cosmos-db/

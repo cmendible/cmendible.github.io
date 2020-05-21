@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-01-31T20:31:41Z"
 description: Shadow IT a Digital Transformation Incubator
-image: /assets/img/posts/shadows.jpg
+images: ["/assets/img/posts/shadows.jpg"]
 title: Shadow IT a Digital Transformation Incubator
 ---
 

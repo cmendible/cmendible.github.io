@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-03-26T12:37:16Z"
 description: 'Raspberry Pi: Run ASP.NET Core on Startup'
-image: /wp-content/uploads/2017/03/windows_10_iot_core_launch.jpg
+images: ["/wp-content/uploads/2017/03/windows_10_iot_core_launch.jpg"]
 tags: ["ARM", "aspNetCore", "PowerShell", "RaspberryPi", "Windows10", "IoT"]
 title: 'Raspberry Pi: Run ASP.NET Core on Startup'
 url: /2017/03/26/raspberry-pi-run-aspnet-core-on-startup/

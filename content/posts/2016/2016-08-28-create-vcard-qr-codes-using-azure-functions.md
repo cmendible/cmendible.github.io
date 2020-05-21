@@ -5,7 +5,7 @@ categories:
 - dotnet
 date: "2016-08-28T18:45:28Z"
 description: Create vCard QR Codes using Azure Functions
-image: /wp-content/uploads/2016/08/qrcodedark.png
+images: ["/wp-content/uploads/2016/08/qrcodedark.png"]
 tags: ["AzureFunctions", "QRCode", "QRCoder", "vCard"]
 title: Create vCard QR Codes using Azure Functions
 ---

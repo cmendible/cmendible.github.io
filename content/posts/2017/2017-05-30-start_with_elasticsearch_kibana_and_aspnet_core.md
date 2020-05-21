@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-05-30T11:58:00Z"
 description: Start with Elasticssearch, Kibana and ASP.NET Core
-image: /wp-content/uploads/2017/05/datalake.png
+images: ["/wp-content/uploads/2017/05/datalake.png"]
 tags: ["aspNetCore", "Docker", "elasticsearch", "kibana", "SeriLog"]
 title: Start with Elasticssearch, Kibana and ASP.NET Core
 url: /2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/

@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2018-03-17T17:23:14Z"
 description: My kubectl Cheat Sheet
-image: /assets/img/posts/kubernetes.png
+images: ["/assets/img/posts/kubernetes.png"]
 published: true
 tags: ["CheatSheet", "kubectl"]
 title: My kubectl Cheat Sheet

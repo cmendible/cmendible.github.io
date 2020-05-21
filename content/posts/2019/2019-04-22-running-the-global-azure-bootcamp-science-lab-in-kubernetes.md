@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: false
 date: "2019-04-22T05:00:00Z"
 description: Running the Global Azure Bootcamp Science Lab in Kubernetes
-images: []
+images: ["/assets/img/posts/azure.png"]
 published: true
 tags: ["GlobalAzure"]
 title: Running the Global Azure Bootcamp Science Lab in Kubernetes

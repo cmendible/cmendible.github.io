@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2016-10-11T07:37:35Z"
 description: Deal with time dependencies in Tests
-image: /wp-content/uploads/2016/10/SystemDateTime.jpg
+images: ["/wp-content/uploads/2016/10/SystemDateTime.jpg"]
 tags: ["DateTime", "UnitTests", "xUnit"]
 title: Deal with time dependencies in Tests
 ---

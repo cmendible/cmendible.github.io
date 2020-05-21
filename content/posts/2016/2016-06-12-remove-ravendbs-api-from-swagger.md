@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2016-06-12T20:24:54Z"
 description: Remove RavenDb's API from Swagger
-image: /wp-content/uploads/2016/06/swagger.png
+images: ["/wp-content/uploads/2016/06/swagger.png"]
 tags: ["ASP.Net", "OWIN", "RavenDb", "Swagger", "Swashbuckle", "WebAPI"]
 title: Remove RavenDb's API from Swagger
 ---

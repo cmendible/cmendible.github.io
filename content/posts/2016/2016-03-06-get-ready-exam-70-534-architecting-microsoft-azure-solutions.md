@@ -5,7 +5,7 @@ categories:
 - certifications
 date: "2016-03-06T12:07:02Z"
 description: 'Get Ready: Exam 70-534 Architecting Microsoft Azure Solutions'
-image: /wp-content/uploads/2016/02/ExamRef_70_534.jpg
+images: ["/wp-content/uploads/2016/02/ExamRef_70_534.jpg"]
 tags: ["70-534", "Architect", "Exam"]
 title: 'Get Ready: Exam 70-534 Architecting Microsoft Azure Solutions'
 ---

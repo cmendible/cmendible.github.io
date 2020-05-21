@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2016-11-29T12:49:28Z"
 description: First steps with .NET Core Tools MSBuild "alpha"
-image: /wp-content/uploads/2016/11/netcoremsbuild.jpg
+images: ["/wp-content/uploads/2016/11/netcoremsbuild.jpg"]
 tags: ["msbuild"]
 title: First steps with .NET Core Tools MSBuild "alpha"
 url: /2016/11/29/first-steps-net-core-tools-msbuild-alpha/

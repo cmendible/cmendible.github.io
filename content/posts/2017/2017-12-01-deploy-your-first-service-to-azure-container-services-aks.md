@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-12-01T15:13:00Z"
 description: Deploy your first Service to Azure Container Services (AKS)
-image: /assets/img/posts/aks.png
+images: ["/assets/img/posts/aks.png"]
 published: true
 tags: ["Docker", "kubernetes"]
 title: Deploy your first Service to Azure Container Services (AKS)

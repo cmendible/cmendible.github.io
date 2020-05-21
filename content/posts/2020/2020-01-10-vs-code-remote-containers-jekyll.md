@@ -5,8 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2020-01-10T00:00:00Z"
 description: 'Visual Studio Code Remote Containers: Jekyll'
-images:
-  - /assets/img/posts/code.png
+images: ["/assets/img/posts/code.png"]
 published: true
 tags: ["jekyll", "Docker"]
 title: 'Visual Studio Code Remote Containers: Jekyll'

@@ -5,7 +5,7 @@ categories:
 - dotnet
 date: "2016-12-11T12:49:54Z"
 description: Debug ASP.NET Core on Docker with Visual Studio Code
-image: /wp-content/uploads/2016/09/dotnetdocker.jpg
+images: ["/wp-content/uploads/2016/09/dotnetdocker.jpg"]
 tags: ["aspNetCore", "Debug", "Docker", "VisualStudioCode"]
 title: Debug ASP.NET Core on Docker with Visual Studio Code
 url: /2016/12/11/debug-asp-net-core-on-docker-with-visual-studio-code/

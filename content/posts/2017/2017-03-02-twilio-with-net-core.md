@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-03-02T07:59:30Z"
 description: Twilio with .NET Core
-image: /wp-content/uploads/2017/03/twilio-csharp-blog-logo.png
+images: ["/wp-content/uploads/2017/03/twilio-csharp-blog-logo.png"]
 tags: ["SMS", "Twilio"]
 title: Twilio with .NET Core
 url: /2017/03/02/twilio-with-net-core/

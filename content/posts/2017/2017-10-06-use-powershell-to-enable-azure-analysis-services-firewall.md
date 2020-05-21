@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-10-06T10:15:52Z"
 description: Use PowerShell to Enable Azure Analysis Services Firewall
-image: /wp-content/uploads/2017/06/powershell.png
+images: ["/wp-content/uploads/2017/06/powershell.png"]
 tags: ["AnalysisServices", "Firewall", "PowerShell"]
 title: Use PowerShell to Enable Azure Analysis Services Firewall
 ---

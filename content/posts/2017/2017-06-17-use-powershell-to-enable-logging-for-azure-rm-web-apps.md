@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-06-17T15:01:53Z"
 description: Use PowerShell to Enable Logging for Azure RM Web Apps
-image: /wp-content/uploads/2017/06/powershell.png
+images: ["/wp-content/uploads/2017/06/powershell.png"]
 tags: ["PowerShell", "WebApp"]
 title: Use PowerShell to Enable Logging for Azure RM Web Apps
 ---

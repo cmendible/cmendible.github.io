@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2018-08-22T16:12:00Z"
 description: '.NET Core, BenchmarkDotNet: for vs foreach performance'
-image: /wp-content/uploads/2017/07/dotnetcore.png
+images: ["/wp-content/uploads/2017/07/dotnetcore.png"]
 published: true
 tags: ["benchmarkdotnet", "for", "foreach"]
 title: '.NET Core, BenchmarkDotNet: for vs foreach performance'

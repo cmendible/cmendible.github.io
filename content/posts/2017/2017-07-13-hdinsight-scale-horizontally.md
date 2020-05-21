@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-07-13T11:07:13Z"
 description: 'HDInsight: Scale Horizontally'
-image: /wp-content/uploads/2016/06/automation1.png
+images: ["/wp-content/uploads/2016/06/automation1.png"]
 tags: ["Automation", "HDInsight", "PowerShell"]
 title: 'HDInsight: Scale Horizontally'
 ---

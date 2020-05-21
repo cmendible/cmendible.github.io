@@ -5,7 +5,7 @@ categories:
 crosspost_to_medium: true
 date: "2017-02-26T19:39:11Z"
 description: Docker Machine with an existing Azure VNET
-image: /wp-content/uploads/2017/02/dm.png
+images: ["/wp-content/uploads/2017/02/dm.png"]
 tags: ["Docker", "docker-machine", "vnet"]
 title: Docker Machine with an existing Azure VNET
 ---

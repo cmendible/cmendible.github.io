@@ -5,7 +5,7 @@ categories:
 - dotnet
 date: "2016-04-13T15:34:11Z"
 description: 'Cloud Design Patterns: Prepara tu aplicación para Azure'
-image: /wp-content/uploads/2016/04/Slide01.jpg
+images: ["/wp-content/uploads/2016/04/Slide01.jpg"]
 tags: ["Cloud", "Design", "Patterns", "GlobalAzure"]
 title: 'Cloud Design Patterns: Prepara tu aplicación para Azure'
 url: /2016/04/13/cloud-design-patterns-prepara-tu-aplicacion-para-azure/

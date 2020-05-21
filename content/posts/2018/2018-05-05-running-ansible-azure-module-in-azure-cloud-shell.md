@@ -5,7 +5,7 @@ categories:
 - devops
 date: "2018-05-05T07:21:39Z"
 description: Running Ansible Azure playbook in Azure Cloud Shell
-image: /assets/img/posts/ansible.png
+images: ["/assets/img/posts/ansible.png"]
 published: true
 tags: ["ansible", "cloudshell"]
 title: Running Ansible Azure playbook in Azure Cloud Shell
