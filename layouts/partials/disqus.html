@@ -16,6 +16,7 @@
             var disqus_loaded = false;
             var disqus_shortname = '{{ .Site.DisqusShortname }}';
             var disqus_button = document.getElementById("show-comments");
+			var disqus_title = '{{with .GetParam "disqus_title" }}{{ . }}{{ else }}{{ .Title }}{{end}}'
 
             var disqus_autoload = {{ .Site.Params.CommentAutoload }};
 			disqus_button.style.display = "";
@@ -27,7 +28,6 @@
 			}
 
 		    function disqus() {
-
 				if (!disqus_loaded) {
 					  disqus_loaded = true;
 
