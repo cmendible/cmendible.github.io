@@ -196,6 +196,6 @@ docker run -p 5000:80 dni
 
 Now navigate to: [http://localhost:5000/api/validate?dni=54495436H](http://localhost:5000/api/validate?dni=54495436H) and the page should return **true**.
 
-You can download all code and files [here](https://github.com/cmendible/dotnetcore.samples/tree/master/azure.function.docker).
+You can download all code and files [here](https://github.com/cmendible/dotnetcore.samples/tree/main/azure.function.docker).
 
 Hope it helps!

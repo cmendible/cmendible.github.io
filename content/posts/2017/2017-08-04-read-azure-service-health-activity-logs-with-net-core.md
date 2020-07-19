@@ -179,6 +179,6 @@ Run the following command:
   ``` powershell
 dotnet run
 ```
-You can get the code <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/azure.health" target="_blank">here</a>.
+You can get the code <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/azure.health" target="_blank">here</a>.
 
 Hope it helps!

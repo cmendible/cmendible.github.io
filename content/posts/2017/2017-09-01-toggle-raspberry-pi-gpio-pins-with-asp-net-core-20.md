@@ -119,6 +119,6 @@ To Turn it off:
 curl -H "Content-Type: application/json" -d 'false' http://[ip of your raspberry]:5000/api/blinky
 ```
 
-Get the code <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.webapi.rpi.gpio" target="_blank">here</a>.
+Get the code <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.webapi.rpi.gpio" target="_blank">here</a>.
 
 Hope it helps!

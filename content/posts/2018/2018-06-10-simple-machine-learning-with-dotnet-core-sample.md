@@ -136,6 +136,6 @@ namespace Titanic.ML
 
 **Note:** I splitted the original dataset from the [book](https://github.com/brinkar/real-world-machine-learning) for this post.
 
-Please find the code and data files [here](https://github.com/cmendible/dotnetcore.samples/tree/master/titanic.ml).
+Please find the code and data files [here](https://github.com/cmendible/dotnetcore.samples/tree/main/titanic.ml).
 
 Hope it helps!

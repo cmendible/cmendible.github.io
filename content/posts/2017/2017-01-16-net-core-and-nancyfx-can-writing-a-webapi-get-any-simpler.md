@@ -204,6 +204,6 @@ Now call the same url: <a href="http://localhost:5000/baconipsum">http://localho
       
 <a href="/wp-content/uploads/2017/01/nancyPostman.jpg"><img src="/wp-content/uploads/2017/01/nancyPostman.jpg" alt="" class="alignleft wp-image-7151" srcset="/wp-content/uploads/2017/01/nancyPostman.jpg 2375w, /wp-content/uploads/2017/01/nancyPostman-300x119.jpg 300w, /wp-content/uploads/2017/01/nancyPostman-768x305.jpg 768w, /wp-content/uploads/2017/01/nancyPostman-1024x407.jpg 1024w, /wp-content/uploads/2017/01/nancyPostman-250x99.jpg 250w" sizes="(max-width: 2375px) 100vw, 2375px" /></a>
             
-Get a copy of the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/nancyfx.sample">https://github.com/cmendible/dotnetcore.samples/tree/master/nancyfx.sample</a>
+Get a copy of the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/nancyfx.sample">https://github.com/cmendible/dotnetcore.samples/tree/main/nancyfx.sample</a>
             
 Hope it helps!

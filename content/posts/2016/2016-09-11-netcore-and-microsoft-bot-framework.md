@@ -257,6 +257,6 @@ No you can talk to your bot!
           
 <a href="/wp-content/uploads/2016/09/pancito.png"><img src="/wp-content/uploads/2016/09/pancito-300x195.png" alt="pancito" width="300" height="195" class="alignleft size-medium wp-image-5881" srcset="/wp-content/uploads/2016/09/pancito-300x195.png 300w, /wp-content/uploads/2016/09/pancito-768x500.png 768w, /wp-content/uploads/2016/09/pancito-1024x667.png 1024w, /wp-content/uploads/2016/09/pancito-250x163.png 250w, /wp-content/uploads/2016/09/pancito.png 1444w" sizes="(max-width: 300px) 100vw, 300px" /></a>
             
-You can get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/echobot">https://github.com/cmendible/dotnetcore.samples/tree/master/echobot</a>
+You can get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echobot">https://github.com/cmendible/dotnetcore.samples/tree/main/echobot</a>
               
 Hope it helps!

@@ -12,7 +12,7 @@ url: /2016/10/30/step-by-step-scale-asp-net-core-with-docker-swarm/
 ---
 A few weeks ago I posted <a href="https://carlos.mendible.com/2016/09/26/step-by-step-asp-net-core-on-docker/" target="_blank">Step by step: ASP.NET Core on Docker</a> were I showed how to build and run a <a href="https://www.docker.com/" target="_blank">Docker</a> image with an ASP.NET Core application.
 
-Today I bring you: **Step by step: Scale ASP.NET Core with Docker Swarm** so you can scale out or in the same [application](https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld).
+Today I bring you: **Step by step: Scale ASP.NET Core with Docker Swarm** so you can scale out or in the same [application](https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld).
 
 Assuming you have <a href="https://www.docker.com/" target="_blank">Docker 1.12 or later</a> installed and running, follow this steps:
 
@@ -109,6 +109,6 @@ If you are don't want the service anymore, remove it from the Swarm with the fol
 docker service rm hello_service
 ```
 
-You can get a copy of the docker file here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld">https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld</a>
+You can get a copy of the docker file here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld">https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld</a>
         
 Hope it helps!    

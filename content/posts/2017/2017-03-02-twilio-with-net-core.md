@@ -127,6 +127,6 @@ Open a command prompt and run
     dotnet run
 ```
 
-Get a copy of the code here: <https://github.com/cmendible/dotnetcore.samples/tree/master/twilio.console>
+Get a copy of the code here: <https://github.com/cmendible/dotnetcore.samples/tree/main/twilio.console>
 
 Hope it helps!

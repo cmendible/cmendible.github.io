@@ -162,6 +162,6 @@ Run the program and enjoy!
 dotnet run
 ```
       
-Get the code and related files here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/kafka.pubsub.console"  target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/master/kafka.pubsub.console</a>
+Get the code and related files here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/kafka.pubsub.console"  target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/main/kafka.pubsub.console</a>
 
 Hope it helps!  

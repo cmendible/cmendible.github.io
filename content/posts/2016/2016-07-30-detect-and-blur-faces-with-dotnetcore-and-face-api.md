@@ -288,6 +288,6 @@ The new **detectedfaces.jpg** file should look like this:
 
 <img src="/wp-content/uploads/2016/07/detectedfaces-300x169.jpg" alt="detectedfaces" width="300" height="169" class="alignleft size-medium wp-image-5431" srcset="/wp-content/uploads/2016/07/detectedfaces-300x169.jpg 300w, /wp-content/uploads/2016/07/detectedfaces-768x432.jpg 768w, /wp-content/uploads/2016/07/detectedfaces-1024x576.jpg 1024w, /wp-content/uploads/2016/07/detectedfaces-250x141.jpg 250w" sizes="(max-width: 300px) 100vw, 300px" />
        
-You can get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/projectoxford">https://github.com/cmendible/dotnetcore.samples/tree/master/projectoxford</a>      
+You can get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/projectoxford">https://github.com/cmendible/dotnetcore.samples/tree/main/projectoxford</a>      
   
 Hope it helps!

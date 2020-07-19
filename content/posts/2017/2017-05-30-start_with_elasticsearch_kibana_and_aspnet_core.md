@@ -155,6 +155,6 @@ Open <a href="http://localhost:5601" target="_blank">http://localhost:5601</a> a
 
 Now click Discover on the side bar and start searching your logs. Enjoy!
             
-Get the code and related files here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.elk.sample"  target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.elk.sample</a>     
+Get the code and related files here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.elk.sample"  target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.elk.sample</a>     
         
 Hope it helps!

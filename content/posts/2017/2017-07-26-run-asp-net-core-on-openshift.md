@@ -138,6 +138,6 @@ When your pod has been deployed browse to your application using the host you co
 
 Enjoy! you just deployed your ASP.NET Core application to OpenShift.
 
-You can get the code <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.on.openshift" target="_blank">here</a>.
+You can get the code <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.openshift" target="_blank">here</a>.
 
 Hope it helps!

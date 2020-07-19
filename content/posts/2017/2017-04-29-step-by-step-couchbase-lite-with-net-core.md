@@ -124,6 +124,6 @@ The console should show the following message:
 Fetched doc with id :: Polar Ice
 ```
 
-Get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/couchbase.lite.console"  target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/master/couchbase.lite.console</a>
+Get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/couchbase.lite.console"  target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/main/couchbase.lite.console</a>
 
 Hope it helps!

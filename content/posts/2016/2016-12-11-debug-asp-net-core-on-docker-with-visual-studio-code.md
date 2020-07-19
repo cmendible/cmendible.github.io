@@ -100,6 +100,6 @@ Place a break point in your code (i.e. line 14 of Program.cs) and hit **F5** in 
 
 The first time it will take some time, but your application will run as a container and you'll be able to debug it!!!
             
-You can get a copy of the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/debug.on.docker">https://github.com/cmendible/dotnetcore.samples/tree/master/debug.on.docker</a>
+You can get a copy of the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/debug.on.docker">https://github.com/cmendible/dotnetcore.samples/tree/main/debug.on.docker</a>
               
 Hope it helps!

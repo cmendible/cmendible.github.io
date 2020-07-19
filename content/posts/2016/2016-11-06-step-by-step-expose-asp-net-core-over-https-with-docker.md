@@ -115,7 +115,7 @@ Now that you know that everything is working as expected use the following comma
 docker run -t -d -p 443:443 httpssample 
 ```
             
-You can get a copy of the docker file here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld.https">https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld.https</a>
+You can get a copy of the docker file here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld.https">https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld.https</a>
      
         
 Hope it helps!

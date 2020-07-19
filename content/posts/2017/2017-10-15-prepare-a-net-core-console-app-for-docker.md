@@ -64,6 +64,6 @@ namespace docker.controlc
 
 Note that we are handling the Console.CancelKeyPress because Docker does not behave as expected if you use the typical Console.ReadKey method to make the application run until a key is pressed. 
 
-Get the code [here](https://github.com/cmendible/dotnetcore.samples/tree/master/docker.controlc).
+Get the code [here](https://github.com/cmendible/dotnetcore.samples/tree/main/docker.controlc).
 
 Hope it helps!

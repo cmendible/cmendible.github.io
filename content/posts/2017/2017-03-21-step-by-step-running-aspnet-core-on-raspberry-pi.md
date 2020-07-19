@@ -163,6 +163,6 @@ cd c:\publish\
 ```
 You should be good to go and be able to browse on port 5000 of you RPi.
         
-Get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.on.rpi">https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.on.rpi</a>
+Get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi">https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi</a>
         
 Hope it helps!        

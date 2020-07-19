@@ -150,6 +150,6 @@ You are good to go so run the application
 dotnet run
 ```
 
-You can get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/cosmosdb">https://github.com/cmendible/dotnetcore.samples/tree/master/cosmosdb</a>
+You can get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/cosmosdb">https://github.com/cmendible/dotnetcore.samples/tree/main/cosmosdb</a>
   
 Hope it helps!  

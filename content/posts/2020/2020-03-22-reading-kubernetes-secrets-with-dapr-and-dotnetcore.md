@@ -243,4 +243,4 @@ If everything is working you should read:
 
 Hope it helps!
 
-Please find all code and files [here](https://github.com/cmendible/dotnetcore.samples/tree/master/dapr.k8s.secrets), and learn more about Dapr and the Secret API [here](https://github.com/dapr/docs/tree/master/concepts/secrets)
+Please find all code and files [here](https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.k8s.secrets), and learn more about Dapr and the Secret API [here](https://github.com/dapr/docs/tree/master/concepts/secrets)

@@ -108,4 +108,4 @@ Your **tasks.json** should look like this:
 
 Hit F5 and enjoy debugging your "Daprized" .NET Core application.
 
-You can download a working sample from this [repo](https://github.com/cmendible/dotnetcore.samples/tree/master/dapr.debug.vscode/).
+You can download a working sample from this [repo](https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.debug.vscode/).

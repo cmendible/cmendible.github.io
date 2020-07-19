@@ -172,6 +172,6 @@ namespace CodeGenerationSample
 }
 ```
 
-Get a copy of the code here: <https://github.com/cmendible/dotnetcore.samples/tree/master/roslyn.create.class>
+Get a copy of the code here: <https://github.com/cmendible/dotnetcore.samples/tree/main/roslyn.create.class>
 
 Hope it helps!

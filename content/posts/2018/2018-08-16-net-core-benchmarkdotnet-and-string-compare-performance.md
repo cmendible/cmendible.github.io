@@ -137,6 +137,6 @@ Job=Core  Runtime=Core
 
 Now you know what method is faster when comparing strings!
 
-Please find all the code used in this post [here](https://github.com/cmendible/dotnetcore.samples/tree/master/benchmarkdotnet).
+Please find all the code used in this post [here](https://github.com/cmendible/dotnetcore.samples/tree/main/benchmarkdotnet).
 
 Hope it helps!

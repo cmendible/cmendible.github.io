@@ -143,4 +143,4 @@ To test the image just repeat the tests from step 3.
 
 Hope it helps!
 
-Feel free to get the code [here](https://github.com/cmendible/dotnetcore.samples/tree/master/echoserver).
+Feel free to get the code [here](https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver).

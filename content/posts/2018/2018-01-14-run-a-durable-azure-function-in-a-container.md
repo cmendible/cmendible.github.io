@@ -273,7 +273,7 @@ Now POST to the orchestrator client to start the durable functions:
 curl -X POST http://localhost:5000/api/orchestrators/orchestrator -i -H "Content-Length: 0"
 ```
 
-You can download all code and files [here](https://github.com/cmendible/dotnetcore.samples/tree/master/azure.durable.function.docker).
+You can download all code and files [here](https://github.com/cmendible/dotnetcore.samples/tree/main/azure.durable.function.docker).
 
 **Note**: The function code is based on the original [Azure Functions Samples](https://github.com/Azure/azure-functions-durable-extension).
 

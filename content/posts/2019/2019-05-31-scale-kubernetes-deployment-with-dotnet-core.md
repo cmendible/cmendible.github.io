@@ -154,6 +154,6 @@ curl -k -i -H 'Content-Type: application/json' -d '{"Deployment": "<YOUR DEPLOYM
 
 **Note**: You must have a valid config file to connect to the k8s cluster.
 
-Please find all the code used in this post [here](https://github.com/cmendible/dotnetcore.samples/tree/master/kubernetes.scale).
+Please find all the code used in this post [here](https://github.com/cmendible/dotnetcore.samples/tree/main/kubernetes.scale).
 
 Hope it helps!

@@ -127,6 +127,6 @@ namespace aspnet.serilog.sample.Controllers
 }
 ```
 
-Download the complete code [here](https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.serilog.sample2.2)
+Download the complete code [here](https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.serilog.sample2.2)
 
 Hope it helps!

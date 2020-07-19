@@ -307,6 +307,6 @@ You are good to go so browse to:<br /> **https://[api id from step 11].execute-a
 
 The browser should show: [&#8220;value1&#8243;,"value2"]  
 
-You can get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/aws.lambda">https://github.com/cmendible/dotnetcore.samples/tree/master/aws.lambda</a>
+You can get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aws.lambda">https://github.com/cmendible/dotnetcore.samples/tree/main/aws.lambda</a>
 
 Hope it helps!        

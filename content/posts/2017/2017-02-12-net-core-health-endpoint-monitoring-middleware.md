@@ -209,6 +209,6 @@ depending on the result of the random function we added to the middleware.
       
 Checkout <a href="https://github.com/lurumad/aspnetcore-health" target="_blank">AspNetCore.Health</a> for nice and extensible implementation of the pattern.
   
-Also find a copy of the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/service.status.middleware">https://github.com/cmendible/dotnetcore.samples/tree/master/service.status.middleware</a>
+Also find a copy of the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/service.status.middleware">https://github.com/cmendible/dotnetcore.samples/tree/main/service.status.middleware</a>
   
 Hope it helps!

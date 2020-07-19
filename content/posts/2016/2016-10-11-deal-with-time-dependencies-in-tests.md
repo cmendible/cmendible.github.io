@@ -133,6 +133,6 @@ dotnet test
     
 No matter the system time the test: **Will_Run_OK_No_Matter_The_Real_Time** will always pass, while the **Will_Fail_After_Noon** test will fail any time after 12 PM.
 
-You can get the code here: <https://github.com/cmendible/dotnetcore.samples/tree/master/remove.datetime.dependency.test>
+You can get the code here: <https://github.com/cmendible/dotnetcore.samples/tree/main/remove.datetime.dependency.test>
 
 Hope it helps!

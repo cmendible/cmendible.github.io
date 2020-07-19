@@ -60,7 +60,7 @@ schtasks /create /tn "Startup Web" /tr c:\Startup.bat /sc onstart /ru SYSTEM
 ---      
 Restart your Raspberry and after a bit your ASP.NET Core app should be up and running.
          
-Get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.on.rpi.startup">https://github.com/cmendible/dotnetcore.samples/tree/master/aspnet.on.rpi.startup</a>
+Get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi.startup">https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi.startup</a>
   
 Hope it helps!
   

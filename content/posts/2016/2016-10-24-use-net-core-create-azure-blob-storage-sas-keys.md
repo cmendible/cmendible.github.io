@@ -110,6 +110,6 @@ I've created the GetSharedAccessSignature to return a write only SAS key for the
     var blobSas = GetSharedAccessSignature(accountName, blobContainer, blobName, storageKey, sharedAccessStartTime, sharedAccessExpiryTime);
 ```
 
-Find a full working sample here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/cloud.design.patterns/valet.key/valet.key.server" target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/master/cloud.design.patterns/valet.key/valet.key.server</a>
+Find a full working sample here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/cloud.design.patterns/valet.key/valet.key.server" target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/main/cloud.design.patterns/valet.key/valet.key.server</a>
 
 Hope it helps!!!

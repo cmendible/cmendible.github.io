@@ -342,6 +342,6 @@ If you check your SQlite database with a tool such as <a href="http://sqlitebrow
 
 <a href="/wp-content/uploads/2016/07/students.png"><img src="/wp-content/uploads/2016/07/students.png" alt="students" class="alignleft wp-image-5391" srcset="/wp-content/uploads/2016/07/students.png 1455w, /wp-content/uploads/2016/07/students-300x55.png 300w, /wp-content/uploads/2016/07/students-768x141.png 768w, /wp-content/uploads/2016/07/students-1024x188.png 1024w, /wp-content/uploads/2016/07/students-250x46.png 250w" sizes="(max-width: 1455px) 100vw, 1455px" /></a>
 
-You can get the code here: <https://github.com/cmendible/dotnetcore.samples/tree/master/efcore.shadowproperties.console>
+You can get the code here: <https://github.com/cmendible/dotnetcore.samples/tree/main/efcore.shadowproperties.console>
 
 Hope it helps!

@@ -227,6 +227,6 @@ You are good to go so run the application
 dotnet run
 ```
 
-You can get the code here: <https://github.com/cmendible/dotnetcore.samples/tree/master/efcore.sqlite.console>
+You can get the code here: <https://github.com/cmendible/dotnetcore.samples/tree/main/efcore.sqlite.console>
 
 Hope it helps!

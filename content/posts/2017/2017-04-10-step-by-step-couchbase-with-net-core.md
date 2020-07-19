@@ -114,6 +114,6 @@ Run the program and enjoy!
 dotnet run
 ```
 
-Get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/couchbase.console"  target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/master/couchbase.console</a>
+Get the code here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/couchbase.console"  target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/main/couchbase.console</a>
   
 Hope it helps!  

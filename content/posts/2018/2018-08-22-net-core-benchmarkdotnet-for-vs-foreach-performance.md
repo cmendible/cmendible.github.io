@@ -157,6 +157,6 @@ So as you can see **for** performs much better than **foreach** when looping thr
 
 Try changing the **int** type for a class and then working with it inside the loop and check the results. You'll know what to do next time you need your application to run fast!
 
-Please find all the code used in this post [here](https://github.com/cmendible/dotnetcore.samples/tree/master/benchmarkdotnet.for).
+Please find all the code used in this post [here](https://github.com/cmendible/dotnetcore.samples/tree/main/benchmarkdotnet.for).
 
 Hope it helps!

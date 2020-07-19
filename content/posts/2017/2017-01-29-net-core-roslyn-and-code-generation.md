@@ -172,6 +172,6 @@ namespace NamespaceChangedUsingRoslyn
 Namespace replaced...
 ```
 
-Get a copy of the code here: <https://github.com/cmendible/dotnetcore.samples/tree/master/roslyn.codegeneration>
+Get a copy of the code here: <https://github.com/cmendible/dotnetcore.samples/tree/main/roslyn.codegeneration>
 
 Hope it helps!

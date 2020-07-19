@@ -76,6 +76,6 @@ Now that you know that everything is working as expected use the following comma
           
 Feel free to logout or close the connection with your Docker box and the application will keep running.
 
-You can get a copy of the docker file here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld">https://github.com/cmendible/dotnetcore.samples/tree/master/docker.helloworld</a>
+You can get a copy of the docker file here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld">https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld</a>
         
 Hope it helps!

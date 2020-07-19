@@ -150,6 +150,6 @@ Run the following command:
 dotnet build
 ```
    
-You can get the code <a href="https://github.com/cmendible/dotnetcore.samples/tree/master/codeanalysis" target="_blank">here</a>.
+You can get the code <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/codeanalysis" target="_blank">here</a>.
 
 Hope it helps!
