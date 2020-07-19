@@ -1,0 +1,28 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MicrosoftTeams on Code it Yourself...</title><link>https://carlos.mendible.com/tags/microsoftteams/</link><description>Recent content in MicrosoftTeams on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Tue, 14 Nov 2017 02:15:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/microsoftteams/feed.xml" rel="self" type="application/rss+xml"/><item><title>Use PowerShell to create a Microsoft Teams Channel</title><link>https://carlos.mendible.com/2017/11/14/use-powershell-to-create-a-microsoft-teams-channel/</link><pubDate>Tue, 14 Nov 2017 02:15:00 +0000</pubDate><guid>https://carlos.mendible.com/2017/11/14/use-powershell-to-create-a-microsoft-teams-channel/</guid><description>&lt;p>For those of you who have been trying to automate anything related to Microsoft Teams, let me tell you that there is a new PowerShell Module in town: &lt;a href="https://www.powershellgallery.com/packages/MicrosoftTeams/0.9.0">Microsoft Teams 0.9.0&lt;/a> which you can install with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Install-Module MicrosoftTeams
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now to automate the channel creation In A Team you can simply:&lt;/p>
+&lt;h2 id="1-create-a-file-createteamchannelps1-with-the-following-contents">1. Create a file createTeamChannel.ps1 with the following contents:&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> &lt;span style="color:#66d9ef">Param&lt;/span>
+(
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$username,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[securestring]&lt;/span>$password,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$tenantId,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$teamName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$channelName)
+&lt;span style="color:#75715e"># Create PSCredential&lt;/span>
+$credential = New-Object System.Management.Automation.PSCredential($username, $password)
+&lt;span style="color:#75715e"># Connect to Microsoft Teams&lt;/span>
+Connect-MicrosoftTeams -TenantId $tenantId -Credential $credential
+&lt;span style="color:#75715e"># Get the Team&lt;/span>
+$team = Get-Team | Where-Object { $_.DisplayName &lt;span style="color:#f92672">-eq&lt;/span> $teamName}
+&lt;span style="color:#66d9ef">if&lt;/span> ($team) {
+&lt;span style="color:#75715e"># Create the new Team Channel&lt;/span>
+New-TeamChannel -GroupId $team.GroupId -DisplayName $channelName -Description $channelName
+}
+&lt;span style="color:#66d9ef">else&lt;/span> {
+&lt;span style="color:#66d9ef">throw&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Team: $teamName does not exist.&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-run-the-following-command-in-powershell">2. Run the following command in PowerShell&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> $password = ConvertTo-SecureString &lt;span style="color:#e6db74">&amp;#34;YOUR PASSWORD&amp;#34;&lt;/span> -AsPlainText -Force
+.\createTeamChannel.ps1 username@tenant.com $password $tenantId MonitoringIssues Incident101
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

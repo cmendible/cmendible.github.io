@@ -1,0 +1,55 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Site-to-Site on Code it Yourself...</title><link>https://carlos.mendible.com/tags/site-to-site/</link><description>Recent content in Site-to-Site on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Mon, 02 May 2016 18:30:24 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/site-to-site/feed.xml" rel="self" type="application/rss+xml"/><item><title>Create an Azure Site to Site VPN</title><link>https://carlos.mendible.com/2016/05/02/create-an-azure-site-to-site-vpn/</link><pubDate>Mon, 02 May 2016 18:30:24 +0000</pubDate><guid>https://carlos.mendible.com/2016/05/02/create-an-azure-site-to-site-vpn/</guid><description>&lt;p>In this post I&amp;rsquo;ll just show the list of PowerShell commands needed to &lt;strong>Create an Azure Site to Site VPN&lt;/strong> and give you some tips when using a &lt;!-- raw HTML omitted -->Check Point Security Gateway&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>First things first! so if you have not installed and configured Azure PowerShell go for it: &lt;!-- raw HTML omitted -->How to install and configure Azure PowerShell&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="1-connect-and-select-you-subscription">1. Connect and Select you subscription&lt;/h2>
+&lt;hr>
+&lt;p>Start by logging into Azure and selecting you subscription:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Login-AzureRmAccount
+Get-AzureRmSubscription
+Select-AzureRmSubscription -SubscriptionId xxxxxxxx-xxx-xxxx-xxxx-xxxxxxxxxxx
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-resource-group">2. Create a Resource Group&lt;/h2>
+&lt;hr>
+&lt;p>Create a resource group. Let&amp;rsquo;s name it: &lt;strong>resourceGroup&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">New-AzureRmResourceGroup -Name resourceGroup -Location &lt;span style="color:#e6db74">&amp;#39;West Europe&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-a-virtual-network-and-a-gateway-subnet">3. Create a virtual network and a gateway subnet&lt;/h2>
+&lt;hr>
+&lt;p>It&amp;rsquo;s necessary to create at least two subnets, and one must be named &lt;strong>GatewaySubnet&lt;/strong> for everything to work as expected.&lt;/p>
+&lt;p>Give the other subnet the name: &lt;strong>remoteSubnet&lt;/strong>. This is where your Virtual Machines will live.&lt;/p>
+&lt;p>In this case both subnets are contained in the 10.0.100.0/24 address space.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">$subnet1 = New-AzureRmVirtualNetworkSubnetConfig -Name &lt;span style="color:#e6db74">&amp;#39;GatewaySubnet&amp;#39;&lt;/span> -AddressPrefix 10.0.100.0/25
+$subnet2 = New-AzureRmVirtualNetworkSubnetConfig -Name &lt;span style="color:#e6db74">&amp;#39;remoteSubnet&amp;#39;&lt;/span> -AddressPrefix 10.0.100.128/25
+New-AzureRmVirtualNetwork -Name cloudNetwork -ResourceGroupName resourceGroup -Location &lt;span style="color:#e6db74">&amp;#39;West Europe&amp;#39;&lt;/span> -AddressPrefix 10.0.100.0/24 -Subnet $subnet1, $subnet2
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-add-your-local-network-gateway">4. Add your local network gateway&lt;/h2>
+&lt;hr>
+&lt;p>Here you must specify the IP address of your on-premises VPN device (i.e 95.122.110.101) which cannot be located behind a NAT.&lt;/p>
+&lt;p>You must also specify your on-premises address space that you want to reach from the cloud. In this sample we will reach anything in the following ranges: 10.2.0.0/21 and ‘192.168.106.0/24&amp;rsquo;&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">New-AzureRmLocalNetworkGateway -Name LocalSite -ResourceGroupName resourceGroup -Location &lt;span style="color:#e6db74">&amp;#39;West Europe&amp;#39;&lt;/span> -GatewayIpAddress &lt;span style="color:#e6db74">&amp;#39;95.122.110.101&amp;#39;&lt;/span> -AddressPrefixÂ  @(&lt;span style="color:#e6db74">&amp;#39;10.2.0.0/21&amp;#39;&lt;/span>,&lt;span style="color:#e6db74">&amp;#39;192.168.106.0/24&amp;#39;&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-request-a-public-ip-address-for-the-vpn-gateway">5. Request a public IP address for the VPN gateway&lt;/h2>
+&lt;hr>
+&lt;p>Next request a public IP Address and give it a name like &lt;strong>globalIP&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">$gwpip= New-AzureRmPublicIpAddress -Name globalIP -ResourceGroupName resourceGroup -Location &lt;span style="color:#e6db74">&amp;#39;West Europe&amp;#39;&lt;/span> -AllocationMethod Dynamic
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-create-the-gateway-ip-addressing-configuration">6. Create the gateway IP addressing configuration&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">$vnet = Get-AzureRmVirtualNetwork -Name cloudNetwork -ResourceGroupName resourceGroup
+$subnet = Get-AzureRmVirtualNetworkSubnetConfig -Name &lt;span style="color:#e6db74">&amp;#39;GatewaySubnet&amp;#39;&lt;/span> -VirtualNetwork $vnet
+$gwipconfig = New-AzureRmVirtualNetworkGatewayIpConfig -Name gwipconfig -SubnetId $subnet.Id -PublicIpAddressId $gwpip.Id
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-create-the-virtual-network-gateway">7. Create the virtual network gateway&lt;/h2>
+&lt;hr>
+&lt;p>Sit back! this step can take up to 10 or more minutes while your Virtual Network Gateway is created.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">New-AzureRmVirtualNetworkGateway -Name vnetgw -ResourceGroupName resourceGroup -Location &lt;span style="color:#e6db74">&amp;#39;West Europe&amp;#39;&lt;/span> -IpConfigurations $gwipconfig -GatewayType Vpn -VpnType RouteBased -GatewaySku Standard
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-get-your-vpn-public-ip-address">8. Get your VPN Public IP Address&lt;/h2>
+&lt;hr>
+&lt;p>Now you can get the cloud public IP address you must configure in your on-premises VPN device.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Get-AzureRmPublicIpAddress -Name gwpip -ResourceGroupName resourceGroup
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="9-configure-your-vpn-device">9. Configure your VPN device&lt;/h2>
+&lt;p>For our Check Point device we followed the:&lt;!-- raw HTML omitted --> How to setup Site-to-Site VPN between Check Point and Microsoft Azure guide&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Take note that the commands given here will result in a &lt;strong>Gateway to Gateway&lt;/strong> Azure setup and therefor you&amp;rsquo;ll have to configure &lt;strong>One VPN tunnel per Gateway pair&lt;/strong> in your Check Point device.&lt;/p>
+&lt;p>Also save the Shared Key (i.e secretword) you&amp;rsquo;ll need it in the next step.&lt;/p>
+&lt;h2 id="10-create-the-vpn-connection">10. Create the VPN connection&lt;/h2>
+&lt;hr>
+&lt;p>It&amp;rsquo;s time to create your connection (named localtoazure in the sample) and your &lt;strong>Azure Site-to-Site VPN&lt;/strong> will start working in a snap!&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">$gateway1 = Get-AzureRmVirtualNetworkGateway -Name vnetgw -ResourceGroupName resourceGroup
+$local = Get-AzureRmLocalNetworkGateway -Name LocalSite -ResourceGroupName resourceGroup
+New-AzureRmVirtualNetworkGatewayConnection -Name localtoazure -ResourceGroupName resourceGroup -Location &lt;span style="color:#e6db74">&amp;#39;West Europe&amp;#39;&lt;/span> -VirtualNetworkGateway1 $gateway1 -LocalNetworkGateway2 $local -ConnectionType IPsec -RoutingWeight 10 -SharedKey &lt;span style="color:#e6db74">&amp;#39;secretword&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p>
+&lt;p>References:&lt;/p>
+&lt;!-- raw HTML omitted --></description></item></channel></rss>

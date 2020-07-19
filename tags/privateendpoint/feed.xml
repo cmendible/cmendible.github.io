@@ -1,0 +1,279 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>privateendpoint on Code it Yourself...</title><link>https://carlos.mendible.com/tags/privateendpoint/</link><description>Recent content in privateendpoint on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Mon, 18 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/privateendpoint/feed.xml" rel="self" type="application/rss+xml"/><item><title>Azure Functions: use Blob Trigger with Private Endpoint</title><link>https://carlos.mendible.com/2020/05/18/azure-functions-use-blob-trigger-with-private-endpoint/</link><pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/05/18/azure-functions-use-blob-trigger-with-private-endpoint/</guid><description>&lt;p>The intent of this post is to help you understand how to connect an Azure Function to a Storage Account privately so all traffic flows through a VNet therefore enhancing the security of your solutions and blobs.&lt;/p>
+&lt;h2 id="the-case">The Case:&lt;/h2>
+&lt;p>Supose you have the following Azure Function written in C# which only copies a blob from one conatiner to another:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Logging;
+&lt;span style="color:#66d9ef">namespace&lt;/span> Secured.Function
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">SecureCopy&lt;/span>
+{
+&lt;span style="color:#a6e22e"> [FunctionName(&amp;#34;SecureCopy&amp;#34;)]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Run(
+&lt;span style="color:#a6e22e"> [BlobTrigger(&amp;#34;input/{name}&amp;#34;, Connection = &amp;#34;privatecfm_STORAGE&amp;#34;)]&lt;/span> Stream myBlob,
+&lt;span style="color:#a6e22e"> [Blob(&amp;#34;output/{name}&amp;#34;, FileAccess.Write, Connection = &amp;#34;privatecfm_STORAGE&amp;#34;)]&lt;/span> Stream copy,
+ILogger log)
+{
+myBlob.CopyTo(copy);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>In this case the storage account used, for the blob trigger and the output binding, has a public endpoint exposed to the internet, which you can secure using features such as the Storage Account Firewall and the new &lt;strong>private endpoints&lt;/strong> which will allow clients on a virtual network (VNet) to securely access data over a &lt;a href="https://docs.microsoft.com/en-us/azure/private-link/private-link-overview">Private Link&lt;/a>. The private endpoint uses an IP address from the VNet address space for your storage account service. &lt;a href="#references">[1]&lt;/a>&lt;/p>
+&lt;p>With those features we can lockdown all inbound traffic to the Storage Account to only accept calls from inside a VNet, so the next step is to enable a feature for Azure Functions that will give your function app access to the resources in the VNet: &lt;strong>Azure App Service VNet Integration feature&lt;/strong> &lt;a href="#references">[2]&lt;/a>.&lt;/p>
+&lt;p>The following sketch shows how this works:&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/posts/function_private_endpoint_sa.png" alt="Solution Diagram">&lt;/p>
+&lt;ol>
+&lt;li>The Azure Function is integrated with a VNet using Regional VNet Integration (blue line).&lt;/li>
+&lt;li>The Storage Account (shown on the right) has a Private Endpoint which assigns a private IP to the Storage Account.&lt;/li>
+&lt;li>Traffic (red line) from the Azure Function flows through the VNet, the Private Endpoint and reaches the Storage Account.&lt;/li>
+&lt;li>The Storage Account, shown on the left, is used for the core services of the Azure Function and, at the time ow writing, can&amp;rsquo;t be protected using private enpoints.&lt;/li>
+&lt;/ol>
+&lt;p>But wait there is one more thing, you will need to add an Azure Private DNS Zone to enable the Azure Function to resolve the name of the Storage Account so it uses the private ip for communication.)&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> The solution will require use of the PremiumV2, or Elastic Premium pricing plan for the Azure Function.&lt;/p>
+&lt;h2 id="deploying-the-infrastructure-with-terraform">Deploying the Infrastructure with Terraform&lt;/h2>
+&lt;p>We&amp;rsquo;ll be using Terraform (version &amp;gt; 0.12) to deploy the solution. Start creating a &lt;strong>providers.tf&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">terraform {
+required_version = &lt;span style="color:#e6db74">&amp;#34;&amp;gt; 0.12&amp;#34;&lt;/span>
+}
+provider &lt;span style="color:#e6db74">&amp;#34;azurerm&amp;#34;&lt;/span> {
+version = &lt;span style="color:#e6db74">&amp;#34;&amp;gt;= 2.0&amp;#34;&lt;/span>
+features {}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Define the following variables in a &lt;strong>variables.tf&lt;/strong> file:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># Azure Resource Location&lt;/span>
+variable location {
+default = &lt;span style="color:#e6db74">&amp;#34;west europe&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Azure Resource Group Name&lt;/span>
+variable resource_group {
+default = &lt;span style="color:#e6db74">&amp;#34;private-endpoint&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Name of the Storage Account you´ll expose through the private endpoint&lt;/span>
+variable sa_name {
+default = &lt;span style="color:#e6db74">&amp;#34;privatecfm&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Name of the Storage Account backing the Azure Function&lt;/span>
+variable function_required_sa {
+default = &lt;span style="color:#e6db74">&amp;#34;privatecfmfunc&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a &lt;strong>mainty.tf&lt;/strong> file with the following contents (Make sure you read the comments to understand the manifest):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># Create Resource Group&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_resource_group&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;rg&amp;#34;&lt;/span> {
+name = var.resource_group
+location = var.location
+}
+&lt;span style="color:#75715e"># Create VNet&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_virtual_network&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;vnet&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;private-network&amp;#34;&lt;/span>
+address_space = [&lt;span style="color:#e6db74">&amp;#34;10.0.0.0/16&amp;#34;&lt;/span>]
+location = azurerm_resource_group.rg.location
+resource_group_name = azurerm_resource_group.rg.name
+&lt;span style="color:#75715e"># Use Private DNS Zone. That&amp;#39;s right we have to add this magical IP here.&lt;/span>
+dns_servers = [&lt;span style="color:#e6db74">&amp;#34;168.63.129.16&amp;#34;&lt;/span>]
+}
+&lt;span style="color:#75715e"># Create the Subnet for the Azure Function. This is thge subnet where we&amp;#39;ll enable Vnet Integration.&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_subnet&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;service&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;service&amp;#34;&lt;/span>
+resource_group_name = azurerm_resource_group.rg.name
+virtual_network_name = azurerm_virtual_network.vnet.name
+address_prefixes = [&lt;span style="color:#e6db74">&amp;#34;10.0.1.0/24&amp;#34;&lt;/span>]
+enforce_private_link_service_network_policies = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#75715e"># Delegate the subnet to &amp;#34;Microsoft.Web/serverFarms&amp;#34;&lt;/span>
+delegation {
+name = &lt;span style="color:#e6db74">&amp;#34;acctestdelegation&amp;#34;&lt;/span>
+service_delegation {
+name = &lt;span style="color:#e6db74">&amp;#34;Microsoft.Web/serverFarms&amp;#34;&lt;/span>
+actions = [&lt;span style="color:#e6db74">&amp;#34;Microsoft.Network/virtualNetworks/subnets/action&amp;#34;&lt;/span>]
+}
+}
+}
+&lt;span style="color:#75715e"># Create the Subnet for the private endpoints. This is where the IP of the private enpoint will live.&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_subnet&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;endpoint&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;endpoint&amp;#34;&lt;/span>
+resource_group_name = azurerm_resource_group.rg.name
+virtual_network_name = azurerm_virtual_network.vnet.name
+address_prefixes = [&lt;span style="color:#e6db74">&amp;#34;10.0.2.0/24&amp;#34;&lt;/span>]
+enforce_private_link_endpoint_network_policies = &lt;span style="color:#66d9ef">true&lt;/span>
+}
+&lt;span style="color:#75715e"># Get current public IP. We´ll need this so we can access the Storage Account from our PC.&lt;/span>
+data &lt;span style="color:#e6db74">&amp;#34;http&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;current_public_ip&amp;#34;&lt;/span> {
+url = &lt;span style="color:#e6db74">&amp;#34;http://ipinfo.io/json&amp;#34;&lt;/span>
+request_headers = {
+Accept = &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Create the &amp;#34;private&amp;#34; Storage Account.&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_account&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sa&amp;#34;&lt;/span> {
+name = var.sa_name
+resource_group_name = azurerm_resource_group.rg.name
+location = azurerm_resource_group.rg.location
+account_tier = &lt;span style="color:#e6db74">&amp;#34;Standard&amp;#34;&lt;/span>
+account_replication_type = &lt;span style="color:#e6db74">&amp;#34;GRS&amp;#34;&lt;/span>
+enable_https_traffic_only = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#75715e"># We are enabling the firewall only allowing traffic from our PC&amp;#39;s public IP.&lt;/span>
+network_rules {
+default_action = &lt;span style="color:#e6db74">&amp;#34;Deny&amp;#34;&lt;/span>
+virtual_network_subnet_ids = []
+ip_rules = [
+jsondecode(data.http.current_public_ip.body).ip
+]
+}
+}
+&lt;span style="color:#75715e"># Create input container&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_container&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;input&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;input&amp;#34;&lt;/span>
+container_access_type = &lt;span style="color:#e6db74">&amp;#34;private&amp;#34;&lt;/span>
+storage_account_name = azurerm_storage_account.sa.name
+}
+&lt;span style="color:#75715e"># Create output container&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_container&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;output&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;output&amp;#34;&lt;/span>
+container_access_type = &lt;span style="color:#e6db74">&amp;#34;private&amp;#34;&lt;/span>
+storage_account_name = azurerm_storage_account.sa.name
+}
+&lt;span style="color:#75715e"># Create the Private endpoint. This is where the Storage account gets a private IP inside the VNet.&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_private_endpoint&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;endpoint&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;sa-endpoint&amp;#34;&lt;/span>
+location = azurerm_resource_group.rg.location
+resource_group_name = azurerm_resource_group.rg.name
+subnet_id = azurerm_subnet.endpoint.id
+private_service_connection {
+name = &lt;span style="color:#e6db74">&amp;#34;sa-privateserviceconnection&amp;#34;&lt;/span>
+private_connection_resource_id = azurerm_storage_account.sa.id
+is_manual_connection = &lt;span style="color:#66d9ef">false&lt;/span>
+subresource_names = [&lt;span style="color:#e6db74">&amp;#34;blob&amp;#34;&lt;/span>]
+}
+}
+&lt;span style="color:#75715e"># Create the blob.core.windows.net Private DNS Zone&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_private_dns_zone&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;private&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;blob.core.windows.net&amp;#34;&lt;/span>
+resource_group_name = azurerm_resource_group.rg.name
+}
+&lt;span style="color:#75715e"># Create an A record pointing to the Storage Account private endpoint&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_private_dns_a_record&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sa&amp;#34;&lt;/span> {
+name = var.sa_name
+zone_name = azurerm_private_dns_zone.private.name
+resource_group_name = azurerm_resource_group.rg.name
+ttl = &lt;span style="color:#ae81ff">3600&lt;/span>
+records = [azurerm_private_endpoint.endpoint.private_service_connection[&lt;span style="color:#ae81ff">0&lt;/span>].private_ip_address]
+}
+&lt;span style="color:#75715e"># Link the Private Zone with the VNet&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_private_dns_zone_virtual_network_link&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sa&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;test&amp;#34;&lt;/span>
+resource_group_name = azurerm_resource_group.rg.name
+private_dns_zone_name = azurerm_private_dns_zone.private.name
+virtual_network_id = azurerm_virtual_network.vnet.id
+}
+&lt;span style="color:#75715e"># Create the Storage Account required by Azure Functions.&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_account&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;function_required_sa&amp;#34;&lt;/span> {
+name = var.function_required_sa
+resource_group_name = azurerm_resource_group.rg.name
+location = azurerm_resource_group.rg.location
+account_tier = &lt;span style="color:#e6db74">&amp;#34;Standard&amp;#34;&lt;/span>
+account_replication_type = &lt;span style="color:#e6db74">&amp;#34;GRS&amp;#34;&lt;/span>
+enable_https_traffic_only = &lt;span style="color:#66d9ef">true&lt;/span>
+}
+&lt;span style="color:#75715e"># Create a container to hold the Azure Function Zip&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_container&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;functions&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;function-releases&amp;#34;&lt;/span>
+storage_account_name = azurerm_storage_account.function_required_sa.name
+container_access_type = &lt;span style="color:#e6db74">&amp;#34;private&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Create a blob with the Azure Function zip&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_blob&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;function&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;securecopy.zip&amp;#34;&lt;/span>
+storage_account_name = azurerm_storage_account.function_required_sa.name
+storage_container_name = azurerm_storage_container.functions.name
+type = &lt;span style="color:#e6db74">&amp;#34;Block&amp;#34;&lt;/span>
+source = &lt;span style="color:#e6db74">&amp;#34;./securecopy.zip&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Create a SAS token so the Fucntion can access the blob and deploy the zip&lt;/span>
+data &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_account_sas&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sas&amp;#34;&lt;/span> {
+connection_string = azurerm_storage_account.function_required_sa.primary_connection_string
+https_only = &lt;span style="color:#66d9ef">false&lt;/span>
+resource_types {
+service = &lt;span style="color:#66d9ef">false&lt;/span>
+container = &lt;span style="color:#66d9ef">false&lt;/span>
+object = &lt;span style="color:#66d9ef">true&lt;/span>
+}
+services {
+blob = &lt;span style="color:#66d9ef">true&lt;/span>
+queue = &lt;span style="color:#66d9ef">false&lt;/span>
+table = &lt;span style="color:#66d9ef">false&lt;/span>
+file = &lt;span style="color:#66d9ef">false&lt;/span>
+}
+start = &lt;span style="color:#e6db74">&amp;#34;2020-05-18&amp;#34;&lt;/span>
+expiry = &lt;span style="color:#e6db74">&amp;#34;2025-05-18&amp;#34;&lt;/span>
+permissions {
+read = &lt;span style="color:#66d9ef">true&lt;/span>
+write = &lt;span style="color:#66d9ef">false&lt;/span>
+delete = &lt;span style="color:#66d9ef">false&lt;/span>
+list = &lt;span style="color:#66d9ef">false&lt;/span>
+add = &lt;span style="color:#66d9ef">false&lt;/span>
+create = &lt;span style="color:#66d9ef">false&lt;/span>
+update = &lt;span style="color:#66d9ef">false&lt;/span>
+process = &lt;span style="color:#66d9ef">false&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Create the Azure Function plan (Elastic Premium) &lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_app_service_plan&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;plan&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;azure-functions-test-service-plan&amp;#34;&lt;/span>
+location = azurerm_resource_group.rg.location
+resource_group_name = azurerm_resource_group.rg.name
+kind = &lt;span style="color:#e6db74">&amp;#34;elastic&amp;#34;&lt;/span>
+sku {
+tier = &lt;span style="color:#e6db74">&amp;#34;ElasticPremium&amp;#34;&lt;/span>
+size = &lt;span style="color:#e6db74">&amp;#34;EP1&amp;#34;&lt;/span>
+capacity = &lt;span style="color:#ae81ff">1&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Create Application Insights&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_application_insights&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;ai&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;func-pe-test&amp;#34;&lt;/span>
+location = azurerm_resource_group.rg.location
+resource_group_name = azurerm_resource_group.rg.name
+application_type = &lt;span style="color:#e6db74">&amp;#34;web&amp;#34;&lt;/span>
+retention_in_days = &lt;span style="color:#ae81ff">90&lt;/span>
+}
+&lt;span style="color:#75715e"># Create the Azure Function App&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_function_app&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;func_app&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;func-pe-test&amp;#34;&lt;/span>
+location = azurerm_resource_group.rg.location
+resource_group_name = azurerm_resource_group.rg.name
+app_service_plan_id = azurerm_app_service_plan.plan.id
+storage_account_name = azurerm_storage_account.function_required_sa.name
+storage_account_access_key = azurerm_storage_account.function_required_sa.primary_access_key
+version = &lt;span style="color:#e6db74">&amp;#34;~3&amp;#34;&lt;/span>
+app_settings = {
+https_only = &lt;span style="color:#66d9ef">true&lt;/span>
+APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.ai.instrumentation_key
+privatecfm_STORAGE = azurerm_storage_account.sa.primary_connection_string
+&lt;span style="color:#75715e"># With this setting we&amp;#39;ll force all outbound traffic through the VNet&lt;/span>
+WEBSITE_VNET_ROUTE_ALL = &lt;span style="color:#e6db74">&amp;#34;1&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Properties used to deploy the zip&lt;/span>
+HASH = filesha256(&lt;span style="color:#e6db74">&amp;#34;./securecopy.zip&amp;#34;&lt;/span>)
+WEBSITE_USE_ZIP = &lt;span style="color:#e6db74">&amp;#34;https://${azurerm_storage_account.function_required_sa.name}.blob.core.windows.net/${azurerm_storage_container.functions.name}/${azurerm_storage_blob.function.name}${data.azurerm_storage_account_sas.sas.sas}&amp;#34;&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Enable Regional VNet integration. Function --&amp;gt; service Subnet &lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_app_service_virtual_network_swift_connection&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;vnet_integration&amp;#34;&lt;/span> {
+app_service_id = azurerm_function_app.func_app.id
+subnet_id = azurerm_subnet.service.id
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now download, into your working folder, the &lt;strong>&lt;a href="https://github.com/cmendible/azure.samples/blob/master/function_sa_private_endpoint/deploy/securecopy.zip">securecopy.zip&lt;/a>&lt;/strong> file containing the sample Azure Function or create a zip, with the same name, containing your own code.&lt;/p>
+&lt;p>Deploy the solution running the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">terraform init
+terraform apply
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-solution">Test the solution&lt;/h2>
+&lt;p>Use the Azure portal or Storage Explorer to upload a file to the &lt;strong>input&lt;/strong> container, after a few seconds you should find a copy of the file in the &lt;strong>output&lt;/strong> container.&lt;/p>
+&lt;h2 id="vnet-integration-name-resolution-test">VNET Integration Name Resolution Test&lt;/h2>
+&lt;p>If the previous test didn&amp;rsquo;t work, please connect through KUDU or the Console to the Azure Function and run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">nameresolver &amp;lt;name of the storage account&amp;gt;.blob.core.windows.net
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The output of the command should show &lt;strong>10.0.2.4&lt;/strong> as the IP address. If that&amp;rsquo;s not the case you probably misconfigured something. &lt;a href="#references">[3]&lt;/a>&lt;/p>
+&lt;p>Hope it helps and please find a copy of all the code &lt;a href="https://github.com/cmendible/azure.samples/tree/main/function_sa_private_endpoint">here&lt;/a>&lt;/p>
+&lt;h2 id="references">References&lt;/h2>
+&lt;ul>
+&lt;li>[1] &lt;a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints">Use private endpoints for Azure Storage&lt;/a>&lt;/li>
+&lt;li>[2] Integrate your app with an Azure virtual network: &lt;a href="https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#regional-vnet-integration">Regional VNET Integration&lt;/a>&lt;/li>
+&lt;li>[3] Integrate your app with an Azure virtual network: &lt;a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints">Troubleshooting&lt;/a>&lt;/li>
+&lt;/ul></description></item></channel></rss>

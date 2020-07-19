@@ -1,0 +1,93 @@
+<!doctype html><html lang=en-us><head><title>Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2016/11/29/first-steps-net-core-tools-msbuild-alpha/><link rel=canonical href=https://carlos.mendible.com/2016/11/29/first-steps-net-core-tools-msbuild-alpha/ itemprop=url><meta name=url content="https://carlos.mendible.com/2016/11/29/first-steps-net-core-tools-msbuild-alpha/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content="First steps with .NET Core Tools MSBuild &#34;alpha&#34;,dotnet"><meta name=news_keywords content="dotnet"><meta property="article:tag" content="msbuild"><meta property="og:title" content="First steps with .NET Core Tools MSBuild &#34;alpha&#34;"><meta property="og:description" content="First steps with .NET Core Tools MSBuild &#34;alpha&#34;"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2016/11/29/first-steps-net-core-tools-msbuild-alpha/"><meta property="og:image" content="https://carlos.mendible.com/wp-content/uploads/2016/11/netcoremsbuild.jpg"><meta property="article:published_time" content="2016-11-29T12:49:28+00:00"><meta property="article:modified_time" content="2016-11-29T12:49:28+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/wp-content/uploads/2016/11/netcoremsbuild.jpg"><meta name=twitter:title content="First steps with .NET Core Tools MSBuild &#34;alpha&#34;"><meta name=twitter:description content="First steps with .NET Core Tools MSBuild &#34;alpha&#34;"><meta name=generator content="Hugo 0.74.2"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>First steps with .NET Core Tools MSBuild "alpha"</h1><aside><ul><li><time class=post-date datetime=2016-11-29T12:49:28Z>Nov 29, 2016</time></li><li>Categories:
+<em><a href=https://carlos.mendible.com/categories/dotnet>dotnet</a></em></li><li><em><a href=https://carlos.mendible.com/tags/msbuild>#msbuild</a></em></li><li>3 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2016/11/29/first-steps-net-core-tools-msbuild-alpha/ title='First steps with .NET Core Tools MSBuild "alpha"'><img src=https://carlos.mendible.com/wp-content/uploads/2016/11/netcoremsbuild.jpg></a></div><p>On November 16th, Microsoft announced the .NET Core Tools MSBuild"alpha". I&rsquo;ve been developing .Net Core applications with Visual Studio Code for a while now, and I needed to try the new tooling.</p><p>In this post I&rsquo;ll show you which were my <strong>First steps with .NET Core Tools MSBuild &ldquo;alpha&rdquo;</strong></p><h2 id=1-installing-net-core-sdk-10-preview-3-build-004056>1. Installing .NET Core SDK 1.0 Preview 3 build 004056</h2><hr><p>The first step was to install the new tools from: .NET Core SDK 1.0 Preview 3 build 004056</p><h2 id=2-creating-a-sample-console-application>2. Creating a Sample Console Application</h2><hr><p>Open a command prompt and run the following commands</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>    md test.msbuild
+    cd test.msbuild
+    dotnet new
+    code .
+</code></pre></div><p>Surprise Code shows two files and one is <strong>test.msbuild.csproj</strong>. Bye bye <strong>project.json</strong>!!!</p><h2 id=3-there-is-no-intellisense-for-csproj-files>3. There is no Intellisense for csproj files</h2><hr><p>This will make things difficult for a while but right now you have to forget about Intellisense and Autocomplete on your <strong>csproj</strong> file, which makes adding references a real pain.</p><h2 id=4-the-csproj-file-does-not-target-net-core-11-by-default>4. The csproj file does not target .Net Core 1.1 by default</h2><hr><p>You&rsquo;ll have to edit the <strong>csproj</strong> file to target .Net Core 1.1 (lines 6 and 16)</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#f92672>&lt;Project</span> <span style=color:#a6e22e>ToolsVersion=</span><span style=color:#e6db74>&#34;15.0&#34;</span> <span style=color:#a6e22e>xmlns=</span><span style=color:#e6db74>&#34;http://schemas.microsoft.com/developer/msbuild/2003&#34;</span><span style=color:#f92672>&gt;</span>
+  <span style=color:#f92672>&lt;Import</span> <span style=color:#a6e22e>Project=</span><span style=color:#e6db74>&#34;$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props&#34;</span> <span style=color:#f92672>/&gt;</span>
+  
+  <span style=color:#f92672>&lt;PropertyGroup&gt;</span>
+    <span style=color:#f92672>&lt;OutputType&gt;</span>Exe<span style=color:#f92672>&lt;/OutputType&gt;</span>
+    <span style=color:#f92672>&lt;TargetFramework&gt;</span>netcoreapp1.1<span style=color:#f92672>&lt;/TargetFramework&gt;</span>
+  <span style=color:#f92672>&lt;/PropertyGroup&gt;</span>
+
+  <span style=color:#f92672>&lt;ItemGroup&gt;</span>
+    <span style=color:#f92672>&lt;Compile</span> <span style=color:#a6e22e>Include=</span><span style=color:#e6db74>&#34;**\*.cs&#34;</span> <span style=color:#f92672>/&gt;</span>
+    <span style=color:#f92672>&lt;EmbeddedResource</span> <span style=color:#a6e22e>Include=</span><span style=color:#e6db74>&#34;**\*.resx&#34;</span> <span style=color:#f92672>/&gt;</span>
+  <span style=color:#f92672>&lt;/ItemGroup&gt;</span>
+
+  <span style=color:#f92672>&lt;ItemGroup&gt;</span>
+    <span style=color:#f92672>&lt;PackageReference</span> <span style=color:#a6e22e>Include=</span><span style=color:#e6db74>&#34;Microsoft.NETCore.App&#34;</span><span style=color:#f92672>&gt;</span>
+      <span style=color:#f92672>&lt;Version&gt;</span>1.1.0<span style=color:#f92672>&lt;/Version&gt;</span>
+    <span style=color:#f92672>&lt;/PackageReference&gt;</span>
+    <span style=color:#f92672>&lt;PackageReference</span> <span style=color:#a6e22e>Include=</span><span style=color:#e6db74>&#34;Microsoft.NET.Sdk&#34;</span><span style=color:#f92672>&gt;</span>
+      <span style=color:#f92672>&lt;Version&gt;</span>1.0.0-alpha-20161104-2<span style=color:#f92672>&lt;/Version&gt;</span>
+      <span style=color:#f92672>&lt;PrivateAssets&gt;</span>All<span style=color:#f92672>&lt;/PrivateAssets&gt;</span>
+    <span style=color:#f92672>&lt;/PackageReference&gt;</span>
+  <span style=color:#f92672>&lt;/ItemGroup&gt;</span>
+  
+  <span style=color:#f92672>&lt;Import</span> <span style=color:#a6e22e>Project=</span><span style=color:#e6db74>&#34;$(MSBuildToolsPath)\Microsoft.CSharp.targets&#34;</span> <span style=color:#f92672>/&gt;</span>
+<span style=color:#f92672>&lt;/Project&gt;</span>
+</code></pre></div><h2 id=5-create-launchjson>5. Create launch.json</h2><hr><p>Hit F5 and select .NET Core. Visual Studio Code will create a <strong>launch.json</strong> file and because the tooling is not yet fully supported you&rsquo;ll have to edit the file manually with the following values</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+    <span style=color:#f92672>&#34;version&#34;</span>: <span style=color:#e6db74>&#34;0.2.0&#34;</span>,
+    <span style=color:#f92672>&#34;configurations&#34;</span>: [
+        {
+            <span style=color:#f92672>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;.NET Core Launch (console)&#34;</span>,
+            <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;coreclr&#34;</span>,
+            <span style=color:#f92672>&#34;request&#34;</span>: <span style=color:#e6db74>&#34;launch&#34;</span>,
+            <span style=color:#f92672>&#34;preLaunchTask&#34;</span>: <span style=color:#e6db74>&#34;build&#34;</span>,
+            <span style=color:#f92672>&#34;program&#34;</span>: <span style=color:#e6db74>&#34;${workspaceRoot}/bin/Debug/netcoreapp1.1/test.msbuild.dll&#34;</span>,
+            <span style=color:#f92672>&#34;args&#34;</span>: [],
+            <span style=color:#f92672>&#34;cwd&#34;</span>: <span style=color:#e6db74>&#34;${workspaceRoot}&#34;</span>,
+            <span style=color:#f92672>&#34;stopAtEntry&#34;</span>: <span style=color:#66d9ef>false</span>,
+            <span style=color:#f92672>&#34;externalConsole&#34;</span>: <span style=color:#66d9ef>false</span>
+        },
+        {
+            <span style=color:#f92672>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;.NET Core Attach&#34;</span>,
+            <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;coreclr&#34;</span>,
+            <span style=color:#f92672>&#34;request&#34;</span>: <span style=color:#e6db74>&#34;attach&#34;</span>,
+            <span style=color:#f92672>&#34;processId&#34;</span>: <span style=color:#e6db74>&#34;${command.pickProcess}&#34;</span>
+        }
+    ]
+}
+</code></pre></div><h2 id=6-create-taskjson>6. Create task.json</h2><hr><p>Hit F5 again and select .NET Core. Visual Studio Code will create a <strong>task.json</strong> file which you won&rsquo;t have to modify.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+    <span style=color:#960050;background-color:#1e0010>//</span> <span style=color:#960050;background-color:#1e0010>See</span> <span style=color:#960050;background-color:#1e0010>https://go.microsoft.com/fwlink/?LinkId=733558</span>
+    <span style=color:#960050;background-color:#1e0010>//</span> <span style=color:#960050;background-color:#1e0010>for</span> <span style=color:#960050;background-color:#1e0010>the</span> <span style=color:#960050;background-color:#1e0010>documentation</span> <span style=color:#960050;background-color:#1e0010>about</span> <span style=color:#960050;background-color:#1e0010>the</span> <span style=color:#960050;background-color:#1e0010>tasks.json</span> <span style=color:#960050;background-color:#1e0010>format</span>
+    <span style=color:#f92672>&#34;version&#34;</span>: <span style=color:#e6db74>&#34;0.1.0&#34;</span>,
+    <span style=color:#f92672>&#34;command&#34;</span>: <span style=color:#e6db74>&#34;dotnet&#34;</span>,
+    <span style=color:#f92672>&#34;isShellCommand&#34;</span>: <span style=color:#66d9ef>true</span>,
+    <span style=color:#f92672>&#34;args&#34;</span>: [],
+    <span style=color:#f92672>&#34;tasks&#34;</span>: [
+        {
+            <span style=color:#f92672>&#34;taskName&#34;</span>: <span style=color:#e6db74>&#34;build&#34;</span>,
+            <span style=color:#f92672>&#34;args&#34;</span>: [ ],
+            <span style=color:#f92672>&#34;isBuildCommand&#34;</span>: <span style=color:#66d9ef>true</span>,
+            <span style=color:#f92672>&#34;showOutput&#34;</span>: <span style=color:#e6db74>&#34;silent&#34;</span>,
+            <span style=color:#f92672>&#34;problemMatcher&#34;</span>: <span style=color:#e6db74>&#34;$msCompile&#34;</span>
+        }
+    ]
+}
+</code></pre></div><h2 id=7-restore-packages>7. Restore packages</h2><hr><p>Run the following command from the Visual Studio Code terminal or the command prompt from step 1</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>    dotnet restore
+</code></pre></div><p>Visual Studio Code won&rsquo;t prompt automatically to restore so failing to run this step manually will prevent you from building the application.</p><h2 id=8-run-and-debug-the-application>8. Run and debug the application</h2><hr><p>Place a break point in line 7 of the <strong>Program.cs</strong> file</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine(<span style=color:#e6db74>&#34;Hello World!&#34;</span>);
+    }
+}
+</code></pre></div><p>Hit F5 and the program should stop at the break point and you are good to go!</p><h2 id=9-side-by-side-with-projectjson-tooling-no-migration>9. Side by side with project.json tooling (no migration)</h2><hr><p>To be able to run my applications based on the <strong>project.json</strong> tools I had to add a <strong>global.json</strong> file in the root folder, with the following content</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+    <span style=color:#f92672>&#34;sdk&#34;</span>: {
+        <span style=color:#f92672>&#34;version&#34;</span>: <span style=color:#e6db74>&#34;1.0.0-preview2-1-003177&#34;</span>
+    }
+}
+</code></pre></div><p>If you are not sure of which versions you have installed, just run the following powershell command:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>ls $env:programfiles\dotnet\sdk
+</code></pre></div><p>And change the value in the <strong>global.json</strong> file as desired.</p><p>Hope it helps!</p></article><section class=post-nav><ul><li><a href=https://carlos.mendible.com/2016/11/06/step-by-step-expose-asp-net-core-over-https-with-docker/><i class="fa fa-chevron-circle-left"></i>Step by step: Expose ASP.NET Core over HTTPS with Docker</a></li><li><a href=https://carlos.mendible.com/2016/12/11/debug-asp-net-core-on-docker-with-visual-studio-code/>Debug ASP.NET Core on Docker with Visual Studio Code <i class="fa fa-chevron-circle-right"></i></a></li></ul></section><section class=comments-block><button id=show-comments style=display:none><i class="fa fa-comments"></i></button></section><section id=disqus_thread></section><script>(function(){if(window.location.hostname=="localhost")
+return;var disqus_loaded=false;var disqus_shortname='codeityourself';var disqus_button=document.getElementById("show-comments");var disqus_title='First steps with .NET Core Tools MSBuild \u0022alpha\u0022'
+var disqus_autoload=true;disqus_button.style.display="";if(disqus_autoload){disqus();}else{disqus_button.addEventListener("click",disqus,false);}
+function disqus(){if(!disqus_loaded){disqus_loaded=true;var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="//"+disqus_shortname+".disqus.com/embed.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e);document.getElementById("show-comments").style.display="none";}}
+var hash=window.location.hash.substr(1);if(hash.length>8){if(hash.substring(0,8)=="comment-"){disqus();}}
+if(/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)){disqus();}})();</script></main><footer><h6>Copyright © 2020 - Carlos Mendible |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://carlos.mendible.com/feed.xml>Subscribe</a></h6></footer></div><script src=https://carlos.mendible.com/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-11243417-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

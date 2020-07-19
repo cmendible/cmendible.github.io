@@ -1,0 +1,55 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Swarm on Code it Yourself...</title><link>https://carlos.mendible.com/tags/swarm/</link><description>Recent content in Swarm on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 30 Oct 2016 15:16:29 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/swarm/feed.xml" rel="self" type="application/rss+xml"/><item><title>Step by step: Scale ASP.NET Core with Docker Swarm</title><link>https://carlos.mendible.com/2016/10/30/step-by-step-scale-asp-net-core-with-docker-swarm/</link><pubDate>Sun, 30 Oct 2016 15:16:29 +0000</pubDate><guid>https://carlos.mendible.com/2016/10/30/step-by-step-scale-asp-net-core-with-docker-swarm/</guid><description>&lt;p>A few weeks ago I posted &lt;!-- raw HTML omitted -->Step by step: ASP.NET Core on Docker&lt;!-- raw HTML omitted --> were I showed how to build and run a &lt;!-- raw HTML omitted -->Docker&lt;!-- raw HTML omitted --> image with an ASP.NET Core application.&lt;/p>
+&lt;p>Today I bring you: &lt;strong>Step by step: Scale ASP.NET Core with Docker Swarm&lt;/strong> so you can scale out or in the same &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld">application&lt;/a>.&lt;/p>
+&lt;p>Assuming you have &lt;!-- raw HTML omitted -->Docker 1.12 or later&lt;!-- raw HTML omitted --> installed and running, follow this steps:&lt;/p>
+&lt;h2 id="1-create-a-dockerfile">1. Create a dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>On your Docker box create a dockerfile with the following contents&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml"> &lt;span style="color:#75715e"># We use the microsoft/dotnet image as a starting point.&lt;/span>
+FROM microsoft/dotnet
+&lt;span style="color:#75715e"># Install git&lt;/span>
+RUN apt-get install git -y
+&lt;span style="color:#75715e"># Create a folder to clone our source code &lt;/span>
+RUN mkdir repositories
+&lt;span style="color:#75715e"># Set our working folder&lt;/span>
+WORKDIR repositories
+&lt;span style="color:#75715e"># Clone the source code&lt;/span>
+RUN git clone https://github.com/cmendible/aspnet-core-helloworld.git
+&lt;span style="color:#75715e"># Set our working folder&lt;/span>
+WORKDIR aspnet-core-helloworld/src/dotnetstarter
+&lt;span style="color:#75715e"># Expose port 5000 for the application. &lt;/span>
+EXPOSE &lt;span style="color:#ae81ff">5000&lt;/span>
+&lt;span style="color:#75715e"># Restore nuget packages&lt;/span>
+RUN dotnet restore
+&lt;span style="color:#75715e"># Start the application using dotnet!!!&lt;/span>
+ENTRYPOINT dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-docker-image">2. Create a Docker image&lt;/h2>
+&lt;hr>
+&lt;p>With the dockerfile in place run the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">sudo docker build -t hello_world .
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now you have an image named &lt;!-- raw HTML omitted -->hello_world&lt;!-- raw HTML omitted --> with all the dependencies and code needed to run the sample.&lt;/p>
+&lt;h2 id="3-initialize-a-swarm">3. Initialize a Swarm&lt;/h2>
+&lt;hr>
+&lt;p>Initialize &lt;!-- raw HTML omitted -->Docker Swarm&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker swarm init
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-a-docker-service">4. Create a Docker Service&lt;/h2>
+&lt;hr>
+&lt;p>Now that you have setup everything use the following command to create a service named &lt;!-- raw HTML omitted -->hello_service&lt;!-- raw HTML omitted --> based on the &lt;!-- raw HTML omitted -->hello_world&lt;!-- raw HTML omitted --> image and start it&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker service create --name hello_service --publish 5000&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>5000 hello_world
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Wait a few seconds and navigate to &lt;!-- raw HTML omitted -->http://localhost:5000&lt;!-- raw HTML omitted --> and you should be able to reach the web application.&lt;/p>
+&lt;p>If you want to learn more about Docker services, start here: &lt;!-- raw HTML omitted -->Service Create/&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="5-scale-up-your-application">5. Scale up your application&lt;/h2>
+&lt;hr>
+&lt;p>Let&amp;rsquo;s scale your service up to 3 instances with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker service scale hello_service=3
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you want to see how many replicas your service is running issue the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker service ls
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that it takes some seconds before all new replicas start.&lt;/p>
+&lt;h2 id="6-scale-down-your-application">6. Scale down your application&lt;/h2>
+&lt;hr>
+&lt;p>Let&amp;rsquo;s scale your service down to 1 instance with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker service scale hello_service=1
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-optional-remove-the-service">7. Optional: Remove the service&lt;/h2>
+&lt;p>If you are don&amp;rsquo;t want the service anymore, remove it from the Swarm with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker service rm hello_service
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can get a copy of the docker file here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld">https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

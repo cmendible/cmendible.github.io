@@ -1,0 +1,87 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CLI on Code it Yourself...</title><link>https://carlos.mendible.com/tags/cli/</link><description>Recent content in CLI on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 10 Aug 2018 00:18:30 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/cli/feed.xml" rel="self" type="application/rss+xml"/><item><title>Installing Azure CLI and Ansible on Ubuntu</title><link>https://carlos.mendible.com/2018/08/10/installing-azure-cli-and-ansible-on-ubuntu/</link><pubDate>Fri, 10 Aug 2018 00:18:30 +0000</pubDate><guid>https://carlos.mendible.com/2018/08/10/installing-azure-cli-and-ansible-on-ubuntu/</guid><description>&lt;p>I&amp;rsquo;ve been using &lt;a href="https://www.ansible.com/">Ansible&lt;/a> and the &lt;a href="https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest">Azure CLI&lt;/a> every single day for the last 3 months. Non stop work editing playbooks and scripts with &lt;a href="https://code.visualstudio.com/">Visual Studio Code&lt;/a> and running them on &lt;a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Ubuntu (WSL)&lt;/a> on my Windows 10 machine.&lt;/p>
+&lt;p>Turns out that because &lt;a href="https://www.ansible.com/">Ansible&lt;/a> uses python version &lt;strong>2.7.12&lt;/strong> and the &lt;a href="https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest">Azure CLI&lt;/a> uses python &lt;strong>3.6.5&lt;/strong> you can make a mess if you get &amp;ldquo;creative&amp;rdquo; trying to install the tools instead of using the recommended commands:&lt;/p>
+&lt;h2 id="1-azure-cli">1. Azure CLI&lt;/h2>
+&lt;hr>
+&lt;p>To install the Azure CLI just run the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">AZ_REPO&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -cs&lt;span style="color:#66d9ef">)&lt;/span>
+echo &lt;span style="color:#e6db74">&amp;#34;deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ &lt;/span>$AZ_REPO&lt;span style="color:#e6db74"> main&amp;#34;&lt;/span> | sudo tee /etc/apt/sources.list.d/azure-cli.list
+curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+sudo apt-get install -y apt-transport-https
+sudo apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> sudo apt-get install -y azure-cli
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you want to read the official Microsoft documentation please find it &lt;a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest">here&lt;/a>&lt;/p>
+&lt;h2 id="2-ansible">2. Ansible&lt;/h2>
+&lt;hr>
+&lt;p>To install Ansible run the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo apt-get update &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> sudo apt-get install -y libssl-dev libffi-dev python-dev python-pip
+sudo pip install ansible&lt;span style="color:#f92672">[&lt;/span>azure&lt;span style="color:#f92672">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Please find the official Microsoft documentation &lt;a href="https://docs.microsoft.com/en-us/azure/virtual-machines/linux/ansible-install-configure#ubuntu1604-lts">here&lt;/a>&lt;/p>
+&lt;h2 id="3-verify-the-installation">3. Verify the installation&lt;/h2>
+&lt;p>To confirm that both tools are installed just run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">az --version
+ansible --verison
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Take a minute and check the python versions and you&amp;rsquo;ll see the difference!&lt;/p>
+&lt;h2 id="4-install-using-a-gist">4. Install using a gist&lt;/h2>
+&lt;hr>
+&lt;p>I&amp;rsquo;ve published a &lt;a href="https://gist.github.com/cmendible/696bc74bfd123924bd255834aeedb340#file-azure_cli_ansible_install-sh">gist&lt;/a> so you can install both Ansible and Azure CLI in one run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo curl -s https://gist.githubusercontent.com/cmendible/696bc74bfd123924bd255834aeedb340/raw/a3fd95f7cf6556292a04ee289ae05769f83caa40/azure_cli_ansible_install.sh | bash
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!!!&lt;/p></description></item><item><title>Accepting Azure Marketplace Terms with Azure CLI</title><link>https://carlos.mendible.com/2018/05/21/accepting-azure-marketplace-terms-with-azure-cli/</link><pubDate>Mon, 21 May 2018 19:21:39 +0000</pubDate><guid>https://carlos.mendible.com/2018/05/21/accepting-azure-marketplace-terms-with-azure-cli/</guid><description>&lt;p>When you try to deploy a VM from the Marketplace using an &lt;strong>ARM&lt;/strong> (json) template you&amp;rsquo;ll get an error like the one below in the case when you&amp;rsquo;ve not previously accepted the &lt;strong>Legal terms&lt;/strong> for the image:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">[{&lt;span style="color:#f92672">&amp;#34;Legal terms have not been accepted for this item on this subscription. To accept terms using Powershell...&amp;#34;&lt;/span>}]
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Accepting the &lt;strong>Legal terms&lt;/strong> is something you have to do once per subscription for each provider offer you want to use. So how can you accept the terms using the &lt;strong>Azure CLI (version 2.0.26 or higher)&lt;/strong>?&lt;/p>
+&lt;p>First get the &lt;strong>urn&lt;/strong> of the image you want to deploy:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">az vm image list --all --publisher paloaltonetworks --offer vmseries --sku bundle1 --query &lt;span style="color:#e6db74">&amp;#39;[0].urn&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now feed the &lt;strong>urn&lt;/strong> (i.e. paloaltonetworks:vmseries1:bundle1:8.1.0) to the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">az vm image accept-terms --urn paloaltonetworks:vmseries1:bundle1:8.1.0
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And that&amp;rsquo;s it! Hope it helps!&lt;/p></description></item><item><title>.NET Core CLI and MSBUILD Cheat Sheet</title><link>https://carlos.mendible.com/2017/09/21/dotnet-core-cli-and-msbuild-cheat-sheet/</link><pubDate>Thu, 21 Sep 2017 17:23:14 +0000</pubDate><guid>https://carlos.mendible.com/2017/09/21/dotnet-core-cli-and-msbuild-cheat-sheet/</guid><description>&lt;p>This is a small &lt;strong>.NET Core CLI and MSBUILD Cheat Sheet&lt;/strong> with the list of commands and settings I use almost on daily basis when working with .NET Core, the command line and Visual Studio Code.&lt;/p>
+&lt;h2 id="checks">Checks&lt;/h2>
+&lt;h3 id="check-installed-cli-version">Check installed CLI version:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet --version
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="show-available-templates">Show available templates:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="solutions">Solutions&lt;/h2>
+&lt;h3 id="create-a-solution-with-the-name-of-current-the-folder">Create a solution with the name of current the folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new sln
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="create-a-solution-with-a-specific-name">Create a solution with a specific name:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new sln --name &lt;span style="color:#66d9ef">[solution name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="add-a-project-to-a-solution">Add a project to a solution:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add sln &lt;span style="color:#66d9ef">[relative path to csproj file]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="packages">Packages&lt;/h2>
+&lt;h3 id="add-package-reference-to-the-project-in-the-current-folder">Add package reference to the project in the current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package &lt;span style="color:#66d9ef">[package name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="remove-a-package-reference-from-the-project-in-the-current-folder">Remove a package reference from the project in the current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet remove package &lt;span style="color:#66d9ef">[package name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="add-a-specific-package-version-reference-to-the-project-in-the-current-folder">Add a specific package version reference to the project in the current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package &lt;span style="color:#66d9ef">[package name]&lt;/span>-v &lt;span style="color:#66d9ef">[version]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="restore-packages">Restore packages:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="create-a-nuget-package-for-the-project-in-current-folder">Create a nuget package for the project in current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet pack
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="project-templates">Project Templates&lt;/h2>
+&lt;h3 id="install-a-new-project-template">Install a new project template:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new --install &lt;span style="color:#66d9ef">[dotnet template name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="remove-a-project-template">Remove a project template:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new --uninstall &lt;span style="color:#66d9ef">[dotnet template name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="run-test-defined-in-current-folder-project">Run test defined in current folder project&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet test
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="builds">Builds&lt;/h2>
+&lt;h3 id="build-currents-folder-solution-or-project">Build current&amp;rsquo;s folder solution or project&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="build-currents-folder-solution-or-project-with-release-configuration">Build current&amp;rsquo;s folder solution or project with release configuration&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build -c Release
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="publish-artifacts-for-currents-folder-solution-or-project">Publish artifacts for current&amp;rsquo;s folder solution or project.&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet publish
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="msbuild">MSBUILD&lt;/h2>
+&lt;h3 id="to-add-a-reference-to-a-local-assembly-without-nuget-package-edit-your-csproj-and-add-a-reference-as-shown-in-the-following-sample">To add a reference to a local assembly without nuget package, edit your csproj and add a Reference as shown in the following sample:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;code&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Reference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[Relative path to the Assembly dll file]&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/code&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="force-a-file-to-be-copied-to-the-output-folder-edit-your-csproj-and-add-a-content-section-as-shown-in-the-following-sample">Force a file to be copied to the output folder, edit your csproj and add a Content section as shown in the following sample:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;code&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Content&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[name of the file]&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;CopyToOutputDirectory&amp;gt;&lt;/span>PreserveNewest&lt;span style="color:#f92672">&amp;lt;/CopyToOutputDirectory&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Content&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/code&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

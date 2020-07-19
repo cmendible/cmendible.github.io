@@ -1,0 +1,91 @@
+<!doctype html><html lang=en-us><head><title>Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2018/08/16/dotnet-core-benchmarkdotnet-and-string-compare-performance/><link rel=canonical href=https://carlos.mendible.com/2018/08/16/dotnet-core-benchmarkdotnet-and-string-compare-performance/ itemprop=url><meta name=url content="https://carlos.mendible.com/2018/08/16/dotnet-core-benchmarkdotnet-and-string-compare-performance/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content=".NET Core,BenchmarkDotNet and string compare performance,dotnet"><meta name=news_keywords content="dotnet"><meta property="article:tag" content="benchmarkdotnet, string"><meta property="og:title" content=".NET Core, BenchmarkDotNet and string compare performance"><meta property="og:description" content=".NET Core, BenchmarkDotNet and string compare performance"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2018/08/16/dotnet-core-benchmarkdotnet-and-string-compare-performance/"><meta property="og:image" content="https://carlos.mendible.com/wp-content/uploads/2017/07/dotnetcore.png"><meta property="article:published_time" content="2018-08-16T11:27:39+00:00"><meta property="article:modified_time" content="2018-08-16T11:27:39+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/wp-content/uploads/2017/07/dotnetcore.png"><meta name=twitter:title content=".NET Core, BenchmarkDotNet and string compare performance"><meta name=twitter:description content=".NET Core, BenchmarkDotNet and string compare performance"><meta name=generator content="Hugo 0.74.2"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>.NET Core, BenchmarkDotNet and string compare performance</h1><aside><ul><li><time class=post-date datetime=2018-08-16T11:27:39Z>Aug 16, 2018</time></li><li>Categories:
+<em><a href=https://carlos.mendible.com/categories/dotnet>dotnet</a></em></li><li><em><a href=https://carlos.mendible.com/tags/benchmarkdotnet>#benchmarkdotnet</a>
+,
+<a href=https://carlos.mendible.com/tags/string>#string</a></em></li><li>3 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2018/08/16/dotnet-core-benchmarkdotnet-and-string-compare-performance/ title=".NET Core, BenchmarkDotNet and string compare performance"><img src=https://carlos.mendible.com/wp-content/uploads/2017/07/dotnetcore.png></a></div><p>You have to choose between using <strong>string.compare</strong> or <strong>==</strong> to compare strings. How would you know which method performs faster?</p><p>Today I&rsquo;ll show you how to use <a href=https://benchmarkdotnet.org>BenchmarkDotNet</a> with .Net Core to answer that question.</p><p>Let&rsquo;s start:</p><h2 id=1-create-a-folder-for-your-new-project>1. Create a folder for your new project</h2><hr><p>Open a command prompt an run:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>mkdir benchmark
+</code></pre></div><h2 id=2-create-the-project>2. Create the project</h2><hr><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>cd benchmark
+dotnet new console
+</code></pre></div><h2 id=3-add-the-references-to-benchmarkdotnet>3. Add the references to BenchmarkDotNet</h2><hr><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>dotnet add package BenchmarkDotNet -v 0.11.0
+dotnet restore
+</code></pre></div><h2 id=4-replace-the-contents-of-programcs-with-the-following-code>4. Replace the contents of Program.cs with the following code</h2><hr><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>using</span> System;
+<span style=color:#66d9ef>using</span> System.Linq;
+<span style=color:#66d9ef>using</span> BenchmarkDotNet.Attributes;
+<span style=color:#66d9ef>using</span> BenchmarkDotNet.Running;
+
+<span style=color:#66d9ef>namespace</span> benchmark
+{
+    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Program</span>
+    {
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> Main(<span style=color:#66d9ef>string</span>[] args)
+        {
+            <span style=color:#75715e>// Use BenchmarkRunner.Run to Benchmark your code
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>var</span> summary = BenchmarkRunner.Run&lt;StringCompareVsEquals&gt;();
+        }
+    }
+
+    <span style=color:#75715e>// We are using .Net Core so add we are adding the CoreJobAttribute here.
+</span><span style=color:#75715e></span><span style=color:#a6e22e>    [CoreJob(baseline: true)]</span>
+<span style=color:#a6e22e>    [RPlotExporter, RankColumn]</span>
+    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>StringCompareVsEquals</span>
+    {
+        <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>static</span> Random random = <span style=color:#66d9ef>new</span> Random();
+        <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>string</span> s1;
+        <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>string</span> s2;
+
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>string</span> RandomString(<span style=color:#66d9ef>int</span> length)
+        {
+            <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>string</span> chars = <span style=color:#e6db74>&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&#34;</span>;
+            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>new</span> <span style=color:#66d9ef>string</span>(Enumerable.Repeat(chars, length)
+                .Select(s =&gt; s[random.Next(s.Length)]).ToArray());
+        }
+
+        <span style=color:#75715e>// We wil run the the test for 2 diff string lengths: 10 &amp; 100
+</span><span style=color:#75715e></span><span style=color:#a6e22e>        [Params(10, 100)]</span>
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>int</span> N;
+
+
+        <span style=color:#75715e>// Create two random strings for each set of params
+</span><span style=color:#75715e></span><span style=color:#a6e22e>        [GlobalSetup]</span>
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> Setup()
+        {
+            s1 = RandomString(N);
+            s2 = RandomString(N);
+        }
+
+        <span style=color:#75715e>// This is the slow way of comparing strings, so let&#39;s benchmark it.
+</span><span style=color:#75715e></span><span style=color:#a6e22e>        [Benchmark]</span>
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>bool</span> Slow() =&gt; s1.ToLower() == s2.ToLower();
+
+        <span style=color:#75715e>// This is the fast way of comparing strings, so let&#39;s benchmark it.
+</span><span style=color:#75715e></span><span style=color:#a6e22e>        [Benchmark]</span>
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>bool</span> Fast() =&gt; <span style=color:#66d9ef>string</span>.Compare(s1, s2, <span style=color:#66d9ef>true</span>) == <span style=color:#ae81ff>0</span>;
+    }
+}
+</code></pre></div><h2 id=5-run-the-application-and-interpret-the-results>5. Run the application and interpret the results</h2><hr><p>Run the following command:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>dotnet run -c release
+</code></pre></div><p>after a while you should expect an output like the following:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>// * Summary *
+
+BenchmarkDotNet<span style=color:#f92672>=</span>v0.11.0, OS<span style=color:#f92672>=</span>Windows 10.0.17134.228 <span style=color:#f92672>(</span>1803/April2018Update/Redstone4<span style=color:#f92672>)</span>
+Intel Core i5-6300U CPU 2.40GHz <span style=color:#f92672>(</span>Skylake<span style=color:#f92672>)</span>, <span style=color:#ae81ff>1</span> CPU, <span style=color:#ae81ff>4</span> logical and <span style=color:#ae81ff>2</span> physical cores
+Frequency<span style=color:#f92672>=</span><span style=color:#ae81ff>2437501</span> Hz, Resolution<span style=color:#f92672>=</span>410.2562 ns, Timer<span style=color:#f92672>=</span>TSC
+.NET Core SDK<span style=color:#f92672>=</span>2.1.302
+  <span style=color:#f92672>[</span>Host<span style=color:#f92672>]</span> : .NET Core 2.1.2 <span style=color:#f92672>(</span>CoreCLR 4.6.26628.05, CoreFX 4.6.26629.01<span style=color:#f92672>)</span>, 64bit RyuJIT
+  Core   : .NET Core 2.1.2 <span style=color:#f92672>(</span>CoreCLR 4.6.26628.05, CoreFX 4.6.26629.01<span style=color:#f92672>)</span>, 64bit RyuJIT
+
+Job<span style=color:#f92672>=</span>Core  Runtime<span style=color:#f92672>=</span>Core
+
+ Method |   N |     Mean |     Error |    StdDev |   Median | Scaled | Rank |
+------- |---- |---------:|----------:|----------:|---------:|-------:|-----:|
+   Slow |  <span style=color:#ae81ff>10</span> | 229.6 ns | 11.590 ns | 32.500 ns | 240.8 ns |   1.00 |    <span style=color:#ae81ff>1</span> |
+        |     |          |           |           |          |        |      |
+   Fast |  <span style=color:#ae81ff>10</span> | 195.2 ns | 12.870 ns | 37.948 ns | 205.5 ns |   1.00 |    <span style=color:#ae81ff>1</span> |
+        |     |          |           |           |          |        |      |
+   Slow | <span style=color:#ae81ff>100</span> | 531.9 ns | 10.320 ns | 14.467 ns | 534.7 ns |   1.00 |    <span style=color:#ae81ff>1</span> |
+        |     |          |           |           |          |        |      |
+   Fast | <span style=color:#ae81ff>100</span> | 148.2 ns |  3.132 ns |  7.683 ns | 145.1 ns |   1.00 |    <span style=color:#ae81ff>1</span> |
+</code></pre></div><p>Now you know what method is faster when comparing strings!</p><p>Please find all the code used in this post <a href=https://github.com/cmendible/dotnetcore.samples/tree/main/benchmarkdotnet>here</a>.</p><p>Hope it helps!</p></article><section class=post-nav><ul><li><a href=https://carlos.mendible.com/2018/08/14/accepting-azure-marketplace-terms-with-ansible/><i class="fa fa-chevron-circle-left"></i>Accepting Azure Marketplace Terms with Ansible</a></li><li><a href=https://carlos.mendible.com/2018/08/22/net-core-benchmarkdotnet-for-vs-foreach-performance/>.NET Core, BenchmarkDotNet: for vs foreach performance <i class="fa fa-chevron-circle-right"></i></a></li></ul></section><section class=comments-block><button id=show-comments style=display:none><i class="fa fa-comments"></i></button></section><section id=disqus_thread></section><script>(function(){if(window.location.hostname=="localhost")
+return;var disqus_loaded=false;var disqus_shortname='codeityourself';var disqus_button=document.getElementById("show-comments");var disqus_title='.NET Core, BenchmarkDotNet and string compare performance'
+var disqus_autoload=true;disqus_button.style.display="";if(disqus_autoload){disqus();}else{disqus_button.addEventListener("click",disqus,false);}
+function disqus(){if(!disqus_loaded){disqus_loaded=true;var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="//"+disqus_shortname+".disqus.com/embed.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e);document.getElementById("show-comments").style.display="none";}}
+var hash=window.location.hash.substr(1);if(hash.length>8){if(hash.substring(0,8)=="comment-"){disqus();}}
+if(/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)){disqus();}})();</script></main><footer><h6>Copyright © 2020 - Carlos Mendible |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://carlos.mendible.com/feed.xml>Subscribe</a></h6></footer></div><script src=https://carlos.mendible.com/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-11243417-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

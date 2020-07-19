@@ -1,0 +1,42 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>70-534 on Code it Yourself...</title><link>https://carlos.mendible.com/tags/70-534/</link><description>Recent content in 70-534 on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 06 Mar 2016 12:07:02 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/70-534/feed.xml" rel="self" type="application/rss+xml"/><item><title>Get Ready: Exam 70-534 Architecting Microsoft Azure Solutions</title><link>https://carlos.mendible.com/2016/03/06/get-ready-exam-70-534-architecting-microsoft-azure-solutions/</link><pubDate>Sun, 06 Mar 2016 12:07:02 +0000</pubDate><guid>https://carlos.mendible.com/2016/03/06/get-ready-exam-70-534-architecting-microsoft-azure-solutions/</guid><description>&lt;p>I recently passed the &lt;!-- raw HTML omitted -->70-534 Architecting Microsoft Azure Solutions&lt;!-- raw HTML omitted --> exam, and I want to share with you tips about the exam and the resources I used to study:&lt;/p>
+&lt;p>&lt;strong>Should you take the exam?&lt;/strong>&lt;/p>
+&lt;p>If you are a &lt;strong>Solutions or Software Architect&lt;/strong> looking to validate your &lt;!-- raw HTML omitted -->Microsoft Azure &lt;!-- raw HTML omitted -->skills then this exam is for you. Also note that Microsoft expects you to:&lt;/p>
+&lt;ul>
+&lt;li>Know the features and capabilities of Azure services to be able to design cloud solutions.&lt;/li>
+&lt;li>Be able to define the appropriate infrastructure and platform solutions to meet the required functional, operational and deployment requirements through the solution life cycle.&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Skills measured:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>Design Microsoft Azure infrastructure and networking (15-20%)&lt;/li>
+&lt;li>Secure resources (15-20%)&lt;/li>
+&lt;li>Design an application storage and data access strategy (15-20%)&lt;/li>
+&lt;li>Design an advanced application (15-20%)&lt;/li>
+&lt;li>Design websites (15-20%)&lt;/li>
+&lt;li>Design a management, monitoring, and business continuity strategy (15-20%)&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Books:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;!-- raw HTML omitted -->Exam Ref 70-534 Architecting Microsoft Azure Solutions&lt;!-- raw HTML omitted --> as all Exam Ref books it&amp;rsquo;s an important resource for studying but it&amp;rsquo;s not a complete Training Guide so reading and practicing with other resources is important.&lt;/li>
+&lt;li>&lt;!-- raw HTML omitted -->Microsoft Azure Essentials: Fundamentals of Azure&lt;!-- raw HTML omitted --> a book you can find in the &lt;!-- raw HTML omitted -->Microsoft Virtual Academy&lt;!-- raw HTML omitted --> along with many other free e-books&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Courses:&lt;/strong>&lt;/p>
+&lt;p>The &lt;!-- raw HTML omitted -->Microsoft Virtual Academy&lt;!-- raw HTML omitted --> is a place filled with great training material and best of all it&amp;rsquo;s free! Here is the list of courses I completed before the exam:&lt;/p>
+&lt;ul>
+&lt;li>&lt;!-- raw HTML omitted -->Architecting Microsoft Azure Solutions&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;!-- raw HTML omitted -->Get Started with Windows Azure Today Jump Start&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;!-- raw HTML omitted -->The Microsoft Hybrid Cloud: Best Practices Guidance&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;!-- raw HTML omitted -->Microsoft Azure IaaS Deep Dive Jump Start&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;!-- raw HTML omitted -->Establish Microsoft Azure IaaS Technical Fundamentals&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Practice tests:&lt;/strong>&lt;/p>
+&lt;p>Just like for any certification exam, studying with practice tests is key to success.&lt;/p>
+&lt;ul>
+&lt;li>&lt;!-- raw HTML omitted -->MesureUp 70-534 Practice Test&lt;!-- raw HTML omitted -->: contains 150 questions and I really like the new online format!&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Hands On:&lt;/strong>&lt;/p>
+&lt;p>Be sure to get some hands on experience!&lt;/p>
+&lt;ul>
+&lt;li>For instance I can tell you that I&amp;rsquo;m not a great Powershell fan so I had to open the console and start playing and trying the commands in order to learn and understand them.&lt;/li>
+&lt;li>Coming from the &lt;strong>Dev&lt;/strong> side of the world I really took time to play with &lt;!-- raw HTML omitted -->Virtual Networks&lt;!-- raw HTML omitted -->, &lt;!-- raw HTML omitted -->ACL&lt;!-- raw HTML omitted -->‘s and &lt;!-- raw HTML omitted -->NSG&lt;!-- raw HTML omitted -->‘s&lt;/li>
+&lt;/ul>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

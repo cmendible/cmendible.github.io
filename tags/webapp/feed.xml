@@ -1,0 +1,202 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WebApp on Code it Yourself...</title><link>https://carlos.mendible.com/tags/webapp/</link><description>Recent content in WebApp on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 17 Jun 2017 15:01:53 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/webapp/feed.xml" rel="self" type="application/rss+xml"/><item><title>Use PowerShell to Enable Logging for Azure RM Web Apps</title><link>https://carlos.mendible.com/2017/06/17/use-powershell-to-enable-logging-for-azure-rm-web-apps/</link><pubDate>Sat, 17 Jun 2017 15:01:53 +0000</pubDate><guid>https://carlos.mendible.com/2017/06/17/use-powershell-to-enable-logging-for-azure-rm-web-apps/</guid><description>&lt;p>Recently I client ask me to enable application and http logging for more than 20 AzureRM Web Apps. Furthermore the client wanted the logs to be stored in a Storage Account.&lt;/p>
+&lt;p>Issues started when I decided to &lt;strong>Use PowerShell to Enable Logging for Azure RM Web Apps&lt;/strong>, because there is no equivalent to the ASM &lt;strong>&lt;!-- raw HTML omitted -->Enable-AzureWebsiteApplicationDiagnostic&lt;!-- raw HTML omitted -->&lt;/strong> cmdlet for ARM resources.&lt;/p>
+&lt;p>So how could I enable logging and the needed configuration? Well there is a handy cmdlet that can be used to set almost any property for an Azure ARM resource: &lt;strong>&lt;!-- raw HTML omitted -->Set-AzureRmResource&lt;!-- raw HTML omitted -->&lt;/strong>&lt;/p>
+&lt;p>And how can anyone discover what properties must be set in order to enable or disable features? Well what I usually do is go to &lt;!-- raw HTML omitted -->portal.azure.com&lt;!-- raw HTML omitted --> and configure a service as specified. Then I browse with &lt;strong>&lt;!-- raw HTML omitted -->Resource Explorer&lt;!-- raw HTML omitted -->&lt;/strong> to find the properties and values I need for the desired configuration.&lt;/p>
+&lt;p>In my clients case I needed to set the following properties:&lt;/p>
+&lt;ul>
+&lt;li>applicationLogs.azureBlobStorage.level&lt;/li>
+&lt;li>applicationLogs.azureBlobStorage.sasUrl&lt;/li>
+&lt;li>applicationLogs.azureBlobStorage.retenionDays&lt;/li>
+&lt;li>httpLogs.azureBlobStorage.level&lt;/li>
+&lt;li>httpLogs.azureBlobStorage.sasUrl&lt;/li>
+&lt;li>httpLogs.azureBlobStorage.retenionDays&lt;/li>
+&lt;li>httpLogs.azureBlobStorage.enabled&lt;/li>
+&lt;/ul>
+&lt;p>So for the solution I just need to create a storage account and set those properties for every Web App found inside a Resource Group. This is the script I used:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#66d9ef">function&lt;/span> Add-IndexNumberToArray (
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $True)]
+&lt;span style="color:#66d9ef">[array]&lt;/span>$array
+) {
+&lt;span style="color:#66d9ef">for&lt;/span> ($i = 0; $i &lt;span style="color:#f92672">-lt&lt;/span> $array.Count; $i++) {
+Add-Member -InputObject $array[$i] -Name &lt;span style="color:#e6db74">&amp;#34;#&amp;#34;&lt;/span> -Value ($i + 1) -MemberType NoteProperty
+}
+$array
+}
+&lt;span style="color:#75715e"># Enable Web App Service Logs&lt;/span>
+&lt;span style="color:#66d9ef">function&lt;/span> Enable-WebAppServiceLogs() {
+Add-AzureRmAccount
+&lt;span style="color:#66d9ef">[array]&lt;/span>$SubscriptionArray = Add-IndexNumberToArray (Get-AzureRmSubscription)
+&lt;span style="color:#66d9ef">[int]&lt;/span>$SelectedSub = 0
+&lt;span style="color:#75715e"># use the current subscription if there is only one subscription available&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> ($SubscriptionArray.Count &lt;span style="color:#f92672">-eq&lt;/span> 1) {
+$SelectedSub = 1
+}
+&lt;span style="color:#75715e"># Get SubscriptionID if one isn&amp;#39;t provided&lt;/span>
+&lt;span style="color:#66d9ef">while&lt;/span> ($SelectedSub &lt;span style="color:#f92672">-gt&lt;/span> $SubscriptionArray.Count &lt;span style="color:#f92672">-or&lt;/span> $SelectedSub &lt;span style="color:#f92672">-lt&lt;/span> 1) {
+Write-host &lt;span style="color:#e6db74">&amp;#34;Please select a subscription from the list below&amp;#34;&lt;/span>
+$SubscriptionArray | Select-Object &lt;span style="color:#e6db74">&amp;#34;#&amp;#34;&lt;/span>, Id, Name | Format-Table
+&lt;span style="color:#66d9ef">try&lt;/span> {
+$SelectedSub = Read-Host &lt;span style="color:#e6db74">&amp;#34;Please enter a selection from 1 to &lt;/span>$($SubscriptionArray.count)&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+}
+&lt;span style="color:#66d9ef">catch&lt;/span> {
+Write-Warning -Message &lt;span style="color:#e6db74">&amp;#39;Invalid option, please try again.&amp;#39;&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Select subscription&lt;/span>
+Select-AzureRmSubscription -SubscriptionId $SubscriptionArray[$SelectedSub - 1].Id
+&lt;span style="color:#75715e"># Ask for the resource group.&lt;/span>
+$resourceGroupName = Read-Host &lt;span style="color:#e6db74">&amp;#39;Resource Group name&amp;#39;&lt;/span>
+&lt;span style="color:#75715e"># Ask for the storage account name&lt;/span>
+$storageAccountName = Read-Host &lt;span style="color:#e6db74">&amp;#39;Storage account name&amp;#39;&lt;/span>
+&lt;span style="color:#75715e"># Exit if resource group does not exists...&lt;/span>
+$resourceGroup = Get-AzureRmResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue
+&lt;span style="color:#66d9ef">if&lt;/span> (!$resourceGroup) {
+Write-Verbose &lt;span style="color:#e6db74">&amp;#34;$resourceGroup does not exists...&amp;#34;&lt;/span>
+Exit
+}
+&lt;span style="color:#75715e"># Create a new storage account.&lt;/span>
+$storage = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName -ErrorAction SilentlyContinue
+&lt;span style="color:#66d9ef">if&lt;/span> (!$storage) {
+$storage = New-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName -Location $resourceGroup.Location -SkuName &lt;span style="color:#e6db74">&amp;#34;Standard_ZRS&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Create a container for the app logs &lt;/span>
+New-AzureStorageContainer -Context $storage.Context -Name &lt;span style="color:#e6db74">&amp;#34;webapp-logs&amp;#34;&lt;/span> -ErrorAction Ignore
+&lt;span style="color:#75715e"># Get a SAS token for the container&lt;/span>
+$webSASToken = New-AzureStorageContainerSASToken -Context $storage.Context `
+-Name &lt;span style="color:#e6db74">&amp;#34;webapp-logs&amp;#34;&lt;/span> `
+-FullUri `
+-Permission rwdl `
+-StartTime (Get-Date).Date `
+-ExpiryTime (Get-Date).Date.AddYears(1)
+&lt;span style="color:#75715e"># Create a container for the http logs&lt;/span>
+New-AzureStorageContainer -Context $storage.Context -Name &lt;span style="color:#e6db74">&amp;#34;http-logs&amp;#34;&lt;/span> -ErrorAction Ignore
+&lt;span style="color:#75715e"># Get a SAS token for the container&lt;/span>
+$httpSASToken = New-AzureStorageContainerSASToken -Context $storage.Context `
+-Name &lt;span style="color:#e6db74">&amp;#34;http-logs&amp;#34;&lt;/span> `
+-FullUri `
+-Permission rwdl `
+-StartTime (Get-Date).Date `
+-ExpiryTime (Get-Date).Date.AddYears(1)
+&lt;span style="color:#75715e"># Get all web app in the resource group&lt;/span>
+$resources = (Get-AzureRmResource).Where( {$_.ResourceType &lt;span style="color:#f92672">-eq&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Microsoft.Web/sites&amp;#34;&lt;/span> &lt;span style="color:#f92672">-and&lt;/span> $_.ResourceGroupName &lt;span style="color:#f92672">-eq&lt;/span> $resourceGroupName})
+&lt;span style="color:#75715e"># For each web app enable application and http logs &lt;/span>
+&lt;span style="color:#66d9ef">foreach&lt;/span> ($resource &lt;span style="color:#66d9ef">in&lt;/span> $resources) {
+&lt;span style="color:#75715e"># Property Object holding the log configuration.&lt;/span>
+$propertiesObject = &lt;span style="color:#66d9ef">[ordered]&lt;/span> @{
+&lt;span style="color:#e6db74">&amp;#39;applicationLogs&amp;#39;&lt;/span> = @{
+&lt;span style="color:#e6db74">&amp;#39;azureBlobStorage&amp;#39;&lt;/span> = @{
+&lt;span style="color:#e6db74">&amp;#39;level&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#39;Error&amp;#39;&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;sasUrl&amp;#39;&lt;/span> = &lt;span style="color:#66d9ef">[string]&lt;/span>$webSASToken
+&lt;span style="color:#e6db74">&amp;#39;retentionInDays&amp;#39;&lt;/span> = 30
+}
+}
+&lt;span style="color:#e6db74">&amp;#39;httpLogs&amp;#39;&lt;/span> = @{
+&lt;span style="color:#e6db74">&amp;#39;azureBlobStorage&amp;#39;&lt;/span> = @{
+&lt;span style="color:#e6db74">&amp;#39;level&amp;#39;&lt;/span> = &lt;span style="color:#e6db74">&amp;#39;Error&amp;#39;&lt;/span>
+&lt;span style="color:#e6db74">&amp;#39;sasUrl&amp;#39;&lt;/span> = &lt;span style="color:#66d9ef">[string]&lt;/span>$httpSASToken
+&lt;span style="color:#e6db74">&amp;#39;retentionInDays&amp;#39;&lt;/span> = 30
+&lt;span style="color:#e6db74">&amp;#39;enabled&amp;#39;&lt;/span> = $true
+}
+}
+}
+&lt;span style="color:#75715e"># Set the properties. Note that the resource type is: Microsoft.Web/sites/config and the resource name: [Web App Name]/logs&lt;/span>
+Set-AzureRmResource `
+-PropertyObject $propertiesObject `
+-ResourceGroupName $resourceGroupName `
+-ResourceType Microsoft.Web/sites/config `
+-ResourceName &lt;span style="color:#e6db74">&amp;#34;&lt;/span>$($resource.ResourceName)&lt;span style="color:#e6db74">/logs&amp;#34;&lt;/span> -ApiVersion 2016-03-01 -Force
+}
+}
+Enable-WebAppServiceLogs
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you save the script in a file (i.e Enable-WebAppServiceLogs.ps1) you can run it as follows:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">.\Enable-WebAppServiceLogs.ps1
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The script will ask you to:&lt;/p>
+&lt;ul>
+&lt;li>login to your Azure account&lt;/li>
+&lt;li>select a subscription&lt;/li>
+&lt;li>write the name of the resource group containing the web apps&lt;/li>
+&lt;li>write the name of the storage account to hold the logs&lt;/li>
+&lt;/ul>
+&lt;p>Get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/azure.powershell.samples/tree/main/Enable-WebAppServiceLogs">https://github.com/cmendible/azure.powershell.samples/tree/main/Enable-WebAppServiceLogs&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Stop or Start all WebApps in your Azure subscription</title><link>https://carlos.mendible.com/2016/06/05/stop-start-webapps-azure-subscription/</link><pubDate>Sun, 05 Jun 2016 19:08:30 +0000</pubDate><guid>https://carlos.mendible.com/2016/06/05/stop-start-webapps-azure-subscription/</guid><description>&lt;p>&lt;strong>Stop or Start all WebApps in your Azure subscription&lt;/strong> with &lt;a href="https://gallery.technet.microsoft.com/scriptcenter/Stop-or-Start-all-WebApps-9533dda6/file/153545/1/Stop-Start-All-WebApps.ps1">Stop-Start-All-WebApps.ps1&lt;/a> a simple PowerShell workflow runbook that will help you automate the process of stopping or starting every single WebApp (Website) you&amp;rsquo;ve deployed.&lt;/p>
+&lt;p>The script receives two required parameters:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Stop&lt;/strong>: If set to true stop the WebApps (Websites) otherwise start the WebApps (Websites)&lt;/li>
+&lt;li>&lt;strong>CredentialAssetName&lt;/strong>: The name of a valid Credential Asset (AutomationPSCredential) you must have previously configured.&lt;/li>
+&lt;/ul>
+&lt;p>As you can see below, the script is quite simple and uses the following PowerShell Activities and Cmdlets:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>Here is the script:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#75715e">&amp;lt;#
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.SYNOPSIS&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Start or Stop all WebApps (Websites) in your subscription.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.DESCRIPTION&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Runbook which allows you to start/stop all WebApps (Websites) in your subscription.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> Stop
+&lt;/span>&lt;span style="color:#75715e"> If set to true: stop the WebApps (Websites). Otherwise start the WebApps (Websites)
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> CredentialAssetName
+&lt;/span>&lt;span style="color:#75715e"> The name of a working AutomationPSCredential
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.NOTES&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> AUTHOR: Carlos Mendible
+&lt;/span>&lt;span style="color:#75715e"> LASTEDIT: June 2, 2016
+&lt;/span>&lt;span style="color:#75715e">#&amp;gt;&lt;/span>
+Workflow Stop-Start-All-WebApps
+{
+&lt;span style="color:#75715e"># Parameters &lt;/span>
+&lt;span style="color:#66d9ef">Param&lt;/span>(
+[&lt;span style="color:#66d9ef">Parameter&lt;/span> (&lt;span style="color:#66d9ef">Mandatory&lt;/span>= $true)]
+&lt;span style="color:#66d9ef">[bool]&lt;/span>$Stop,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span> (&lt;span style="color:#66d9ef">Mandatory&lt;/span>= $true)]
+&lt;span style="color:#66d9ef">[string]&lt;/span>$CredentialAssetName
+)
+&lt;span style="color:#75715e">#The name of the Automation Credential Asset this runbook will use to authenticate to Azure. &lt;/span>
+$CredentialAssetName = $CredentialAssetName;
+&lt;span style="color:#75715e">#Get the credential with the above name from the Automation Asset store &lt;/span>
+$Cred = Get-AutomationPSCredential -Name $CredentialAssetName
+&lt;span style="color:#66d9ef">if&lt;/span>(!$Cred) {
+&lt;span style="color:#66d9ef">Throw&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Could not find an Automation Credential Asset named &amp;#39;${CredentialAssetName}&amp;#39;. Make sure you have created one in this Automation Account.&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e">#Connect to your Azure Account &lt;/span>
+Add-AzureRmAccount -Credential $Cred
+Add-AzureAccount -Credential $Cred
+$status = &lt;span style="color:#e6db74">&amp;#39;Stopped&amp;#39;&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> ($Stop)
+{
+$status = &lt;span style="color:#e6db74">&amp;#39;Running&amp;#39;&lt;/span>
+}
+&lt;span style="color:#75715e"># Get Running WebApps (Websites) &lt;/span>
+$websites = Get-AzureWebsite | where-object -FilterScript{$_.state &lt;span style="color:#f92672">-eq&lt;/span> $status }
+&lt;span style="color:#66d9ef">foreach&lt;/span> -parallel ($website &lt;span style="color:#66d9ef">In&lt;/span> $websites)
+{
+&lt;span style="color:#66d9ef">if&lt;/span> ($Stop)
+{
+$result = Stop-AzureWebsite $website.Name
+&lt;span style="color:#66d9ef">if&lt;/span>($result)
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;- &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> did not shutdown successfully&amp;#34;&lt;/span>
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;+ &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> shutdown successfully&amp;#34;&lt;/span>
+}
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+$result = Start-AzureWebsite $website.Name
+&lt;span style="color:#66d9ef">if&lt;/span>($result)
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;- &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> did not start successfully&amp;#34;&lt;/span>
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;+ &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> started successfully&amp;#34;&lt;/span>
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can download the script from the &lt;!-- raw HTML omitted -->Technet Script Gallery&lt;!-- raw HTML omitted -->, import it as a runbook for your automation account in the Azure portal or simply copy the code from this post.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

@@ -1,176 +1,60 @@
-<!doctype html>
-
-<html lang="en-us">
-
-<head>
-  <title>Code it Yourself...</title>
-  <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="HDInsight: Scale Horizontally" />
-<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
-<meta name="twitter:site" content="@cmendibl3">
-<meta name="twitter:creator" content="@cmendibl3">
-
-<meta name="generator" content="Hugo 0.62.1" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
-  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
-  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
-
-<body>
-  <div id="container">
-    <header>
-      <h1>
-                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
-            </h1>
-
-      <ul id="social-media">
-        
-        
-        
-        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-         
-        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-         
-        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
-           
-        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
-        
-      </ul>
-      
-      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
-      
-    </header>
-
-    
-<nav>
-    <ul>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/">
-                <i class="fa-li fa  fa-lg"></i><span>Home</span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/posts/">
-                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/categories/">
-                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/about">
-                <i class="fa-li fa  fa-lg"></i><span>About</span>
-            </a>
-        </li>
-        
-    </ul>
-</nav>
-
-    <main>
-
-
-
-
-<article>
-
-    <h1>HDInsight: Scale Horizontally</h1>
-
-    
-        <aside>
-    <ul>
-        <li>
-            <time class="post-date" datetime="2017-07-13T11:07:13Z">Jul 13, 2017</time>
-        </li>
-        
-        <li>
-            Categories:
-            <em>
-                
-                    
-                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
-                
-                    , 
-                    <a href="https://carlos.mendible.com/categories/devops">DevOps</a>
-                
-            </em>
-        </li>
-        
-
-        
-
-        <li>2 minutes read</li>
-    </ul>
-</aside>
-
-    
-
-    <p><strong>HDInsight: Scale Horizontally</strong> with <a href="https://gallery.technet.microsoft.com/Scale-your-HDInsight-f57bb4d8">Scale-HDInsightClusterNodes.ps1</a> a PowerShell workflow that will help you automate the process of scaling your cluster.</p>
-<p>The script receives 4 parameters:</p>
-<ul>
-<li><strong>ResourceGroupName</strong>: The name of the resource group where the cluster resides</li>
-<li><strong>ClusterName</strong>: The name of your HDInsight cluster</li>
-<li><strong>Nodes</strong>: The number of nodes you want for the cluster</li>
-<li><strong>ConnectionName</strong>: The name of your automation connection account</li>
-</ul>
-<p>and requires the following PowerShell modules: <strong>AzureRM.Profile</strong>, <strong>AzureRM.HDInsight</strong></p>
-<p>Here is the code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell"><span style="color:#75715e">&lt;#</span><span style="color:#75715e">
-</span><span style="color:#75715e">    </span><span style="color:#e6db74">.SYNOPSIS</span><span style="color:#75715e">
-</span><span style="color:#75715e">        Scale-HDInsightClusterNodes is a simple PowerShell workflow runbook that will help you automate the process of scaling in or out your HDInsight clusters depending on your needs</span><span style="color:#75715e">.</span><span style="color:#75715e">
-</span><span style="color:#75715e">    
-</span><span style="color:#75715e">    </span><span style="color:#e6db74">.DESCRIPTION</span><span style="color:#75715e">
-</span><span style="color:#75715e">        Scale-HDInsightClusterNodes is a simple PowerShell workflow runbook that will help you automate the process of scaling in or out your HDInsight clusters depending on your needs</span><span style="color:#75715e">.</span><span style="color:#75715e">
-</span><span style="color:#75715e">
-</span><span style="color:#75715e">    </span><span style="color:#e6db74">.PARAMETER</span><span style="color:#75715e"> ResourceGroupName
-</span><span style="color:#75715e">        The name of the resource group where the cluster resides
-</span><span style="color:#75715e">    
-</span><span style="color:#75715e">    </span><span style="color:#e6db74">.PARAMETER</span><span style="color:#75715e"> ClusterName
-</span><span style="color:#75715e">        The name of your HDInsight cluster
-</span><span style="color:#75715e">    
-</span><span style="color:#75715e">    </span><span style="color:#e6db74">.PARAMETER</span><span style="color:#75715e"> Nodes
-</span><span style="color:#75715e">        The number of nodes you want for the cluster
-</span><span style="color:#75715e">
-</span><span style="color:#75715e">    </span><span style="color:#e6db74">.PARAMETER</span><span style="color:#75715e"> ConnectionName
-</span><span style="color:#75715e">        The name of your automation connection account
-</span><span style="color:#75715e">   
-</span><span style="color:#75715e">    </span><span style="color:#e6db74">.NOTES</span><span style="color:#75715e"> 
-</span><span style="color:#75715e">        AUTHOR: Carlos Mendible 
-</span><span style="color:#75715e">        LASTEDIT: June 13, 2017 
-</span><span style="color:#75715e"></span><span style="color:#75715e">#&gt;</span>
+<!doctype html><html lang=en-us><head><title>Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2017/07/13/hdinsight-scale-horizontally/><link rel=canonical href=https://carlos.mendible.com/2017/07/13/hdinsight-scale-horizontally/ itemprop=url><meta name=url content="https://carlos.mendible.com/2017/07/13/hdinsight-scale-horizontally/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content="HDInsight: Scale Horizontally,azure,devops"><meta name=news_keywords content="azure, devops"><meta property="article:tag" content="Automation, HDInsight, PowerShell"><meta property="og:title" content="HDInsight: Scale Horizontally"><meta property="og:description" content="HDInsight: Scale Horizontally"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2017/07/13/hdinsight-scale-horizontally/"><meta property="og:image" content="https://carlos.mendible.com/wp-content/uploads/2016/06/automation1.png"><meta property="article:published_time" content="2017-07-13T11:07:13+00:00"><meta property="article:modified_time" content="2017-07-13T11:07:13+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/wp-content/uploads/2016/06/automation1.png"><meta name=twitter:title content="HDInsight: Scale Horizontally"><meta name=twitter:description content="HDInsight: Scale Horizontally"><meta name=generator content="Hugo 0.74.2"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>HDInsight: Scale Horizontally</h1><aside><ul><li><time class=post-date datetime=2017-07-13T11:07:13Z>Jul 13, 2017</time></li><li>Categories:
+<em><a href=https://carlos.mendible.com/categories/azure>azure</a>
+,
+<a href=https://carlos.mendible.com/categories/devops>devops</a></em></li><li><em><a href=https://carlos.mendible.com/tags/automation>#Automation</a>
+,
+<a href=https://carlos.mendible.com/tags/hdinsight>#HDInsight</a>
+,
+<a href=https://carlos.mendible.com/tags/powershell>#PowerShell</a></em></li><li>2 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2017/07/13/hdinsight-scale-horizontally/ title="HDInsight: Scale Horizontally"><img src=https://carlos.mendible.com/wp-content/uploads/2016/06/automation1.png></a></div><p><strong>HDInsight: Scale Horizontally</strong> with <a href=https://gallery.technet.microsoft.com/Scale-your-HDInsight-f57bb4d8>Scale-HDInsightClusterNodes.ps1</a> a PowerShell workflow that will help you automate the process of scaling your cluster.</p><p>The script receives 4 parameters:</p><ul><li><strong>ResourceGroupName</strong>: The name of the resource group where the cluster resides</li><li><strong>ClusterName</strong>: The name of your HDInsight cluster</li><li><strong>Nodes</strong>: The number of nodes you want for the cluster</li><li><strong>ConnectionName</strong>: The name of your automation connection account</li></ul><p>and requires the following PowerShell modules: <strong>AzureRM.Profile</strong>, <strong>AzureRM.HDInsight</strong></p><p>Here is the code:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell><span style=color:#75715e>&lt;#
+</span><span style=color:#75715e>    </span><span style=color:#e6db74>.SYNOPSIS</span><span style=color:#75715e>
+</span><span style=color:#75715e>        Scale-HDInsightClusterNodes is a simple PowerShell workflow runbook that will help you automate the process of scaling in or out your HDInsight clusters depending on your needs.
+</span><span style=color:#75715e>    
+</span><span style=color:#75715e>    </span><span style=color:#e6db74>.DESCRIPTION</span><span style=color:#75715e>
+</span><span style=color:#75715e>        Scale-HDInsightClusterNodes is a simple PowerShell workflow runbook that will help you automate the process of scaling in or out your HDInsight clusters depending on your needs.
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>    </span><span style=color:#e6db74>.PARAMETER</span><span style=color:#75715e> ResourceGroupName
+</span><span style=color:#75715e>        The name of the resource group where the cluster resides
+</span><span style=color:#75715e>    
+</span><span style=color:#75715e>    </span><span style=color:#e6db74>.PARAMETER</span><span style=color:#75715e> ClusterName
+</span><span style=color:#75715e>        The name of your HDInsight cluster
+</span><span style=color:#75715e>    
+</span><span style=color:#75715e>    </span><span style=color:#e6db74>.PARAMETER</span><span style=color:#75715e> Nodes
+</span><span style=color:#75715e>        The number of nodes you want for the cluster
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>    </span><span style=color:#e6db74>.PARAMETER</span><span style=color:#75715e> ConnectionName
+</span><span style=color:#75715e>        The name of your automation connection account
+</span><span style=color:#75715e>   
+</span><span style=color:#75715e>    </span><span style=color:#e6db74>.NOTES</span><span style=color:#75715e> 
+</span><span style=color:#75715e>        AUTHOR: Carlos Mendible 
+</span><span style=color:#75715e>        LASTEDIT: June 13, 2017 
+</span><span style=color:#75715e>#&gt;</span>
 Workflow Scale-HDInsightClusterNodes {
-    <span style="color:#66d9ef">Param</span>
+    <span style=color:#66d9ef>Param</span>
     (   
-        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]
-        <span style="color:#66d9ef">[String]</span>$ResourceGroupName,
+        [<span style=color:#66d9ef>Parameter</span>(<span style=color:#66d9ef>Mandatory</span> = $true)]
+        <span style=color:#66d9ef>[String]</span>$ResourceGroupName,
 
-        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]
-        <span style="color:#66d9ef">[String]</span>$ClusterName,
+        [<span style=color:#66d9ef>Parameter</span>(<span style=color:#66d9ef>Mandatory</span> = $true)]
+        <span style=color:#66d9ef>[String]</span>$ClusterName,
 
-        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $true)]
-        <span style="color:#66d9ef">[Int]</span>$Nodes,
+        [<span style=color:#66d9ef>Parameter</span>(<span style=color:#66d9ef>Mandatory</span> = $true)]
+        <span style=color:#66d9ef>[Int]</span>$Nodes,
 
-        [<span style="color:#66d9ef">Parameter</span>(<span style="color:#66d9ef">Mandatory</span> = $false)]
-        <span style="color:#66d9ef">[String]</span>$ConnectionName
+        [<span style=color:#66d9ef>Parameter</span>(<span style=color:#66d9ef>Mandatory</span> = $false)]
+        <span style=color:#66d9ef>[String]</span>$ConnectionName
     )
 
-    <span style="color:#75715e"># This Workflow requieres the following PowerShell modules: AzureRM.Profile, AzureRM.HDInsight</span>
+    <span style=color:#75715e># This Workflow requieres the following PowerShell modules: AzureRM.Profile, AzureRM.HDInsight</span>
 
     $automationConnectionName = $ConnectionName
-    <span style="color:#66d9ef">if</span> (!$ConnectionName) {
-        $automationConnectionName = <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">AzureRunAsConnection</span><span style="color:#e6db74">&#34;</span>
+    <span style=color:#66d9ef>if</span> (!$ConnectionName) {
+        $automationConnectionName = <span style=color:#e6db74>&#34;AzureRunAsConnection&#34;</span>
     }
 	
-    <span style="color:#75715e"># Get the connection by name (i.e. AzureRunAsConnection)</span>
+    <span style=color:#75715e># Get the connection by name (i.e. AzureRunAsConnection)</span>
     $servicePrincipalConnection = Get-AutomationConnection -Name $automationConnectionName         
 
-    Write-Output <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Logging in to Azure...</span><span style="color:#e6db74">&#34;</span>
+    Write-Output <span style=color:#e6db74>&#34;Logging in to Azure...&#34;</span>
     
     Add-AzureRmAccount `
         -ServicePrincipal `
@@ -178,101 +62,17 @@ Workflow Scale-HDInsightClusterNodes {
         -ApplicationId $servicePrincipalConnection.ApplicationId `
         -CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint
  
-    Write-Output <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Scaling cluster </span><span style="color:#e6db74">$</span><span style="color:#e6db74">ClusterName to </span><span style="color:#e6db74">$</span><span style="color:#e6db74">Nodes nodes...</span><span style="color:#e6db74">&#34;</span>
+    Write-Output <span style=color:#e6db74>&#34;Scaling cluster $ClusterName to $Nodes nodes...&#34;</span>
     Set-AzureRmHDInsightClusterSize `
         -ResourceGroupName $ResourceGroupName `
         -ClusterName $ClusterName `
         -TargetInstanceCount $Nodes
 }
-</code></pre></div><p>You can download the script from the <!-- raw HTML omitted -->Technet Script Gallery<!-- raw HTML omitted -->, import it as a runbook for your automation account in the Azure portal or simply copy the code from this post.</p>
-<p>Hope it helps!</p>
-
-
-</article>
-
-
-<section class="post-nav">
-    <ul>
-        
-        <li>
-            <a href="https://carlos.mendible.com/2017/07/04/deploy-your-asp.net-core-web-api-to-aws-lambda/"><i class="fa fa-chevron-circle-left"></i> Deploy your ASP.NET Core Web API to AWS Lambda</a>
-        </li>
-        
-        
-        <li>
-            <a href="https://carlos.mendible.com/2017/07/18/dotnet-new-templates-for-aws-lambda-and-raspberry-pi/">dotnet new templates for AWS Lambda and Raspberry Pi <i class="fa fa-chevron-circle-right"></i> </a>
-        </li>
-        
-    </ul>
-</section>
-
-<section class="comments-block">
-
-</section>
-
-<section id="disqus_thread"></section>
-
-<script>
-      (function () {
-            
-            
-            if (window.location.hostname == "localhost")
-                  return;
-
-            var disqus_loaded = false;
-            var disqus_shortname = 'codeityourself';
-            var disqus_button = document.getElementById("show-comments");
-
-            function disqus() {
-
-                  if (!disqus_loaded) {
-                        disqus_loaded = true;
-
-                        var e = document.createElement("script");
-                        e.type = "text/javascript";
-                        e.async = true;
-                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
-                        (document.getElementsByTagName("head")[0] ||
-                              document.getElementsByTagName("body")[0])
-                              .appendChild(e);
-                  }
-            }
-
-            disqus();
-
-            
-            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
-                  disqus();
-            }
-      })();
-</script>
-
-
-
-
-
-</main>
-<footer>
-    <h6>Copyright © 2019 - Carlos Mendible |
-        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
-        <a href="https://carlos.mendible.com/feed.xml">Subscribe</a></h6>
-</footer>
-</div>
-<script src="https://carlos.mendible.com/js/scripts.js"></script>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-11243417-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-</body>
-
-</html>
+</code></pre></div><p>You can download the script from the Technet Script Gallery, import it as a runbook for your automation account in the Azure portal or simply copy the code from this post.</p><p>Hope it helps!</p></article><section class=post-nav><ul><li><a href=https://carlos.mendible.com/2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/><i class="fa fa-chevron-circle-left"></i>Deploy your ASP.NET Core Web API to AWS Lambda</a></li><li><a href=https://carlos.mendible.com/2017/07/18/dotnet-new-templates-for-aws-lambda-and-raspberry-pi/>dotnet new templates for AWS Lambda and Raspberry Pi <i class="fa fa-chevron-circle-right"></i></a></li></ul></section><section class=comments-block><button id=show-comments style=display:none><i class="fa fa-comments"></i></button></section><section id=disqus_thread></section><script>(function(){if(window.location.hostname=="localhost")
+return;var disqus_loaded=false;var disqus_shortname='codeityourself';var disqus_button=document.getElementById("show-comments");var disqus_title='HDInsight: Scale Horizontally'
+var disqus_autoload=true;disqus_button.style.display="";if(disqus_autoload){disqus();}else{disqus_button.addEventListener("click",disqus,false);}
+function disqus(){if(!disqus_loaded){disqus_loaded=true;var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="//"+disqus_shortname+".disqus.com/embed.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e);document.getElementById("show-comments").style.display="none";}}
+var hash=window.location.hash.substr(1);if(hash.length>8){if(hash.substring(0,8)=="comment-"){disqus();}}
+if(/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)){disqus();}})();</script></main><footer><h6>Copyright © 2020 - Carlos Mendible |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://carlos.mendible.com/feed.xml>Subscribe</a></h6></footer></div><script src=https://carlos.mendible.com/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-11243417-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

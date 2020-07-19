@@ -1,15 +1,1 @@
-
-   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-     <channel>
-       <title>Tags on Code it Yourself...</title>
-       <link>https://carlos.mendible.com/tags/</link>
-       <description>Recent content in Tags on Code it Yourself...</description>
-       <generator>Hugo -- gohugo.io</generator>
-       <language>en-us</language>
-       <copyright>Copyright &amp;copy; 2019 - Carlos Mendible</copyright>
-       
-           <atom:link href="https://carlos.mendible.com/tags/feed.xml" rel="self" type="application/rss+xml" />
-       
-       
-     </channel>
-   </rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tags on Code it Yourself...</title><link>https://carlos.mendible.com/tags/</link><description>Recent content in Tags on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Wed, 20 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/feed.xml" rel="self" type="application/rss+xml"/><item><title>actions</title><link>https://carlos.mendible.com/tags/actions/</link><pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/tags/actions/</guid><description/></item><item><title>dapr</title><link>https://carlos.mendible.com/tags/dapr/</link><pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/tags/dapr/</guid><description/></item><item><title>github</title><link>https://carlos.mendible.com/tags/github/</link><pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/tags/github/</guid><description/></item><item><title>Blob</title><link>https://carlos.mendible.com/tags/blob/</link><pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/tags/blob/</guid><description/></item><item><title>functions</title><link>https://carlos.mendible.com/tags/functions/</link><pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/tags/functions/</guid><description/></item><item><title>privateendpoint</title><link>https://carlos.mendible.com/tags/privateendpoint/</link><pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/tags/privateendpoint/</guid><description/></item><item><title>Serverless</title><link>https://carlos.mendible.com/tags/serverless/</link><pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/tags/serverless/</guid><description/></item><item><title>keyvault</title><link>https://carlos.mendible.com/tags/keyvault/</link><pubDate>Thu, 23 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/tags/keyvault/</guid><description/></item><item><title>managedidentity</title><link>https://carlos.mendible.com/tags/managedidentity/</link><pubDate>Thu, 23 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/tags/managedidentity/</guid><description/></item><item><title>secretmanager</title><link>https://carlos.mendible.com/tags/secretmanager/</link><pubDate>Sat, 29 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/tags/secretmanager/</guid><description/></item></channel></rss>

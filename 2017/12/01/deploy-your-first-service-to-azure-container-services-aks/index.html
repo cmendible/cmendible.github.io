@@ -1,286 +1,58 @@
-<!doctype html>
-
-<html lang="en-us">
-
-<head>
-  <title>Code it Yourself...</title>
-  <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="Deploy your first Service to Azure Container Services (AKS)" />
-<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
-<meta name="twitter:site" content="@cmendibl3">
-<meta name="twitter:creator" content="@cmendibl3">
-
-<meta name="generator" content="Hugo 0.62.1" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
-  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
-  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
-
-<body>
-  <div id="container">
-    <header>
-      <h1>
-                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
-            </h1>
-
-      <ul id="social-media">
-        
-        
-        
-        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-         
-        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-         
-        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
-           
-        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
-        
-      </ul>
-      
-      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
-      
-    </header>
-
-    
-<nav>
-    <ul>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/">
-                <i class="fa-li fa  fa-lg"></i><span>Home</span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/posts/">
-                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/categories/">
-                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/about">
-                <i class="fa-li fa  fa-lg"></i><span>About</span>
-            </a>
-        </li>
-        
-    </ul>
-</nav>
-
-    <main>
-
-
-
-
-<article>
-
-    <h1>Deploy your first Service to Azure Container Services (AKS)</h1>
-
-    
-        <aside>
-    <ul>
-        <li>
-            <time class="post-date" datetime="2017-12-01T15:13:00Z">Dec 1, 2017</time>
-        </li>
-        
-        <li>
-            Categories:
-            <em>
-                
-                    
-                    <a href="https://carlos.mendible.com/categories/azure">Azure</a>
-                
-            </em>
-        </li>
-        
-
-        
-
-        <li>3 minutes read</li>
-    </ul>
-</aside>
-
-    
-
-    <p>In this post I'll show you how to <strong>Deploy your first Service to <a href="https://docs.microsoft.com/en-us/azure/aks/">Azure Container Services (AKS)</a></strong>.</p>
-<p><strong>Prerequisites</strong>:</p>
-<ul>
-<li><a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">Azure CLI</a> installed and basic knowledge experience.</li>
-<li><a href="https://www.docker.com">Docker</a> installed and basic knowledge.</li>
-<li><a href="https://azure.microsoft.com/en-us/pricing/purchase-options/">Azure Subscription</a></li>
-<li><a href="https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/">Kubernetes</a> experience.</li>
-</ul>
-<h2 id="1-create-a-resource-group">1. Create a resource group:</h2>
-<p>Firt create a Resource Group. Be aware that at the time of writing AKS is not available in all Azure regions.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az group create -l westeurope -n aks
-</code></pre></div><h2 id="2-create-an-azure-container-registry">2. Create an Azure Container Registry:</h2>
-<p>Probably you'll want a private registry to upload your docker images, so let's create an <a href="https://azure.microsoft.com/en-us/services/container-registry/">Azure Container Registry</a> instance.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az acr create -g aks -n myregistry --sku Basic --admin-enabled
-</code></pre></div><h2 id="3-login-to-the-azure-container-registry">3. Login to the Azure Container Registry:</h2>
-<p>You can login to the Container Registry using the following Azure CLI command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az acr login -n myregistry
-</code></pre></div><p>Or you can get the Key and login with docker:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az acr credential show -n myregistry
-docker login myregistry.azurecr.io -u myregistry -p <span style="color:#66d9ef">[PASSWORD FROM PREVIOUS COMMAND]</span>
-</code></pre></div><h2 id="4-push-an-image-to-the-azure-container-registry">4. Push an image to the Azure Container Registry:</h2>
-<p>In this step we are going to pull an image from docker hub, and then upload it to the Container Registry created in step 2. Feel free to use your own docker image with a working web application.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">docker pull yaros1av/hello-core
-docker tag yaros1av/hello-core myregistry.azurecr.io/hello-core<span style="color:#960050;background-color:#1e0010">:</span>1.0
-docker push myregistry.azurecr.io/hello-core<span style="color:#960050;background-color:#1e0010">:</span>1.0
-</code></pre></div><h2 id="5-create-aks-cluster">5. Create AKS cluster</h2>
-<p>Now create the AKS cluster:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az aks create -g aks --name myAKSCluster --generate-ssh-keys
-</code></pre></div><h2 id="6-install-kubectlhttpskubernetesiodocsreferencekubectloverview">6. Install <a href="https://kubernetes.io/docs/reference/kubectl/overview/">kubectl</a></h2>
-<p>To manage the cluster you'll need to install <a href="https://kubernetes.io/docs/reference/kubectl/overview/">kubectl</a> so run the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az aks install-cli
-</code></pre></div><h2 id="7-get-cluster-credentials">7. Get cluster credentials</h2>
-<p>Get the cluster credentials and check the connectivity so you can start working with the AKS cluster.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">az aks get-credentials -g aks -n myAKSCluster
+<!doctype html><html lang=en-us><head><title>Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2017/12/01/deploy-your-first-service-to-azure-container-services-aks/><link rel=canonical href=https://carlos.mendible.com/2017/12/01/deploy-your-first-service-to-azure-container-services-aks/ itemprop=url><meta name=url content="https://carlos.mendible.com/2017/12/01/deploy-your-first-service-to-azure-container-services-aks/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content="Deploy your first Service to Azure Container Services (AKS),azure"><meta name=news_keywords content="azure"><meta property="article:tag" content="Docker, kubernetes"><meta property="og:title" content="Deploy your first Service to Azure Container Services (AKS)"><meta property="og:description" content="Deploy your first Service to Azure Container Services (AKS)"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2017/12/01/deploy-your-first-service-to-azure-container-services-aks/"><meta property="og:image" content="https://carlos.mendible.com/assets/img/posts/aks.png"><meta property="article:published_time" content="2017-12-01T15:13:00+00:00"><meta property="article:modified_time" content="2017-12-01T15:13:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/assets/img/posts/aks.png"><meta name=twitter:title content="Deploy your first Service to Azure Container Services (AKS)"><meta name=twitter:description content="Deploy your first Service to Azure Container Services (AKS)"><meta name=generator content="Hugo 0.74.2"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>Deploy your first Service to Azure Container Services (AKS)</h1><aside><ul><li><time class=post-date datetime=2017-12-01T15:13:00Z>Dec 1, 2017</time></li><li>Categories:
+<em><a href=https://carlos.mendible.com/categories/azure>azure</a></em></li><li><em><a href=https://carlos.mendible.com/tags/docker>#Docker</a>
+,
+<a href=https://carlos.mendible.com/tags/kubernetes>#kubernetes</a></em></li><li>3 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2017/12/01/deploy-your-first-service-to-azure-container-services-aks/ title="Deploy your first Service to Azure Container Services (AKS)"><img src=https://carlos.mendible.com/assets/img/posts/aks.png></a></div><p>In this post I&rsquo;ll show you how to <strong>Deploy your first Service to <a href=https://docs.microsoft.com/en-us/azure/aks/>Azure Container Services (AKS)</a></strong>.</p><p><strong>Prerequisites</strong>:</p><ul><li><a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">Azure CLI</a> installed and basic knowledge experience.</li><li><a href=https://www.docker.com>Docker</a> installed and basic knowledge.</li><li><a href=https://azure.microsoft.com/en-us/pricing/purchase-options/>Azure Subscription</a></li><li><a href=https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/>Kubernetes</a> experience.</li></ul><h2 id=1-create-a-resource-group>1. Create a resource group:</h2><p>Firt create a Resource Group. Be aware that at the time of writing AKS is not available in all Azure regions.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>az group create -l westeurope -n aks
+</code></pre></div><h2 id=2-create-an-azure-container-registry>2. Create an Azure Container Registry:</h2><p>Probably you&rsquo;ll want a private registry to upload your docker images, so let&rsquo;s create an <a href=https://azure.microsoft.com/en-us/services/container-registry/>Azure Container Registry</a> instance.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>az acr create -g aks -n myregistry --sku Basic --admin-enabled
+</code></pre></div><h2 id=3-login-to-the-azure-container-registry>3. Login to the Azure Container Registry:</h2><p>You can login to the Container Registry using the following Azure CLI command:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>az acr login -n myregistry
+</code></pre></div><p>Or you can get the Key and login with docker:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>az acr credential show -n myregistry
+docker login myregistry.azurecr.io -u myregistry -p <span style=color:#66d9ef>[PASSWORD FROM PREVIOUS COMMAND]</span>
+</code></pre></div><h2 id=4-push-an-image-to-the-azure-container-registry>4. Push an image to the Azure Container Registry:</h2><p>In this step we are going to pull an image from docker hub, and then upload it to the Container Registry created in step 2. Feel free to use your own docker image with a working web application.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>docker pull yaros1av/hello-core
+docker tag yaros1av/hello-core myregistry.azurecr.io/hello-core<span style=color:#960050;background-color:#1e0010>:</span>1.0
+docker push myregistry.azurecr.io/hello-core<span style=color:#960050;background-color:#1e0010>:</span>1.0
+</code></pre></div><h2 id=5-create-aks-cluster>5. Create AKS cluster</h2><p>Now create the AKS cluster:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>az aks create -g aks --name myAKSCluster --generate-ssh-keys
+</code></pre></div><h2 id=6-install-kubectlhttpskubernetesiodocsreferencekubectloverview>6. Install <a href=https://kubernetes.io/docs/reference/kubectl/overview/>kubectl</a></h2><p>To manage the cluster you&rsquo;ll need to install <a href=https://kubernetes.io/docs/reference/kubectl/overview/>kubectl</a> so run the following command:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>az aks install-cli
+</code></pre></div><h2 id=7-get-cluster-credentials>7. Get cluster credentials</h2><p>Get the cluster credentials and check the connectivity so you can start working with the AKS cluster.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>az aks get-credentials -g aks -n myAKSCluster
 kubectl get nodes
-</code></pre></div><h2 id="8-create-a-secret-to-hold-the-registry-credentials">8. Create a Secret to hold the registry credentials.</h2>
-<p>You have to add the Azure Container Registry credentials to your AKS service in order to be able to pull the images. This is acomplished by creating a secret:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">kubectl create secret docker-registry <span style="color:#66d9ef">[SECRET NAME]</span> --docker-server=myregistry.azurecr.io --docker-username=myregistry --docker-password=<span style="color:#66d9ef">[THE REGISTRY PASWORD FROM STEP 3]</span> --docker-email=<span style="color:#66d9ef">[EMAIL ADDRESS]</span>
-</code></pre></div><p>Check for the secret:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">kubectl describe secret
-</code></pre></div><h2 id="9-create-a-kubernetes-deploymenthttpskubernetesiodocsconceptsworkloadscontrollersdeployment-definition">9. Create a kubernetes <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">deployment</a> definition.</h2>
-<p>Create a file <strong>[your deployment].yml</strong> with the following contents (replace the secret name):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">apiVersion: apps/v1beta1
-kind: Deployment
-metadata:
-  name: my-api
-spec:
-  replicas: <span style="color:#ae81ff">1</span>
-  template:
-    metadata:
-      labels:
-        app: my-api
-    spec:
-      containers:
-      - name: my-api
-        image: myregistry.azurecr.io/hello-core:<span style="color:#ae81ff">1.0</span>
-        ports:
-        - containerPort: <span style="color:#ae81ff">80</span>
-      imagePullSecrets:
-      - name: [SECRET NAME]
+</code></pre></div><h2 id=8-create-a-secret-to-hold-the-registry-credentials>8. Create a Secret to hold the registry credentials.</h2><p>You have to add the Azure Container Registry credentials to your AKS service in order to be able to pull the images. This is acomplished by creating a secret:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>kubectl create secret docker-registry <span style=color:#66d9ef>[SECRET NAME]</span> --docker-server=myregistry.azurecr.io --docker-username=myregistry --docker-password=<span style=color:#66d9ef>[THE REGISTRY PASWORD FROM STEP 3]</span> --docker-email=<span style=color:#66d9ef>[EMAIL ADDRESS]</span>
+</code></pre></div><p>Check for the secret:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>kubectl describe secret
+</code></pre></div><h2 id=9-create-a-kubernetes-deploymenthttpskubernetesiodocsconceptsworkloadscontrollersdeployment-definition>9. Create a kubernetes <a href=https://kubernetes.io/docs/concepts/workloads/controllers/deployment/>deployment</a> definition.</h2><p>Create a file <strong>[your deployment].yml</strong> with the following contents (replace the secret name):</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yml data-lang=yml><span style=color:#66d9ef>apiVersion</span>: apps/v1beta1
+<span style=color:#66d9ef>kind</span>: Deployment
+<span style=color:#66d9ef>metadata</span>:
+  <span style=color:#66d9ef>name</span>: my-api
+<span style=color:#66d9ef>spec</span>:
+  <span style=color:#66d9ef>replicas</span>: <span style=color:#ae81ff>1</span>
+  <span style=color:#66d9ef>template</span>:
+    <span style=color:#66d9ef>metadata</span>:
+      <span style=color:#66d9ef>labels</span>:
+        <span style=color:#66d9ef>app</span>: my-api
+    <span style=color:#66d9ef>spec</span>:
+      <span style=color:#66d9ef>containers</span>:
+      - <span style=color:#66d9ef>name</span>: my-api
+        <span style=color:#66d9ef>image</span>: myregistry.azurecr.io/hello-core:<span style=color:#ae81ff>1.0</span>
+        <span style=color:#66d9ef>ports</span>:
+        - <span style=color:#66d9ef>containerPort</span>: <span style=color:#ae81ff>80</span>
+      <span style=color:#66d9ef>imagePullSecrets</span>:
+      - <span style=color:#66d9ef>name</span>: [SECRET NAME]
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-api
-spec:
-  type: LoadBalancer
-  ports:
-  - port: <span style="color:#ae81ff">80</span>
-  selector:
-    app: my-api
-</code></pre></div><p>As you can see the file references the image pushed to the Container Service with the secret created in previous steps.</p>
-<h2 id="10-deploy-your-service">10. Deploy your service.</h2>
-<p>Run the following comnmand to deploy your service to AKS:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">kubectl create <span style="color:#f92672">-f</span> <span style="color:#66d9ef">[your deployment]</span>.yml
-</code></pre></div><h2 id="11-get-the-puplic-ip-for-your-service">11. Get the puplic IP for your service</h2>
-<p>To try your service you'll need to get the public IP (It can take a while).</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">kubectl.exe get service/my-api -w
-</code></pre></div><p>Once you get the IP go ahead and test the service.</p>
-<h2 id="12-update-your-deployment-to-different-version-of-the-image">12. Update your deployment to different version of the image</h2>
-<p>If you need to update your service to use another version of the dokcer image run the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">kubectl set image deployment/my-api <span style="color:#66d9ef">[image name]</span>=myregistry.azurecr.io/<span style="color:#66d9ef">[image name]</span><span style="color:#960050;background-color:#1e0010">:</span><span style="color:#66d9ef">[new version]</span>
-</code></pre></div><h2 id="13-add-an-autoscale-rule">13. Add an autoscale rule</h2>
-<p>To add an autoscale rule to your service, run the following command:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">kubectl autoscale deployment my-api --min=2 --max=5 --cpu-percent=80
-</code></pre></div><p>Hope it helps!</p>
-
-
-</article>
-
-
-<section class="post-nav">
-    <ul>
-        
-        <li>
-            <a href="https://carlos.mendible.com/2017/11/14/use-powershell-to-create-a-microsoft-teams-channel/"><i class="fa fa-chevron-circle-left"></i> Use PowerShell to create a Microsoft Teams Channel</a>
-        </li>
-        
-        
-        <li>
-            <a href="https://carlos.mendible.com/2017/12/28/run-a-precompiled-.net-core-azure-function-in-a-container/">Run a Precompiled .NET Core Azure Function in a Container <i class="fa fa-chevron-circle-right"></i> </a>
-        </li>
-        
-    </ul>
-</section>
-
-<section class="comments-block">
-
-</section>
-
-<section id="disqus_thread"></section>
-
-<script>
-      (function () {
-            
-            
-            if (window.location.hostname == "localhost")
-                  return;
-
-            var disqus_loaded = false;
-            var disqus_shortname = 'codeityourself';
-            var disqus_button = document.getElementById("show-comments");
-
-            function disqus() {
-
-                  if (!disqus_loaded) {
-                        disqus_loaded = true;
-
-                        var e = document.createElement("script");
-                        e.type = "text/javascript";
-                        e.async = true;
-                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
-                        (document.getElementsByTagName("head")[0] ||
-                              document.getElementsByTagName("body")[0])
-                              .appendChild(e);
-                  }
-            }
-
-            disqus();
-
-            
-            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
-                  disqus();
-            }
-      })();
-</script>
-
-
-
-
-
-</main>
-<footer>
-    <h6>Copyright © 2019 - Carlos Mendible |
-        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
-        <a href="https://carlos.mendible.com/feed.xml">Subscribe</a></h6>
-</footer>
-</div>
-<script src="https://carlos.mendible.com/js/scripts.js"></script>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-11243417-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-</body>
-
-</html>
+<span style=color:#66d9ef>apiVersion</span>: v1
+<span style=color:#66d9ef>kind</span>: Service
+<span style=color:#66d9ef>metadata</span>:
+  <span style=color:#66d9ef>name</span>: my-api
+<span style=color:#66d9ef>spec</span>:
+  <span style=color:#66d9ef>type</span>: LoadBalancer
+  <span style=color:#66d9ef>ports</span>:
+  - <span style=color:#66d9ef>port</span>: <span style=color:#ae81ff>80</span>
+  <span style=color:#66d9ef>selector</span>:
+    <span style=color:#66d9ef>app</span>: my-api
+</code></pre></div><p>As you can see the file references the image pushed to the Container Service with the secret created in previous steps.</p><h2 id=10-deploy-your-service>10. Deploy your service.</h2><p>Run the following comnmand to deploy your service to AKS:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>kubectl create <span style=color:#f92672>-f</span> <span style=color:#66d9ef>[your deployment]</span>.yml
+</code></pre></div><h2 id=11-get-the-puplic-ip-for-your-service>11. Get the puplic IP for your service</h2><p>To try your service you&rsquo;ll need to get the public IP (It can take a while).</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>kubectl.exe get service/my-api -w
+</code></pre></div><p>Once you get the IP go ahead and test the service.</p><h2 id=12-update-your-deployment-to-different-version-of-the-image>12. Update your deployment to different version of the image</h2><p>If you need to update your service to use another version of the dokcer image run the following command:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>kubectl set image deployment/my-api <span style=color:#66d9ef>[image name]</span>=myregistry.azurecr.io/<span style=color:#66d9ef>[image name]</span><span style=color:#960050;background-color:#1e0010>:</span><span style=color:#66d9ef>[new version]</span>
+</code></pre></div><h2 id=13-add-an-autoscale-rule>13. Add an autoscale rule</h2><p>To add an autoscale rule to your service, run the following command:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>kubectl autoscale deployment my-api --min=2 --max=5 --cpu-percent=80
+</code></pre></div><p>Hope it helps!</p></article><section class=post-nav><ul><li><a href=https://carlos.mendible.com/2017/11/14/use-powershell-to-create-a-microsoft-teams-channel/><i class="fa fa-chevron-circle-left"></i>Use PowerShell to create a Microsoft Teams Channel</a></li><li><a href=https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/>Run a Precompiled .NET Core Azure Function in a Container <i class="fa fa-chevron-circle-right"></i></a></li></ul></section><section class=comments-block><button id=show-comments style=display:none><i class="fa fa-comments"></i></button></section><section id=disqus_thread></section><script>(function(){if(window.location.hostname=="localhost")
+return;var disqus_loaded=false;var disqus_shortname='codeityourself';var disqus_button=document.getElementById("show-comments");var disqus_title='Deploy your first Service to Azure Container Services (AKS)'
+var disqus_autoload=true;disqus_button.style.display="";if(disqus_autoload){disqus();}else{disqus_button.addEventListener("click",disqus,false);}
+function disqus(){if(!disqus_loaded){disqus_loaded=true;var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="//"+disqus_shortname+".disqus.com/embed.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e);document.getElementById("show-comments").style.display="none";}}
+var hash=window.location.hash.substr(1);if(hash.length>8){if(hash.substring(0,8)=="comment-"){disqus();}}
+if(/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)){disqus();}})();</script></main><footer><h6>Copyright © 2020 - Carlos Mendible |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://carlos.mendible.com/feed.xml>Subscribe</a></h6></footer></div><script src=https://carlos.mendible.com/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-11243417-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

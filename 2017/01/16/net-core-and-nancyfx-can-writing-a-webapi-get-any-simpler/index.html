@@ -1,178 +1,60 @@
-<!doctype html>
-
-<html lang="en-us">
-
-<head>
-  <title>Code it Yourself...</title>
-  <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content=".Net Core and NancyFX: can writing a WebApi get any simpler?" />
-<meta name="author" content="Carlos Mendible" /><meta name="twitter:card" content="summary">
-<meta name="twitter:site" content="@cmendibl3">
-<meta name="twitter:creator" content="@cmendibl3">
-
-<meta name="generator" content="Hugo 0.62.1" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
-  <script src="https://kit.fontawesome.com/b76b73e8e8.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda" />
-  <link rel="stylesheet" type="text/css" href="https://carlos.mendible.com/css/styles.css" /></head>
-
-<body>
-  <div id="container">
-    <header>
-      <h1>
-                <a href="https://carlos.mendible.com/">Code it Yourself&hellip;</a>
-            </h1>
-
-      <ul id="social-media">
-        
-        
-        
-        <li><a href="https://twitter.com/cmendibl3"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-         
-        <li><a href="https://www.linkedin.com/in/carlosmendible"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-         
-        <li><a href="https://github.com/cmendible"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a></li>
-           
-        <li><a href="https://instagram.com/cmendibl3"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a></li>
-        
-      </ul>
-      
-      <p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p>
-      
-    </header>
-
-    
-<nav>
-    <ul>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/">
-                <i class="fa-li fa  fa-lg"></i><span>Home</span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/posts/">
-                <i class="fa-li fa  fa-lg"></i><span>Posts</span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/categories/">
-                <i class="fa-li fa  fa-lg"></i><span>Categories</span>
-            </a>
-        </li>
-        
-        <li>
-            <a class="" href="https://carlos.mendible.com/about">
-                <i class="fa-li fa  fa-lg"></i><span>About</span>
-            </a>
-        </li>
-        
-    </ul>
-</nav>
-
-    <main>
-
-
-
-
-<article>
-
-    <h1>.Net Core and NancyFX: can writing a WebApi get any simpler?</h1>
-
-    
-        <aside>
-    <ul>
-        <li>
-            <time class="post-date" datetime="2017-01-16T14:54:55Z">Jan 16, 2017</time>
-        </li>
-        
-        <li>
-            Categories:
-            <em>
-                
-                    
-                    <a href="https://carlos.mendible.com/categories/dotnetcore">dotNetCore</a>
-                
-            </em>
-        </li>
-        
-
-        
-
-        <li>3 minutes read</li>
-    </ul>
-</aside>
-
-    
-
-    <p>Last Thursday I attended a Meetup hosted by my friends of <!-- raw HTML omitted -->@MsCodersMadrid<!-- raw HTML omitted --> in Madrid where, thanks to <!-- raw HTML omitted -->@snavarropino<!-- raw HTML omitted -->, I learned a bit about the <strong><!-- raw HTML omitted -->NancyFX<!-- raw HTML omitted --></strong> open source framework.</p>
-<p>I really couldn't believe my eyes when I saw how simple it is to use <strong><!-- raw HTML omitted -->NancyFX<!-- raw HTML omitted --></strong> to write a Web API. Two of the things that got my attention were: the out of the box content negotiation and zero configuration dependency injection.</p>
-<p>What are we waiting for? Lets's put in the mix <strong>.Net Core and <!-- raw HTML omitted -->NancyFX<!-- raw HTML omitted --></strong> and ask ourselves: <strong>can a WebApi get any simpler?</strong>.</p>
-<p>Steps:</p>
-<h2 id="1-create-the-application">1. Create the application</h2>
-<hr>
-<p>Open a command prompt and run</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">    md nancyfx.sample
+<!doctype html><html lang=en-us><head><title>Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2017/01/16/net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/><link rel=canonical href=https://carlos.mendible.com/2017/01/16/net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/ itemprop=url><meta name=url content="https://carlos.mendible.com/2017/01/16/net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content=".Net Core and NancyFX: can writing a WebApi get any simpler?,dotnet"><meta name=news_keywords content="dotnet"><meta property="article:tag" content="aspNetCore, NancyFX, WebAPI"><meta property="og:title" content=".Net Core and NancyFX: can writing a WebApi get any simpler?"><meta property="og:description" content=".Net Core and NancyFX: can writing a WebApi get any simpler?"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2017/01/16/net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/"><meta property="og:image" content="https://carlos.mendible.com/wp-content/uploads/2017/01/nancy.jpg"><meta property="article:published_time" content="2017-01-16T14:54:55+00:00"><meta property="article:modified_time" content="2017-01-16T14:54:55+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/wp-content/uploads/2017/01/nancy.jpg"><meta name=twitter:title content=".Net Core and NancyFX: can writing a WebApi get any simpler?"><meta name=twitter:description content=".Net Core and NancyFX: can writing a WebApi get any simpler?"><meta name=generator content="Hugo 0.74.2"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>.Net Core and NancyFX: can writing a WebApi get any simpler?</h1><aside><ul><li><time class=post-date datetime=2017-01-16T14:54:55Z>Jan 16, 2017</time></li><li>Categories:
+<em><a href=https://carlos.mendible.com/categories/dotnet>dotnet</a></em></li><li><em><a href=https://carlos.mendible.com/tags/aspnetcore>#aspNetCore</a>
+,
+<a href=https://carlos.mendible.com/tags/nancyfx>#NancyFX</a>
+,
+<a href=https://carlos.mendible.com/tags/webapi>#WebAPI</a></em></li><li>3 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2017/01/16/net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/ title=".Net Core and NancyFX: can writing a WebApi get any simpler?"><img src=https://carlos.mendible.com/wp-content/uploads/2017/01/nancy.jpg></a></div><p>Last Thursday I attended a Meetup hosted by my friends of @MsCodersMadrid in Madrid where, thanks to @snavarropino, I learned a bit about the <strong>NancyFX</strong> open source framework.</p><p>I really couldn&rsquo;t believe my eyes when I saw how simple it is to use <strong>NancyFX</strong> to write a Web API. Two of the things that got my attention were: the out of the box content negotiation and zero configuration dependency injection.</p><p>What are we waiting for? Lets&rsquo;s put in the mix <strong>.Net Core and NancyFX</strong> and ask ourselves: <strong>can a WebApi get any simpler?</strong>.</p><p>Steps:</p><h2 id=1-create-the-application>1. Create the application</h2><hr><p>Open a command prompt and run</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>    md nancyfx.sample
     cd nancyfx.sample
     dotnet new
     dotnet restore
     code .
-</code></pre></div><h2 id="2-replace-the-contents-of-projectjson">2. Replace the contents of project.json</h2>
-<hr>
-<p>Replace the contents on <strong>project.json</strong> file. Be sure to include the references to <strong>Microsoft.AspNetCore.Owin</strong> and <strong>Nancy</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-  <span style="color:#f92672">&#34;dependencies&#34;</span>: {
-    <span style="color:#f92672">&#34;Microsoft.NETCore.App&#34;</span>: {
-      <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;1.1.0-preview1-001153-00&#34;</span>,
-      <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;platform&#34;</span>
+</code></pre></div><h2 id=2-replace-the-contents-of-projectjson>2. Replace the contents of project.json</h2><hr><p>Replace the contents on <strong>project.json</strong> file. Be sure to include the references to <strong>Microsoft.AspNetCore.Owin</strong> and <strong>Nancy</strong></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:#f92672>&#34;dependencies&#34;</span>: {
+    <span style=color:#f92672>&#34;Microsoft.NETCore.App&#34;</span>: {
+      <span style=color:#f92672>&#34;version&#34;</span>: <span style=color:#e6db74>&#34;1.1.0-preview1-001153-00&#34;</span>,
+      <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;platform&#34;</span>
     },
-    <span style="color:#f92672">&#34;Microsoft.AspNetCore.Server.IISIntegration&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>,
-    <span style="color:#f92672">&#34;Microsoft.AspNetCore.Server.Kestrel&#34;</span>: <span style="color:#e6db74">&#34;1.0.1&#34;</span>,
-    <span style="color:#f92672">&#34;Microsoft.AspNetCore.Owin&#34;</span>: <span style="color:#e6db74">&#34;1.0.0&#34;</span>,
-    <span style="color:#f92672">&#34;Nancy&#34;</span>: <span style="color:#e6db74">&#34;2.0.0-clinteastwood&#34;</span>
+    <span style=color:#f92672>&#34;Microsoft.AspNetCore.Server.IISIntegration&#34;</span>: <span style=color:#e6db74>&#34;1.0.0&#34;</span>,
+    <span style=color:#f92672>&#34;Microsoft.AspNetCore.Server.Kestrel&#34;</span>: <span style=color:#e6db74>&#34;1.0.1&#34;</span>,
+    <span style=color:#f92672>&#34;Microsoft.AspNetCore.Owin&#34;</span>: <span style=color:#e6db74>&#34;1.0.0&#34;</span>,
+    <span style=color:#f92672>&#34;Nancy&#34;</span>: <span style=color:#e6db74>&#34;2.0.0-clinteastwood&#34;</span>
   },
-  <span style="color:#f92672">&#34;tools&#34;</span>: {},
-  <span style="color:#f92672">&#34;frameworks&#34;</span>: {
-    <span style="color:#f92672">&#34;netcoreapp1.1&#34;</span>: {
-      <span style="color:#f92672">&#34;imports&#34;</span>: [
-        <span style="color:#e6db74">&#34;dotnet5.6&#34;</span>,
-        <span style="color:#e6db74">&#34;dnxcore50&#34;</span>,
-        <span style="color:#e6db74">&#34;portable-net45+win8&#34;</span>
+  <span style=color:#f92672>&#34;tools&#34;</span>: {},
+  <span style=color:#f92672>&#34;frameworks&#34;</span>: {
+    <span style=color:#f92672>&#34;netcoreapp1.1&#34;</span>: {
+      <span style=color:#f92672>&#34;imports&#34;</span>: [
+        <span style=color:#e6db74>&#34;dotnet5.6&#34;</span>,
+        <span style=color:#e6db74>&#34;dnxcore50&#34;</span>,
+        <span style=color:#e6db74>&#34;portable-net45+win8&#34;</span>
       ]
     }
   },
-  <span style="color:#f92672">&#34;buildOptions&#34;</span>: {
-    <span style="color:#f92672">&#34;debugType&#34;</span>: <span style="color:#e6db74">&#34;portable&#34;</span>,
-    <span style="color:#f92672">&#34;emitEntryPoint&#34;</span>: <span style="color:#66d9ef">true</span>,
-    <span style="color:#f92672">&#34;preserveCompilationContext&#34;</span>: <span style="color:#66d9ef">true</span>
+  <span style=color:#f92672>&#34;buildOptions&#34;</span>: {
+    <span style=color:#f92672>&#34;debugType&#34;</span>: <span style=color:#e6db74>&#34;portable&#34;</span>,
+    <span style=color:#f92672>&#34;emitEntryPoint&#34;</span>: <span style=color:#66d9ef>true</span>,
+    <span style=color:#f92672>&#34;preserveCompilationContext&#34;</span>: <span style=color:#66d9ef>true</span>
   },
-  <span style="color:#f92672">&#34;runtimeOptions&#34;</span>: {
-    <span style="color:#f92672">&#34;configProperties&#34;</span>: {
-      <span style="color:#f92672">&#34;System.GC.Server&#34;</span>: <span style="color:#66d9ef">true</span>
+  <span style=color:#f92672>&#34;runtimeOptions&#34;</span>: {
+    <span style=color:#f92672>&#34;configProperties&#34;</span>: {
+      <span style=color:#f92672>&#34;System.GC.Server&#34;</span>: <span style=color:#66d9ef>true</span>
     }
   },
-  <span style="color:#f92672">&#34;publishOptions&#34;</span>: {},
-  <span style="color:#f92672">&#34;scripts&#34;</span>: {},
-  <span style="color:#f92672">&#34;tooling&#34;</span>: {
-    <span style="color:#f92672">&#34;defaultNamespace&#34;</span>: <span style="color:#e6db74">&#34;WebApplication&#34;</span>
+  <span style=color:#f92672>&#34;publishOptions&#34;</span>: {},
+  <span style=color:#f92672>&#34;scripts&#34;</span>: {},
+  <span style=color:#f92672>&#34;tooling&#34;</span>: {
+    <span style=color:#f92672>&#34;defaultNamespace&#34;</span>: <span style=color:#e6db74>&#34;WebApplication&#34;</span>
   }
 }
-</code></pre></div><h2 id="3-replace-the-contents-of-programcs">3. Replace the contents of Program.cs</h2>
-<hr>
-<p>Let's host the Web API with AspNetCore</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> System.IO;
-<span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Hosting;
+</code></pre></div><h2 id=3-replace-the-contents-of-programcs>3. Replace the contents of Program.cs</h2><hr><p>Let&rsquo;s host the Web API with AspNetCore</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>using</span> System.IO;
+<span style=color:#66d9ef>using</span> Microsoft.AspNetCore.Hosting;
 
-<span style="color:#66d9ef">namespace</span> WebApplication
+<span style=color:#66d9ef>namespace</span> WebApplication
 {
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Program</span>
+    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Program</span>
     {
-        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> Main(<span style="color:#66d9ef">string</span>[] args)
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> Main(<span style=color:#66d9ef>string</span>[] args)
         {
-            <span style="color:#66d9ef">var</span> host = <span style="color:#66d9ef">new</span> WebHostBuilder()
+            <span style=color:#66d9ef>var</span> host = <span style=color:#66d9ef>new</span> WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
@@ -183,175 +65,72 @@
         }
     }
 }
-</code></pre></div><h2 id="4-add-a-startupcs">4. Add a Startup.cs</h2>
-<hr>
-<p>This one-liner hooks <strong><!-- raw HTML omitted -->NancyFX<!-- raw HTML omitted --></strong> to our application.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> Microsoft.AspNetCore.Builder;
-<span style="color:#66d9ef">using</span> Nancy.Owin;
+</code></pre></div><h2 id=4-add-a-startupcs>4. Add a Startup.cs</h2><hr><p>This one-liner hooks <strong>NancyFX</strong> to our application.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>using</span> Microsoft.AspNetCore.Builder;
+<span style=color:#66d9ef>using</span> Nancy.Owin;
 
-<span style="color:#66d9ef">namespace</span> WebApplication
+<span style=color:#66d9ef>namespace</span> WebApplication
 {
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Startup</span>
+    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Startup</span>
     {
-        <span style="color:#75715e">// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> Configure(IApplicationBuilder app)
+        <span style=color:#75715e>// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> Configure(IApplicationBuilder app)
         {
             app.UseOwin(x =&gt; x.UseNancy());
         }
     }
 }
-</code></pre></div><h2 id="5-create-a-service-to-return-some-random-message">5. Create a service to return some random message</h2>
-<hr>
-<p>Add a new file (i.e BaconIpsumService.cs) to hold the application logic and add the following sample content</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> System.Net.Http;
-<span style="color:#66d9ef">using</span> System.Threading.Tasks;
+</code></pre></div><h2 id=5-create-a-service-to-return-some-random-message>5. Create a service to return some random message</h2><hr><p>Add a new file (i.e BaconIpsumService.cs) to hold the application logic and add the following sample content</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>using</span> System.Net.Http;
+<span style=color:#66d9ef>using</span> System.Threading.Tasks;
 
-<span style="color:#66d9ef">namespace</span> WebApplication
+<span style=color:#66d9ef>namespace</span> WebApplication
 {
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaconIpsumMessage</span>
+    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>BaconIpsumMessage</span>
     {
-        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">string</span> Body {<span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">set</span>;}
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>string</span> Body {<span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>;}
     }
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> IBaconIpsumService
+    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>interface</span> IBaconIpsumService
     {
         Task&lt;BaconIpsumMessage&gt; GenerateAsync();
     }
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaconIpsumService</span> : IBaconIpsumService
+    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>BaconIpsumService</span> : IBaconIpsumService
     {
-        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">async</span> Task&lt;BaconIpsumMessage&gt; GenerateAsync()
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>async</span> Task&lt;BaconIpsumMessage&gt; GenerateAsync()
         {
-            <span style="color:#66d9ef">using</span> (<span style="color:#66d9ef">var</span> client = <span style="color:#66d9ef">new</span> HttpClient())
+            <span style=color:#66d9ef>using</span> (<span style=color:#66d9ef>var</span> client = <span style=color:#66d9ef>new</span> HttpClient())
             {
-                <span style="color:#66d9ef">var</span> message = <span style="color:#66d9ef">new</span> BaconIpsumMessage();
-                <span style="color:#75715e">// Post the message
-</span><span style="color:#75715e"></span>                message.Body =  <span style="color:#66d9ef">await</span> client.GetStringAsync(
-                    <span style="color:#e6db74">$&#34;https://baconipsum.com/api/?type=meat-and-filler&#34;</span>);
+                <span style=color:#66d9ef>var</span> message = <span style=color:#66d9ef>new</span> BaconIpsumMessage();
+                <span style=color:#75715e>// Post the message
+</span><span style=color:#75715e></span>                message.Body =  <span style=color:#66d9ef>await</span> client.GetStringAsync(
+                    <span style=color:#e6db74>$&#34;https://baconipsum.com/api/?type=meat-and-filler&#34;</span>);
 
-                <span style="color:#66d9ef">return</span> message;
+                <span style=color:#66d9ef>return</span> message;
             }
         }
     }
 }
-</code></pre></div><h2 id="5-create-a-nancyfx-module-to-host-the-webapi">5. Create a NancyFX module to host the WebAPI</h2>
-<hr>
-<p>Create a new file (i.e BaconIpsumModule .cs) to hold the routes and actions for the Web API</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-csharp" data-lang="csharp"><span style="color:#66d9ef">using</span> Nancy;
+</code></pre></div><h2 id=5-create-a-nancyfx-module-to-host-the-webapi>5. Create a NancyFX module to host the WebAPI</h2><hr><p>Create a new file (i.e BaconIpsumModule .cs) to hold the routes and actions for the Web API</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>using</span> Nancy;
 
-<span style="color:#66d9ef">namespace</span> WebApplication
+<span style=color:#66d9ef>namespace</span> WebApplication
 {
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BaconIpsumModule</span> : NancyModule
+    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>BaconIpsumModule</span> : NancyModule
     {
-        <span style="color:#66d9ef">public</span> BaconIpsumModule(IBaconIpsumService baconIpsumService)
+        <span style=color:#66d9ef>public</span> BaconIpsumModule(IBaconIpsumService baconIpsumService)
         {
-            Get(<span style="color:#e6db74">&#34;/&#34;</span>, args =&gt; <span style="color:#e6db74">&#34;Super Duper Happy Path running on .NET Core&#34;</span>);
+            Get(<span style=color:#e6db74>&#34;/&#34;</span>, args =&gt; <span style=color:#e6db74>&#34;Super Duper Happy Path running on .NET Core&#34;</span>);
 
-            Get(<span style="color:#e6db74">&#34;/baconipsum&#34;</span>, <span style="color:#66d9ef">async</span> args =&gt; <span style="color:#66d9ef">await</span> baconIpsumService.GenerateAsync());
+            Get(<span style=color:#e6db74>&#34;/baconipsum&#34;</span>, <span style=color:#66d9ef>async</span> args =&gt; <span style=color:#66d9ef>await</span> baconIpsumService.GenerateAsync());
         }
     }
 }
-</code></pre></div><p>The first route returns a string and the second one calls our service and returns a <strong>BaconIpsumMessage</strong> instance (And yes! <!-- raw HTML omitted -->NancyFX<!-- raw HTML omitted --> supports async too!).</p>
-<p>Also note that the module requires an instance of <strong>IBaconIpsumService</strong> in the constructor but don't worry because <strong><!-- raw HTML omitted -->NancyFX<!-- raw HTML omitted --></strong> will inject it for you without any special configuration or registration!</p>
-<h2 id="6-run-and-test-the-application">6. Run and test the application</h2>
-<hr>
-<p>Run the following commands</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">dotnet restore
+</code></pre></div><p>The first route returns a string and the second one calls our service and returns a <strong>BaconIpsumMessage</strong> instance (And yes! NancyFX supports async too!).</p><p>Also note that the module requires an instance of <strong>IBaconIpsumService</strong> in the constructor but don&rsquo;t worry because <strong>NancyFX</strong> will inject it for you without any special configuration or registration!</p><h2 id=6-run-and-test-the-application>6. Run and test the application</h2><hr><p>Run the following commands</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>dotnet restore
 dotnet run
-</code></pre></div><p>Navigate to <!-- raw HTML omitted -->http://localhost:5000<!-- raw HTML omitted --> and the browser should show the message: <strong>Super Duper Happy Path running on .NET Core</strong></p>
-<p>Navigate to <!-- raw HTML omitted -->http://localhost:5000/baconipsum<!-- raw HTML omitted --> and because of automatic content navigation <strong><!-- raw HTML omitted -->NancyFX<!-- raw HTML omitted --></strong> will try to find a view to display the <strong>BaconIpsumMessage</strong> which we didn't register and therefore results in an internal server error:</p>
-<p><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
-<p>Now call the same url: <!-- raw HTML omitted -->http://localhost:5000/baconipsum<!-- raw HTML omitted --> using postman and you'll get the expected json:</p>
-<p><!-- raw HTML omitted --><!-- raw HTML omitted --><!-- raw HTML omitted --></p>
-<p>Get a copy of the code here: <!-- raw HTML omitted --><a href="https://github.com/cmendible/dotnetcore.samples/tree/master/nancyfx.sample%3C/a%3E">https://github.com/cmendible/dotnetcore.samples/tree/master/nancyfx.sample&lt;/a&gt;</a></p>
-<p>Hope it helps!</p>
-
-
-</article>
-
-
-<section class="post-nav">
-    <ul>
-        
-        <li>
-            <a href="https://carlos.mendible.com/2016/12/18/the-value-of-online-influencer/"><i class="fa fa-chevron-circle-left"></i> The Value of Online Influencer</a>
-        </li>
-        
-        
-        <li>
-            <a href="https://carlos.mendible.com/2017/01/29/.net-core-roslyn-and-code-generation/">.NET Core, Roslyn and Code Generation <i class="fa fa-chevron-circle-right"></i> </a>
-        </li>
-        
-    </ul>
-</section>
-
-<section class="comments-block">
-
-</section>
-
-<section id="disqus_thread"></section>
-
-<script>
-      (function () {
-            
-            
-            if (window.location.hostname == "localhost")
-                  return;
-
-            var disqus_loaded = false;
-            var disqus_shortname = 'codeityourself';
-            var disqus_button = document.getElementById("show-comments");
-
-            function disqus() {
-
-                  if (!disqus_loaded) {
-                        disqus_loaded = true;
-
-                        var e = document.createElement("script");
-                        e.type = "text/javascript";
-                        e.async = true;
-                        e.src = "//" + disqus_shortname + ".disqus.com/embed.js";
-                        (document.getElementsByTagName("head")[0] ||
-                              document.getElementsByTagName("body")[0])
-                              .appendChild(e);
-                  }
-            }
-
-            disqus();
-
-            
-            if (/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)) {
-                  disqus();
-            }
-      })();
-</script>
-
-
-
-
-
-</main>
-<footer>
-    <h6>Copyright © 2019 - Carlos Mendible |
-        Rendered by <a href="https://gohugo.io" title="Hugo">Hugo</a> |
-        <a href="https://carlos.mendible.com/feed.xml">Subscribe</a></h6>
-</footer>
-</div>
-<script src="https://carlos.mendible.com/js/scripts.js"></script>
-
-
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-11243417-1', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-
-</body>
-
-</html>
+</code></pre></div><p>Navigate to http://localhost:5000 and the browser should show the message: <strong>Super Duper Happy Path running on .NET Core</strong></p><p>Navigate to http://localhost:5000/baconipsum and because of automatic content navigation <strong>NancyFX</strong> will try to find a view to display the <strong>BaconIpsumMessage</strong> which we didn&rsquo;t register and therefore results in an internal server error:</p><p></p><p>Now call the same url: http://localhost:5000/baconipsum using postman and you&rsquo;ll get the expected json:</p><p></p><p>Get a copy of the code here: <a href=https://github.com/cmendible/dotnetcore.samples/tree/main/nancyfx.sample>https://github.com/cmendible/dotnetcore.samples/tree/main/nancyfx.sample</a></p><p>Hope it helps!</p></article><section class=post-nav><ul><li><a href=https://carlos.mendible.com/2016/12/18/the-value-of-online-influencer/><i class="fa fa-chevron-circle-left"></i>The Value of Online Influencer</a></li><li><a href=https://carlos.mendible.com/2017/01/29/net-core-roslyn-and-code-generation/>.NET Core, Roslyn and Code Generation <i class="fa fa-chevron-circle-right"></i></a></li></ul></section><section class=comments-block><button id=show-comments style=display:none><i class="fa fa-comments"></i></button></section><section id=disqus_thread></section><script>(function(){if(window.location.hostname=="localhost")
+return;var disqus_loaded=false;var disqus_shortname='codeityourself';var disqus_button=document.getElementById("show-comments");var disqus_title='.Net Core and NancyFX: can writing a WebApi get any simpler?'
+var disqus_autoload=true;disqus_button.style.display="";if(disqus_autoload){disqus();}else{disqus_button.addEventListener("click",disqus,false);}
+function disqus(){if(!disqus_loaded){disqus_loaded=true;var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="//"+disqus_shortname+".disqus.com/embed.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e);document.getElementById("show-comments").style.display="none";}}
+var hash=window.location.hash.substr(1);if(hash.length>8){if(hash.substring(0,8)=="comment-"){disqus();}}
+if(/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)){disqus();}})();</script></main><footer><h6>Copyright © 2020 - Carlos Mendible |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://carlos.mendible.com/feed.xml>Subscribe</a></h6></footer></div><script src=https://carlos.mendible.com/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-11243417-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

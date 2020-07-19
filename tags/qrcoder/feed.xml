@@ -1,0 +1,83 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>QRCoder on Code it Yourself...</title><link>https://carlos.mendible.com/tags/qrcoder/</link><description>Recent content in QRCoder on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 28 Aug 2016 18:45:28 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/qrcoder/feed.xml" rel="self" type="application/rss+xml"/><item><title>Create vCard QR Codes using Azure Functions</title><link>https://carlos.mendible.com/2016/08/28/create-vcard-qr-codes-using-azure-functions/</link><pubDate>Sun, 28 Aug 2016 18:45:28 +0000</pubDate><guid>https://carlos.mendible.com/2016/08/28/create-vcard-qr-codes-using-azure-functions/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to develop a Web API to &lt;strong>Create vCard QR Codes using &lt;!-- raw HTML omitted -->Azure Functions&lt;!-- raw HTML omitted -->&lt;/strong>.&lt;/p>
+&lt;p>But wait what are &lt;!-- raw HTML omitted -->Azure Functions&lt;!-- raw HTML omitted -->?&lt;/p>
+&lt;p>As defined by Microsoft:&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;!-- raw HTML omitted -->Azure Functions&lt;!-- raw HTML omitted --> is a serverless event driven experience that extends the existing Azure App Service platform. These nano-services can scale based on demand and you pay only for the resources you consume.&lt;/p>
+&lt;/blockquote>
+&lt;p>And what does serverless means? I really like the definition given by Scot Hanselman in his post &lt;!-- raw HTML omitted -->What is Serverless Computing? Exploring Azure Functions&lt;!-- raw HTML omitted -->:&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>Serverless Computing is like this – Your code, a slider bar, and your credit card&lt;/strong>. You just have your function out there and it will scale as long as you can pay for it. It&amp;rsquo;s as close to&amp;quot;cloudy&amp;rdquo; as The Cloud can get.&lt;/p>
+&lt;/blockquote>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-function-app">1. Create a Function App&lt;/h2>
+&lt;hr>
+&lt;p>Head to &lt;!-- raw HTML omitted -->portal.azure.com&lt;!-- raw HTML omitted --> and hit the New button. Search for &lt;strong>Function App&lt;/strong> and create one. You&amp;rsquo;ll be asked for an app name, resource group, app service plan and storage account where the code will live.&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="2-create-the-function">2. Create the function&lt;/h2>
+&lt;hr>
+&lt;p>Create a new Function, selecting the empty C# template and give it a name: (i.e QRCoder)&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="3-add-the-code">3. Add the code&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Code (run.csx)&lt;/strong> section with the following code and save it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span>r &lt;span style="color:#e6db74">&amp;#34;System.Drawing&amp;#34;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span>r &lt;span style="color:#e6db74">&amp;#34;QRCoder.dll&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">using&lt;/span> System.Drawing;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Drawing.Imaging;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http.Headers;
+&lt;span style="color:#66d9ef">using&lt;/span> QRCoder;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;HttpResponseMessage&amp;gt; Run(HttpRequestMessage req, TraceWriter log)
+{
+&lt;span style="color:#75715e">// Read the json request
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> qrRequest = &lt;span style="color:#66d9ef">await&lt;/span> req.Content.ReadAsAsync&amp;lt;SimpleVCardRequest&amp;gt;();
+&lt;span style="color:#75715e">// Create the vCard string
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> vCard = &lt;span style="color:#e6db74">&amp;#34;BEGIN:VCARD\n&amp;#34;&lt;/span>;
+vCard += &lt;span style="color:#e6db74">$&amp;#34;FN:{qrRequest.Name}\n&amp;#34;&lt;/span>;
+vCard += &lt;span style="color:#e6db74">$&amp;#34;TEL;WORK;VOICE:{qrRequest.Phone}\n&amp;#34;&lt;/span>;
+vCard += &lt;span style="color:#e6db74">&amp;#34;END:VCARD&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Generate de QRCode
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> QRCodeGenerator qrGenerator = &lt;span style="color:#66d9ef">new&lt;/span> QRCodeGenerator();
+QRCodeData qrCodeData = qrGenerator.CreateQrCode(vCard, QRCodeGenerator.ECCLevel.Q);
+QRCode qrCode = &lt;span style="color:#66d9ef">new&lt;/span> QRCode(qrCodeData);
+&lt;span style="color:#75715e">// Save the QRCode as a jpeg image and send it in the response.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (Bitmap qrCodeImage = qrCode.GetGraphic(&lt;span style="color:#ae81ff">20&lt;/span>))
+&lt;span style="color:#66d9ef">using&lt;/span> (MemoryStream ms = &lt;span style="color:#66d9ef">new&lt;/span> MemoryStream())
+{
+qrCodeImage.Save(ms, ImageFormat.Jpeg);
+&lt;span style="color:#66d9ef">var&lt;/span> response = &lt;span style="color:#66d9ef">new&lt;/span> HttpResponseMessage()
+{
+Content = &lt;span style="color:#66d9ef">new&lt;/span> ByteArrayContent(ms.ToArray()),
+StatusCode = HttpStatusCode.OK,
+};
+response.Content.Headers.ContentType = &lt;span style="color:#66d9ef">new&lt;/span> MediaTypeHeaderValue(&lt;span style="color:#e6db74">&amp;#34;image/jpeg&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">return&lt;/span> response;
+}
+}
+&lt;span style="color:#75715e">// Request class to hold the Name and Phone number used to generated the vCard QR Code
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">SimpleVCardRequest&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Name { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Phone { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-fixing-the-missing-references">4. Fixing the missing references&lt;/h2>
+&lt;p>If you read the log you&amp;rsquo;ll notice the compiler can&amp;rsquo;t resolve the references to &lt;strong>&lt;!-- raw HTML omitted -->QRCoder&lt;!-- raw HTML omitted -->&lt;/strong> and that&amp;rsquo;s because we are using a 3rd party library to generate the QR codes.&lt;/p>
+&lt;p>We need to upload the assemblies to the &lt;strong>Functions App&lt;/strong>. Connect to your App via SFTP or your favorite method.&lt;/p>
+&lt;p>You&amp;rsquo;ll need to create a &lt;strong>bin&lt;/strong> folder under the folder with your function&amp;rsquo;s name (i.e. QRCoder) and upload the &lt;strong>QRCoder.dll&lt;/strong> and &lt;strong>UnityEngine.dll&lt;/strong> files to it.&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="6-create-an-html-endpoint-for-the-function">6. Create an HTML endpoint for the function&lt;/h2>
+&lt;hr>
+&lt;p>Head to the Integrate tab and add a new HTML trigger and save it with the default values.&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="7-test-the-web-api">7. Test the Web API&lt;/h2>
+&lt;hr>
+&lt;p>Head to the Develop tab and copy the Function Url:&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&amp;lt;img src=&amp;rdquo;/wp-content/uploads/2016/08/functionUrl.png&amp;rdquo; alt=&amp;quot;functionUrl&amp;rdquo; class=&amp;quot;aligncenter&amp;rdquo; size-medium wp-image-5662&amp;rdquo; srcset=&amp;rdquo;/wp-content/uploads/2016/08/functionUrl.png 1800w, /wp-content/uploads/2016/08/functionUrl-300x28.png 300w, /wp-content/uploads/2016/08/functionUrl-768x70.png 768w, /wp-content/uploads/2016/08/functionUrl-1024x94.png 1024w, /wp-content/uploads/2016/08/functionUrl-250x23.png 250w&amp;rdquo; sizes=&amp;rdquo;(max-width: 1800px) 100vw, 1800px&amp;rdquo; /&amp;gt;&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Now use &lt;!-- raw HTML omitted -->postman &lt;!-- raw HTML omitted -->to send payload to the Web API and get a QR Code&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>The response should show a working QR code like the following:&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>You can grab the code for the function here: &lt;!-- raw HTML omitted -->&lt;a href="https://gist.github.com/cmendible/4b6627bcf288b94af9be4d25f6e66d5f">https://gist.github.com/cmendible/4b6627bcf288b94af9be4d25f6e66d5f&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

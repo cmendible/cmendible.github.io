@@ -1,0 +1,61 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>volume on Code it Yourself...</title><link>https://carlos.mendible.com/tags/volume/</link><description>Recent content in volume on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 10 Feb 2019 15:12:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/volume/feed.xml" rel="self" type="application/rss+xml"/><item><title>Kubernetes: Mount a file in your Pod using a ConfigMap</title><link>https://carlos.mendible.com/2019/02/10/kubernetes-mount-file-pod-with-configmap/</link><pubDate>Sun, 10 Feb 2019 15:12:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/02/10/kubernetes-mount-file-pod-with-configmap/</guid><description>&lt;p>Lately I&amp;rsquo;ve been learning Go and this week I started a side project named &lt;a href="https://github.com/cmendible/kube-sherlock">kube-sherlock&lt;/a>. The purpose of this small program is to list any pod that does not have the &lt;strong>labels&lt;/strong> that your organization requires.&lt;/p>
+&lt;p>For &lt;a href="https://github.com/cmendible/kube-sherlock">kube-sherlock&lt;/a> I created a &lt;a href="https://github.com/cmendible/kube-sherlock/blob/master/dockerfile">dockerfile&lt;/a> were both the program (kube-sherlock) and the default configuration (config.yaml) are placed in the &lt;strong>app&lt;/strong> folder:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-docker" data-lang="docker">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> golang:1.11.5 AS build&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> /src&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ADD&lt;/span> go.mod go.sum ./&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> go get -v&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ADD&lt;/span> kube-sherlock.go config.yaml ./&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> CGO_ENABLED&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span> GOOS&lt;span style="color:#f92672">=&lt;/span>linux go build -a -ldflags &lt;span style="color:#e6db74">&amp;#39;-w&amp;#39;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> alpine:3.7&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>build src/config.yaml app/config.yaml&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>build src/kube-sherlock app/kube-sherlock&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> /app&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">CMD&lt;/span> ./kube-sherlock&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Metadata&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ARG&lt;/span> BUILD_DATE&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ARG&lt;/span> VCS_REF&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">LABEL&lt;/span> org.label-schema.build-date&lt;span style="color:#f92672">=&lt;/span>$BUILD_DATE &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> org.label-schema.name&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;kube-sherlock&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> org.label-schema.description&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Check if labels are applied to your containers&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> org.label-schema.url&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;https://github.com/cmendible/kube-sherlock&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> org.label-schema.vcs-ref&lt;span style="color:#f92672">=&lt;/span>$VCS_REF &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> org.label-schema.vcs-url&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;https://github.com/cmendible/kube-sherlock&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> org.label-schema.schema-version&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;0.1&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>So what if you want to replace the default configuration?&lt;/p>
+&lt;p>You can achieve this with the help of a &lt;strong>ConfigMap&lt;/strong>, creating a new &lt;strong>config.yaml&lt;/strong> with your custom values:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: ConfigMap
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: sherlock-config
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;span style="color:#66d9ef">data&lt;/span>:
+&lt;span style="color:#66d9ef">config.yaml&lt;/span>: &lt;span style="color:#e6db74">|
+&lt;/span>&lt;span style="color:#e6db74"> namespaces:&lt;/span>
+- default
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+- &lt;span style="color:#e6db74">&amp;#34;app&amp;#34;&lt;/span>
+- &lt;span style="color:#e6db74">&amp;#34;owner&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: I&amp;rsquo;m using the name of the file as the &lt;strong>key&lt;/strong>.&lt;/p>
+&lt;p>And then create a pod definition, referencing the &lt;strong>ConfigMap&lt;/strong>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Pod
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: kube-sherlock
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">serviceAccountName&lt;/span>: kube-sherlock
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: kube-sherlock
+&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/kube-sherlock:&lt;span style="color:#ae81ff">0.1&lt;/span>
+&lt;span style="color:#66d9ef">volumeMounts&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: config-volume
+&lt;span style="color:#66d9ef">mountPath&lt;/span>: /app/config.yaml
+&lt;span style="color:#66d9ef">subPath&lt;/span>: config.yaml
+&lt;span style="color:#66d9ef">volumes&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: config-volume
+&lt;span style="color:#66d9ef">configMap&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: sherlock-config
+&lt;span style="color:#66d9ef">restartPolicy&lt;/span>: Never
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: the volume references the &lt;strong>ConfigMap&lt;/strong> (sherlock-config), the volume mount specifies the &lt;strong>mountPath&lt;/strong> as the file you want to replace (/app/config.yaml) and the &lt;strong>subPath&lt;/strong> property is used to reference the file by key (config.yaml)&lt;/p>
+&lt;p>Hope it helps.&lt;/p></description></item></channel></rss>

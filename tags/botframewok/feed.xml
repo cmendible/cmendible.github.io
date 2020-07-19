@@ -1,0 +1,190 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>BotFramewok on Code it Yourself...</title><link>https://carlos.mendible.com/tags/botframewok/</link><description>Recent content in BotFramewok on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 11 Sep 2016 09:15:32 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/botframewok/feed.xml" rel="self" type="application/rss+xml"/><item><title>.NET Core and Microsoft Bot Framework</title><link>https://carlos.mendible.com/2016/09/11/dotnetcore-and-microsoft-bot-framework/</link><pubDate>Sun, 11 Sep 2016 09:15:32 +0000</pubDate><guid>https://carlos.mendible.com/2016/09/11/dotnetcore-and-microsoft-bot-framework/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to create a simple Skype bot that will reply with the same text message you send to it.&lt;/p>
+&lt;p>You&amp;rsquo;ll be using &lt;strong>.Net Core and &lt;!-- raw HTML omitted -->Microsoft Bot Framework&lt;!-- raw HTML omitted -->&lt;/strong>. As you already know not every library has been ported to .Net Core so you&amp;rsquo;ll have to use the &lt;strong>&lt;!-- raw HTML omitted -->Microsoft Bot Connector API – v3.0&lt;!-- raw HTML omitted -->&lt;/strong> to bring the bot to life.&lt;/p>
+&lt;p>Let me show you what it takes to create a simple bot:&lt;/p>
+&lt;h2 id="1-register-the-bot">1. Register the bot&lt;/h2>
+&lt;hr>
+&lt;p>Head to the &lt;!-- raw HTML omitted -->Register bot&lt;!-- raw HTML omitted --> page and fill the required fields.&lt;/p>
+&lt;p>For the messaging endpoint use something like: &lt;strong>&lt;!-- raw HTML omitted -->https://{url of your bot}/api/messages&lt;!-- raw HTML omitted -->&lt;/strong>&lt;/p>
+&lt;p>Also get your Microsoft App ID and password from the Microsoft Application registration portal, and save them cause you&amp;rsquo;ll need them to fill the BotCredentials in our sample.&lt;/p>
+&lt;h2 id="2-create-a-new-net-core-web-the-project">2. Create a new .NET Core Web the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">md bot
+cd bot
+dotnet new -t web
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-the-following-dependencies-to-your-projectjson-file">3. Add the following dependencies to your project.json file&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json"> &lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNet.WebApi.Client&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;5.2.3&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">,&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;System.Runtime.Serialization.Xml&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;4.1.1&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">,&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Caching.Memory&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">,&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Options.ConfigurationExtensions&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">,&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.DependencyInjection&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">,&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.DependencyInjection.Abstractions&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And restore the packages&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-add-the-following-section-to-your-appsettingsjson-file">4. Add the following section to your appsettings.json file&lt;/h2>
+&lt;hr>
+&lt;p>Replace the values with those of your registered bot.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#e6db74">&amp;#34;BotCredentials&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> {
+&lt;span style="color:#f92672">&amp;#34;ClientId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{Replace with your ClientId}&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;ClientSecret&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{Replace with your ClientSecret}&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-replace-the-configureservices-in-you-startup-class">5. Replace the ConfigureServices in you Startup class&lt;/h2>
+&lt;p>You&amp;rsquo;ll be using options to inject configurations (BotCredentials) to the controller and in Memory Cache to save tokens to avoid authenticating the bot on every call.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to add services to the container.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> ConfigureServices(IServiceCollection services)
+{
+&lt;span style="color:#75715e">// Adding options so we can inject configurations.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> services.AddOptions();
+&lt;span style="color:#75715e">// Register the bot credentials section
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> services.Configure&amp;lt;BotCredentials&amp;gt;(Configuration.GetSection(&lt;span style="color:#e6db74">&amp;#34;BotCredentials&amp;#34;&lt;/span>));
+&lt;span style="color:#75715e">// we&amp;#39;ll be catching tokens, so enable MemoryCache.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> services.AddMemoryCache();
+services.AddMvc();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-create-a-botcredentials-class">6. Create a BotCredentials class&lt;/h2>
+&lt;p>This class will hold the bot credentials&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> WebApplication
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Bot Credentials
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">BotCredentials&lt;/span>
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// CLientId
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> ClientId { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// ClientSecret
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> ClientSecret { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-create-tokenresponse-class">7. Create TokenResponse class&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> WebApplication
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Token Response
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TokenResponse&lt;/span>
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Property to hold the token
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> access_token { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-create-a-messagescontroller-class">8. Create a MessagesController class&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> WebApplication.Controllers
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Dynamic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http.Headers;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Mvc;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Caching.Memory;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Options;
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// This controller will receive the skype messages and handle them to the EchoBot service.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e"> [Route(&amp;#34;api/[controller]&lt;/span>&lt;span style="color:#e6db74">&amp;#34;)]
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">MessagesController&lt;/span> : Controller
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// memoryCache
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> IMemoryCache memoryCache;
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Bot Credentials
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> BotCredentials botCredentials;
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Constructor
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> MessagesController(IMemoryCache memoryCache, IOptions&amp;lt;BotCredentials&amp;gt; botCredentials)
+{
+&lt;span style="color:#66d9ef">this&lt;/span>.memoryCache = memoryCache;
+&lt;span style="color:#66d9ef">this&lt;/span>.botCredentials = botCredentials.Value;
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// This method will be called every time the bot receives an activity. This is the messaging endpoint
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;201 Created&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e"> [HttpPost]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">virtual&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;IActionResult&amp;gt; Post([FromBody] &lt;span style="color:#66d9ef">dynamic&lt;/span> activity)
+{
+&lt;span style="color:#75715e">// Get the conversation id so the bot answers.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> conversationId = activity.&lt;span style="color:#66d9ef">from&lt;/span>.id.ToString();
+&lt;span style="color:#75715e">// Get a valid token
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> token = &lt;span style="color:#66d9ef">await&lt;/span> &lt;span style="color:#66d9ef">this&lt;/span>.GetBotApiToken();
+&lt;span style="color:#75715e">// send the message back
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> HttpClient())
+{
+&lt;span style="color:#75715e">// I&amp;#39;m using dynamic here to make the code simpler
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">dynamic&lt;/span> message = &lt;span style="color:#66d9ef">new&lt;/span> ExpandoObject();
+message.type = &lt;span style="color:#e6db74">&amp;#34;message/text&amp;#34;&lt;/span>;
+message.text = activity.text;
+&lt;span style="color:#75715e">// Set the toekn in the authorization header.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> client.DefaultRequestHeaders.Authorization = &lt;span style="color:#66d9ef">new&lt;/span> AuthenticationHeaderValue(&lt;span style="color:#e6db74">&amp;#34;Bearer&amp;#34;&lt;/span>, token);
+&lt;span style="color:#75715e">// Post the message
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">await&lt;/span> client.PostAsJsonAsync&amp;lt;ExpandoObject&amp;gt;(
+&lt;span style="color:#e6db74">$&amp;#34;https://api.skype.net/v3/conversations/{conversationId}/activities&amp;#34;&lt;/span>,
+message &lt;span style="color:#66d9ef">as&lt;/span> ExpandoObject);
+}
+&lt;span style="color:#66d9ef">return&lt;/span> Created(Url.Content(&lt;span style="color:#e6db74">&amp;#34;~/&amp;#34;&lt;/span>), &lt;span style="color:#66d9ef">string&lt;/span>.Empty);
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Gets and caches a valid token so the bot can send messages.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;The token&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt; GetBotApiToken()
+{
+&lt;span style="color:#75715e">// Check to see if we already have a valid token
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> token = memoryCache.Get(&lt;span style="color:#e6db74">&amp;#34;token&amp;#34;&lt;/span>)?.ToString();
+&lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#66d9ef">string&lt;/span>.IsNullOrEmpty(token))
+{
+&lt;span style="color:#75715e">// we need to get a token.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> HttpClient())
+{
+&lt;span style="color:#75715e">// Create the encoded content needed to get a token
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> parameters = &lt;span style="color:#66d9ef">new&lt;/span> Dictionary&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;
+{
+{&lt;span style="color:#e6db74">&amp;#34;client_id&amp;#34;&lt;/span>, &lt;span style="color:#66d9ef">this&lt;/span>.botCredentials.ClientId },
+{&lt;span style="color:#e6db74">&amp;#34;client_secret&amp;#34;&lt;/span>, &lt;span style="color:#66d9ef">this&lt;/span>.botCredentials.ClientSecret },
+{&lt;span style="color:#e6db74">&amp;#34;scope&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;https://graph.microsoft.com/.default&amp;#34;&lt;/span> },
+{&lt;span style="color:#e6db74">&amp;#34;grant_type&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;client_credentials&amp;#34;&lt;/span> }
+};
+&lt;span style="color:#66d9ef">var&lt;/span> content = &lt;span style="color:#66d9ef">new&lt;/span> FormUrlEncodedContent(parameters);
+&lt;span style="color:#75715e">// Post
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> response = &lt;span style="color:#66d9ef">await&lt;/span> client.PostAsync(&lt;span style="color:#e6db74">&amp;#34;https://login.microsoftonline.com/common/oauth2/v2.0/token&amp;#34;&lt;/span>, content);
+&lt;span style="color:#75715e">// Get the token response
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> tokenResponse = &lt;span style="color:#66d9ef">await&lt;/span> response.Content.ReadAsAsync&amp;lt;TokenResponse&amp;gt;();
+token = tokenResponse.access_token;
+&lt;span style="color:#75715e">// Cache the token for 15 minutes.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> memoryCache.Set(
+&lt;span style="color:#e6db74">&amp;#34;token&amp;#34;&lt;/span>,
+token,
+&lt;span style="color:#66d9ef">new&lt;/span> DateTimeOffset(DateTime.Now.AddMinutes(&lt;span style="color:#ae81ff">15&lt;/span>)));
+}
+}
+&lt;span style="color:#66d9ef">return&lt;/span> token;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="9-deploy-your-bot-and-add-it-to-your-skype">9. Deploy your bot and add it to your skype&lt;/h2>
+&lt;hr>
+&lt;ol>
+&lt;li>Deploy your bot (I deployed it to an Azure Web App)&lt;/li>
+&lt;li>Head to the &lt;strong>My Bots&lt;/strong> section of the &lt;!-- raw HTML omitted -->Microsoft Bot Framework&lt;!-- raw HTML omitted --> page and add the bot to your skype contacts.&lt;/li>
+&lt;/ol>
+&lt;h2 id="10-talk-to-your-bot">10. Talk to your bot&lt;/h2>
+&lt;hr>
+&lt;p>No you can talk to your bot!&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>You can get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echobot">https://github.com/cmendible/dotnetcore.samples/tree/main/echobot&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

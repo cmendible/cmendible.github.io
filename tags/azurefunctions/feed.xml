@@ -1,0 +1,384 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AzureFunctions on Code it Yourself...</title><link>https://carlos.mendible.com/tags/azurefunctions/</link><description>Recent content in AzureFunctions on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 14 Jan 2018 15:19:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/azurefunctions/feed.xml" rel="self" type="application/rss+xml"/><item><title>Run a Durable Azure Function in a Container</title><link>https://carlos.mendible.com/2018/01/14/run-a-durable-azure-function-in-a-container/</link><pubDate>Sun, 14 Jan 2018 15:19:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/01/14/run-a-durable-azure-function-in-a-container/</guid><description>&lt;p>Greetings readers! Hope you all a Happy New Year!&lt;/p>
+&lt;p>Last post I was about &lt;a href="https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container">running a Precompiled .NET Core Azure Function in a Container&lt;/a>. This time let&amp;rsquo;s go one step further and &lt;strong>Run a Durable Azure Function in a Container&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>Prerequisites&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.docker.com">Docker&lt;/a> installed and basic knowledge.&lt;/li>
+&lt;li>&lt;a href="https://www.microsoft.com/net/download/">.NET Core&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account">Azure Storage Account&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-overview">Azure Durable Functions Knowledge&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-create-a-net-core-lib-project">1. Create a .NET Core lib project&lt;/h2>
+&lt;p>Create a .NET Core lib project.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new lib --name durable
+cd dni
+rm .\Class1.cs
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-add-the-required-references-to-be-able-to-use-azure-functions-api-and-the-durable-task-extensions">2. Add the required references to be able to use Azure Functions API and the Durable Task Extensions&lt;/h2>
+&lt;p>Be sure to add the following packages to the project. Sample code will not work with the latest versions of some of the Microsoft.AspNetCore.* packages, so pay special attention to the version parameter.&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Microsoft.AspNetCore.Mvc.WebApiCompatShim&lt;/strong> is needed to use the &lt;strong>ReadAsAsync&lt;/strong> extension (Assembly: System.Net.Http.Formatting) in one of the functions.&lt;/li>
+&lt;li>&lt;strong>Microsoft.Azure.WebJobs.Script.ExtensionsMetadataGenerator&lt;/strong> is need to generate, during build time, the extension file needed to run durable fucntions.&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.AspNetCore.Http -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc.WebApiCompatShim -v 2.0.0
+dotnet add package Microsoft.Azure.WebJobs -v 3.0.0-beta4
+dotnet add package Microsoft.Azure.WebJobs.Extensions.DurableTask -v 1.0.0-beta
+dotnet add package Microsoft.Azure.WebJobs.Script.ExtensionsMetadataGenerator -v 1.0.0-beta2
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-the-wwwroot-and-the-folders-needed-to-hold-the-functions">3. Create the wwwroot and the folders needed to hold the functions&lt;/h2>
+&lt;p>Create some foders. The first one &lt;strong>wwwroot&lt;/strong> will hold all the functions and global configuration. The others will hold the specific files for each of the 3 azure functions you&amp;rsquo;ll deploy:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">md wwwroot
+md wwwroot/httpstart
+md wwwroot/activity
+md wwwroot/orchestrator
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-hostjson-file-in-the-wwwroot-folder">4. Create host.json file in the wwwroot folder&lt;/h2>
+&lt;p>Create a &lt;strong>host.json&lt;/strong> file in the &lt;strong>wwwroot&lt;/strong> folder with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{ }
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-the-activity-function">5. Create the activity function&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/activity&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;name&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;activityTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//durable.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;DurableFunctions.Activity.Run&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create a &lt;strong>Activity.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">namespace&lt;/span> DurableFunctions
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Activity&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Run(&lt;span style="color:#66d9ef">string&lt;/span> name)
+{
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#e6db74">$&amp;#34;Hello {name}!&amp;#34;&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: this function uses an &lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Activity Trigger&lt;/a>.&lt;/p>
+&lt;h2 id="6-create-an-orchestrator-function">6. Create an orchestrator function&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/orchestrator&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;context&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;orchestrationTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//durable.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;DurableFunctions.Orchestrator.Run&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create a &lt;strong>Orchestrator.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">namespace&lt;/span> DurableFunctions
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Orchestrator&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;&amp;gt; Run(
+DurableOrchestrationContext context)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> outputs = &lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;();
+outputs.Add(&lt;span style="color:#66d9ef">await&lt;/span> context.CallActivityAsync&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;activity&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Tokyo&amp;#34;&lt;/span>));
+outputs.Add(&lt;span style="color:#66d9ef">await&lt;/span> context.CallActivityAsync&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;activity&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Seattle&amp;#34;&lt;/span>));
+outputs.Add(&lt;span style="color:#66d9ef">await&lt;/span> context.CallActivityAsync&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;activity&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;London&amp;#34;&lt;/span>));
+&lt;span style="color:#75715e">// returns [&amp;#34;Hello Tokyo!&amp;#34;, &amp;#34;Hello Seattle!&amp;#34;, &amp;#34;Hello London!&amp;#34;]
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> outputs;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: this function uses an &lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Orchestration Trigger&lt;/a>.&lt;/p>
+&lt;h2 id="7-create-the-orchestrator-client">7. Create the Orchestrator Client&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/httpstart&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;authLevel&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;anonymous&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;req&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;httpTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;route&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;orchestrators/{functionName}&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;methods&amp;#34;&lt;/span>: [
+&lt;span style="color:#e6db74">&amp;#34;post&amp;#34;&lt;/span>
+]
+},
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;starter&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;orchestrationClient&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//durable.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;DurableFunctions.HttpStart.Run&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create a &lt;strong>HttpStart.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http.Headers;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs.Host;
+&lt;span style="color:#66d9ef">namespace&lt;/span> DurableFunctions
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">HttpStart&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;HttpResponseMessage&amp;gt; Run(
+HttpRequestMessage req,
+DurableOrchestrationClient starter,
+&lt;span style="color:#66d9ef">string&lt;/span> functionName,
+TraceWriter log)
+{
+&lt;span style="color:#75715e">// Function input comes from the request content.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">dynamic&lt;/span> eventData = &lt;span style="color:#66d9ef">await&lt;/span> req.Content.ReadAsAsync&amp;lt;&lt;span style="color:#66d9ef">object&lt;/span>&amp;gt;();
+&lt;span style="color:#66d9ef">string&lt;/span> instanceId = &lt;span style="color:#66d9ef">await&lt;/span> starter.StartNewAsync(functionName, eventData);
+log.Info(&lt;span style="color:#e6db74">$&amp;#34;Started orchestration with ID = &amp;#39;{instanceId}&amp;#39;.&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> res = starter.CreateCheckStatusResponse(req, instanceId);
+res.Headers.RetryAfter = &lt;span style="color:#66d9ef">new&lt;/span> RetryConditionHeaderValue(TimeSpan.FromSeconds(&lt;span style="color:#ae81ff">10&lt;/span>));
+&lt;span style="color:#66d9ef">return&lt;/span> res;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: this function uses an http trigger and an &lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Orchestration client&lt;/a>.&lt;/p>
+&lt;h2 id="8-create-a-dockerfile">8. Create a dockerfile&lt;/h2>
+&lt;p>Create a &lt;strong>dockerfile&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/azure-functions-runtime:2.0.0-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># If we don&amp;#39;t set WEBSITE_HOSTNAME Azure Function triggers other than HttpTrigger won&amp;#39;t run. (FunctionInvocationException: Webhooks are not configured)&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># I&amp;#39;ve created a pull request to add this variable to the original dockerfile: https://github.com/Azure/azure-webjobs-sdk-script/pull/2285&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> WEBSITE_HOSTNAME&lt;span style="color:#f92672">=&lt;/span>localhost:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Copy all Function files and binaries to /home/site/wwwroot&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ADD&lt;/span> wwwroot /home/site/wwwroot&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Functions must live in: /home/site/wwwroot&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># We expect to receive the Storage Account Connection String from the command line.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ARG&lt;/span> STORAGE_ACCOUNT&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Set the AzureWebJobsStorage Environment Variable. Otherwise Durable Functions Extensions won&amp;#39;t work.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> AzureWebJobsStorage&lt;span style="color:#f92672">=&lt;/span>$STORAGE_ACCOUNT&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that once you execute a docker build on the file all the contents of the &lt;strong>wwwroot&lt;/strong> folder will be copied to the &lt;strong>/home/site/wwwroot&lt;/strong> inside the image.&lt;/p>
+&lt;h2 id="9-build-the-project-and-the-docker-image">9. Build the project and the docker image&lt;/h2>
+&lt;p>Build the .NET Core project so you get the precompiled funtions and then build the docker image:&lt;/p>
+&lt;p>Note: you&amp;rsquo;ll need a valid Azure Storage Account connection string.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build -o .\wwwroot\bin\
+docker build --build-arg STORAGE_ACCOUNT=&lt;span style="color:#e6db74">&amp;#34;[Valid Azure Storage Account Connection String]&amp;#34;&lt;/span> -t durable .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="10-create-a-container-and-test-the-function">10. Create a container and test the function&lt;/h2>
+&lt;p>Run the following to run the Azure Function in a container:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker run -p 5000&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>80 durable
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now POST to the orchestrator client to start the durable functions:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -X POST http://localhost:5000/api/orchestrators/orchestrator -i -H &lt;span style="color:#e6db74">&amp;#34;Content-Length: 0&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can download all code and files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/azure.durable.function.docker">here&lt;/a>.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: The function code is based on the original &lt;a href="https://github.com/Azure/azure-functions-durable-extension">Azure Functions Samples&lt;/a>.&lt;/p>
+&lt;p>Happy coding!&lt;/p></description></item><item><title>Run a Precompiled .NET Core Azure Function in a Container</title><link>https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/</link><pubDate>Thu, 28 Dec 2017 15:13:00 +0000</pubDate><guid>https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/</guid><description>&lt;p>So this morning I found my self browsing through the images Microsoft has published in the &lt;a href="https://hub.docker.com/u/microsoft/">Docker Hub&lt;/a> and then I saw this one: &lt;a href="https://hub.docker.com/r/microsoft/azure-functions-runtime/">microsoft/azure-functions-runtime&lt;/a> and decided to &lt;strong>Run a Precompiled .NET Core Azure Function in a Container&lt;/strong>.&lt;/p>
+&lt;p>&lt;strong>Prerequisites&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.docker.com">Docker&lt;/a> installed and basic knowledge.&lt;/li>
+&lt;li>&lt;a href="https://www.microsoft.com/net/download/">.NET Core&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-create-a-net-core-lib-project">1. Create a .NET Core lib project&lt;/h2>
+&lt;p>Create a .NET Core lib project.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new lib --name dni
+cd dni
+rm .\Class1.cs
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-add-the-required-references-to-be-able-to-use-azure-functions-api">2. Add the required references to be able to use Azure Functions API&lt;/h2>
+&lt;p>Be sure to add the following packages to the project. I couldn&amp;rsquo;t make the sample work with the latest versions of some of the Microsoft.AspNetCore.* packages, so pay special attention to the version parameter.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.AspNetCore.Http -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc -v 2.0.0
+dotnet add package Microsoft.Azure.WebJobs -v 3.0.0-beta4
+dotnet add package Microsoft.Extensions.Primitives -v 2.0.0
+dotnet add package Newtonsoft.Json -v 10.0.3
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-modify-the-output-path-of-the-project">3. Modify the Output Path of the project&lt;/h2>
+&lt;p>Edit dni.csproj and the OutputPath property with the following value: &lt;strong>wwwroot\bin&lt;/strong>. The project contents should now look like the following text:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;Project&lt;/span> &lt;span style="color:#a6e22e">Sdk=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.NET.Sdk&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;TargetFramework&amp;gt;&lt;/span>netstandard2.0&lt;span style="color:#f92672">&amp;lt;/TargetFramework&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;OutputPath&amp;gt;&lt;/span>wwwroot\bin&lt;span style="color:#f92672">&amp;lt;/OutputPath&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Http&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Mvc&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Azure.WebJobs&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;3.0.0-beta4&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Primitives&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Newtonsoft.Json&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;10.0.3&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Project&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-the-wwwroot-and-validate-folders">4. Create the wwwroot and validate folders&lt;/h2>
+&lt;p>Create two folders. The first one &lt;strong>wwwroot&lt;/strong> will hold all the functions and global configuration. The second one: &lt;strong>validate&lt;/strong> will hold the configuration of the &lt;strong>validate&lt;/strong> function we&amp;rsquo;ll be deploying.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">md wwwroot
+md wwwroot/validate
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-hostjson-file-in-the-wwwroot-folder">5. Create host.json file in the wwwroot folder&lt;/h2>
+&lt;p>Create a &lt;strong>host.json&lt;/strong> file in the &lt;strong>wwwroot&lt;/strong> folder with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{ }
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-create-functionjson-and-runcsx-files">6. Create function.json and run.csx files&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/validate&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;authLevel&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;anonymous&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;req&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;httpTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//netstandard2.0//dni.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Dni.HttpTrigger.Run&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that in &lt;strong>functions.json&lt;/strong> we are specifying the function trigger &lt;strong>type&lt;/strong> as &lt;strong>httpTrigger&lt;/strong> and also specifying the &lt;strong>scriptFile&lt;/strong> and &lt;strong>entryPoint&lt;/strong>.&lt;/p>
+&lt;p>Now create a &lt;strong>run.csx&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#75715e">//leave this file empty - all the logic is placed within our precompiled function
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-create-an-httptriggercs-file-to-hold-your-function">7. Create an HttpTrigger.cs file to hold your function&lt;/h2>
+&lt;p>Create a &lt;strong>HttpTrigger.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> Dni
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Mvc;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs.Host;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">HttpTrigger&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> IActionResult Run(HttpRequest req, TraceWriter log)
+{
+log.Info(&lt;span style="color:#e6db74">&amp;#34;DNI Validation function is processing a request.&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">string&lt;/span> dni = req.Query[&lt;span style="color:#e6db74">&amp;#34;dni&amp;#34;&lt;/span>];
+&lt;span style="color:#66d9ef">return&lt;/span> dni != &lt;span style="color:#66d9ef">null&lt;/span>
+? (ActionResult)&lt;span style="color:#66d9ef">new&lt;/span> OkObjectResult(ValidateDNI(dni))
+: &lt;span style="color:#66d9ef">new&lt;/span> BadRequestObjectResult(&lt;span style="color:#e6db74">&amp;#34;Please pass a dni on the query string&amp;#34;&lt;/span>);
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">bool&lt;/span> ValidateDNI(&lt;span style="color:#66d9ef">string&lt;/span> dni)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> table = &lt;span style="color:#e6db74">&amp;#34;TRWAGMYFPDXBNJZSQVHLCKE&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> foreignerDigits = &lt;span style="color:#66d9ef">new&lt;/span> Dictionary&amp;lt;&lt;span style="color:#66d9ef">char&lt;/span>, &lt;span style="color:#66d9ef">char&lt;/span>&amp;gt;()
+{
+{ &lt;span style="color:#e6db74">&amp;#39;X&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>},
+{ &lt;span style="color:#e6db74">&amp;#39;Y&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>},
+{ &lt;span style="color:#e6db74">&amp;#39;Z&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;2&amp;#39;&lt;/span>}
+};
+&lt;span style="color:#66d9ef">var&lt;/span> numbers = &lt;span style="color:#e6db74">&amp;#34;1234567890&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> parsedDNI = dni.ToUpper();
+&lt;span style="color:#66d9ef">if&lt;/span> (parsedDNI.Length == &lt;span style="color:#ae81ff">9&lt;/span>)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> checkDigit = parsedDNI[&lt;span style="color:#ae81ff">8&lt;/span>];
+parsedDNI = parsedDNI.Remove(&lt;span style="color:#ae81ff">8&lt;/span>);
+&lt;span style="color:#66d9ef">if&lt;/span> (foreignerDigits.ContainsKey(parsedDNI[&lt;span style="color:#ae81ff">0&lt;/span>]))
+{
+parsedDNI = parsedDNI.Replace(parsedDNI[&lt;span style="color:#ae81ff">0&lt;/span>], foreignerDigits[parsedDNI[&lt;span style="color:#ae81ff">0&lt;/span>]]);
+}
+&lt;span style="color:#66d9ef">return&lt;/span> parsedDNI.Length == parsedDNI.Where(n =&amp;gt; numbers.Contains(n)).Count() &amp;amp;&amp;amp;
+table[&lt;span style="color:#66d9ef">int&lt;/span>.Parse(parsedDNI) % &lt;span style="color:#ae81ff">23&lt;/span>] == checkDigit;
+}
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Cause I didn&amp;rsquo;t want to create a simple Hello World sample, this Azure Function Code takes the &lt;strong>dni&lt;/strong> parameter from the query string and validates if the given value is a valid &lt;strong>Spanish National Identity Document&lt;/strong> number.&lt;/p>
+&lt;h2 id="8-create-a-dockerfile">8. Create a dockerfile&lt;/h2>
+&lt;p>Create a &lt;strong>dockerfile&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/azure-functions-runtime:v2.0.0-beta1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> AzureWebJobsScriptRoot&lt;span style="color:#f92672">=&lt;/span>/home/site/wwwroot&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ADD&lt;/span> wwwroot /home/site/wwwroot&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that once you execute a docker build on the file all the contents of the &lt;strong>wwwroot&lt;/strong> folder will be copied to the &lt;strong>/home/site/wwwroot&lt;/strong> inside the image.&lt;/p>
+&lt;h2 id="9-build-the-project-and-the-docker-image">9. Build the project and the docker image&lt;/h2>
+&lt;p>Build the .NET Core project so you get a precompiled funtion and then build the docker image:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+docker build -t dni .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="10-create-a-container-and-test-the-function">10. Create a container and test the function&lt;/h2>
+&lt;p>Run the following to run the Azure Function in a container:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker run -p 5000&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>80 dni
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now navigate to: &lt;a href="http://localhost:5000/api/validate?dni=54495436H">http://localhost:5000/api/validate?dni=54495436H&lt;/a> and the page should return &lt;strong>true&lt;/strong>.&lt;/p>
+&lt;p>You can download all code and files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/azure.function.docker">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Create vCard QR Codes using Azure Functions</title><link>https://carlos.mendible.com/2016/08/28/create-vcard-qr-codes-using-azure-functions/</link><pubDate>Sun, 28 Aug 2016 18:45:28 +0000</pubDate><guid>https://carlos.mendible.com/2016/08/28/create-vcard-qr-codes-using-azure-functions/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to develop a Web API to &lt;strong>Create vCard QR Codes using &lt;!-- raw HTML omitted -->Azure Functions&lt;!-- raw HTML omitted -->&lt;/strong>.&lt;/p>
+&lt;p>But wait what are &lt;!-- raw HTML omitted -->Azure Functions&lt;!-- raw HTML omitted -->?&lt;/p>
+&lt;p>As defined by Microsoft:&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;!-- raw HTML omitted -->Azure Functions&lt;!-- raw HTML omitted --> is a serverless event driven experience that extends the existing Azure App Service platform. These nano-services can scale based on demand and you pay only for the resources you consume.&lt;/p>
+&lt;/blockquote>
+&lt;p>And what does serverless means? I really like the definition given by Scot Hanselman in his post &lt;!-- raw HTML omitted -->What is Serverless Computing? Exploring Azure Functions&lt;!-- raw HTML omitted -->:&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;strong>Serverless Computing is like this – Your code, a slider bar, and your credit card&lt;/strong>. You just have your function out there and it will scale as long as you can pay for it. It&amp;rsquo;s as close to&amp;quot;cloudy&amp;rdquo; as The Cloud can get.&lt;/p>
+&lt;/blockquote>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-function-app">1. Create a Function App&lt;/h2>
+&lt;hr>
+&lt;p>Head to &lt;!-- raw HTML omitted -->portal.azure.com&lt;!-- raw HTML omitted --> and hit the New button. Search for &lt;strong>Function App&lt;/strong> and create one. You&amp;rsquo;ll be asked for an app name, resource group, app service plan and storage account where the code will live.&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="2-create-the-function">2. Create the function&lt;/h2>
+&lt;hr>
+&lt;p>Create a new Function, selecting the empty C# template and give it a name: (i.e QRCoder)&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="3-add-the-code">3. Add the code&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Code (run.csx)&lt;/strong> section with the following code and save it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span>r &lt;span style="color:#e6db74">&amp;#34;System.Drawing&amp;#34;&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span>r &lt;span style="color:#e6db74">&amp;#34;QRCoder.dll&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">using&lt;/span> System.Drawing;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Drawing.Imaging;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http.Headers;
+&lt;span style="color:#66d9ef">using&lt;/span> QRCoder;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;HttpResponseMessage&amp;gt; Run(HttpRequestMessage req, TraceWriter log)
+{
+&lt;span style="color:#75715e">// Read the json request
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> qrRequest = &lt;span style="color:#66d9ef">await&lt;/span> req.Content.ReadAsAsync&amp;lt;SimpleVCardRequest&amp;gt;();
+&lt;span style="color:#75715e">// Create the vCard string
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> vCard = &lt;span style="color:#e6db74">&amp;#34;BEGIN:VCARD\n&amp;#34;&lt;/span>;
+vCard += &lt;span style="color:#e6db74">$&amp;#34;FN:{qrRequest.Name}\n&amp;#34;&lt;/span>;
+vCard += &lt;span style="color:#e6db74">$&amp;#34;TEL;WORK;VOICE:{qrRequest.Phone}\n&amp;#34;&lt;/span>;
+vCard += &lt;span style="color:#e6db74">&amp;#34;END:VCARD&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Generate de QRCode
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> QRCodeGenerator qrGenerator = &lt;span style="color:#66d9ef">new&lt;/span> QRCodeGenerator();
+QRCodeData qrCodeData = qrGenerator.CreateQrCode(vCard, QRCodeGenerator.ECCLevel.Q);
+QRCode qrCode = &lt;span style="color:#66d9ef">new&lt;/span> QRCode(qrCodeData);
+&lt;span style="color:#75715e">// Save the QRCode as a jpeg image and send it in the response.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (Bitmap qrCodeImage = qrCode.GetGraphic(&lt;span style="color:#ae81ff">20&lt;/span>))
+&lt;span style="color:#66d9ef">using&lt;/span> (MemoryStream ms = &lt;span style="color:#66d9ef">new&lt;/span> MemoryStream())
+{
+qrCodeImage.Save(ms, ImageFormat.Jpeg);
+&lt;span style="color:#66d9ef">var&lt;/span> response = &lt;span style="color:#66d9ef">new&lt;/span> HttpResponseMessage()
+{
+Content = &lt;span style="color:#66d9ef">new&lt;/span> ByteArrayContent(ms.ToArray()),
+StatusCode = HttpStatusCode.OK,
+};
+response.Content.Headers.ContentType = &lt;span style="color:#66d9ef">new&lt;/span> MediaTypeHeaderValue(&lt;span style="color:#e6db74">&amp;#34;image/jpeg&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">return&lt;/span> response;
+}
+}
+&lt;span style="color:#75715e">// Request class to hold the Name and Phone number used to generated the vCard QR Code
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">SimpleVCardRequest&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Name { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Phone { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-fixing-the-missing-references">4. Fixing the missing references&lt;/h2>
+&lt;p>If you read the log you&amp;rsquo;ll notice the compiler can&amp;rsquo;t resolve the references to &lt;strong>&lt;!-- raw HTML omitted -->QRCoder&lt;!-- raw HTML omitted -->&lt;/strong> and that&amp;rsquo;s because we are using a 3rd party library to generate the QR codes.&lt;/p>
+&lt;p>We need to upload the assemblies to the &lt;strong>Functions App&lt;/strong>. Connect to your App via SFTP or your favorite method.&lt;/p>
+&lt;p>You&amp;rsquo;ll need to create a &lt;strong>bin&lt;/strong> folder under the folder with your function&amp;rsquo;s name (i.e. QRCoder) and upload the &lt;strong>QRCoder.dll&lt;/strong> and &lt;strong>UnityEngine.dll&lt;/strong> files to it.&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="6-create-an-html-endpoint-for-the-function">6. Create an HTML endpoint for the function&lt;/h2>
+&lt;hr>
+&lt;p>Head to the Integrate tab and add a new HTML trigger and save it with the default values.&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="7-test-the-web-api">7. Test the Web API&lt;/h2>
+&lt;hr>
+&lt;p>Head to the Develop tab and copy the Function Url:&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&amp;lt;img src=&amp;rdquo;/wp-content/uploads/2016/08/functionUrl.png&amp;rdquo; alt=&amp;quot;functionUrl&amp;rdquo; class=&amp;quot;aligncenter&amp;rdquo; size-medium wp-image-5662&amp;rdquo; srcset=&amp;rdquo;/wp-content/uploads/2016/08/functionUrl.png 1800w, /wp-content/uploads/2016/08/functionUrl-300x28.png 300w, /wp-content/uploads/2016/08/functionUrl-768x70.png 768w, /wp-content/uploads/2016/08/functionUrl-1024x94.png 1024w, /wp-content/uploads/2016/08/functionUrl-250x23.png 250w&amp;rdquo; sizes=&amp;rdquo;(max-width: 1800px) 100vw, 1800px&amp;rdquo; /&amp;gt;&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Now use &lt;!-- raw HTML omitted -->postman &lt;!-- raw HTML omitted -->to send payload to the Web API and get a QR Code&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>The response should show a working QR code like the following:&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>You can grab the code for the function here: &lt;!-- raw HTML omitted -->&lt;a href="https://gist.github.com/cmendible/4b6627bcf288b94af9be4d25f6e66d5f">https://gist.github.com/cmendible/4b6627bcf288b94af9be4d25f6e66d5f&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

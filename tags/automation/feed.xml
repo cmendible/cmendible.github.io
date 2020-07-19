@@ -1,0 +1,438 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Automation on Code it Yourself...</title><link>https://carlos.mendible.com/tags/automation/</link><description>Recent content in Automation on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 16 May 2019 15:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/automation/feed.xml" rel="self" type="application/rss+xml"/><item><title>ARM: Enable Container Monitoring Solution on an existing Log Analytics Workspace</title><link>https://carlos.mendible.com/2019/05/16/arm-enable-container-solution-on-an-existing-loganalytics-workspace/</link><pubDate>Thu, 16 May 2019 15:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/05/16/arm-enable-container-solution-on-an-existing-loganalytics-workspace/</guid><description>&lt;p>Recently I had to update a bunch of &lt;a href="https://www.google.com/url?sa=t&amp;amp;rct=j&amp;amp;q=&amp;amp;esrc=s&amp;amp;source=web&amp;amp;cd=1&amp;amp;cad=rja&amp;amp;uact=8&amp;amp;ved=2ahUKEwiFrof58qDiAhXqyIUKHWPuBaIQFjAAegQIARAB&amp;amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fazure%2Fazure-monitor%2Flearn%2Fquick-create-workspace&amp;amp;usg=AOvVaw3DvKwidPs8__aX0fQ0vjQf">Log Analytics Workspaces&lt;/a> resources to enable the &lt;a href="https://docs.microsoft.com/en-us/azure/azure-monitor/insights/containers">Container Monitoring Solution&lt;/a>. So I came up with this ARM Template that I want to share with you:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;$schema&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;contentVersion&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;parameters&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;LogAnalyticsWorkspaceName&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;string&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;metadata&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;description&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Log Analytics Workspace name&amp;#34;&lt;/span>
+}
+}
+},
+&lt;span style="color:#f92672">&amp;#34;variables&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;workspaceResourceId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[resourceId(&amp;#39;Microsoft.OperationalInsights/workspaces/&amp;#39;, parameters(&amp;#39;LogAnalyticsWorkspaceName&amp;#39;))]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;containerSolutionName&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[concat(parameters(&amp;#39;LogAnalyticsWorkspaceName&amp;#39;), &amp;#39;-containers&amp;#39;)]&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;resources&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Microsoft.OperationsManagement/solutions&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;apiVersion&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2015-11-01-preview&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[variables(&amp;#39;containerSolutionName&amp;#39;)]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;location&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[resourceGroup().location]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;plan&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[variables(&amp;#39;containerSolutionName&amp;#39;)]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;product&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[concat(&amp;#39;OMSGallery/&amp;#39;, &amp;#39;ContainerInsights&amp;#39;)]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;promotionCode&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;publisher&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Microsoft&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;properties&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;workspaceResourceId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[variables(&amp;#39;workspaceResourceId&amp;#39;)]&amp;#34;&lt;/span>
+}
+}
+],
+&lt;span style="color:#f92672">&amp;#34;outputs&amp;#34;&lt;/span>: {}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;!-- raw HTML omitted -->
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Use PowerShell to enable Azure Storage Account Firewall Rules</title><link>https://carlos.mendible.com/2017/11/02/use-powershell-to-enable-azure-storage-account-firewall-rules/</link><pubDate>Thu, 02 Nov 2017 20:53:16 +0000</pubDate><guid>https://carlos.mendible.com/2017/11/02/use-powershell-to-enable-azure-storage-account-firewall-rules/</guid><description>&lt;p>In this post I&amp;rsquo;ll show you how to &lt;strong>Use PowerShell to enable Azure Storage Account Firewall Rules&lt;/strong>.&lt;/p>
+&lt;p>Be sure to be have &lt;a href="https://www.powershellgallery.com/packages/AzureRM/4.4.1">AzureRM PowerShell 4.4.1&lt;/a> module installed.&lt;/p>
+&lt;h2 id="login-to-your-azure-account">&lt;strong>Login to your Azure Account&lt;/strong>&lt;/h2>
+&lt;p>Launch Powershell and start by Login to your Azure Account.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Login-AzureRmAccount
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="set-resource-group-and-storage-account-name-variables">&lt;strong>Set Resource Group and Storage Account Name Variables&lt;/strong>&lt;/h2>
+&lt;p>Set the following variables&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> $resourceGroupName = &lt;span style="color:#e6db74">&amp;#34;[THE NAME OF THE RESOURCE GROUP]&amp;#34;&lt;/span>
+$storageAccountName = &lt;span style="color:#e6db74">&amp;#34;[THE NAME OF THE STORAGE ACCOUNT]&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="enable-the-firewall">&lt;strong>Enable the Firewall&lt;/strong>&lt;/h2>
+&lt;p>To enable the firewall you&amp;rsquo;ll need to &lt;strong>Deny&lt;/strong> all trafic to the storage account using the &lt;strong>DefaultAction&lt;/strong> parameter and then allow Azure Services to connect to it with the &lt;strong>Bypass parameter&lt;/strong>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Update-AzureRmStorageAccountNetworkRuleSet -ResourceGroupName $resourceGroupName -Name $storageAccountName -DefaultAction Deny -Bypass AzureServices,Metrics,Logging
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To allow an IP Address or an IP Address range you can run the following commands changing the value of the &lt;strong>IPAddressOrRange&lt;/strong> parameter:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Add-AzureRMStorageAccountNetworkRule -ResourceGroupName $resourceGroupName -AccountName $storageAccountName -IPAddressOrRange &lt;span style="color:#e6db74">&amp;#34;79.159.46.90&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Add-AzureRMStorageAccountNetworkRule -ResourceGroupName $resourceGroupName -AccountName $storageAccountName -IPAddressOrRange &lt;span style="color:#e6db74">&amp;#34;79.159.46.0/24&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item><item><title>Use PowerShell to Enable and Automate Azure Analysis Services Backup</title><link>https://carlos.mendible.com/2017/10/23/use-powershell-to-enable-and-automate-azure-analysis-services-backup/</link><pubDate>Mon, 23 Oct 2017 20:53:16 +0000</pubDate><guid>https://carlos.mendible.com/2017/10/23/use-powershell-to-enable-and-automate-azure-analysis-services-backup/</guid><description>&lt;p>In this post I&amp;rsquo;ll show you how to &lt;strong>Use PowerShell to Enable and Automate Azure Analysis Backup&lt;/strong>.&lt;/p>
+&lt;h2 id="enable-azure-analysis-service-backup">&lt;strong>Enable Azure Analysis Service Backup&lt;/strong>&lt;/h2>
+&lt;p>Enable-AzureRmAnalysisServicesBackup is a small powershell script that uses the the Set-AzureRmResource cmdlet to enable backup location to an Azure Analysis Service instance.&lt;/p>
+&lt;p>Once you run it, the script will ask you for:&lt;/p>
+&lt;ul>
+&lt;li>The resource group name where the Analysis Service is deployed&lt;/li>
+&lt;li>The name of the Azure Analysis Service instance.&lt;/li>
+&lt;li>The name of te storage account where the backups will be placed&lt;/li>
+&lt;li>The name of the container in the storage accoutn where the backups will be placed&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#66d9ef">Param&lt;/span>
+(
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$resourceGroupName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$analysisServicesName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$storageAccountName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$containerName)
+&lt;span style="color:#66d9ef">function&lt;/span> Add-AnalysisServicesBackupBlobContainer($props, $resourceGroupName, $storageAccountName, $containerName) {
+&lt;span style="color:#75715e"># Get storage account keys.&lt;/span>
+$keys = Get-AzureRmStorageAccountKey `
+-StorageAccountName $storageAccountName `
+-ResourceGroupName $resourceGroupName
+&lt;span style="color:#75715e"># Use first key.&lt;/span>
+$key = $keys[0].Value
+&lt;span style="color:#75715e"># Create an Azure Storage Context for the storage account.&lt;/span>
+$context = New-AzureStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $key
+&lt;span style="color:#75715e"># Create a 2 Years SAS Token&lt;/span>
+$starTime = (Get-Date).AddMinutes(-5)
+$sasToken = New-AzureStorageContainerSASToken `
+-Name $containerName `
+-Context $context `
+-ExpiryTime $starTime.AddYears(2) `
+-Permission rwdlac `
+-Protocol HttpsOnly `
+-StartTime $starTime
+&lt;span style="color:#75715e"># Create the Container Uri&lt;/span>
+$blobContainerUri = &lt;span style="color:#e6db74">&amp;#34;https://&lt;/span>$($storageAccountName)&lt;span style="color:#e6db74">.blob.core.windows.net/&lt;/span>$($containerName)$($sasToken)&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Check the Analysis Server to see if the backupBlobContainerUri property exists.&lt;/span>
+$backupBlobContainerUriProperty = $props | Get-Member -Name &lt;span style="color:#e6db74">&amp;#34;backupBlobContainerUri&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> (!$backupBlobContainerUriProperty) {
+&lt;span style="color:#75715e"># Add the property to the object.&lt;/span>
+$props | Add-Member @{backupBlobContainerUri = &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>}
+}
+&lt;span style="color:#75715e"># Set the container Uri&lt;/span>
+$props.backupBlobContainerUri = $blobContainerUri
+}
+&lt;span style="color:#75715e"># Get the Analysis Services resource properties.&lt;/span>
+$resource = Get-AzureRmResource `
+-ResourceGroupName $resourceGroupName `
+-ResourceType &lt;span style="color:#e6db74">&amp;#34;Microsoft.AnalysisServices/servers&amp;#34;&lt;/span> `
+-ResourceName $analysisServicesName
+$props = $resource.Properties
+&lt;span style="color:#75715e"># Modify the backupBlobContainerUri.&lt;/span>
+Add-AnalysisServicesBackupBlobContainer $props $resourceGroupName $storageAccountName $containerName
+&lt;span style="color:#75715e"># Save the properties.&lt;/span>
+Set-AzureRmResource `
+-PropertyObject $props `
+-ResourceGroupName $resourceGroupName `
+-ResourceType &lt;span style="color:#e6db74">&amp;#34;Microsoft.AnalysisServices/servers&amp;#34;&lt;/span> `
+-ResourceName $analysisServicesName `
+-Force
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get the code &lt;a href="https://github.com/cmendible/azure.powershell.samples/tree/main/Enable-AzureRmAnalysisServicesBackup">here&lt;/a> or download the file from the &lt;a href="https://gallery.technet.microsoft.com/Enable-AzureRmAnalysisServi-254a889c">Technet Gallery&lt;/a>.&lt;/p>
+&lt;h2 id="automate-azure-analysis-service-backup">&lt;strong>Automate Azure Analysis Service Backup&lt;/strong>&lt;/h2>
+&lt;p>Backup-AnalysisServices is a simple PowerShell workflow runbook that will help you automate the process of backing up an Azure Analysis Service Database.&lt;/p>
+&lt;p>The script receives 5 parameters:&lt;/p>
+&lt;ul>
+&lt;li>ResourceGroupName: The name of the resource group where the cluster resides&lt;/li>
+&lt;li>AutomationCredentialName: The Automation credential holding username and password for Analysis Services&lt;/li>
+&lt;li>AnalysisServiceDatabase: The Analysis Service Database&lt;/li>
+&lt;li>AnalysisServiceServer: The Analysis Service Server (i.e. asazure://northeurope.asazure.windows.net/myanalysisservice)&lt;/li>
+&lt;li>ConnectionName: The name of your automation connection account. Defaults to ‘AzureRunAsConnection&amp;rsquo;&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#75715e">&amp;lt;#
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.SYNOPSIS&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Backup-AnalysisServices is a simple PowerShell workflow runbook that will help you automate the process of backing up an Azure Analysis Service Database.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.DESCRIPTION&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Backup-AnalysisServices is a simple PowerShell workflow runbook that will help you automate the process of backing up an Azure Analysis Service Database.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> ResourceGroupName
+&lt;/span>&lt;span style="color:#75715e"> The name of the resource group where the cluster resides
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> AutomationCredentialName
+&lt;/span>&lt;span style="color:#75715e"> The Automation credential holding the username and password for Analysis Services
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> AnalysisServiceDatabase
+&lt;/span>&lt;span style="color:#75715e"> The Analysis Service Database
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> AnalysisServiceServer
+&lt;/span>&lt;span style="color:#75715e"> The Analysis Service Server
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> ConnectionName
+&lt;/span>&lt;span style="color:#75715e"> The name of your automation connection account. Defaults to &amp;#39;AzureRunAsConnection&amp;#39;
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.NOTES&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> AUTHOR: Carlos Mendible
+&lt;/span>&lt;span style="color:#75715e"> LASTEDIT: October 17, 2017
+&lt;/span>&lt;span style="color:#75715e">#&amp;gt;&lt;/span>
+workflow Backup-AnalysisServices {
+&lt;span style="color:#66d9ef">Param&lt;/span>
+(
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$ResourceGroupName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$AutomationCredentialName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$AnalysisServiceDatabase,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$AnalysisServiceServer,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $false)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$ConnectionName
+)
+&lt;span style="color:#75715e"># Requires the AzureRM.Profile and SqlServer PowerShell Modules&lt;/span>
+$automationConnectionName = $ConnectionName
+&lt;span style="color:#66d9ef">if&lt;/span> (!$ConnectionName) {
+$automationConnectionName = &lt;span style="color:#e6db74">&amp;#34;AzureRunAsConnection&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Get the connection by name (i.e. AzureRunAsConnection)&lt;/span>
+$servicePrincipalConnection = Get-AutomationConnection -Name $automationConnectionName
+Write-Output &lt;span style="color:#e6db74">&amp;#34;Logging in to Azure...&amp;#34;&lt;/span>
+Add-AzureRmAccount `
+-ServicePrincipal `
+-TenantId $servicePrincipalConnection.TenantId `
+-ApplicationId $servicePrincipalConnection.ApplicationId `
+-CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint
+&lt;span style="color:#75715e"># Get PSCredential&lt;/span>
+$cred = Get-AutomationPSCredential -Name $AutomationCredentialName
+Write-Output &lt;span style="color:#e6db74">&amp;#34;Starting Backup...&amp;#34;&lt;/span>
+Backup-ASDatabase `
+&lt;span style="color:#960050;background-color:#1e0010">–&lt;/span>backupfile (&lt;span style="color:#e6db74">&amp;#34;backup.&amp;#34;&lt;/span> + (Get-Date).ToString(&lt;span style="color:#e6db74">&amp;#34;yyMMdd&amp;#34;&lt;/span>) + &lt;span style="color:#e6db74">&amp;#34;.abf&amp;#34;&lt;/span>) `
+&lt;span style="color:#960050;background-color:#1e0010">–&lt;/span>name $AnalysisServiceDatabase `
+-server $AnalysisServiceServer `
+-Credential $cred
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get the code &lt;a href="https://github.com/cmendible/azure.powershell.samples/tree/main/Backup-AnalysisServices">here&lt;/a> or download the file from the &lt;a href="https://gallery.technet.microsoft.com/Azure-Analysis-Backup-a06df3ad">Technet Gallery&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Create a Service Principal and write required parameters to a .azureauth file</title><link>https://carlos.mendible.com/2017/08/02/create-service-principal-write-required-parameters-to-azureauth-file/</link><pubDate>Wed, 02 Aug 2017 16:57:08 +0000</pubDate><guid>https://carlos.mendible.com/2017/08/02/create-service-principal-write-required-parameters-to-azureauth-file/</guid><description>&lt;p>This week I had to repeat the process of creating a Service Principal in order to use the &lt;strong>Microsoft.Azure.Management.Fluent&lt;/strong> lib with &lt;strong>.NET Core&lt;/strong> so I decided it was time to script the process. With the following script you can &lt;strong>Create a Service Principal and write required parameters to a .azureauth file&lt;/strong>.&lt;/p>
+&lt;p>You&amp;rsquo;ll need the &lt;strong>AzureRM&lt;/strong> PowerShell module installed:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Install-Module AzureRM
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Here is the code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#75715e">&amp;lt;#
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.SYNOPSIS&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> New-ServicePrincipalAsReader is a PowerShell script to create a Read only Service Principal in Azure.
+&lt;/span>&lt;span style="color:#75715e"> The script will write a file ([subscriptionName].azureauth) with all the parameters needed to use the Microsoft.Azure.Management.Fluent lib.
+&lt;/span>&lt;span style="color:#75715e"> SECURITY: The file [subscriptionName].azureauth will contain the key for the Service Principal.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.DESCRIPTION&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> New-ServicePrincipalAsReader is a PowerShell script to create a Read only Service Principal in Azure.
+&lt;/span>&lt;span style="color:#75715e"> The script will write a file ([subscriptionName].azureauth) with all the parameters needed to use the Microsoft.Azure.Management.Fluent lib.
+&lt;/span>&lt;span style="color:#75715e"> SECURITY: The file [subscriptionName].azureauth will contain the key for the Service Principal.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> subscriptionName
+&lt;/span>&lt;span style="color:#75715e"> The name of the subscription to connect.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> servicePrincipalName
+&lt;/span>&lt;span style="color:#75715e"> The name of of the Service Principal. Default value is: logReader
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.NOTES&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> AUTHOR: Carlos Mendible
+&lt;/span>&lt;span style="color:#75715e"> LASTEDIT: August 02, 2017
+&lt;/span>&lt;span style="color:#75715e">#&amp;gt;&lt;/span>
+&lt;span style="color:#66d9ef">Param&lt;/span>(
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[string]&lt;/span>$subscriptionName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $false)]
+&lt;span style="color:#66d9ef">[string]&lt;/span>$servicePrincipalName = &lt;span style="color:#e6db74">&amp;#34;logReader&amp;#34;&lt;/span>
+)
+&lt;span style="color:#75715e"># Creates an AesKey.&lt;/span>
+&lt;span style="color:#66d9ef">function&lt;/span> Create-AesKey() {
+$aesManaged = New-Object &lt;span style="color:#e6db74">&amp;#34;System.Security.Cryptography.AesManaged&amp;#34;&lt;/span>
+$aesManaged.Mode = &lt;span style="color:#66d9ef">[System.Security.Cryptography.CipherMode]&lt;/span>::CBC
+$aesManaged.Padding = &lt;span style="color:#66d9ef">[System.Security.Cryptography.PaddingMode]&lt;/span>::Zeros
+$aesManaged.BlockSize = 128
+$aesManaged.KeySize = 256
+$aesManaged.GenerateKey()
+&lt;span style="color:#66d9ef">[System.Convert]&lt;/span>::ToBase64String($aesManaged.Key)
+}
+&lt;span style="color:#75715e"># Create a Service Principal as subscription Reader.&lt;/span>
+&lt;span style="color:#75715e"># Resulting file is compatible with the Microsoft.Azure.Management.Fluent lib.&lt;/span>
+&lt;span style="color:#75715e"># SECURITY ALERT: Be careful with the file and its contents &lt;/span>
+&lt;span style="color:#66d9ef">function&lt;/span> New-ServicePrincipalAsReader($subscriptionName, $applicationName) {
+&lt;span style="color:#75715e"># Login to Azure&lt;/span>
+Add-AzureRmAccount
+&lt;span style="color:#75715e"># Select the subscription&lt;/span>
+Write-Host &lt;span style="color:#e6db74">&amp;#34;Selecting subscription &amp;#39;$subscriptionName&amp;#39;&amp;#34;&lt;/span>;
+$subscriptionId = (Get-AzureRmSubscription -SubscriptionName $subscriptionName).Id
+Set-AzureRmContext -SubscriptionId $subscriptionId;
+&lt;span style="color:#75715e"># Get the Tenant Id&lt;/span>
+$tenantId = (Get-AzureRmContext).Tenant.Id
+&lt;span style="color:#75715e"># Create an AD Application&lt;/span>
+Write-Host &lt;span style="color:#e6db74">&amp;#34;Creating the AD Application&amp;#34;&lt;/span>
+$application = New-AzureRmADApplication `
+-DisplayName $applicationName `
+-HomePage &lt;span style="color:#e6db74">&amp;#34;http://$applicationName&amp;#34;&lt;/span> `
+-IdentifierUris &lt;span style="color:#e6db74">&amp;#34;http://$applicationName&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Create the Key need to authenticate with this Application&lt;/span>
+$keyValue = Create-AesKey
+$startDate = Get-Date
+$endDate = $startDate.AddYears(1)
+&lt;span style="color:#75715e"># Add a key to the Application&lt;/span>
+Write-Host &lt;span style="color:#e6db74">&amp;#34;Creating the AD Application Credential&amp;#34;&lt;/span>
+New-AzureRmADAppCredential `
+-ApplicationId $application.ApplicationId `
+-Password $keyValue `
+-StartDate $startDate `
+-EndDate $endDate
+&lt;span style="color:#75715e"># Create the service principal&lt;/span>
+Write-Host &lt;span style="color:#e6db74">&amp;#34;Creating the Service Principal&amp;#34;&lt;/span>
+$servicePrincipal = New-AzureRmADServicePrincipal -ApplicationId $application.ApplicationId
+Get-AzureRmADServicePrincipal -ObjectId $servicePrincipal.Id
+&lt;span style="color:#75715e"># Make the service principal Reader&lt;/span>
+Write-Host &lt;span style="color:#e6db74">&amp;#34;Set the Principal as Reader&amp;#34;&lt;/span>
+$ownerRole = $null
+$retries = 0;
+&lt;span style="color:#66d9ef">While&lt;/span> ($ownerRole &lt;span style="color:#f92672">-eq&lt;/span> $null &lt;span style="color:#f92672">-and&lt;/span> $retries &lt;span style="color:#f92672">-le&lt;/span> 6) {
+&lt;span style="color:#75715e"># Sleep here for a few seconds to allow the service principal application to become active &lt;/span>
+&lt;span style="color:#75715e"># (should only take a couple of seconds normally)&lt;/span>
+Start-Sleep 15
+New-AzureRmRoleAssignment `
+-RoleDefinitionName Reader `
+-ServicePrincipalName $application.ApplicationId `
+-ErrorAction SilentlyContinue
+$ownerRole = Get-AzureRMRoleAssignment `
+-ServicePrincipalName $application.ApplicationId `
+-ErrorAction SilentlyContinue
+$retries++;
+}
+&lt;span style="color:#75715e"># Write the Authentication data to a file. Please be careful with where you save this file!!!&lt;/span>
+$filePath = (Get-Location).Path + &lt;span style="color:#e6db74">&amp;#34;\$servicePrincipalName.azureauth&amp;#34;&lt;/span>
+Add-Content $filePath &lt;span style="color:#e6db74">&amp;#34;subscription=$subscriptionId&amp;#34;&lt;/span>
+Add-Content $filePath &lt;span style="color:#e6db74">&amp;#34;client=&lt;/span>$($application.ApplicationId)&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
+Add-Content $filePath &lt;span style="color:#e6db74">&amp;#34;tenant=$tenantId&amp;#34;&lt;/span>
+Add-Content $filePath &lt;span style="color:#e6db74">&amp;#34;key=$keyValue&amp;#34;&lt;/span>
+Add-Content $filePath &lt;span style="color:#e6db74">&amp;#34;managementURI=https\://management.core.windows.net/&amp;#34;&lt;/span>
+Add-Content $filePath &lt;span style="color:#e6db74">&amp;#34;baseURL=https\://management.azure.com/&amp;#34;&lt;/span>
+Add-Content $filePath &lt;span style="color:#e6db74">&amp;#34;authURL=https\://login.windows.net/&amp;#34;&lt;/span>
+Add-Content $filePath &lt;span style="color:#e6db74">&amp;#34;https\://graph.windows.net/&amp;#34;&lt;/span>
+}
+New-ServicePrincipalAsReader `
+-subscriptionName $subscriptionName `
+-applicationName $servicePrincipalName
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can download the script from the &lt;!-- raw HTML omitted -->Technet Script Gallery&lt;!-- raw HTML omitted --> or collaborate &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>HDInsight: Scale Horizontally</title><link>https://carlos.mendible.com/2017/07/13/hdinsight-scale-horizontally/</link><pubDate>Thu, 13 Jul 2017 11:07:13 +0000</pubDate><guid>https://carlos.mendible.com/2017/07/13/hdinsight-scale-horizontally/</guid><description>&lt;p>&lt;strong>HDInsight: Scale Horizontally&lt;/strong> with &lt;a href="https://gallery.technet.microsoft.com/Scale-your-HDInsight-f57bb4d8">Scale-HDInsightClusterNodes.ps1&lt;/a> a PowerShell workflow that will help you automate the process of scaling your cluster.&lt;/p>
+&lt;p>The script receives 4 parameters:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>ResourceGroupName&lt;/strong>: The name of the resource group where the cluster resides&lt;/li>
+&lt;li>&lt;strong>ClusterName&lt;/strong>: The name of your HDInsight cluster&lt;/li>
+&lt;li>&lt;strong>Nodes&lt;/strong>: The number of nodes you want for the cluster&lt;/li>
+&lt;li>&lt;strong>ConnectionName&lt;/strong>: The name of your automation connection account&lt;/li>
+&lt;/ul>
+&lt;p>and requires the following PowerShell modules: &lt;strong>AzureRM.Profile&lt;/strong>, &lt;strong>AzureRM.HDInsight&lt;/strong>&lt;/p>
+&lt;p>Here is the code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#75715e">&amp;lt;#
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.SYNOPSIS&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Scale-HDInsightClusterNodes is a simple PowerShell workflow runbook that will help you automate the process of scaling in or out your HDInsight clusters depending on your needs.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.DESCRIPTION&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Scale-HDInsightClusterNodes is a simple PowerShell workflow runbook that will help you automate the process of scaling in or out your HDInsight clusters depending on your needs.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> ResourceGroupName
+&lt;/span>&lt;span style="color:#75715e"> The name of the resource group where the cluster resides
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> ClusterName
+&lt;/span>&lt;span style="color:#75715e"> The name of your HDInsight cluster
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> Nodes
+&lt;/span>&lt;span style="color:#75715e"> The number of nodes you want for the cluster
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> ConnectionName
+&lt;/span>&lt;span style="color:#75715e"> The name of your automation connection account
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.NOTES&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> AUTHOR: Carlos Mendible
+&lt;/span>&lt;span style="color:#75715e"> LASTEDIT: June 13, 2017
+&lt;/span>&lt;span style="color:#75715e">#&amp;gt;&lt;/span>
+Workflow Scale-HDInsightClusterNodes {
+&lt;span style="color:#66d9ef">Param&lt;/span>
+(
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$ResourceGroupName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$ClusterName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[Int]&lt;/span>$Nodes,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $false)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$ConnectionName
+)
+&lt;span style="color:#75715e"># This Workflow requieres the following PowerShell modules: AzureRM.Profile, AzureRM.HDInsight&lt;/span>
+$automationConnectionName = $ConnectionName
+&lt;span style="color:#66d9ef">if&lt;/span> (!$ConnectionName) {
+$automationConnectionName = &lt;span style="color:#e6db74">&amp;#34;AzureRunAsConnection&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Get the connection by name (i.e. AzureRunAsConnection)&lt;/span>
+$servicePrincipalConnection = Get-AutomationConnection -Name $automationConnectionName
+Write-Output &lt;span style="color:#e6db74">&amp;#34;Logging in to Azure...&amp;#34;&lt;/span>
+Add-AzureRmAccount `
+-ServicePrincipal `
+-TenantId $servicePrincipalConnection.TenantId `
+-ApplicationId $servicePrincipalConnection.ApplicationId `
+-CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint
+Write-Output &lt;span style="color:#e6db74">&amp;#34;Scaling cluster $ClusterName to $Nodes nodes...&amp;#34;&lt;/span>
+Set-AzureRmHDInsightClusterSize `
+-ResourceGroupName $ResourceGroupName `
+-ClusterName $ClusterName `
+-TargetInstanceCount $Nodes
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can download the script from the &lt;!-- raw HTML omitted -->Technet Script Gallery&lt;!-- raw HTML omitted -->, import it as a runbook for your automation account in the Azure portal or simply copy the code from this post.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Stop or Start all WebApps in your Azure subscription</title><link>https://carlos.mendible.com/2016/06/05/stop-start-webapps-azure-subscription/</link><pubDate>Sun, 05 Jun 2016 19:08:30 +0000</pubDate><guid>https://carlos.mendible.com/2016/06/05/stop-start-webapps-azure-subscription/</guid><description>&lt;p>&lt;strong>Stop or Start all WebApps in your Azure subscription&lt;/strong> with &lt;a href="https://gallery.technet.microsoft.com/scriptcenter/Stop-or-Start-all-WebApps-9533dda6/file/153545/1/Stop-Start-All-WebApps.ps1">Stop-Start-All-WebApps.ps1&lt;/a> a simple PowerShell workflow runbook that will help you automate the process of stopping or starting every single WebApp (Website) you&amp;rsquo;ve deployed.&lt;/p>
+&lt;p>The script receives two required parameters:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Stop&lt;/strong>: If set to true stop the WebApps (Websites) otherwise start the WebApps (Websites)&lt;/li>
+&lt;li>&lt;strong>CredentialAssetName&lt;/strong>: The name of a valid Credential Asset (AutomationPSCredential) you must have previously configured.&lt;/li>
+&lt;/ul>
+&lt;p>As you can see below, the script is quite simple and uses the following PowerShell Activities and Cmdlets:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>Here is the script:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#75715e">&amp;lt;#
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.SYNOPSIS&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Start or Stop all WebApps (Websites) in your subscription.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.DESCRIPTION&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Runbook which allows you to start/stop all WebApps (Websites) in your subscription.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> Stop
+&lt;/span>&lt;span style="color:#75715e"> If set to true: stop the WebApps (Websites). Otherwise start the WebApps (Websites)
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> CredentialAssetName
+&lt;/span>&lt;span style="color:#75715e"> The name of a working AutomationPSCredential
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.NOTES&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> AUTHOR: Carlos Mendible
+&lt;/span>&lt;span style="color:#75715e"> LASTEDIT: June 2, 2016
+&lt;/span>&lt;span style="color:#75715e">#&amp;gt;&lt;/span>
+Workflow Stop-Start-All-WebApps
+{
+&lt;span style="color:#75715e"># Parameters &lt;/span>
+&lt;span style="color:#66d9ef">Param&lt;/span>(
+[&lt;span style="color:#66d9ef">Parameter&lt;/span> (&lt;span style="color:#66d9ef">Mandatory&lt;/span>= $true)]
+&lt;span style="color:#66d9ef">[bool]&lt;/span>$Stop,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span> (&lt;span style="color:#66d9ef">Mandatory&lt;/span>= $true)]
+&lt;span style="color:#66d9ef">[string]&lt;/span>$CredentialAssetName
+)
+&lt;span style="color:#75715e">#The name of the Automation Credential Asset this runbook will use to authenticate to Azure. &lt;/span>
+$CredentialAssetName = $CredentialAssetName;
+&lt;span style="color:#75715e">#Get the credential with the above name from the Automation Asset store &lt;/span>
+$Cred = Get-AutomationPSCredential -Name $CredentialAssetName
+&lt;span style="color:#66d9ef">if&lt;/span>(!$Cred) {
+&lt;span style="color:#66d9ef">Throw&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Could not find an Automation Credential Asset named &amp;#39;${CredentialAssetName}&amp;#39;. Make sure you have created one in this Automation Account.&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e">#Connect to your Azure Account &lt;/span>
+Add-AzureRmAccount -Credential $Cred
+Add-AzureAccount -Credential $Cred
+$status = &lt;span style="color:#e6db74">&amp;#39;Stopped&amp;#39;&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> ($Stop)
+{
+$status = &lt;span style="color:#e6db74">&amp;#39;Running&amp;#39;&lt;/span>
+}
+&lt;span style="color:#75715e"># Get Running WebApps (Websites) &lt;/span>
+$websites = Get-AzureWebsite | where-object -FilterScript{$_.state &lt;span style="color:#f92672">-eq&lt;/span> $status }
+&lt;span style="color:#66d9ef">foreach&lt;/span> -parallel ($website &lt;span style="color:#66d9ef">In&lt;/span> $websites)
+{
+&lt;span style="color:#66d9ef">if&lt;/span> ($Stop)
+{
+$result = Stop-AzureWebsite $website.Name
+&lt;span style="color:#66d9ef">if&lt;/span>($result)
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;- &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> did not shutdown successfully&amp;#34;&lt;/span>
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;+ &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> shutdown successfully&amp;#34;&lt;/span>
+}
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+$result = Start-AzureWebsite $website.Name
+&lt;span style="color:#66d9ef">if&lt;/span>($result)
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;- &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> did not start successfully&amp;#34;&lt;/span>
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;+ &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> started successfully&amp;#34;&lt;/span>
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can download the script from the &lt;!-- raw HTML omitted -->Technet Script Gallery&lt;!-- raw HTML omitted -->, import it as a runbook for your automation account in the Azure portal or simply copy the code from this post.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

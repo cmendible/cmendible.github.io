@@ -1,0 +1,195 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ImageProcessorCoreProjectOxford on Code it Yourself...</title><link>https://carlos.mendible.com/tags/imageprocessorcoreprojectoxford/</link><description>Recent content in ImageProcessorCoreProjectOxford on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 30 Jul 2016 16:07:18 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/imageprocessorcoreprojectoxford/feed.xml" rel="self" type="application/rss+xml"/><item><title>Detect and Blur Faces with .NET Core and Face API</title><link>https://carlos.mendible.com/2016/07/30/detect-and-blur-faces-with-dotnetcore-and-face-api/</link><pubDate>Sat, 30 Jul 2016 16:07:18 +0000</pubDate><guid>https://carlos.mendible.com/2016/07/30/detect-and-blur-faces-with-dotnetcore-and-face-api/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to create a small console application that will &lt;strong>Detect and Blur Faces with .NET Core and Face API&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>You will also need an Azure Cognitive Services Face API account and the correct set of access keys. (Start here: &lt;!-- raw HTML omitted -->Subscribe in seconds&lt;!-- raw HTML omitted --> if you need a Cognitive Service Account and here for the &lt;!-- raw HTML omitted -->Documentation&lt;!-- raw HTML omitted -->)&lt;/p>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir projectoxford
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd projectoxford
+dotnet new
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-a-settings-file">3. Create a settings file&lt;/h2>
+&lt;hr>
+&lt;p>Create an &lt;strong>appsettings.json&lt;/strong> file to hold your Face API Key (remember to replace the values with those from your Cognitive Service account):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;FaceAPIKey&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Your key here]&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-modify-the-project-file">4. Modify the project file&lt;/h2>
+&lt;hr>
+&lt;p>Modify the &lt;strong>project.json&lt;/strong> to add the &lt;strong>Microsoft.ProjectOxford.Face&lt;/strong> dependency and also specify that the &lt;strong>appsettings.json&lt;/strong> file must be copied to the output (&lt;strong>buildOptions&lt;/strong> section) so it becomes available to the application once you build it.&lt;/p>
+&lt;p>We&amp;rsquo;ll be needing &lt;!-- raw HTML omitted -->ImageProcessorCore &lt;!-- raw HTML omitted --> to process the image (System.Drawing is not available in .NET Core) and also the extensions and tools to work with configuration files and user secrets.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;userSecretsId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;cmendible3-dotnetcore.samples-projectOxford&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0-*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;buildOptions&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;debugType&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;portable&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;emitEntryPoint&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;copyToOutput&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;include&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Extensions.Configuration&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Extensions.Configuration.Json&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Extensions.Configuration.UserSecrets&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.ProjectOxford.Face&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.1.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;System.Runtime.Serialization.Primitives&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;4.1.1&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;ImageProcessorCore&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0-alpha-966&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;tools&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Extensions.SecretManager.Tools&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0-*&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;frameworks&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;netcoreapp1.0&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.NETCore.App&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;platform&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;imports&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dnxcore50&amp;#34;&lt;/span>
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-add-imageprocessorcore-package-source">6. Add ImageProcessorCore package source&lt;/h2>
+&lt;hr>
+&lt;p>ImageProcessorCore is in alpha stage and packages are available via MyGet so add &lt;strong>NuGet.config&lt;/strong> file with the following content:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#75715e">&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;utf-8&amp;#34;?&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;configuration&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;packageSources&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;add&lt;/span> &lt;span style="color:#a6e22e">key=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;imageprocessor&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">value=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;https://www.myget.org/F/imageprocessor/api/v3/index.json&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">protocolVersion=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;3&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/packageSources&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/configuration&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-restore-packages">7. Restore packages&lt;/h2>
+&lt;hr>
+&lt;p>You just modified the &lt;strong>project.json&lt;/strong> file with new dependencies and added the NuGet.config file so please restore the packages with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-modify-programcs">8. Modify Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> ConsoleApplication
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> ImageProcessorCore;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.ProjectOxford.Face;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.ProjectOxford.Face.Contract;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Let&amp;#39;s detect and blur some faces!
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// The name of the source image.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> sourceImage = &lt;span style="color:#e6db74">&amp;#34;faces.jpg&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// The name of the destination image
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> destinationImage = &lt;span style="color:#e6db74">&amp;#34;detectedfaces.jpg&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Get the configuration
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> configuration = BuildConfiguration();
+&lt;span style="color:#75715e">// Detect the faces in the source file
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> DetectFaces(sourceImage, configuration[&lt;span style="color:#e6db74">&amp;#34;FaceAPIKey&amp;#34;&lt;/span>])
+.ContinueWith((task) =&amp;gt;
+{
+&lt;span style="color:#75715e">// Save the result of the detection
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> faceRects = task.Result;
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Detected {faceRects.Length} faces&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Blur the detected faces and save in another file
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> BlurFaces(faceRects, sourceImage, destinationImage);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Done!!!&amp;#34;&lt;/span>);
+});
+Console.ReadLine();
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Build the confguration
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;Returns the configuration&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> IConfigurationRoot BuildConfiguration()
+{
+&lt;span style="color:#75715e">// Enable to app to read json setting files
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> builder = &lt;span style="color:#66d9ef">new&lt;/span> ConfigurationBuilder()
+.AddJsonFile(&lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">false&lt;/span>, reloadOnChange: &lt;span style="color:#66d9ef">true&lt;/span>);
+&lt;span style="color:#75715e">#if DEBUG
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// We use user secrets in Debug mode so API keys are not uploaded to source control
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> builder.AddUserSecrets(&lt;span style="color:#e6db74">&amp;#34;cmendible3-dotnetcore.samples-projectOxford&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">#endif
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#66d9ef">return&lt;/span> builder.Build();
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Blur the detected faces from de source image.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> BlurFaces(FaceRectangle[] faceRects, &lt;span style="color:#66d9ef">string&lt;/span> sourceImage, &lt;span style="color:#66d9ef">string&lt;/span> destinationImage)
+{
+&lt;span style="color:#66d9ef">if&lt;/span> (File.Exists(destinationImage))
+{
+File.Delete(destinationImage);
+}
+&lt;span style="color:#66d9ef">if&lt;/span> (faceRects.Length &amp;gt; &lt;span style="color:#ae81ff">0&lt;/span>)
+{
+&lt;span style="color:#66d9ef">using&lt;/span> (FileStream stream = File.OpenRead(&lt;span style="color:#e6db74">&amp;#34;faces.jpg&amp;#34;&lt;/span>))
+&lt;span style="color:#66d9ef">using&lt;/span> (FileStream output = File.OpenWrite(destinationImage))
+{
+&lt;span style="color:#66d9ef">var&lt;/span> image = &lt;span style="color:#66d9ef">new&lt;/span> Image&amp;lt;Color, &lt;span style="color:#66d9ef">uint&lt;/span>&amp;gt;(stream);
+&lt;span style="color:#75715e">// Blur every detected face
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> faceRect &lt;span style="color:#66d9ef">in&lt;/span> faceRects)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> rectangle = &lt;span style="color:#66d9ef">new&lt;/span> Rectangle(
+faceRect.Left,
+faceRect.Top,
+faceRect.Width,
+faceRect.Height);
+image = image.BoxBlur(&lt;span style="color:#ae81ff">20&lt;/span>, rectangle);
+}
+image.SaveAsJpeg(output);
+}
+}
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Detect faces calling the Face API
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;Detected faces rectangles&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;FaceRectangle[]&amp;gt; DetectFaces(&lt;span style="color:#66d9ef">string&lt;/span> imageFilePath, &lt;span style="color:#66d9ef">string&lt;/span> apiKey)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> faceServiceClient = &lt;span style="color:#66d9ef">new&lt;/span> FaceServiceClient(apiKey);
+&lt;span style="color:#66d9ef">try&lt;/span>
+{
+&lt;span style="color:#66d9ef">using&lt;/span> (Stream imageFileStream = File.OpenRead(imageFilePath))
+{
+&lt;span style="color:#66d9ef">var&lt;/span> faces = &lt;span style="color:#66d9ef">await&lt;/span> faceServiceClient.DetectAsync(imageFileStream);
+&lt;span style="color:#66d9ef">var&lt;/span> faceRects = faces.Select(face =&amp;gt; face.FaceRectangle);
+&lt;span style="color:#66d9ef">return&lt;/span> faceRects.ToArray();
+}
+}
+&lt;span style="color:#66d9ef">catch&lt;/span> (Exception)
+{
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> FaceRectangle[&lt;span style="color:#ae81ff">0&lt;/span>];
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="9-build">9. Build&lt;/h2>
+&lt;hr>
+&lt;p>Build and run the application with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="10-expected-results">10. Expected results&lt;/h2>
+&lt;hr>
+&lt;p>Command line should read&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Detected 26 faces
+Done!!!
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The new &lt;strong>detectedfaces.jpg&lt;/strong> file should look like this:&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>You can get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/projectoxford">https://github.com/cmendible/dotnetcore.samples/tree/main/projectoxford&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

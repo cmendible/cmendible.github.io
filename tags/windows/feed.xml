@@ -1,0 +1,66 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Windows on Code it Yourself...</title><link>https://carlos.mendible.com/tags/windows/</link><description>Recent content in Windows on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Mon, 18 Oct 2010 10:21:03 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/windows/feed.xml" rel="self" type="application/rss+xml"/><item><title>Prepare your App for Windows Azure! Create a custom Configuration Manager!</title><link>https://carlos.mendible.com/2010/10/18/prepare-your-app-for-windows-azure-create-a-custom-configuration-manager/</link><pubDate>Mon, 18 Oct 2010 10:21:03 +0000</pubDate><guid>https://carlos.mendible.com/2010/10/18/prepare-your-app-for-windows-azure-create-a-custom-configuration-manager/</guid><description>&lt;p>When you deploy an application to Windowes Azure, your application configuration cannot be changed cause it becomes part of the distributed package.&lt;/p>
+&lt;p>So what can you do if you want to set some dynamic settings (i.e Connection String settings)?&lt;/p>
+&lt;p>First of all you must use the &lt;strong>ServiceDefinition.csdef&lt;/strong> file and add the dynamic settings there.&lt;/p>
+&lt;p>Next tell your app to read the connection string from that file instead of the config file. To accomplish that task create the following classes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> Azure.Configuration
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ConfigurationManager&lt;/span>
+{
+&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> Settings _settings = &lt;span style="color:#66d9ef">new&lt;/span> Settings();
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> Settings Settings
+{
+&lt;span style="color:#66d9ef">get&lt;/span>
+{
+&lt;span style="color:#66d9ef">return&lt;/span> _settings;
+}
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> ConnectionStrings ConnectionStrings
+{
+&lt;span style="color:#66d9ef">get&lt;/span>
+{
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ConnectionStrings();
+}
+}
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Settings&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> &lt;span style="color:#66d9ef">this&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span> key]
+{
+&lt;span style="color:#66d9ef">get&lt;/span>
+{
+&lt;span style="color:#66d9ef">if&lt;/span> (RoleEnvironment.IsAvailable)
+{
+&lt;span style="color:#66d9ef">return&lt;/span> RoleEnvironment.GetConfigurationSettingValue(key);
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+&lt;span style="color:#66d9ef">if&lt;/span> (cfg.ConfigurationManager.AppSettings.AllKeys.Contains(key))
+&lt;span style="color:#66d9ef">return&lt;/span> cfg.ConfigurationManager.AppSettings[key];
+}
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>.Empty;
+}
+}
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ConnectionStrings&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> &lt;span style="color:#66d9ef">this&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span> key]
+{
+&lt;span style="color:#66d9ef">get&lt;/span>
+{
+&lt;span style="color:#66d9ef">if&lt;/span> (RoleEnvironment.IsAvailable)
+{
+&lt;span style="color:#66d9ef">return&lt;/span> RoleEnvironment.GetConfigurationSettingValue(key);
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+&lt;span style="color:#66d9ef">if&lt;/span> (cfg.ConfigurationManager.ConnectionStrings[key] != &lt;span style="color:#66d9ef">null&lt;/span>)
+&lt;span style="color:#66d9ef">return&lt;/span> cfg.ConfigurationManager.ConnectionStrings[key].ConnectionString;
+}
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>.Empty;
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then you can just call &lt;strong>ConfigurationManager.Settings[&lt;em>{key}&lt;/em>]&lt;/strong> to get the vaue for a given key or &lt;strong>ConfigurationManager.ConnectionStrings[&lt;em>{connection string name}&lt;/em>]&lt;/strong> to get a connection string.&lt;/p>
+&lt;p>You&amp;rsquo;ll need to add a reference to &lt;strong>Microsoft.WindowsAzure.ServiceRuntime&lt;/strong> which is included in the &lt;a href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=2274a0a8-5d37-4eac-b50a-e197dc340f6f&amp;amp;displaylang=en">Windows Azure Tools for Microsoft Visual Studio&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

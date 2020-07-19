@@ -1,0 +1,188 @@
+<!doctype html><html lang=en-us><head><title>Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2016/09/11/dotnetcore-and-microsoft-bot-framework/><link rel=canonical href=https://carlos.mendible.com/2016/09/11/dotnetcore-and-microsoft-bot-framework/ itemprop=url><meta name=url content="https://carlos.mendible.com/2016/09/11/dotnetcore-and-microsoft-bot-framework/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content=".NET Core and Microsoft Bot Framework,dotnet"><meta name=news_keywords content="dotnet"><meta property="article:tag" content="aspNetCore, BotFramewok, REST"><meta property="og:title" content=".NET Core and Microsoft Bot Framework"><meta property="og:description" content=".NET Core and Microsoft Bot Framework"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2016/09/11/dotnetcore-and-microsoft-bot-framework/"><meta property="og:image" content="https://carlos.mendible.com/wp-content/uploads/2016/09/bot-framework-default-8.png"><meta property="article:published_time" content="2016-09-11T09:15:32+00:00"><meta property="article:modified_time" content="2016-09-11T09:15:32+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/wp-content/uploads/2016/09/bot-framework-default-8.png"><meta name=twitter:title content=".NET Core and Microsoft Bot Framework"><meta name=twitter:description content=".NET Core and Microsoft Bot Framework"><meta name=generator content="Hugo 0.74.2"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>.NET Core and Microsoft Bot Framework</h1><aside><ul><li><time class=post-date datetime=2016-09-11T09:15:32Z>Sep 11, 2016</time></li><li>Categories:
+<em><a href=https://carlos.mendible.com/categories/dotnet>dotnet</a></em></li><li><em><a href=https://carlos.mendible.com/tags/aspnetcore>#aspNetCore</a>
+,
+<a href=https://carlos.mendible.com/tags/botframewok>#BotFramewok</a>
+,
+<a href=https://carlos.mendible.com/tags/rest>#REST</a></em></li><li>4 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2016/09/11/dotnetcore-and-microsoft-bot-framework/ title=".NET Core and Microsoft Bot Framework"><img src=https://carlos.mendible.com/wp-content/uploads/2016/09/bot-framework-default-8.png></a></div><p>Today I&rsquo;ll show you how to create a simple Skype bot that will reply with the same text message you send to it.</p><p>You&rsquo;ll be using <strong>.Net Core and Microsoft Bot Framework</strong>. As you already know not every library has been ported to .Net Core so you&rsquo;ll have to use the <strong>Microsoft Bot Connector API – v3.0</strong> to bring the bot to life.</p><p>Let me show you what it takes to create a simple bot:</p><h2 id=1-register-the-bot>1. Register the bot</h2><hr><p>Head to the Register bot page and fill the required fields.</p><p>For the messaging endpoint use something like: <strong>https://{url of your bot}/api/messages</strong></p><p>Also get your Microsoft App ID and password from the Microsoft Application registration portal, and save them cause you&rsquo;ll need them to fill the BotCredentials in our sample.</p><h2 id=2-create-a-new-net-core-web-the-project>2. Create a new .NET Core Web the project</h2><hr><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>md bot
+cd bot
+dotnet new -t web
+</code></pre></div><h2 id=3-add-the-following-dependencies-to-your-projectjson-file>3. Add the following dependencies to your project.json file</h2><hr><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>    <span style=color:#e6db74>&#34;Microsoft.AspNet.WebApi.Client&#34;</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#e6db74>&#34;5.2.3&#34;</span><span style=color:#960050;background-color:#1e0010>,</span>
+    <span style=color:#e6db74>&#34;System.Runtime.Serialization.Xml&#34;</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#e6db74>&#34;4.1.1&#34;</span><span style=color:#960050;background-color:#1e0010>,</span>
+    <span style=color:#e6db74>&#34;Microsoft.Extensions.Caching.Memory&#34;</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#e6db74>&#34;1.0.0&#34;</span><span style=color:#960050;background-color:#1e0010>,</span>
+    <span style=color:#e6db74>&#34;Microsoft.Extensions.Options.ConfigurationExtensions&#34;</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#e6db74>&#34;1.0.0&#34;</span><span style=color:#960050;background-color:#1e0010>,</span>
+    <span style=color:#e6db74>&#34;Microsoft.Extensions.DependencyInjection&#34;</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#e6db74>&#34;1.0.0&#34;</span><span style=color:#960050;background-color:#1e0010>,</span>
+    <span style=color:#e6db74>&#34;Microsoft.Extensions.DependencyInjection.Abstractions&#34;</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#e6db74>&#34;1.0.0&#34;</span>
+</code></pre></div><p>And restore the packages</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>dotnet restore
+</code></pre></div><h2 id=4-add-the-following-section-to-your-appsettingsjson-file>4. Add the following section to your appsettings.json file</h2><hr><p>Replace the values with those of your registered bot.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#e6db74>&#34;BotCredentials&#34;</span><span style=color:#960050;background-color:#1e0010>:</span> {
+    <span style=color:#f92672>&#34;ClientId&#34;</span>: <span style=color:#e6db74>&#34;{Replace with your ClientId}&#34;</span>,
+    <span style=color:#f92672>&#34;ClientSecret&#34;</span>: <span style=color:#e6db74>&#34;{Replace with your ClientSecret}&#34;</span>
+  }
+</code></pre></div><h2 id=5-replace-the-configureservices-in-you-startup-class>5. Replace the ConfigureServices in you Startup class</h2><p>You&rsquo;ll be using options to inject configurations (BotCredentials) to the controller and in Memory Cache to save tokens to avoid authenticating the bot on every call.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp>    <span style=color:#75715e>// This method gets called by the runtime. Use this method to add services to the container.
+</span><span style=color:#75715e></span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> ConfigureServices(IServiceCollection services)
+    {
+        <span style=color:#75715e>// Adding options so we can inject configurations.
+</span><span style=color:#75715e></span>        services.AddOptions();
+
+        <span style=color:#75715e>// Register the bot credentials section
+</span><span style=color:#75715e></span>        services.Configure&lt;BotCredentials&gt;(Configuration.GetSection(<span style=color:#e6db74>&#34;BotCredentials&#34;</span>));
+
+        <span style=color:#75715e>// we&#39;ll be catching tokens, so enable MemoryCache.
+</span><span style=color:#75715e></span>        services.AddMemoryCache();
+
+        services.AddMvc();
+     }
+</code></pre></div><h2 id=6-create-a-botcredentials-class>6. Create a BotCredentials class</h2><p>This class will hold the bot credentials</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>namespace</span> WebApplication
+{
+    <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// Bot Credentials
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>BotCredentials</span>
+    {
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// CLientId
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>string</span> ClientId { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// ClientSecret
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>string</span> ClientSecret { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+    }
+}
+</code></pre></div><h2 id=7-create-tokenresponse-class>7. Create TokenResponse class</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>namespace</span> WebApplication
+{
+    <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// Token Response
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>TokenResponse</span>
+    {
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// Property to hold the token
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>string</span> access_token { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+    }
+}
+</code></pre></div><h2 id=8-create-a-messagescontroller-class>8. Create a MessagesController class</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>namespace</span> WebApplication.Controllers
+{
+    <span style=color:#66d9ef>using</span> System;
+    <span style=color:#66d9ef>using</span> System.Collections.Generic;
+    <span style=color:#66d9ef>using</span> System.Dynamic;
+    <span style=color:#66d9ef>using</span> System.Net.Http;
+    <span style=color:#66d9ef>using</span> System.Net.Http.Headers;
+    <span style=color:#66d9ef>using</span> System.Threading.Tasks;
+    <span style=color:#66d9ef>using</span> Microsoft.AspNetCore.Mvc;
+    <span style=color:#66d9ef>using</span> Microsoft.Extensions.Caching.Memory;
+    <span style=color:#66d9ef>using</span> Microsoft.Extensions.Options;
+
+    <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// This controller will receive the skype messages and handle them to the EchoBot service. 
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span><span style=color:#a6e22e>    [Route(&#34;api/[controller]</span><span style=color:#e6db74>&#34;)]
+</span><span style=color:#e6db74></span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>MessagesController</span> : Controller
+    {
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// memoryCache
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        IMemoryCache memoryCache;
+
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// Bot Credentials
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        BotCredentials botCredentials;
+
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// Constructor
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// 
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// 
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>public</span> MessagesController(IMemoryCache memoryCache, IOptions&lt;BotCredentials&gt; botCredentials)
+        {
+            <span style=color:#66d9ef>this</span>.memoryCache = memoryCache;
+            <span style=color:#66d9ef>this</span>.botCredentials = botCredentials.Value;
+        }
+
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// This method will be called every time the bot receives an activity. This is the messaging endpoint
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// 
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;returns&gt;201 Created&lt;/returns&gt;
+</span><span style=color:#75715e></span><span style=color:#a6e22e>        [HttpPost]</span>
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>virtual</span> <span style=color:#66d9ef>async</span> Task&lt;IActionResult&gt; Post([FromBody] <span style=color:#66d9ef>dynamic</span> activity)
+        {
+            <span style=color:#75715e>// Get the conversation id so the bot answers.
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>var</span> conversationId = activity.<span style=color:#66d9ef>from</span>.id.ToString();
+
+            <span style=color:#75715e>// Get a valid token 
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>string</span> token = <span style=color:#66d9ef>await</span> <span style=color:#66d9ef>this</span>.GetBotApiToken();
+
+            <span style=color:#75715e>// send the message back
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>using</span> (<span style=color:#66d9ef>var</span> client = <span style=color:#66d9ef>new</span> HttpClient())
+            {
+                <span style=color:#75715e>// I&#39;m using dynamic here to make the code simpler
+</span><span style=color:#75715e></span>                <span style=color:#66d9ef>dynamic</span> message = <span style=color:#66d9ef>new</span> ExpandoObject();
+                message.type = <span style=color:#e6db74>&#34;message/text&#34;</span>;
+                message.text = activity.text;
+
+                <span style=color:#75715e>// Set the toekn in the authorization header.
+</span><span style=color:#75715e></span>                client.DefaultRequestHeaders.Authorization = <span style=color:#66d9ef>new</span> AuthenticationHeaderValue(<span style=color:#e6db74>&#34;Bearer&#34;</span>, token);
+
+                <span style=color:#75715e>// Post the message
+</span><span style=color:#75715e></span>                <span style=color:#66d9ef>await</span> client.PostAsJsonAsync&lt;ExpandoObject&gt;(
+                    <span style=color:#e6db74>$&#34;https://api.skype.net/v3/conversations/{conversationId}/activities&#34;</span>,
+                    message <span style=color:#66d9ef>as</span> ExpandoObject);
+            }
+
+            <span style=color:#66d9ef>return</span> Created(Url.Content(<span style=color:#e6db74>&#34;~/&#34;</span>), <span style=color:#66d9ef>string</span>.Empty);
+        }
+
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// Gets and caches a valid token so the bot can send messages.
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;returns&gt;The token&lt;/returns&gt;
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>async</span> Task&lt;<span style=color:#66d9ef>string</span>&gt; GetBotApiToken()
+        {
+            <span style=color:#75715e>// Check to see if we already have a valid token
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>string</span> token = memoryCache.Get(<span style=color:#e6db74>&#34;token&#34;</span>)?.ToString();
+            <span style=color:#66d9ef>if</span> (<span style=color:#66d9ef>string</span>.IsNullOrEmpty(token))
+            {
+                <span style=color:#75715e>// we need to get a token.
+</span><span style=color:#75715e></span>                <span style=color:#66d9ef>using</span> (<span style=color:#66d9ef>var</span> client = <span style=color:#66d9ef>new</span> HttpClient())
+                {
+                    <span style=color:#75715e>// Create the encoded content needed to get a token
+</span><span style=color:#75715e></span>                    <span style=color:#66d9ef>var</span> parameters = <span style=color:#66d9ef>new</span> Dictionary&lt;<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>string</span>&gt;
+                    {
+                        {<span style=color:#e6db74>&#34;client_id&#34;</span>, <span style=color:#66d9ef>this</span>.botCredentials.ClientId },
+                        {<span style=color:#e6db74>&#34;client_secret&#34;</span>, <span style=color:#66d9ef>this</span>.botCredentials.ClientSecret },
+                        {<span style=color:#e6db74>&#34;scope&#34;</span>, <span style=color:#e6db74>&#34;https://graph.microsoft.com/.default&#34;</span> },
+                        {<span style=color:#e6db74>&#34;grant_type&#34;</span>, <span style=color:#e6db74>&#34;client_credentials&#34;</span> }
+                    };
+                    <span style=color:#66d9ef>var</span> content = <span style=color:#66d9ef>new</span> FormUrlEncodedContent(parameters);
+
+                    <span style=color:#75715e>// Post
+</span><span style=color:#75715e></span>                    <span style=color:#66d9ef>var</span> response = <span style=color:#66d9ef>await</span> client.PostAsync(<span style=color:#e6db74>&#34;https://login.microsoftonline.com/common/oauth2/v2.0/token&#34;</span>, content);
+
+                    <span style=color:#75715e>// Get the token response
+</span><span style=color:#75715e></span>                    <span style=color:#66d9ef>var</span> tokenResponse = <span style=color:#66d9ef>await</span> response.Content.ReadAsAsync&lt;TokenResponse&gt;();
+
+                    token = tokenResponse.access_token;
+
+                    <span style=color:#75715e>// Cache the token for 15 minutes.
+</span><span style=color:#75715e></span>                    memoryCache.Set(
+                        <span style=color:#e6db74>&#34;token&#34;</span>,
+                        token,
+                        <span style=color:#66d9ef>new</span> DateTimeOffset(DateTime.Now.AddMinutes(<span style=color:#ae81ff>15</span>)));
+                }
+            }
+
+            <span style=color:#66d9ef>return</span> token;
+        }
+    }
+}
+</code></pre></div><h2 id=9-deploy-your-bot-and-add-it-to-your-skype>9. Deploy your bot and add it to your skype</h2><hr><ol><li>Deploy your bot (I deployed it to an Azure Web App)</li><li>Head to the <strong>My Bots</strong> section of the Microsoft Bot Framework page and add the bot to your skype contacts.</li></ol><h2 id=10-talk-to-your-bot>10. Talk to your bot</h2><hr><p>No you can talk to your bot!</p><p></p><p>You can get the code here: <a href=https://github.com/cmendible/dotnetcore.samples/tree/main/echobot>https://github.com/cmendible/dotnetcore.samples/tree/main/echobot</a></p><p>Hope it helps!</p></article><section class=post-nav><ul><li><a href=https://carlos.mendible.com/2016/08/28/create-vcard-qr-codes-using-azure-functions/><i class="fa fa-chevron-circle-left"></i>Create vCard QR Codes using Azure Functions</a></li><li><a href=https://carlos.mendible.com/2016/09/19/step-step-serilog-asp-net-core/>Step by step: Serilog with ASP.NET Core <i class="fa fa-chevron-circle-right"></i></a></li></ul></section><section class=comments-block><button id=show-comments style=display:none><i class="fa fa-comments"></i></button></section><section id=disqus_thread></section><script>(function(){if(window.location.hostname=="localhost")
+return;var disqus_loaded=false;var disqus_shortname='codeityourself';var disqus_button=document.getElementById("show-comments");var disqus_title='.NET Core and Microsoft Bot Framework'
+var disqus_autoload=true;disqus_button.style.display="";if(disqus_autoload){disqus();}else{disqus_button.addEventListener("click",disqus,false);}
+function disqus(){if(!disqus_loaded){disqus_loaded=true;var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="//"+disqus_shortname+".disqus.com/embed.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e);document.getElementById("show-comments").style.display="none";}}
+var hash=window.location.hash.substr(1);if(hash.length>8){if(hash.substring(0,8)=="comment-"){disqus();}}
+if(/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)){disqus();}})();</script></main><footer><h6>Copyright © 2020 - Carlos Mendible |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://carlos.mendible.com/feed.xml>Subscribe</a></h6></footer></div><script src=https://carlos.mendible.com/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-11243417-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

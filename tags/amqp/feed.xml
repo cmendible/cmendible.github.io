@@ -1,0 +1,176 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AMQP on Code it Yourself...</title><link>https://carlos.mendible.com/tags/amqp/</link><description>Recent content in AMQP on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 17 Jul 2016 15:21:03 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/amqp/feed.xml" rel="self" type="application/rss+xml"/><item><title>Step by step: .NET Core, Azure Service Bus and AMQP</title><link>https://carlos.mendible.com/2016/07/17/step-by-step-net-core-azure-service-bus-and-amqp/</link><pubDate>Sun, 17 Jul 2016 15:21:03 +0000</pubDate><guid>https://carlos.mendible.com/2016/07/17/step-by-step-net-core-azure-service-bus-and-amqp/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to create a small console application with a &lt;strong>Step by step: .NET Core, Azure Service Bus and AMQP&lt;/strong> example.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>You will also need an Azure Service Bus namespace, topic and subscription with the correct set of credentials. (Start here: &lt;!-- raw HTML omitted -->How to use Service Bus topics and subscriptions&lt;!-- raw HTML omitted --> if you don&amp;rsquo;t know how to configure the Service Bus)&lt;/p>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir azureservicebus.amqp.console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd azureservicebus.amqp.console
+dotnet new
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-a-settings-file">3. Create a settings file&lt;/h2>
+&lt;hr>
+&lt;p>Create an &lt;strong>appsettings.json&lt;/strong> file to hold your service bus connection information (remember to replace the values with those from your Service Bus configuration):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;ServiceBus&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;NamespaceUrl&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[The namespace url (i.e. codeityourself.servicebus.windows.net)]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;PolicyName&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[The policy name]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Key&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[The SAS key]&amp;#34;&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-modify-the-project-file">4. Modify the project file&lt;/h2>
+&lt;hr>
+&lt;p>Modify the &lt;strong>project.json&lt;/strong> to add the &lt;strong>AMQPNetLite&lt;/strong> dependencies and also specify that the &lt;strong>appsettings.json&lt;/strong> file must be copied to the output (&lt;strong>buildOptions&lt;/strong> section) so it becomes available to the application once you build it.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0-*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;buildOptions&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;debugType&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;portable&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;emitEntryPoint&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;copyToOutput&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;include&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Extensions.Configuration&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Extensions.Configuration.Json&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;AMQPNetLite&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.2.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;System.Net.Http&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;4.1.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;System.Xml.XmlDocument&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;4.0.1&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;System.Runtime.Serialization.Xml&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;4.1.1&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;frameworks&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;netcoreapp1.0&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.NETCore.App&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;platform&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;imports&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dnxcore50&amp;#34;&lt;/span>
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-restore-packages">5. Restore packages&lt;/h2>
+&lt;hr>
+&lt;p>You just modified the &lt;strong>project.json&lt;/strong> file with new dependencies so please restore the packages with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-modify-programcs">6. Modify Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> ConsoleApplication
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Xml;
+&lt;span style="color:#66d9ef">using&lt;/span> Amqp;
+&lt;span style="color:#66d9ef">using&lt;/span> Amqp.Framing;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// Enable to app to read json setting files
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> builder = &lt;span style="color:#66d9ef">new&lt;/span> ConfigurationBuilder()
+.AddJsonFile(&lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">false&lt;/span>, reloadOnChange: &lt;span style="color:#66d9ef">true&lt;/span>);
+&lt;span style="color:#75715e">// build the configuration
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> configuration = builder.Build();
+&lt;span style="color:#75715e">// Azure service bus SAS key
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> policyName = WebUtility.UrlEncode(configuration[&lt;span style="color:#e6db74">&amp;#34;ServiceBus:PolicyName&amp;#34;&lt;/span>]);
+&lt;span style="color:#66d9ef">var&lt;/span> key = WebUtility.UrlEncode(configuration[&lt;span style="color:#e6db74">&amp;#34;ServiceBus:Key&amp;#34;&lt;/span>]);
+&lt;span style="color:#75715e">// Azure service bus namespace
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> namespaceUrl = configuration[&lt;span style="color:#e6db74">&amp;#34;ServiceBus:NamespaceUrl&amp;#34;&lt;/span>];
+&lt;span style="color:#75715e">// Create the AMQP connection string
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> connnectionString = &lt;span style="color:#e6db74">$&amp;#34;amqps://{policyName}:{key}@{namespaceUrl}/&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Create the AMQP connection
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> connection = &lt;span style="color:#66d9ef">new&lt;/span> Connection(&lt;span style="color:#66d9ef">new&lt;/span> Address(connnectionString));
+&lt;span style="color:#75715e">// Create the AMQP session
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> amqpSession = &lt;span style="color:#66d9ef">new&lt;/span> Session(connection);
+&lt;span style="color:#75715e">// Give a name to the sender
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> senderSubscriptionId = &lt;span style="color:#e6db74">&amp;#34;codeityourself.amqp.sender&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Give a name to the receiver
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> receiverSubscriptionId = &lt;span style="color:#e6db74">&amp;#34;codeityourself.amqp.receiver&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Name of the topic you will be sending messages
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> topic = &lt;span style="color:#e6db74">&amp;#34;codeityourself&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Name of the subscription you will receive messages from
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> subscription = &lt;span style="color:#e6db74">&amp;#34;codeityourself.listener&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Create the AMQP sender
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> sender = &lt;span style="color:#66d9ef">new&lt;/span> SenderLink(amqpSession, senderSubscriptionId, topic);
+&lt;span style="color:#66d9ef">for&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> i = &lt;span style="color:#ae81ff">0&lt;/span>; i &amp;lt; &lt;span style="color:#ae81ff">10&lt;/span>; i++)
+{
+&lt;span style="color:#75715e">// Create message
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> message = &lt;span style="color:#66d9ef">new&lt;/span> Message(&lt;span style="color:#e6db74">$&amp;#34;Received message {i}&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Add a meesage id
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> message.Properties = &lt;span style="color:#66d9ef">new&lt;/span> Properties() { MessageId = Guid.NewGuid().ToString() };
+&lt;span style="color:#75715e">// Add some message properties
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> message.ApplicationProperties = &lt;span style="color:#66d9ef">new&lt;/span> ApplicationProperties();
+message.ApplicationProperties[&lt;span style="color:#e6db74">&amp;#34;Message.Type.FullName&amp;#34;&lt;/span>] = &lt;span style="color:#66d9ef">typeof&lt;/span>(&lt;span style="color:#66d9ef">string&lt;/span>).FullName;
+&lt;span style="color:#75715e">// Send message
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> sender.Send(message);
+}
+&lt;span style="color:#75715e">// Create the AMQP consumer
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> consumer = &lt;span style="color:#66d9ef">new&lt;/span> ReceiverLink(amqpSession, receiverSubscriptionId, &lt;span style="color:#e6db74">$&amp;#34;{topic}/Subscriptions/{subscription}&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Start listening
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> consumer.Start(&lt;span style="color:#ae81ff">5&lt;/span>, OnMessageCallback);
+&lt;span style="color:#75715e">// Wait for a key to close the program
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.Read();
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Method that will be called every time a message is received.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> OnMessageCallback(ReceiverLink receiver, Message message)
+{
+&lt;span style="color:#66d9ef">try&lt;/span>
+{
+&lt;span style="color:#75715e">// You can read the custom property
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> messageType = message.ApplicationProperties[&lt;span style="color:#e6db74">&amp;#34;Message.Type.FullName&amp;#34;&lt;/span>];
+&lt;span style="color:#75715e">// Variable to save the body of the message.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> body = &lt;span style="color:#66d9ef">string&lt;/span>.Empty;
+&lt;span style="color:#75715e">// Get the body
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> rawBody = message.GetBody&amp;lt;&lt;span style="color:#66d9ef">object&lt;/span>&amp;gt;();
+&lt;span style="color:#75715e">// If the body is byte[] assume it was sent as a BrokeredMessage
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// and deserialize it using a XmlDictionaryReader
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (rawBody &lt;span style="color:#66d9ef">is&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>[])
+{
+&lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> reader = XmlDictionaryReader.CreateBinaryReader(
+&lt;span style="color:#66d9ef">new&lt;/span> MemoryStream(rawBody &lt;span style="color:#66d9ef">as&lt;/span> &lt;span style="color:#66d9ef">byte&lt;/span>[]),
+&lt;span style="color:#66d9ef">null&lt;/span>,
+XmlDictionaryReaderQuotas.Max))
+{
+&lt;span style="color:#66d9ef">var&lt;/span> doc = &lt;span style="color:#66d9ef">new&lt;/span> XmlDocument();
+doc.Load(reader);
+body = doc.InnerText;
+}
+}
+&lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#75715e">// Asume the body is a string
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> {
+body = rawBody.ToString();
+}
+&lt;span style="color:#75715e">// Write the body to the Console.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(body);
+&lt;span style="color:#75715e">// Accept the messsage.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> receiver.Accept(message);
+}
+&lt;span style="color:#66d9ef">catch&lt;/span> (Exception ex)
+{
+receiver.Reject(message);
+Console.WriteLine(ex);
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-build">8. Build&lt;/h2>
+&lt;hr>
+&lt;p>Build the application with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="9-run">9. Run&lt;/h1>
+&lt;hr>
+&lt;p>You are good to go so run the application&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can get the code &lt;a href="%22https://github.com/cmendible/dotnetcore.samples/tree/main/azureservicebus.amqp.console%22">here&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

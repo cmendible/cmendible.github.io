@@ -1,0 +1,151 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>couchbase on Code it Yourself...</title><link>https://carlos.mendible.com/tags/couchbase/</link><description>Recent content in couchbase on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 29 Apr 2017 19:51:45 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/couchbase/feed.xml" rel="self" type="application/rss+xml"/><item><title>Step by step: Couchbase Lite with .Net Core</title><link>https://carlos.mendible.com/2017/04/29/step-by-step-couchbase-lite-with-net-core/</link><pubDate>Sat, 29 Apr 2017 19:51:45 +0000</pubDate><guid>https://carlos.mendible.com/2017/04/29/step-by-step-couchbase-lite-with-net-core/</guid><description>&lt;p>Not long after writing &lt;strong>Step by step: Couchbase with .Net Core&lt;/strong> I discovered Couchbase Lite, which is still in development, but it looks like a great solution for embedded NoSQL scenarios.&lt;/p>
+&lt;p>So let&amp;rsquo;s start with this simple: &lt;strong>Step by step: Couchbase Lite with .Net Core&lt;/strong> tutorial.&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir couchbase.lite.console
+cd couchbase.lite.console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-console-project">2. Create a console project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-a-nugetconfig">3. Add a nuget.config&lt;/h2>
+&lt;hr>
+&lt;p>Since Couchbase Lite is still in development you&amp;rsquo;ll need to add their development nuget server as Nuget source, so create a nuget.config file with the following contents.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#75715e">&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;utf-8&amp;#34;?&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;configuration&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;packageSources&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;add&lt;/span> &lt;span style="color:#a6e22e">key=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Couchbase.Developer&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">value=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;http://mobile.nuget.couchbase.com/nuget/Developer/&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/packageSources&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;disabledPackageSources&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/configuration&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-add-a-reference-to-the-couchbase-lite-nuget-package">4. Add a reference to the Couchbase Lite nuget package&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package couchbase.lite -v 2.0.0-db004
+dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-replace-the-contents-of-programcs">5. Replace the contents of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> Couchbase.Lite;
+&lt;span style="color:#66d9ef">using&lt;/span> Couchbase.Lite.Query;
+&lt;span style="color:#66d9ef">namespace&lt;/span> couchbase.lite
+{
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// Get current directory to store the database.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> dir = Directory.GetCurrentDirectory();
+&lt;span style="color:#75715e">// Delete the database so we can run the sample without issues.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> DatabaseFactory.DeleteDatabase(&lt;span style="color:#e6db74">&amp;#34;db&amp;#34;&lt;/span>, dir);
+&lt;span style="color:#75715e">// Create the default options.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> options = DatabaseOptions.Default;
+options.Directory = dir;
+&lt;span style="color:#75715e">// Create the database
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> db = DatabaseFactory.Create(&lt;span style="color:#e6db74">&amp;#34;db&amp;#34;&lt;/span>, options);
+&lt;span style="color:#75715e">// Create a document the Id == &amp;#34;Polar Ice&amp;#34; an set properties.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> document = db.GetDocument(&lt;span style="color:#e6db74">&amp;#34;Polar Ice&amp;#34;&lt;/span>);
+document.Properties = &lt;span style="color:#66d9ef">new&lt;/span> Dictionary&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#66d9ef">object&lt;/span>&amp;gt;
+{
+&lt;span style="color:#a6e22e"> [&amp;#34;name&amp;#34;]&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Polar Ice&amp;#34;&lt;/span>,
+&lt;span style="color:#a6e22e"> [&amp;#34;brewery_id&amp;#34;]&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;Polar&amp;#34;&lt;/span>
+};
+&lt;span style="color:#75715e">// Save the document
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> document.Save();
+&lt;span style="color:#75715e">// Query for the document abd write results to the console.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> query = QueryFactory.Select()
+.From(DataSourceFactory.Database(db))
+.Where(ExpressionFactory.Property(&lt;span style="color:#e6db74">&amp;#34;brewery_id&amp;#34;&lt;/span>).EqualTo(&lt;span style="color:#e6db74">&amp;#34;Polar&amp;#34;&lt;/span>));
+&lt;span style="color:#66d9ef">var&lt;/span> rows = query.Run();
+&lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> row &lt;span style="color:#66d9ef">in&lt;/span> rows)
+{
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Fetched doc with id :: {row.DocumentID}&amp;#34;&lt;/span>);
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-run-the-program">6. Run the program&lt;/h2>
+&lt;hr>
+&lt;p>Run the program&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The console should show the following message:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Fetched doc with id :: Polar Ice
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/couchbase.lite.console">https://github.com/cmendible/dotnetcore.samples/tree/main/couchbase.lite.console&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Step by step: Couchbase with .Net Core</title><link>https://carlos.mendible.com/2017/04/10/step-by-step-couchbase-with-net-core/</link><pubDate>Mon, 10 Apr 2017 17:11:15 +0000</pubDate><guid>https://carlos.mendible.com/2017/04/10/step-by-step-couchbase-with-net-core/</guid><description>&lt;p>This week I started to read an understand how &lt;strong>&lt;a href="http://www.couchbase.com">Couchbase&lt;/a>&lt;/strong> works and that&amp;rsquo;s the reason I decided to write: &lt;strong>Step by step: Couchbase with .Net Core&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>Tip:&lt;/strong> I&amp;rsquo;ll be using &lt;strong>Docker&lt;/strong> to install and run &lt;strong>&lt;a href="http://www.couchbase.com">Couchbase&lt;/a>&lt;/strong>&lt;/p>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir couchbase.console
+cd couchbase.console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-console-project">2. Create a console project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-the-couchbase-nuget-package">3. Add the Couchbase nuget package&lt;/h2>
+&lt;hr>
+&lt;p>Add the &lt;strong>&lt;!-- raw HTML omitted -->Couchbase&lt;!-- raw HTML omitted -->&lt;/strong> nuget package to your project:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package CouchbaseNetClient
+dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-replace-the-contents-of-programcs">4. Replace the contents of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> couchbase.console
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> Couchbase;
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// Connect to cluster. Defaults to localhost
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> cluster = &lt;span style="color:#66d9ef">new&lt;/span> Cluster())
+{
+&lt;span style="color:#75715e">// Open the beer sample bucket
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> bucket = cluster.OpenBucket(&lt;span style="color:#e6db74">&amp;#34;beer-sample&amp;#34;&lt;/span>))
+{
+&lt;span style="color:#75715e">// Create a new beer document
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> document = &lt;span style="color:#66d9ef">new&lt;/span> Document&amp;lt;&lt;span style="color:#66d9ef">dynamic&lt;/span>&amp;gt;
+{
+Id = &lt;span style="color:#e6db74">&amp;#34;Polar Ice&amp;#34;&lt;/span>,
+Content = &lt;span style="color:#66d9ef">new&lt;/span>
+{
+name = &lt;span style="color:#e6db74">&amp;#34;Polar Ice&amp;#34;&lt;/span>,
+brewery_id = &lt;span style="color:#e6db74">&amp;#34;Polar&amp;#34;&lt;/span>
+}
+};
+&lt;span style="color:#75715e">// Insert the beer document
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> result = bucket.Insert(document);
+&lt;span style="color:#66d9ef">if&lt;/span> (result.Success)
+{
+Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;Inserted document &amp;#39;{0}&amp;#39;&amp;#34;&lt;/span>, document.Id);
+}
+&lt;span style="color:#75715e">// Query the beer sample bucket and find the beer we just added.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> queryResult = bucket.Query&amp;lt;&lt;span style="color:#66d9ef">dynamic&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;SELECT name FROM `beer-sample` WHERE brewery_id =\&amp;#34;Polar\&amp;#34;&amp;#34;&lt;/span>))
+{
+&lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> row &lt;span style="color:#66d9ef">in&lt;/span> queryResult.Rows)
+{
+Console.WriteLine(row);
+}
+}
+}
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-setup-couchbase-with-docker">5. Setup Couchbase with Docker&lt;/h2>
+&lt;hr>
+&lt;p>Run the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker pull couchbase/server
+docker run -d --name db -p 8091-8094&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>8091-8094 -p 11210&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>11210 couchbase
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Browse to: &lt;!-- raw HTML omitted -->http://localhost:8091&lt;!-- raw HTML omitted --> and setup &lt;strong>Couchbase&lt;/strong>.&lt;/p>
+&lt;p>Be sure to add the Beer Sample bucket and check the documentation here: &lt;!-- raw HTML omitted -->&lt;a href="https://hub.docker.com/r/couchbase/server/">https://hub.docker.com/r/couchbase/server/&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="6-run-the-program">6. Run the program&lt;/h2>
+&lt;hr>
+&lt;p>Run the program and enjoy!&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/couchbase.console">https://github.com/cmendible/dotnetcore.samples/tree/main/couchbase.console&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

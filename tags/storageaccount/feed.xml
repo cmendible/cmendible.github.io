@@ -1,0 +1,124 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>StorageAccount on Code it Yourself...</title><link>https://carlos.mendible.com/tags/storageaccount/</link><description>Recent content in StorageAccount on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Tue, 16 Apr 2019 05:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/storageaccount/feed.xml" rel="self" type="application/rss+xml"/><item><title>AKS: Persistent Volume with existing Storage Account</title><link>https://carlos.mendible.com/2019/04/16/aks-persistent-volume-with-existing-storage-account/</link><pubDate>Tue, 16 Apr 2019 05:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/04/16/aks-persistent-volume-with-existing-storage-account/</guid><description>&lt;p>In order to deploy a Persistent Volume in your AKS cluster using an existing Storage Account you should take the following steps:&lt;/p>
+&lt;ol>
+&lt;li>Create a &lt;strong>Storage Class&lt;/strong> with a reference to the Storage Account.&lt;/li>
+&lt;li>Create a &lt;strong>Secret&lt;/strong> with the credentials used to access the Storage Account.&lt;/li>
+&lt;li>Create a &lt;strong>Persistent Volume&lt;/strong> with a reference to the Storage Class, the secret and the File Share.&lt;/li>
+&lt;li>Create a &lt;strong>Persistent Volume Claim&lt;/strong> with a reference to the volume by name.&lt;/li>
+&lt;/ol>
+&lt;p>Use the following &lt;strong>yaml&lt;/strong> as a template for the resources described above. Save the contents as &lt;strong>aks-existing-storage-account-pv.yaml&lt;/strong>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#75715e"># Create a StorageClass object pointing to the existing Storage Account&lt;/span>
+&lt;span style="color:#75715e"># Remember: that the Storage account must be in the same Resource Group where the AKS cluster is deployed&lt;/span>
+&lt;span style="color:#66d9ef">kind&lt;/span>: StorageClass
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: storage.k8s.io/v1
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: azurefile
+&lt;span style="color:#66d9ef">provisioner&lt;/span>: kubernetes.io/azure-file
+&lt;span style="color:#66d9ef">mountOptions&lt;/span>:
+- dir_mode=&lt;span style="color:#ae81ff">0777&lt;/span>
+- file_mode=&lt;span style="color:#ae81ff">0777&lt;/span>
+&lt;span style="color:#66d9ef">parameters&lt;/span>:
+&lt;span style="color:#66d9ef">storageAccount&lt;/span>: &amp;lt;storage account name&lt;span style="color:#e6db74">&amp;gt;
+&lt;/span>&lt;span style="color:#e6db74"> location: &amp;lt;storage account location&amp;gt;&lt;/span>
+---
+&lt;span style="color:#75715e"># Create a Secret to hold the name and key of the Storage Account&lt;/span>
+&lt;span style="color:#75715e"># Remember: values are base64 encoded&lt;/span>
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Secret
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: azurefile-secret
+&lt;span style="color:#66d9ef">type&lt;/span>: Opaque
+&lt;span style="color:#66d9ef">data&lt;/span>:
+&lt;span style="color:#66d9ef">azurestorageaccountname&lt;/span>: &amp;lt;base64 encoded storage account name&lt;span style="color:#e6db74">&amp;gt;
+&lt;/span>&lt;span style="color:#e6db74"> azurestorageaccountkey: &amp;lt;base64 encoded storage account key&amp;gt;&lt;/span>
+---
+&lt;span style="color:#75715e"># Create a persistent volume, with the corresponding StorageClass and the reference to the Azure File secret.&lt;/span>
+&lt;span style="color:#75715e"># Remember: Create the share in the storage account otherwise the pods will fail with a &amp;#34;No such file or directory&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: PersistentVolume
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: nginx-pv
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">capacity&lt;/span>:
+&lt;span style="color:#66d9ef">storage&lt;/span>: 5Gi
+&lt;span style="color:#66d9ef">accessModes&lt;/span>:
+- ReadWriteOnce
+&lt;span style="color:#66d9ef">storageClassName&lt;/span>: azurefile
+&lt;span style="color:#66d9ef">azureFile&lt;/span>:
+&lt;span style="color:#66d9ef">secretName&lt;/span>: azurefile-secret
+&lt;span style="color:#66d9ef">shareName&lt;/span>: &amp;lt;Share Name (must already exist in the storage account)&lt;span style="color:#e6db74">&amp;gt;
+&lt;/span>&lt;span style="color:#e6db74"> readOnly: false&lt;/span>
+&lt;span style="color:#66d9ef">mountOptions&lt;/span>:
+- dir_mode=&lt;span style="color:#ae81ff">0777&lt;/span>
+- file_mode=&lt;span style="color:#ae81ff">0777&lt;/span>
+- uid=&lt;span style="color:#ae81ff">1000&lt;/span>
+- gid=&lt;span style="color:#ae81ff">1000&lt;/span>
+---
+&lt;span style="color:#75715e"># Create a PersistentVolumeClaim referencing the StorageClass and the volume&lt;/span>
+&lt;span style="color:#75715e"># Remember: this is a static scenario. The volume was created in the previous step.&lt;/span>
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: PersistentVolumeClaim
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: nginx-pvc
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">accessModes&lt;/span>:
+- ReadWriteOnce
+&lt;span style="color:#66d9ef">resources&lt;/span>:
+&lt;span style="color:#66d9ef">requests&lt;/span>:
+&lt;span style="color:#66d9ef">storage&lt;/span>: 5Gi
+&lt;span style="color:#66d9ef">storageClassName&lt;/span>: azurefile
+&lt;span style="color:#66d9ef">volumeName&lt;/span>: nginx-pv
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy to your cluster and verify that the Private Volume Claim status is &lt;strong>Bound&lt;/strong>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f aks-existing-storage-account-pv.yaml
+kubectl get pvc
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Result should show something like:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">NAME STATUS VOLUME CAPACITY ACCESS MODES STORAGECLASS AGE
+nginx-pvc Bound nginx-pv 5Gi RWO azurefile ...
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>That&amp;rsquo;s it! now you can mount a volume in a container with a reference to the Private Volume Claim as in the following deployment:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#75715e"># Deploy an nginx mounting a volume and referencing the persisten volume claim&lt;/span>
+&lt;span style="color:#75715e"># Remember: using pvc decouples your deployment from the volume implementations&lt;/span>
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: extensions/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: nginx
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">template&lt;/span>:
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: nginx-storage
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: nginx-pod
+&lt;span style="color:#66d9ef">image&lt;/span>: nginx:&lt;span style="color:#ae81ff">1.15.5&lt;/span>
+&lt;span style="color:#66d9ef">resources&lt;/span>:
+&lt;span style="color:#66d9ef">requests&lt;/span>:
+&lt;span style="color:#66d9ef">cpu&lt;/span>: 100m
+&lt;span style="color:#66d9ef">memory&lt;/span>: 128Mi
+&lt;span style="color:#66d9ef">limits&lt;/span>:
+&lt;span style="color:#66d9ef">cpu&lt;/span>: 250m
+&lt;span style="color:#66d9ef">memory&lt;/span>: 256Mi
+&lt;span style="color:#66d9ef">volumeMounts&lt;/span>:
+- &lt;span style="color:#66d9ef">mountPath&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;/mnt/azure&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">name&lt;/span>: volume
+&lt;span style="color:#66d9ef">volumes&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: volume
+&lt;span style="color:#66d9ef">persistentVolumeClaim&lt;/span>:
+&lt;span style="color:#66d9ef">claimName&lt;/span>: nginx-pvc
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps.&lt;/p>
+&lt;p>Please download all code and files &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/16.aks-pv-with-existing-storage-account">here&lt;/a>.&lt;/p></description></item><item><title>Use PowerShell to enable Azure Storage Account Firewall Rules</title><link>https://carlos.mendible.com/2017/11/02/use-powershell-to-enable-azure-storage-account-firewall-rules/</link><pubDate>Thu, 02 Nov 2017 20:53:16 +0000</pubDate><guid>https://carlos.mendible.com/2017/11/02/use-powershell-to-enable-azure-storage-account-firewall-rules/</guid><description>&lt;p>In this post I&amp;rsquo;ll show you how to &lt;strong>Use PowerShell to enable Azure Storage Account Firewall Rules&lt;/strong>.&lt;/p>
+&lt;p>Be sure to be have &lt;a href="https://www.powershellgallery.com/packages/AzureRM/4.4.1">AzureRM PowerShell 4.4.1&lt;/a> module installed.&lt;/p>
+&lt;h2 id="login-to-your-azure-account">&lt;strong>Login to your Azure Account&lt;/strong>&lt;/h2>
+&lt;p>Launch Powershell and start by Login to your Azure Account.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Login-AzureRmAccount
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="set-resource-group-and-storage-account-name-variables">&lt;strong>Set Resource Group and Storage Account Name Variables&lt;/strong>&lt;/h2>
+&lt;p>Set the following variables&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> $resourceGroupName = &lt;span style="color:#e6db74">&amp;#34;[THE NAME OF THE RESOURCE GROUP]&amp;#34;&lt;/span>
+$storageAccountName = &lt;span style="color:#e6db74">&amp;#34;[THE NAME OF THE STORAGE ACCOUNT]&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="enable-the-firewall">&lt;strong>Enable the Firewall&lt;/strong>&lt;/h2>
+&lt;p>To enable the firewall you&amp;rsquo;ll need to &lt;strong>Deny&lt;/strong> all trafic to the storage account using the &lt;strong>DefaultAction&lt;/strong> parameter and then allow Azure Services to connect to it with the &lt;strong>Bypass parameter&lt;/strong>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Update-AzureRmStorageAccountNetworkRuleSet -ResourceGroupName $resourceGroupName -Name $storageAccountName -DefaultAction Deny -Bypass AzureServices,Metrics,Logging
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To allow an IP Address or an IP Address range you can run the following commands changing the value of the &lt;strong>IPAddressOrRange&lt;/strong> parameter:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Add-AzureRMStorageAccountNetworkRule -ResourceGroupName $resourceGroupName -AccountName $storageAccountName -IPAddressOrRange &lt;span style="color:#e6db74">&amp;#34;79.159.46.90&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Add-AzureRMStorageAccountNetworkRule -ResourceGroupName $resourceGroupName -AccountName $storageAccountName -IPAddressOrRange &lt;span style="color:#e6db74">&amp;#34;79.159.46.0/24&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

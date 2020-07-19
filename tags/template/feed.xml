@@ -1,0 +1,27 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Template on Code it Yourself...</title><link>https://carlos.mendible.com/tags/template/</link><description>Recent content in Template on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Tue, 18 Jul 2017 08:56:48 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/template/feed.xml" rel="self" type="application/rss+xml"/><item><title>dotnet new templates for AWS Lambda and Raspberry Pi</title><link>https://carlos.mendible.com/2017/07/18/dotnet-new-templates-for-aws-lambda-and-raspberry-pi/</link><pubDate>Tue, 18 Jul 2017 08:56:48 +0000</pubDate><guid>https://carlos.mendible.com/2017/07/18/dotnet-new-templates-for-aws-lambda-and-raspberry-pi/</guid><description>&lt;p>After reading the following articles:&lt;/p>
+&lt;ul>
+&lt;li>&lt;!-- raw HTML omitted -->How to create your own templates for dotnet new&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;!-- raw HTML omitted -->Custom Project Templates Using dotnet new&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;/ul>
+&lt;p>and having a twitter conversation with &lt;!-- raw HTML omitted -->Sayed-Ibrahim-Hashimi&lt;!-- raw HTML omitted --> I decided it was a nice idea to create some templates based on the code of some of my posts.&lt;/p>
+&lt;p>So here are the results:&lt;/p>
+&lt;h2 id="1-create-a-an-aspnet-core-web-api-project-ready-for-aws-lambda">1. Create a an ASP.NET Core Web API project ready for AWS lambda&lt;/h2>
+&lt;hr>
+&lt;ul>
+&lt;li>&lt;strong>Name:&lt;/strong> CodeItYourself.WebAPI.AWS.Lambda&lt;/li>
+&lt;li>&lt;strong>Type&lt;/strong>: Web/API&lt;/li>
+&lt;li>&lt;strong>Installation:&lt;/strong> &lt;!-- raw HTML omitted -->dotnet new &amp;ndash;install CodeItYourself.WebAPI.AWS.Lambda::*&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;strong>Usage:&lt;/strong> &lt;!-- raw HTML omitted -->dotnet new webapilambda&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;strong>Related post:&lt;/strong> &lt;a href="https://carlos.mendible.com/2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/">Deploy your ASP.NET Core Web API to AWS Lambda&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="2-create-an-aspnet-core-web-project-for-raspberrypi">2. Create an ASP.NET Core Web project for RaspberryPi&lt;/h2>
+&lt;hr>
+&lt;ul>
+&lt;li>&lt;strong>Name:&lt;/strong> CodeItYourself.ASPNET.Raspberry&lt;/li>
+&lt;li>&lt;strong>Type&lt;/strong>: Web&lt;/li>
+&lt;li>&lt;strong>Installation:&lt;/strong> &lt;!-- raw HTML omitted -->dotnet new &amp;ndash;install CodeItYourself.ASPNET.Raspberry::*&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;strong>Usage:&lt;/strong> &lt;!-- raw HTML omitted -->dotnet new webrpi&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;strong>Related post:&lt;/strong> &lt;a href="https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/">Step by step: Running ASP.NET Core on Raspberry Pi&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>You can clone the code for the templates &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>
