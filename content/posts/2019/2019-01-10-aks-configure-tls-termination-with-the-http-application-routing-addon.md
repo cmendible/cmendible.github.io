@@ -53,4 +53,4 @@ Once you have tls working go ahead and try rate limits and whitelisting!
 
 Hope it helps.
 
-Please download all code and files [here](https://github.com/cmendible/kubernetes.samples/tree/master/15.http-application-routing-tls) and be sure to check the [online documentation](https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md) to learn more about the annotations and other NGINX features.
+Please download all code and files [here](https://github.com/cmendible/kubernetes.samples/tree/main/15.http-application-routing-tls) and be sure to check the [online documentation](https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md) to learn more about the annotations and other NGINX features.

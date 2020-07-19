@@ -42,7 +42,7 @@ helm template flux `
   --output-dir .\.baked .\.charts\fluxcd
 ```
 
-As you can see I'm configuring [Flux](https://docs.fluxcd.io/en/latest/) to use my k8s sample repo and the [19.flux](https://github.com/cmendible/kubernetes.samples/tree/master/19.flux) folder, which contains a simple deployment [file](https://github.com/cmendible/kubernetes.samples/blob/master/19.flux/dni-function.yaml), but of course you can have more resource definitions.
+As you can see I'm configuring [Flux](https://docs.fluxcd.io/en/latest/) to use my k8s sample repo and the [19.flux](https://github.com/cmendible/kubernetes.samples/tree/main/19.flux) folder, which contains a simple deployment [file](https://github.com/cmendible/kubernetes.samples/blob/main/19.flux/dni-function.yaml), but of course you can have more resource definitions.
 
 ## 3. Deploy the configuration to your cluster
 

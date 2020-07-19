@@ -141,6 +141,6 @@ New-ServicePrincipalAsReader `
     -applicationName $servicePrincipalName
 ```
 
-You can download the script from the <a href="https://gallery.technet.microsoft.com/Create-a-Service-Principal-179d0b36" target="_blank">Technet Script Gallery</a> or collaborate <a href="https://github.com/cmendible/azure.powershell.samples/tree/master/New-ServicePrincipalAsReader" target="_blank">here</a>.
+You can download the script from the <a href="https://gallery.technet.microsoft.com/Create-a-Service-Principal-179d0b36" target="_blank">Technet Script Gallery</a> or collaborate <a href="https://github.com/cmendible/azure.powershell.samples/tree/main/New-ServicePrincipalAsReader" target="_blank">here</a>.
 
 Hope it helps!

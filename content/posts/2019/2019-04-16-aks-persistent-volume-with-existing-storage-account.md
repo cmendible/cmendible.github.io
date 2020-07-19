@@ -140,4 +140,4 @@ spec:
 
 Hope it helps.
 
-Please download all code and files [here](https://github.com/cmendible/kubernetes.samples/tree/master/16.aks-pv-with-existing-storage-account).
+Please download all code and files [here](https://github.com/cmendible/kubernetes.samples/tree/main/16.aks-pv-with-existing-storage-account).

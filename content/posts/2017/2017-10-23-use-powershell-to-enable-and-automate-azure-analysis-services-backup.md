@@ -89,7 +89,7 @@ Set-AzureRmResource `
     -Force
 ```
 
-Get the code [here](https://github.com/cmendible/azure.powershell.samples/tree/master/Enable-AzureRmAnalysisServicesBackup) or download the file from the [Technet Gallery](https://gallery.technet.microsoft.com/Enable-AzureRmAnalysisServi-254a889c).
+Get the code [here](https://github.com/cmendible/azure.powershell.samples/tree/main/Enable-AzureRmAnalysisServicesBackup) or download the file from the [Technet Gallery](https://gallery.technet.microsoft.com/Enable-AzureRmAnalysisServi-254a889c).
 
 ## **Automate Azure Analysis Service Backup**
 
@@ -179,6 +179,6 @@ workflow Backup-AnalysisServices {
 }
 ```
 
-Get the code [here](https://github.com/cmendible/azure.powershell.samples/tree/master/Backup-AnalysisServices) or download the file from the [Technet Gallery](https://gallery.technet.microsoft.com/Azure-Analysis-Backup-a06df3ad).
+Get the code [here](https://github.com/cmendible/azure.powershell.samples/tree/main/Backup-AnalysisServices) or download the file from the [Technet Gallery](https://gallery.technet.microsoft.com/Azure-Analysis-Backup-a06df3ad).
 
 Hope it helps!

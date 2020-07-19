@@ -158,6 +158,6 @@ The script will ask you to:
   * write the name of the resource group containing the web apps
   * write the name of the storage account to hold the logs
 
-Get the code here: <a href="https://github.com/cmendible/azure.powershell.samples/tree/master/Enable-WebAppServiceLogs"  target="_blank">https://github.com/cmendible/azure.powershell.samples/tree/master/Enable-WebAppServiceLogs</a>
+Get the code here: <a href="https://github.com/cmendible/azure.powershell.samples/tree/main/Enable-WebAppServiceLogs"  target="_blank">https://github.com/cmendible/azure.powershell.samples/tree/main/Enable-WebAppServiceLogs</a>
 
 Hope it helps!
