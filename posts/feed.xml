@@ -1,0 +1,991 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Code it Yourself...</title><link>https://carlos.mendible.com/posts/</link><description>Recent content in Posts on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Mon, 18 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/posts/feed.xml" rel="self" type="application/rss+xml"/><item><title>Azure Functions: use Blob Trigger with Private Endpoint</title><link>https://carlos.mendible.com/2020/05/18/azure-functions-use-blob-trigger-with-private-endpoint/</link><pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/05/18/azure-functions-use-blob-trigger-with-private-endpoint/</guid><description>&lt;p>The intent of this post is to help you understand how to connect an Azure Function to a Storage Account privately so all traffic flows through a VNet therefore enhancing the security of your solutions and blobs.&lt;/p>
+&lt;h2 id="the-case">The Case:&lt;/h2>
+&lt;p>Supose you have the following Azure Function written in C# which only copies a blob from one conatiner to another:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Logging;
+&lt;span style="color:#66d9ef">namespace&lt;/span> Secured.Function
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">SecureCopy&lt;/span>
+{
+&lt;span style="color:#a6e22e"> [FunctionName(&amp;#34;SecureCopy&amp;#34;)]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Run(
+&lt;span style="color:#a6e22e"> [BlobTrigger(&amp;#34;input/{name}&amp;#34;, Connection = &amp;#34;privatecfm_STORAGE&amp;#34;)]&lt;/span> Stream myBlob,
+&lt;span style="color:#a6e22e"> [Blob(&amp;#34;output/{name}&amp;#34;, FileAccess.Write, Connection = &amp;#34;privatecfm_STORAGE&amp;#34;)]&lt;/span> Stream copy,
+ILogger log)
+{
+myBlob.CopyTo(copy);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>In this case the storage account used, for the blob trigger and the output binding, has a public endpoint exposed to the internet, which you can secure using features such as the Storage Account Firewall and the new &lt;strong>private endpoints&lt;/strong> which will allow clients on a virtual network (VNet) to securely access data over a &lt;a href="https://docs.microsoft.com/en-us/azure/private-link/private-link-overview">Private Link&lt;/a>. The private endpoint uses an IP address from the VNet address space for your storage account service. &lt;a href="#references">[1]&lt;/a>&lt;/p>
+&lt;p>With those features we can lockdown all inbound traffic to the Storage Account to only accept calls from inside a VNet, so the next step is to enable a feature for Azure Functions that will give your function app access to the resources in the VNet: &lt;strong>Azure App Service VNet Integration feature&lt;/strong> &lt;a href="#references">[2]&lt;/a>.&lt;/p>
+&lt;p>The following sketch shows how this works:&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/posts/function_private_endpoint_sa.png" alt="Solution Diagram">&lt;/p>
+&lt;ol>
+&lt;li>The Azure Function is integrated with a VNet using Regional VNet Integration (blue line).&lt;/li>
+&lt;li>The Storage Account (shown on the right) has a Private Endpoint which assigns a private IP to the Storage Account.&lt;/li>
+&lt;li>Traffic (red line) from the Azure Function flows through the VNet, the Private Endpoint and reaches the Storage Account.&lt;/li>
+&lt;li>The Storage Account, shown on the left, is used for the core services of the Azure Function and, at the time ow writing, can&amp;rsquo;t be protected using private enpoints.&lt;/li>
+&lt;/ol>
+&lt;p>But wait there is one more thing, you will need to add an Azure Private DNS Zone to enable the Azure Function to resolve the name of the Storage Account so it uses the private ip for communication.)&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> The solution will require use of the PremiumV2, or Elastic Premium pricing plan for the Azure Function.&lt;/p>
+&lt;h2 id="deploying-the-infrastructure-with-terraform">Deploying the Infrastructure with Terraform&lt;/h2>
+&lt;p>We&amp;rsquo;ll be using Terraform (version &amp;gt; 0.12) to deploy the solution. Start creating a &lt;strong>providers.tf&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">terraform {
+required_version = &lt;span style="color:#e6db74">&amp;#34;&amp;gt; 0.12&amp;#34;&lt;/span>
+}
+provider &lt;span style="color:#e6db74">&amp;#34;azurerm&amp;#34;&lt;/span> {
+version = &lt;span style="color:#e6db74">&amp;#34;&amp;gt;= 2.0&amp;#34;&lt;/span>
+features {}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Define the following variables in a &lt;strong>variables.tf&lt;/strong> file:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># Azure Resource Location&lt;/span>
+variable location {
+default = &lt;span style="color:#e6db74">&amp;#34;west europe&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Azure Resource Group Name&lt;/span>
+variable resource_group {
+default = &lt;span style="color:#e6db74">&amp;#34;private-endpoint&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Name of the Storage Account you´ll expose through the private endpoint&lt;/span>
+variable sa_name {
+default = &lt;span style="color:#e6db74">&amp;#34;privatecfm&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Name of the Storage Account backing the Azure Function&lt;/span>
+variable function_required_sa {
+default = &lt;span style="color:#e6db74">&amp;#34;privatecfmfunc&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Create a &lt;strong>mainty.tf&lt;/strong> file with the following contents (Make sure you read the comments to understand the manifest):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># Create Resource Group&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_resource_group&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;rg&amp;#34;&lt;/span> {
+name = var.resource_group
+location = var.location
+}
+&lt;span style="color:#75715e"># Create VNet&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_virtual_network&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;vnet&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;private-network&amp;#34;&lt;/span>
+address_space = [&lt;span style="color:#e6db74">&amp;#34;10.0.0.0/16&amp;#34;&lt;/span>]
+location = azurerm_resource_group.rg.location
+resource_group_name = azurerm_resource_group.rg.name
+&lt;span style="color:#75715e"># Use Private DNS Zone. That&amp;#39;s right we have to add this magical IP here.&lt;/span>
+dns_servers = [&lt;span style="color:#e6db74">&amp;#34;168.63.129.16&amp;#34;&lt;/span>]
+}
+&lt;span style="color:#75715e"># Create the Subnet for the Azure Function. This is thge subnet where we&amp;#39;ll enable Vnet Integration.&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_subnet&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;service&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;service&amp;#34;&lt;/span>
+resource_group_name = azurerm_resource_group.rg.name
+virtual_network_name = azurerm_virtual_network.vnet.name
+address_prefixes = [&lt;span style="color:#e6db74">&amp;#34;10.0.1.0/24&amp;#34;&lt;/span>]
+enforce_private_link_service_network_policies = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#75715e"># Delegate the subnet to &amp;#34;Microsoft.Web/serverFarms&amp;#34;&lt;/span>
+delegation {
+name = &lt;span style="color:#e6db74">&amp;#34;acctestdelegation&amp;#34;&lt;/span>
+service_delegation {
+name = &lt;span style="color:#e6db74">&amp;#34;Microsoft.Web/serverFarms&amp;#34;&lt;/span>
+actions = [&lt;span style="color:#e6db74">&amp;#34;Microsoft.Network/virtualNetworks/subnets/action&amp;#34;&lt;/span>]
+}
+}
+}
+&lt;span style="color:#75715e"># Create the Subnet for the private endpoints. This is where the IP of the private enpoint will live.&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_subnet&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;endpoint&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;endpoint&amp;#34;&lt;/span>
+resource_group_name = azurerm_resource_group.rg.name
+virtual_network_name = azurerm_virtual_network.vnet.name
+address_prefixes = [&lt;span style="color:#e6db74">&amp;#34;10.0.2.0/24&amp;#34;&lt;/span>]
+enforce_private_link_endpoint_network_policies = &lt;span style="color:#66d9ef">true&lt;/span>
+}
+&lt;span style="color:#75715e"># Get current public IP. We´ll need this so we can access the Storage Account from our PC.&lt;/span>
+data &lt;span style="color:#e6db74">&amp;#34;http&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;current_public_ip&amp;#34;&lt;/span> {
+url = &lt;span style="color:#e6db74">&amp;#34;http://ipinfo.io/json&amp;#34;&lt;/span>
+request_headers = {
+Accept = &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Create the &amp;#34;private&amp;#34; Storage Account.&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_account&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sa&amp;#34;&lt;/span> {
+name = var.sa_name
+resource_group_name = azurerm_resource_group.rg.name
+location = azurerm_resource_group.rg.location
+account_tier = &lt;span style="color:#e6db74">&amp;#34;Standard&amp;#34;&lt;/span>
+account_replication_type = &lt;span style="color:#e6db74">&amp;#34;GRS&amp;#34;&lt;/span>
+enable_https_traffic_only = &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#75715e"># We are enabling the firewall only allowing traffic from our PC&amp;#39;s public IP.&lt;/span>
+network_rules {
+default_action = &lt;span style="color:#e6db74">&amp;#34;Deny&amp;#34;&lt;/span>
+virtual_network_subnet_ids = []
+ip_rules = [
+jsondecode(data.http.current_public_ip.body).ip
+]
+}
+}
+&lt;span style="color:#75715e"># Create input container&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_container&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;input&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;input&amp;#34;&lt;/span>
+container_access_type = &lt;span style="color:#e6db74">&amp;#34;private&amp;#34;&lt;/span>
+storage_account_name = azurerm_storage_account.sa.name
+}
+&lt;span style="color:#75715e"># Create output container&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_container&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;output&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;output&amp;#34;&lt;/span>
+container_access_type = &lt;span style="color:#e6db74">&amp;#34;private&amp;#34;&lt;/span>
+storage_account_name = azurerm_storage_account.sa.name
+}
+&lt;span style="color:#75715e"># Create the Private endpoint. This is where the Storage account gets a private IP inside the VNet.&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_private_endpoint&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;endpoint&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;sa-endpoint&amp;#34;&lt;/span>
+location = azurerm_resource_group.rg.location
+resource_group_name = azurerm_resource_group.rg.name
+subnet_id = azurerm_subnet.endpoint.id
+private_service_connection {
+name = &lt;span style="color:#e6db74">&amp;#34;sa-privateserviceconnection&amp;#34;&lt;/span>
+private_connection_resource_id = azurerm_storage_account.sa.id
+is_manual_connection = &lt;span style="color:#66d9ef">false&lt;/span>
+subresource_names = [&lt;span style="color:#e6db74">&amp;#34;blob&amp;#34;&lt;/span>]
+}
+}
+&lt;span style="color:#75715e"># Create the blob.core.windows.net Private DNS Zone&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_private_dns_zone&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;private&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;blob.core.windows.net&amp;#34;&lt;/span>
+resource_group_name = azurerm_resource_group.rg.name
+}
+&lt;span style="color:#75715e"># Create an A record pointing to the Storage Account private endpoint&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_private_dns_a_record&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sa&amp;#34;&lt;/span> {
+name = var.sa_name
+zone_name = azurerm_private_dns_zone.private.name
+resource_group_name = azurerm_resource_group.rg.name
+ttl = &lt;span style="color:#ae81ff">3600&lt;/span>
+records = [azurerm_private_endpoint.endpoint.private_service_connection[&lt;span style="color:#ae81ff">0&lt;/span>].private_ip_address]
+}
+&lt;span style="color:#75715e"># Link the Private Zone with the VNet&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_private_dns_zone_virtual_network_link&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sa&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;test&amp;#34;&lt;/span>
+resource_group_name = azurerm_resource_group.rg.name
+private_dns_zone_name = azurerm_private_dns_zone.private.name
+virtual_network_id = azurerm_virtual_network.vnet.id
+}
+&lt;span style="color:#75715e"># Create the Storage Account required by Azure Functions.&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_account&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;function_required_sa&amp;#34;&lt;/span> {
+name = var.function_required_sa
+resource_group_name = azurerm_resource_group.rg.name
+location = azurerm_resource_group.rg.location
+account_tier = &lt;span style="color:#e6db74">&amp;#34;Standard&amp;#34;&lt;/span>
+account_replication_type = &lt;span style="color:#e6db74">&amp;#34;GRS&amp;#34;&lt;/span>
+enable_https_traffic_only = &lt;span style="color:#66d9ef">true&lt;/span>
+}
+&lt;span style="color:#75715e"># Create a container to hold the Azure Function Zip&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_container&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;functions&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;function-releases&amp;#34;&lt;/span>
+storage_account_name = azurerm_storage_account.function_required_sa.name
+container_access_type = &lt;span style="color:#e6db74">&amp;#34;private&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Create a blob with the Azure Function zip&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_blob&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;function&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;securecopy.zip&amp;#34;&lt;/span>
+storage_account_name = azurerm_storage_account.function_required_sa.name
+storage_container_name = azurerm_storage_container.functions.name
+type = &lt;span style="color:#e6db74">&amp;#34;Block&amp;#34;&lt;/span>
+source = &lt;span style="color:#e6db74">&amp;#34;./securecopy.zip&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Create a SAS token so the Fucntion can access the blob and deploy the zip&lt;/span>
+data &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_account_sas&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sas&amp;#34;&lt;/span> {
+connection_string = azurerm_storage_account.function_required_sa.primary_connection_string
+https_only = &lt;span style="color:#66d9ef">false&lt;/span>
+resource_types {
+service = &lt;span style="color:#66d9ef">false&lt;/span>
+container = &lt;span style="color:#66d9ef">false&lt;/span>
+object = &lt;span style="color:#66d9ef">true&lt;/span>
+}
+services {
+blob = &lt;span style="color:#66d9ef">true&lt;/span>
+queue = &lt;span style="color:#66d9ef">false&lt;/span>
+table = &lt;span style="color:#66d9ef">false&lt;/span>
+file = &lt;span style="color:#66d9ef">false&lt;/span>
+}
+start = &lt;span style="color:#e6db74">&amp;#34;2020-05-18&amp;#34;&lt;/span>
+expiry = &lt;span style="color:#e6db74">&amp;#34;2025-05-18&amp;#34;&lt;/span>
+permissions {
+read = &lt;span style="color:#66d9ef">true&lt;/span>
+write = &lt;span style="color:#66d9ef">false&lt;/span>
+delete = &lt;span style="color:#66d9ef">false&lt;/span>
+list = &lt;span style="color:#66d9ef">false&lt;/span>
+add = &lt;span style="color:#66d9ef">false&lt;/span>
+create = &lt;span style="color:#66d9ef">false&lt;/span>
+update = &lt;span style="color:#66d9ef">false&lt;/span>
+process = &lt;span style="color:#66d9ef">false&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Create the Azure Function plan (Elastic Premium) &lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_app_service_plan&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;plan&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;azure-functions-test-service-plan&amp;#34;&lt;/span>
+location = azurerm_resource_group.rg.location
+resource_group_name = azurerm_resource_group.rg.name
+kind = &lt;span style="color:#e6db74">&amp;#34;elastic&amp;#34;&lt;/span>
+sku {
+tier = &lt;span style="color:#e6db74">&amp;#34;ElasticPremium&amp;#34;&lt;/span>
+size = &lt;span style="color:#e6db74">&amp;#34;EP1&amp;#34;&lt;/span>
+capacity = &lt;span style="color:#ae81ff">1&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Create Application Insights&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_application_insights&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;ai&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;func-pe-test&amp;#34;&lt;/span>
+location = azurerm_resource_group.rg.location
+resource_group_name = azurerm_resource_group.rg.name
+application_type = &lt;span style="color:#e6db74">&amp;#34;web&amp;#34;&lt;/span>
+retention_in_days = &lt;span style="color:#ae81ff">90&lt;/span>
+}
+&lt;span style="color:#75715e"># Create the Azure Function App&lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_function_app&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;func_app&amp;#34;&lt;/span> {
+name = &lt;span style="color:#e6db74">&amp;#34;func-pe-test&amp;#34;&lt;/span>
+location = azurerm_resource_group.rg.location
+resource_group_name = azurerm_resource_group.rg.name
+app_service_plan_id = azurerm_app_service_plan.plan.id
+storage_account_name = azurerm_storage_account.function_required_sa.name
+storage_account_access_key = azurerm_storage_account.function_required_sa.primary_access_key
+version = &lt;span style="color:#e6db74">&amp;#34;~3&amp;#34;&lt;/span>
+app_settings = {
+https_only = &lt;span style="color:#66d9ef">true&lt;/span>
+APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.ai.instrumentation_key
+privatecfm_STORAGE = azurerm_storage_account.sa.primary_connection_string
+&lt;span style="color:#75715e"># With this setting we&amp;#39;ll force all outbound traffic through the VNet&lt;/span>
+WEBSITE_VNET_ROUTE_ALL = &lt;span style="color:#e6db74">&amp;#34;1&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Properties used to deploy the zip&lt;/span>
+HASH = filesha256(&lt;span style="color:#e6db74">&amp;#34;./securecopy.zip&amp;#34;&lt;/span>)
+WEBSITE_USE_ZIP = &lt;span style="color:#e6db74">&amp;#34;https://${azurerm_storage_account.function_required_sa.name}.blob.core.windows.net/${azurerm_storage_container.functions.name}/${azurerm_storage_blob.function.name}${data.azurerm_storage_account_sas.sas.sas}&amp;#34;&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Enable Regional VNet integration. Function --&amp;gt; service Subnet &lt;/span>
+resource &lt;span style="color:#e6db74">&amp;#34;azurerm_app_service_virtual_network_swift_connection&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;vnet_integration&amp;#34;&lt;/span> {
+app_service_id = azurerm_function_app.func_app.id
+subnet_id = azurerm_subnet.service.id
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now download, into your working folder, the &lt;strong>&lt;a href="https://github.com/cmendible/azure.samples/blob/master/function_sa_private_endpoint/deploy/securecopy.zip">securecopy.zip&lt;/a>&lt;/strong> file containing the sample Azure Function or create a zip, with the same name, containing your own code.&lt;/p>
+&lt;p>Deploy the solution running the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">terraform init
+terraform apply
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-solution">Test the solution&lt;/h2>
+&lt;p>Use the Azure portal or Storage Explorer to upload a file to the &lt;strong>input&lt;/strong> container, after a few seconds you should find a copy of the file in the &lt;strong>output&lt;/strong> container.&lt;/p>
+&lt;h2 id="vnet-integration-name-resolution-test">VNET Integration Name Resolution Test&lt;/h2>
+&lt;p>If the previous test didn&amp;rsquo;t work, please connect through KUDU or the Console to the Azure Function and run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">nameresolver &amp;lt;name of the storage account&amp;gt;.blob.core.windows.net
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The output of the command should show &lt;strong>10.0.2.4&lt;/strong> as the IP address. If that&amp;rsquo;s not the case you probably misconfigured something. &lt;a href="#references">[3]&lt;/a>&lt;/p>
+&lt;p>Hope it helps and please find a copy of all the code &lt;a href="https://github.com/cmendible/azure.samples/tree/main/function_sa_private_endpoint">here&lt;/a>&lt;/p>
+&lt;h2 id="references">References&lt;/h2>
+&lt;ul>
+&lt;li>[1] &lt;a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints">Use private endpoints for Azure Storage&lt;/a>&lt;/li>
+&lt;li>[2] Integrate your app with an Azure virtual network: &lt;a href="https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#regional-vnet-integration">Regional VNET Integration&lt;/a>&lt;/li>
+&lt;li>[3] Integrate your app with an Azure virtual network: &lt;a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints">Troubleshooting&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>Kubernetes NGINX ingress controller with Dapr</title><link>https://carlos.mendible.com/2020/04/05/kubernetes-nginx-ingress-controller-with-dapr/</link><pubDate>Sun, 05 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/04/05/kubernetes-nginx-ingress-controller-with-dapr/</guid><description>&lt;p>In this post I&amp;rsquo;ll show you how to expose your &amp;ldquo;Daprized&amp;rdquo; applications using and NGINX ingress controller.&lt;/p>
+&lt;h2 id="prerequistes">Prerequistes&lt;/h2>
+&lt;ul>
+&lt;li>A working &lt;a href="https://kubernetes.io/">kubernetes&lt;/a> cluster with Dapr installed. If you need instructions please find them &lt;a href="https://github.com/dapr/docs/blob/master/getting-started/environment-setup.md#installing-dapr-on-a-kubernetes-cluster">here&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="deploy-an-application-to-your-kubernetes-cluster">Deploy an application to your Kubernetes cluster&lt;/h2>
+&lt;p>I&amp;rsquo;ll be using a simple Azure Function I created back in 2017 in the following post: &lt;strong>&lt;a href="https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/">Run a Precompiled .NET Core Azure Function in a Container&lt;/a>&lt;/strong> which exposes a simple validation function.&lt;/p>
+&lt;p>Create a &lt;em>function.yaml&lt;/em> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#66d9ef">template&lt;/span>:
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">annotations&lt;/span>:
+&lt;span style="color:#66d9ef">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dni&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/dni:&lt;span style="color:#ae81ff">1.0.0&lt;/span>
+&lt;span style="color:#66d9ef">ports&lt;/span>:
+- &lt;span style="color:#66d9ef">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note the &lt;em>dapr.io&lt;/em> annotations used to instruct Dapr to inject the sidecar in your pod.&lt;/p>
+&lt;p>Now deploy the function into kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f ./function.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="deploy-nginx-ingress-controller-with-dapr">Deploy NGINX Ingress Controller with Dapr&lt;/h2>
+&lt;p>We are going to &amp;ldquo;Daprize&amp;rdquo; the NGINX Ingress Controller so traffic flows as shown in the following picture &lt;a href="#references">[1]&lt;/a>:&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/posts/dapr-nginx-ingress.png" alt="Daprized NGINX Ingress Controller">&lt;/p>
+&lt;p>In order to add the &lt;em>dapr.io&lt;/em> annotations to the NGINX pod, create a &lt;em>dapr-annotations.yaml&lt;/em> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">controller&lt;/span>:
+&lt;span style="color:#66d9ef">podAnnotations&lt;/span>:
+&lt;span style="color:#66d9ef">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;nginx-ingress&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and deploy the NGINX ingress controller:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm install nginx stable/nginx-ingress -f .&lt;span style="color:#ae81ff">\d&lt;/span>apr-annotations.yaml -n default
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Since we´ll also be adding TLS termination to the mix, run the following commands to generate the certificate and deploy the corresponding secret into kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">openssl req -x509 -nodes -days &lt;span style="color:#ae81ff">365&lt;/span> -newkey rsa:2048 -keyout tls.key -out tls.crt -subj &lt;span style="color:#e6db74">&amp;#34;/CN=hydra/O=hydra&amp;#34;&lt;/span>
+kubectl create secret tls tls-secret --key tls.key --cert tls.cert
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create the ingress rule (&lt;em>ingress.yaml&lt;/em>* file) with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: extensions/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Ingress
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: ingress-rules
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;span style="color:#66d9ef">annotations&lt;/span>:
+&lt;span style="color:#66d9ef">kubernetes.io/ingress.class&lt;/span>: nginx
+&lt;span style="color:#66d9ef">nginx.ingress.kubernetes.io/rewrite-target&lt;/span>: /
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">tls&lt;/span>:
+- &lt;span style="color:#66d9ef">hosts&lt;/span>:
+- hydra
+&lt;span style="color:#66d9ef">secretName&lt;/span>: tls-secret
+&lt;span style="color:#66d9ef">rules&lt;/span>:
+- &lt;span style="color:#66d9ef">host&lt;/span>: hydra
+&lt;span style="color:#66d9ef">http&lt;/span>:
+&lt;span style="color:#66d9ef">paths&lt;/span>:
+- &lt;span style="color:#66d9ef">path&lt;/span>: /
+&lt;span style="color:#66d9ef">backend&lt;/span>:
+&lt;span style="color:#66d9ef">serviceName&lt;/span>: nginx-ingress-dapr
+&lt;span style="color:#66d9ef">servicePort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that the rule is calling the &lt;em>nginx-ingress-dapr&lt;/em> service which was created by Dapr when we deployed the Daprized version of the ingress controller. This means that all trafic with the &lt;em>hydra&lt;/em> host will be sent to the Dapr sidecar of your NGINX controller pod.&lt;/p>
+&lt;p>Deploy the ingress rule:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f ./ingress.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-daprized-application">Test the &amp;ldquo;Daprized&amp;rdquo; application&lt;/h2>
+&lt;p>To test the application we&amp;rsquo;ll need the public IP of the ingress service, so run the following command and copy the resulting IP address:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get service --selector&lt;span style="color:#f92672">=&lt;/span>app&lt;span style="color:#f92672">=&lt;/span>nginx-ingress,component&lt;span style="color:#f92672">=&lt;/span>controller -o jsonpath&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;{.items[*].status.loadBalancer.ingress[0].ip}&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now make a simple curl request, using the &lt;a href="https://github.com/dapr/docs/blob/master/reference/api/service_invocation_api.md">Dapr invocation api specification&lt;/a>, to the application:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">curl -k -H &lt;span style="color:#e6db74">&amp;#34;Host: hydra&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;https://&amp;lt;ingress ip&amp;gt;/v1.0/invoke/dni/method/api/validate?dni=54495436H&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything runs as expected you should get the following result:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">true
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p>
+&lt;p>Learn more about Dapr &lt;a href="https://github.com/dapr/docs/tree/master/">here&lt;/a> and Dapr service invocation &lt;a href="https://github.com/dapr/docs/tree/master/howto/invoke-and-discover-services">here&lt;/a>&lt;/p>
+&lt;h2 id="references">References&lt;/h2>
+&lt;p>[1] Image from the &lt;a href="https://github.com/dapr/docs/blob/master/presentations/Dapr%20Presentation%20Deck.pptx">Dapr Predentation deck&lt;/a>&lt;/p></description></item><item><title>Reading Kubernetes Secrets with Dapr and .NET Core</title><link>https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/</link><pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/</guid><description>&lt;p>&lt;a href="https://dapr.io">Dapr&lt;/a> is an event-driven, portable runtime for building microservices on cloud and edge.&lt;/p>
+&lt;p>&lt;a href="https://dapr.io">Dapr&lt;/a> supports the fundamental features you&amp;rsquo;ll need such as: service invocation, state management, publish/subscribe messaging and since version &lt;a href="https://github.com/dapr/dapr/releases/tag/v0.5.0">0.5.0&lt;/a> the ability to read from secret stores!&lt;/p>
+&lt;p>This post will show you to read kubernetes secrets using &lt;a href="https://dapr.io">Dapr&lt;/a> and .NET Core:&lt;/p>
+&lt;h2 id="prerequistes">Prerequistes&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://dotnet.microsoft.com/download">.Net Core SDK 3.1&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/dapr/cli">Dapr CLI&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/dapr/dotnet-sdk">Dapr DotNet SDK&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.docker.com/">Docker&lt;/a>&lt;/li>
+&lt;li>A working &lt;a href="https://kubernetes.io/">kubernetes&lt;/a> cluster&lt;/li>
+&lt;/ul>
+&lt;h2 id="create-an-net-core-project-and-add-dependencies">Create an .NET Core project and add dependencies&lt;/h2>
+&lt;p>Open the command line and type:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">dotnet new web -o dapr.k8s.secrets
+cd dapr.k8s.secrets
+dotnet add package Dapr.Client -v 0.5.0-preview02
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="update-startupcs">Update Startup.cs&lt;/h2>
+&lt;p>Update &lt;em>Startup.cs&lt;/em> with the following contents in order to expose a &lt;em>secret&lt;/em> endpoint and use &lt;a href="https://dapr.io">Dapr&lt;/a> to fetch a kubernetes secret:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> dapr.k8s.secrets
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System.Text.Json;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.DependencyInjection;
+&lt;span style="color:#66d9ef">using&lt;/span> Dapr.Client;
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Startup&lt;/span>
+{
+&lt;span style="color:#75715e">// Dapr listens for requets on localhost
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> localhost = &lt;span style="color:#e6db74">&amp;#34;127.0.0.1&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Get the Dapr gRPC port
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> daprPort =&amp;gt; Environment.GetEnvironmentVariable(&lt;span style="color:#e6db74">&amp;#34;DAPR_GRPC_PORT&amp;#34;&lt;/span>) ?? &lt;span style="color:#e6db74">&amp;#34;50001&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">public&lt;/span> Startup(IConfiguration configuration)
+{
+Configuration = configuration;
+}
+&lt;span style="color:#66d9ef">public&lt;/span> IConfiguration Configuration { &lt;span style="color:#66d9ef">get&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> ConfigureServices(IServiceCollection services)
+{
+&lt;span style="color:#75715e">// Create Dapr Client
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> DaprClientBuilder()
+.UseEndpoint(&lt;span style="color:#e6db74">$&amp;#34;https://{localhost}:{daprPort}&amp;#34;&lt;/span>)
+.Build();
+&lt;span style="color:#75715e">// Add the DaprClient to DI.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> services.AddSingleton&amp;lt;DaprClient&amp;gt;(client);
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Configure(IApplicationBuilder app, IWebHostEnvironment env, DaprClient client)
+{
+&lt;span style="color:#66d9ef">if&lt;/span> (env.IsDevelopment())
+{
+app.UseDeveloperExceptionPage();
+}
+app.UseRouting();
+app.UseEndpoints(endpoints =&amp;gt;
+{
+&lt;span style="color:#75715e">// Add the secrets route
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> endpoints.MapGet(&lt;span style="color:#e6db74">&amp;#34;secret&amp;#34;&lt;/span>, Secret);
+});
+&lt;span style="color:#66d9ef">async&lt;/span> Task Secret(HttpContext context)
+{
+&lt;span style="color:#75715e">// Get the secret from kubernetes
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> secretValues = &lt;span style="color:#66d9ef">await&lt;/span> client.GetSecretAsync(
+&lt;span style="color:#e6db74">&amp;#34;kubernetes&amp;#34;&lt;/span>, &lt;span style="color:#75715e">// Name of the Dapr Secret Store
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#e6db74">&amp;#34;super-secret&amp;#34;&lt;/span>, &lt;span style="color:#75715e">// Name of the k8s secret
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Dictionary&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;() { { &lt;span style="color:#e6db74">&amp;#34;namespace&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;default&amp;#34;&lt;/span> } }); &lt;span style="color:#75715e">// Namespace where the k8s secret is deployed
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Get the secret value
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> secretValue = secretValues[&lt;span style="color:#e6db74">&amp;#34;super-secret&amp;#34;&lt;/span>];
+context.Response.ContentType = &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">await&lt;/span> JsonSerializer.SerializeAsync(context.Response.Body, secretValue);
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-a-dockerfile-with-the-following-contents">Create a Dockerfile with the following contents:&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">FROM mcr.microsoft.com/dotnet/core/sdk:&lt;span style="color:#ae81ff">3.1&lt;/span> AS builder
+WORKDIR /app
+&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> caches restore result &lt;span style="color:#66d9ef">by&lt;/span> copying csproj file separately
+COPY *.csproj .
+RUN dotnet restore
+COPY . .
+RUN dotnet publish --output /app/ --configuration Release
+RUN sed -n &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>s:.*&amp;lt;AssemblyName&amp;gt;&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>(.*&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>)&amp;lt;/AssemblyName&amp;gt;.*:&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>:p&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span> *.csproj &amp;gt; __assemblyname
+RUN &lt;span style="color:#66d9ef">if&lt;/span> [ ! -s __assemblyname ]; then filename=&lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>(ls *.csproj); echo &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>{filename%.*} &amp;gt; __assemblyname; fi
+&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> Stage &lt;span style="color:#ae81ff">2&lt;/span>
+FROM mcr.microsoft.com/dotnet/core/aspnet:&lt;span style="color:#ae81ff">3.1&lt;/span>
+WORKDIR /app
+COPY --&lt;span style="color:#66d9ef">from&lt;/span>=builder /app .
+ENV PORT &lt;span style="color:#ae81ff">80&lt;/span>
+EXPOSE &lt;span style="color:#ae81ff">80&lt;/span>
+ENTRYPOINT dotnet &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>(cat /app/__assemblyname).dll
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="build-the-docker-image-and-push-it-to-a-container-registry">Build the Docker image and push it to a container registry&lt;/h2>
+&lt;p>I&amp;rsquo;ll be pushing the container to &lt;a href="https://hub.docker.com/r/cmendibl3/dapr-k8s-secrets">Docker Hub&lt;/a>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell"> docker build -t cmendibl3/dapr-k8s-secrets:1.0.0 .
+docker push cmendibl3/dapr-k8s-secrets:1.0.0
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-manifest-and-deploy-the-application-to-kubernetes">Create manifest and deploy the application to kubernetes&lt;/h2>
+&lt;p>Create a &lt;em>deployment.yaml&lt;/em> with the following contents (remember to replace the image with your own values):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#75715e"># ASP.NET Core Application&lt;/span>
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dapr-k8s-secrets
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#66d9ef">template&lt;/span>:
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: dapr-k8s-secrets
+&lt;span style="color:#66d9ef">aadpodidbinding&lt;/span>: requires-vault
+&lt;span style="color:#66d9ef">annotations&lt;/span>:
+&lt;span style="color:#66d9ef">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dapr-k8s-secrets&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: dapr-k8s-secrets
+&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/dapr-k8s-secrets:&lt;span style="color:#ae81ff">1.0.0&lt;/span>
+&lt;span style="color:#66d9ef">ports&lt;/span>:
+- &lt;span style="color:#66d9ef">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#66d9ef">imagePullPolicy&lt;/span>: Always
+---
+&lt;span style="color:#75715e"># Create a Kubernetes Secret&lt;/span>
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Secret
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: super-secret
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;span style="color:#66d9ef">type&lt;/span>: Opaque
+&lt;span style="color:#66d9ef">data&lt;/span>:
+&lt;span style="color:#66d9ef">super-secret&lt;/span>: eW91ciBzdXBlciBzZWNyZXQK
+---
+&lt;span style="color:#75715e"># If RBAC is enabled in K8s, give the default service account access to read secrets in the default namespace&lt;/span>
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: rbac.authorization.k8s.io/v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: ClusterRoleBinding
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dapr-secret-reader
+&lt;span style="color:#66d9ef">roleRef&lt;/span>:
+&lt;span style="color:#66d9ef">apiGroup&lt;/span>: rbac.authorization.k8s.io
+&lt;span style="color:#66d9ef">kind&lt;/span>: ClusterRole
+&lt;span style="color:#66d9ef">name&lt;/span>: secret-reader
+&lt;span style="color:#66d9ef">subjects&lt;/span>:
+- &lt;span style="color:#66d9ef">kind&lt;/span>: ServiceAccount
+&lt;span style="color:#66d9ef">name&lt;/span>: default
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you haven&amp;rsquo;t installed Dapr in your kuberntes cluster run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dapr init --kubernetes
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now deploy the application to kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f ./deployment.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-application">Test the application&lt;/h2>
+&lt;p>Get the pod name and execute a port forward to test the API&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$pod &lt;span style="color:#f92672">=&lt;/span> kubectl get po --selector&lt;span style="color:#f92672">=&lt;/span>app&lt;span style="color:#f92672">=&lt;/span>dapr-k8s-secrets -n default -o jsonpath&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span>
+kubectl port-forward $pod 80:80
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run the following command in other terminal:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">curl http://localhost/secret
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything is working you should read:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">&lt;span style="color:#e6db74">&amp;#34;your super secret&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p>
+&lt;p>Please find all code and files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.k8s.secrets">here&lt;/a>, and learn more about Dapr and the Secret API &lt;a href="https://github.com/dapr/docs/tree/master/concepts/secrets">here&lt;/a>&lt;/p></description></item><item><title>Dapr: Debugging .NET Core with Visual Studio Code</title><link>https://carlos.mendible.com/2020/02/09/dapr-debugging-dotnetcore-with-visual-studio-code/</link><pubDate>Sun, 09 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/02/09/dapr-debugging-dotnetcore-with-visual-studio-code/</guid><description>&lt;p>So you are new to &lt;a href="https://dapr.io">Dapr&lt;/a> and you are trying to understand how it works with you .NET Core application. You already tried launching your app with the Dapr CLI and then you find yourself wondering on how to debug the mix with Visual Studio Code.&lt;/p>
+&lt;p>Well, follow this simple steps and you&amp;rsquo;ll be ready:&lt;/p>
+&lt;h2 id="modify-launchjson">Modify launch.json&lt;/h2>
+&lt;p>Change the &lt;strong>preLaunchTask&lt;/strong> so instead it calls a task named &lt;strong>daprd-debug&lt;/strong> instead of &lt;strong>build&lt;/strong>&lt;/p>
+&lt;p>Your &lt;strong>launch.json&lt;/strong> file should look like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">IntelliSense&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">learn&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">about&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">possible&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">attributes.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Hover&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">view&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">descriptions&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">of&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">existing&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">attributes.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">For&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">more&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">information,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">visit:&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">https://go.microsoft.com/fwlink/?linkid=830387&lt;/span>
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.2.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;configurations&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.NET Core Launch (web)&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;coreclr&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;request&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;launch&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;preLaunchTask&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd-debug&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;program&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}/bin/Debug/netcoreapp3.1/&amp;lt;your assembly name&amp;gt;.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [],
+&lt;span style="color:#f92672">&amp;#34;cwd&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;stopAtEntry&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;serverReadyAction&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;action&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;openExternally&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;pattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^\\s*Now listening on:\\s+(https?://\\S+)&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;env&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;ASPNETCORE_ENVIRONMENT&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Development&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;sourceFileMap&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;/Views&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}/Views&amp;#34;&lt;/span>
+}
+},
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.NET Core Attach&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;coreclr&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;request&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;attach&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;processId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${command:pickProcess}&amp;#34;&lt;/span>
+}
+]
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="modify-tasksjson">Modify tasks.json&lt;/h2>
+&lt;p>A new task to &lt;strong>tasks.json&lt;/strong> and name it &lt;strong>daprd-debug&lt;/strong> or whatever name you choosed in te previous step.&lt;/p>
+&lt;p>Your &lt;strong>tasks.json&lt;/strong> should look like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;tasks&amp;#34;&lt;/span>: [
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Ommited&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">tasks.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">...&lt;/span>
+{
+&lt;span style="color:#f92672">&amp;#34;label&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd-debug&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [
+&lt;span style="color:#e6db74">&amp;#34;-dapr-id&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;routing&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;-app-port&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;5000&amp;#34;&lt;/span>
+],
+&lt;span style="color:#f92672">&amp;#34;isBackground&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;problemMatcher&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;pattern&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;regexp&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;file&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;location&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">2&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;message&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;background&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;beginsPattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^.*starting Dapr Runtime.*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;endsPattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^.*waiting on port.*&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;dependsOn&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;build&amp;#34;&lt;/span>
+}
+]
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note:&lt;/strong> the new task depends on the &lt;strong>build&lt;/strong> task.&lt;/p>
+&lt;h2 id="hit-f5-and-enjoy">Hit F5 and enjoy&lt;/h2>
+&lt;p>Hit F5 and enjoy debugging your &amp;ldquo;Daprized&amp;rdquo; .NET Core application.&lt;/p>
+&lt;p>You can download a working sample from this &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.debug.vscode/">repo&lt;/a>.&lt;/p></description></item><item><title>MongoDB Enterprise Operator: Deploying MongoDB in AKS</title><link>https://carlos.mendible.com/2020/02/09/mongodb-enterprise-operator-deploying-mongodb-in-aks/</link><pubDate>Sun, 09 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/02/09/mongodb-enterprise-operator-deploying-mongodb-in-aks/</guid><description>&lt;p>a couple of weeks ago I was trying to deploy MongoDB in AKS using the &lt;a href="https://docs.mongodb.com/kubernetes-operator/master/tutorial/install-k8s-operator/">MongoDB Enterprise Operator&lt;/a> and had trouble finding a simple tutorial to make the thing work. This post intends to fill that gap with a straight to the point approach.&lt;/p>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;p>Be sure to deploy AKS with a set of nodes with at least 8GB of RAM. I used &lt;strong>Standard_D3_v2&lt;/strong>&lt;/p>
+&lt;h2 id="first-clone-the-mongodb-enterprise-kubernetes-repo">First clone the MongoDB Enterprise Kubernetes repo&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">git clone https://github.com/mongodb/mongodb-enterprise-kubernetes.git
+cd mongodb-enterprise-kubernetes
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="create-the-mongodb-namespace-inside-your-cluster">Create the MongoDB namespace inside your cluster&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl create namespace mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="deploy-the-custom-resource-definitions">Deploy the Custom Resource Definitions&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f crds.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="deploy-the-mongodb-enterprise-operator">Deploy the MongoDB Enterprise Operator&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f mongodb-enterprise.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="create-a-secret-for-the-ops-manager">Create a secret for the Ops Manager&lt;/h2>
+&lt;p>As part of the installation you&amp;rsquo;ll have to deploy the Ops Manager to the cluster. Be sure to set a complex password otherwise the Ops Manager wont start.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl create secret generic ops-manager-admin-secret &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>Username&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Username&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>Password&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Password&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>FirstName&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Name&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>LastName&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Last Name&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
+-n mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="deploy-the-ops-manager">Deploy the Ops Manager&lt;/h2>
+&lt;p>Create &lt;strong>ops-manager.yaml&lt;/strong> with the following contents (Note that we are using 1 replica):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: mongodb.com/v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: MongoDBOpsManager
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: ops-manager
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#75715e"># the number of Ops Manager instances to run. Set to value bigger&lt;/span>
+&lt;span style="color:#75715e"># than 1 to get high availability and upgrades without downtime&lt;/span>
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#75715e"># the version of Ops Manager distro to use&lt;/span>
+&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.4&lt;/span>
+&lt;span style="color:#75715e"># the name of the secret containing admin user credentials.&lt;/span>
+&lt;span style="color:#75715e"># Either remove the secret or change the password using Ops Manager UI after the Ops Manager&lt;/span>
+&lt;span style="color:#75715e"># resource is created!&lt;/span>
+&lt;span style="color:#66d9ef">adminCredentials&lt;/span>: ops-manager-admin-secret
+&lt;span style="color:#75715e"># the Ops Manager configuration. All the values must be of type string&lt;/span>
+&lt;span style="color:#66d9ef">configuration&lt;/span>:
+&lt;span style="color:#66d9ef">mms.fromEmailAddr&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;admin@thecompany.com&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># the application database backing Ops Manager. Replica Set is the only supported type&lt;/span>
+&lt;span style="color:#75715e"># Application database has the SCRAM-SHA authentication mode always enabled&lt;/span>
+&lt;span style="color:#66d9ef">applicationDatabase&lt;/span>:
+&lt;span style="color:#66d9ef">members&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
+&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.0&lt;/span>
+&lt;span style="color:#66d9ef">persistent&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#66d9ef">podSpec&lt;/span>:
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.25&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the Ops Manager:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f .&lt;span style="color:#ae81ff">\o&lt;/span>ps-manager.yaml -n mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="wait-until-the-ops-manager-is-ready">Wait until the Ops Manager is ready&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get om -n mongodb -o yaml -w
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="port-forward-so-you-can-access-ops-manager-from-your-pc">Port Forward so you can access Ops Manager from your PC&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl port-forward pods/ops-manager-0 8080:8080 -n mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="setup-de-ops-manager">Setup de Ops Manager&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Login into the Ops Manager (http://localhost:8080) using the same user and password you deployed as a secret.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a href="http://docs.opsmanager.mongodb.com/current/tutorial/manage-organizations/">Create an Organization&lt;/a>. Copy the &lt;strong>Organnization Id&lt;/strong> so you can use it later.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a href="https://docs.opsmanager.mongodb.com/rapid/tutorial/configure-public-api-access/#configure-public-api-access">Create Public &amp;amp; Private Key for the Organization&lt;/a>. Copy both keys so you can use them later.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a href="https://docs.opsmanager.mongodb.com/rapid/tutorial/configure-public-api-access/#create-org-app-api-key">White List the Operator IPs&lt;/a>. To get the IPs run:&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get po --selector&lt;span style="color:#f92672">=&lt;/span>app&lt;span style="color:#f92672">=&lt;/span>mongodb-enterprise-operator -n mongodb -o jsonpath&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;{.items[*].status.podIP}&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="create-a-secret-that-will-be-used-by-the-operator-to-connect-with-the-ops-manager">Create a secret that will be used by the operator to connect with the ops manager&lt;/h2>
+&lt;p>Use the Public and Private keys copied in previous steps to run tyhe following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl -n mongodb &lt;span style="color:#e6db74">`&lt;/span>
+create secret generic my-credentials &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;user=&amp;lt;private key&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;publicApiKey=&amp;lt;public key&amp;gt;&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="create-a-project">Create a project&lt;/h2>
+&lt;p>Create &lt;strong>project.yaml&lt;/strong> with the following contents and be sure to replace the &lt;strong>Organization Id&lt;/strong> you copied in previous steps:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: ConfigMap
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: mongodb-test
+&lt;span style="color:#66d9ef">data&lt;/span>:
+&lt;span style="color:#66d9ef">projectName&lt;/span>: mongodb-test
+&lt;span style="color:#66d9ef">baseUrl&lt;/span>: http://ops-manager-svc.mongodb.svc.cluster.local:&lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;span style="color:#66d9ef">orgId&lt;/span>: &amp;lt;Organization Id&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the project ConfigMap definition:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply .&lt;span style="color:#ae81ff">\p&lt;/span>roject.yaml -n mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="create-a-standalone-mongodb-instance">Create a standalone MongoDB instance&lt;/h2>
+&lt;p>Create &lt;strong>standalone.yaml&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: mongodb.com/v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: MongoDB
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: my-standalone
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.1&lt;/span>
+&lt;span style="color:#66d9ef">type&lt;/span>: Standalone
+&lt;span style="color:#66d9ef">opsManager&lt;/span>:
+&lt;span style="color:#66d9ef">configMapRef&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: mongodb-test
+&lt;span style="color:#66d9ef">credentials&lt;/span>: my-credentials
+&lt;span style="color:#75715e"># This flag allows the creation of pods without persistent volumes. This is for&lt;/span>
+&lt;span style="color:#75715e"># testing only, and must not be used in production. &amp;#39;false&amp;#39; will disable&lt;/span>
+&lt;span style="color:#75715e"># Persistent Volume Claims. The default is &amp;#39;true&amp;#39;&lt;/span>
+&lt;span style="color:#66d9ef">persistent&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the standalone MongoDB:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f .&lt;span style="color:#ae81ff">\s&lt;/span>tandalone.yaml -n mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;p>Enjoy! You have MongoDB up and running!&lt;/p>
+&lt;p>To learn more about the MongoDB Enterprise Operator please check &lt;a href="https://docs.mongodb.com/kubernetes-operator/master/tutorial/install-k8s-operator/">here&lt;/a>.&lt;/p></description></item><item><title>Visual Studio Code Remote Containers: Jekyll</title><link>https://carlos.mendible.com/2020/01/10/vs-code-remote-containers-jekyll/</link><pubDate>Fri, 10 Jan 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/01/10/vs-code-remote-containers-jekyll/</guid><description>&lt;p>For the last 3 years this blog was written using &lt;a href="https://jekyllrb.com/docs/installation/">Jekyll&lt;/a> which has a series of requirements such as Ruby that I don&amp;rsquo;t want to keep installing or maintaining on my PC. So I created this Developer Container for those who want to use Jekyll from an isolated container.&lt;/p>
+&lt;p>Let&amp;rsquo;s check the container definition:&lt;/p>
+&lt;h2 id="1-devcontainerjson-file">1. devcontainer.json file&lt;/h2>
+&lt;hr>
+&lt;p>This file configures the remote container with the specified extensions&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Jekyll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;dockerFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Dockerfile&amp;#34;&lt;/span>,
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;settings&amp;#39;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">set&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">*default*&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">specific&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">settings.json&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">values&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">on&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">create.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">You&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">can&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">edit&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">these&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">settings&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">after&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">using&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">File&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Preferences&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Settings&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Remote.&lt;/span>
+&lt;span style="color:#f92672">&amp;#34;settings&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;terminal.integrated.shell.linux&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;/bin/bash&amp;#34;&lt;/span>
+},
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;appPort&amp;#39;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">with&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">published&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">ports.&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">If&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">port&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">isn&amp;#39;t&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">working,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">be&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">sure&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">your&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">server&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">accepts&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">connections&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">from&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">all&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">interfaces&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">(0.0.0.0&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">or&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;*&amp;#39;),&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">not&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">just&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">localhost.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;appPort&amp;#34;&lt;/span>: [&lt;span style="color:#e6db74">&amp;#34;3000:3000&amp;#34;&lt;/span>],
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">run&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">commands&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">after&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">is&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">created.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;postCreateCommand&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;cd ${input:projectName} &amp;amp;&amp;amp; bundle install&amp;#34;&lt;/span>,
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">non-root&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">user.&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">On&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Linux,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">this&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">will&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">prevent&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">new&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">files&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">getting&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">created&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">as&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">root,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">but&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">you&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">may&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">need&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">update&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">USER_UID&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">and&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">USER_GID&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">in&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">.devcontainer/Dockerfile&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">match&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">your&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">user&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">if&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">not&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">1000.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;runArgs&amp;#34;&lt;/span>: [ &lt;span style="color:#e6db74">&amp;#34;-u&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;vscode&amp;#34;&lt;/span> ],
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Add&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">IDs&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">of&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">extensions&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">you&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">want&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">installed&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">when&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">is&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">created&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">in&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">array&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">below.&lt;/span>
+&lt;span style="color:#f92672">&amp;#34;extensions&amp;#34;&lt;/span>: []
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-dockerfile">2. Dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>This is the Dockerfile with all the tooling for the Jekyll environment.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-Dockerfile" data-lang="Dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> debian:latest&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Avoid warnings by switching to noninteractive&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>noninteractive
+&lt;span style="color:#75715e"># This Dockerfile adds a non-root &amp;#39;vscode&amp;#39; user with sudo access. However, for Linux,&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># this user&amp;#39;s GID/UID must match your local user UID/GID to avoid permission issues&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># with bind mounts. Update USER_UID / USER_GID if yours is not 1000. See&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># https://aka.ms/vscode-remote/containers/non-root-user for details.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ARG&lt;/span> USERNAME&lt;span style="color:#f92672">=&lt;/span>vscode
+&lt;span style="color:#66d9ef">ARG&lt;/span> USER_UID&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1000&lt;/span>
+&lt;span style="color:#66d9ef">ARG&lt;/span> USER_GID&lt;span style="color:#f92672">=&lt;/span>$USER_UID&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils dialog 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install vim, git, process tools, lsb-release&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> git &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install ruby&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> make &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> build-essential &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ruby &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ruby-dev &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install jekyll&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> gem install &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> bundler &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> jekyll &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Create a non-root user to use if preferred - see https://aka.ms/vscode-remote/containers/non-root-user.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> groupadd --gid $USER_GID $USERNAME &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e"># [Optional] Add sudo support for the non-root user&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y sudo &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo $USERNAME ALL&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">\(&lt;/span>root&lt;span style="color:#ae81ff">\)&lt;/span> NOPASSWD:ALL &amp;gt; /etc/sudoers.d/$USERNAME&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> chmod &lt;span style="color:#ae81ff">0440&lt;/span> /etc/sudoers.d/$USERNAME &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf /var/lib/apt/lists/*&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about this Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-blockchainhttps://github.com/microsoft/vscode-dev-containers/tree/master/containers/jekyll">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>AKS: Read Azure Key Vault secrets using AAD Pod Identity</title><link>https://carlos.mendible.com/2019/11/30/aks-read-azure-key-vault-secrets-using-aad-pod-identity/</link><pubDate>Sat, 30 Nov 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/11/30/aks-read-azure-key-vault-secrets-using-aad-pod-identity/</guid><description>&lt;p>What if I tell you that it&amp;rsquo;s possible to connect you AKS pods to an &lt;strong>Azure Key Vault&lt;/strong> using identities but without having to use credentials in an explicit way?&lt;/p>
+&lt;p>Well with &lt;strong>AAD Pod Identities&lt;/strong> you can enable your Kubernetes applications to access Azure cloud resources securely using &lt;strong>Azure Active Directory&lt;/strong> (AAD) including &lt;strong>Azure Key Vault&lt;/strong>.&lt;/p>
+&lt;p>The following &lt;a href="https://gist.github.com/cmendible/4dd5c48a45480d5a0db0d6ed68e4cd01">gist&lt;/a> show a &lt;strong>PowerShell&lt;/strong> script that will help you setup everything inside your RBAC enabled AKS cluster. You will also need to have &lt;strong>Azure CLI&lt;/strong> installed on your box and an &lt;strong>Azure Key Vault&lt;/strong> deployed in the same resource group where your AKS lives.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#66d9ef">param&lt;/span>(
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$resourceGroupName,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$identityName,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$identitySelector,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$aksName,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$keyVaultName
+)
+&lt;span style="color:#75715e"># Get the current subscription&lt;/span>
+$subscriptionId = (az account show | ConvertFrom-Json).id
+&lt;span style="color:#75715e"># Get aks so we can extract it&amp;#39;s Service Princpal later&lt;/span>
+$aks = az aks show `
+-g $resourceGroupName `
+-n $aksName | ConvertFrom-Json
+&lt;span style="color:#75715e"># Create Managed Identity&lt;/span>
+$identity = az identity create `
+-g $resourceGroupName `
+-n $identityName `
+-o json | ConvertFrom-Json
+&lt;span style="color:#75715e"># Assign the Reader role to the Managed Identity&lt;/span>
+az role assignment create `
+--role &lt;span style="color:#e6db74">&amp;#34;Reader&amp;#34;&lt;/span> `
+--assignee $identity.principalId `
+--scope /subscriptions/$subscriptionId/resourcegroups/$resourceGroupName
+&lt;span style="color:#75715e"># Assign the Managed Identity Operator role to the AKS Service Principal&lt;/span>
+az role assignment create `
+--role &lt;span style="color:#e6db74">&amp;#34;Managed Identity Operator&amp;#34;&lt;/span> `
+--assignee $aks.servicePrincipalProfile.clientId `
+--scope $identity.id
+&lt;span style="color:#75715e"># Add policy to the Key Vault so the Managed Identity can read secrets&lt;/span>
+az keyvault set-policy `
+--name $keyVaultName `
+--spn $identity.clientId `
+--secret-permissions get list
+&lt;span style="color:#75715e"># Enable AAD Pod Identity on AKS&lt;/span>
+kubectl apply &lt;span style="color:#f92672">-f&lt;/span> https&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml
+&lt;span style="color:#75715e"># Create the Azure Identity and AzureIdentityBinding yaml on the fly&lt;/span>
+$k8sAzureIdentityandBinding = &lt;span style="color:#e6db74">@&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">apiVersion: &amp;#34;aadpodidentity.k8s.io/v1&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">kind: AzureIdentity
+&lt;/span>&lt;span style="color:#e6db74">metadata:
+&lt;/span>&lt;span style="color:#e6db74"> name: &lt;/span>$($identityName)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">spec:
+&lt;/span>&lt;span style="color:#e6db74"> type: 0
+&lt;/span>&lt;span style="color:#e6db74"> ResourceID: &lt;/span>$($identity.id)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74"> ClientID: &lt;/span>$($identity.clientId)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">---
+&lt;/span>&lt;span style="color:#e6db74">apiVersion: &amp;#34;aadpodidentity.k8s.io/v1&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">kind: AzureIdentityBinding
+&lt;/span>&lt;span style="color:#e6db74">metadata:
+&lt;/span>&lt;span style="color:#e6db74"> name: &lt;/span>$($identityName)&lt;span style="color:#e6db74">-identity-binding
+&lt;/span>&lt;span style="color:#e6db74">spec:
+&lt;/span>&lt;span style="color:#e6db74"> AzureIdentity: &lt;/span>$($identityName)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74"> Selector: &lt;/span>$($identitySelector)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">&amp;#34;@&lt;/span>
+&lt;span style="color:#75715e"># Deploy the yamls &lt;/span>
+$k8sAzureIdentityandBinding | kubectl apply &lt;span style="color:#f92672">-f&lt;/span> -
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The script creates a Manged Identity, assigns some permissions to it and creates a policy inside the Key Vault enabling the Identity to list and get secrets.&lt;/p>
+&lt;p>Then the &lt;strong>&lt;a href="https://github.com/Azure/aad-pod-identity#components">Managed Identity Controller (MIC) deployment and the Node Managed Identity (NMI) daemon set&lt;/a>&lt;/strong> are deployed inside the cluster.&lt;/p>
+&lt;p>In the last step, two resources are deployed. The first one is an &lt;strong>AzureIdentity&lt;/strong> that will be used to identify the Managed Identity inside your cluster and the second one is an &lt;strong>AzureIdentityBinding&lt;/strong> that binds the azure Identity with a Selector.&lt;/p>
+&lt;p>Let&amp;rsquo;s run the PowerShell command with the following parameters:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Resource Group&lt;/strong>: myResourceGroup&lt;/li>
+&lt;li>&lt;strong>Managed Identity Name&lt;/strong>: myId&lt;/li>
+&lt;li>&lt;strong>Identity Selector&lt;/strong>: requires-vault&lt;/li>
+&lt;li>&lt;strong>AKS Name&lt;/strong>: myAKS&lt;/li>
+&lt;li>&lt;strong>Key Vault Name&lt;/strong>: myKeyVault&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">.\SetupPodIdentityKeyVaultIntegration.ps1 myResourceGroup myId requires-vault myAKS myKeyVault
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Once the command is done, any pod marked with the &lt;em>&lt;strong>aadpodidbinding: requires-vault&lt;/strong>&lt;/em> label will get an Identity assigned.&lt;/p>
+&lt;p>To check that everything is working as expected you can create a &lt;strong>deployment.yaml&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: az-keyvault-reader-test
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#66d9ef">template&lt;/span>:
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: az-keyvault-reader-test
+&lt;span style="color:#66d9ef">aadpodidbinding&lt;/span>: requires-vault
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: busybox
+&lt;span style="color:#66d9ef">image&lt;/span>: busybox
+&lt;span style="color:#66d9ef">command&lt;/span>:
+[
+&lt;span style="color:#e6db74">&amp;#34;sh&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;-c&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;wget --tries=70 -qO- http://127.0.0.1:8333/secrets/&amp;lt;SECRET_NAME&amp;gt;/&amp;#34;&lt;/span>,
+]
+&lt;span style="color:#66d9ef">imagePullPolicy&lt;/span>: Always
+&lt;span style="color:#66d9ef">resources&lt;/span>:
+&lt;span style="color:#66d9ef">requests&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;4Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;100m&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">limits&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;8Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;200m&amp;#34;&lt;/span>
+- &lt;span style="color:#66d9ef">name&lt;/span>: az-keyvault-reader-sidecar
+&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/az-keyvault-reader:&lt;span style="color:#ae81ff">0.2&lt;/span>
+&lt;span style="color:#66d9ef">imagePullPolicy&lt;/span>: Always
+&lt;span style="color:#66d9ef">env&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: AZURE_KEYVAULT_NAME
+&lt;span style="color:#66d9ef">value&lt;/span>: &amp;lt;AZURE_KEYVAULT_NAME&lt;span style="color:#e6db74">&amp;gt;
+&lt;/span>&lt;span style="color:#e6db74"> resources:&lt;/span>
+&lt;span style="color:#66d9ef">requests&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;8Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;100m&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">limits&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;16Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;200m&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">restartPolicy&lt;/span>: Always
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: Replace the values for &amp;lt;AZURE_KEYVAULT_NAME&amp;gt; with the name of your Key Vault and &amp;lt;SECRET_NAME&amp;gt; with the name of an existing secret stored in your Key Vault:&lt;/p>
+&lt;p>Now deploy to Kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> ./deployment.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and check the logs for the &lt;strong>busybox&lt;/strong> pod:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl logs &lt;span style="color:#f92672">-f&lt;/span> $(kubectl get po --selector=app=az-keyvault-reader-test -o jsonpath=&lt;span style="color:#e6db74">&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span>) -c busybox -w
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything is OK you should see the value of your secret dumped in the logs (Bad security practice here)!!! And yes you did all this without knowing any credentials!&lt;/p>
+&lt;p>Please find the code used to connect to the &lt;strong>Azure KeyVault&lt;/strong> here: &lt;a href="https://github.com/cmendible/az-keyvault-reader/blob/master/src/az-keyvault-reader.go">az-keyvault-reader.go&lt;/a> and check &lt;a href="https://github.com/Azure/aad-pod-identity">AAD Pod Identity&lt;/a> for more information on how this &amp;ldquo;magic&amp;rdquo; works.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Kubernetes: Despliegue en Azure</title><link>https://carlos.mendible.com/2019/11/24/kubernetes-despliegue-en-azure/</link><pubDate>Sun, 24 Nov 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/11/24/kubernetes-despliegue-en-azure/</guid><description>&lt;p>Durante el mes de Octubre tuve la suerte de grabar en LinkedIn Learning mi primer curso online sobre Kubernetes.&lt;/p>
+&lt;p>Aun me queda mucho por aprender y mejorar en este formato, ya que mientras grabas los cursos no recibes feedback inmediato como sí ocurre cuando das una charla o haces una presentación.&lt;/p>
+&lt;h2 id="detalles-del-curso">Detalles del curso&lt;/h2>
+&lt;p>Domina los conceptos básicos de Azure Kubernetes Service o AKS. Introdúcete con este curso en su arquitectura, en la gestión general del servicio y en las operaciones que puede realizar. Además, despliega paso a paso tu primera aplicación en clúster. Al terminar este curso estarás preparado para trabajar con Azure Kubernetes Service y dar el salto a un nivel más avanzado.&lt;/p>
+&lt;p>Os dejo el enlace por &lt;a href="https://www.linkedin.com/learning-login/share?forceAccount=false&amp;amp;redirect=https%3A%2F%2Fwww.linkedin.com%2Flearning%2Fkubernetes-despliegue-en-azure%3Ftrk%3Dshare_ent_url">aquí&lt;/a>&lt;/p>
+&lt;p>Espero que os guste!&lt;/p></description></item><item><title>GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux</title><link>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</link><pubDate>Sun, 04 Aug 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</guid><description>&lt;p>Recently I learned about GitOps which is a way to manage your Kubernetes clusters and the applications you run on top using Git. The idea is that you can declaratively describe the desired state of your systems in Git and roll out changes as soon as merges occur.&lt;/p>
+&lt;p>You can immediately see the main benefits of such an approach: Your Git repositories become the single source of truth for both your infrastructure and application code, allowing the teams to increase productivity and stability (you get the Git log to audit changes).&lt;/p>
+&lt;p>To implement GitOps you can use and configure &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> following some simple steps:&lt;/p>
+&lt;h2 id="1-download-the-helm-template">1. Download the helm template&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">helm fetch `
+--repo https&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//fluxcd.github.io/flux `
+--untar `
+--untardir .\.charts `
+--version 0.10.2 `
+flux
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-bake-the-template-with-your-repo-i-dont-use-tiller">2. Bake the template with your repo (I don&amp;rsquo;t use Tiller)&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">helm template flux `
+--set git.url=&lt;span style="color:#e6db74">&amp;#34;git@github.com:cmendible/kubernetes.samples&amp;#34;&lt;/span> `
+--set git.path=&lt;span style="color:#e6db74">&amp;#34;19.flux&amp;#34;&lt;/span> `
+--set git.pollInterval=&lt;span style="color:#e6db74">&amp;#34;5s&amp;#34;&lt;/span> `
+--namespace flux `
+--output-dir .\.baked .\.charts\fluxcd
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see I&amp;rsquo;m configuring &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> to use my k8s sample repo and the &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/19.flux">19.flux&lt;/a> folder, which contains a simple deployment &lt;a href="https://github.com/cmendible/kubernetes.samples/blob/main/19.flux/dni-function.yaml">file&lt;/a>, but of course you can have more resource definitions.&lt;/p>
+&lt;h2 id="3-deploy-the-configuration-to-your-cluster">3. Deploy the configuration to your cluster&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> .\.baked\flux\templates\
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-get-the-fluxctl-cli">4. Get the fluxctl CLI&lt;/h2>
+&lt;p>Download the &lt;a href="https://github.com/fluxcd/flux/releases/tag/1.13.2">fluxctl CLI&lt;/a>&lt;/p>
+&lt;h2 id="5-use-fluxctl-to-get-the-public-key">5. Use fluxctl to get the public key&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">fluxctl identity --k8s-fwd-ns flux
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This key is needed to sync your cluster state with the Git repository (GitHub): Copy the key you obtained and use it to create a &lt;strong>deploy key&lt;/strong> with write access on your GitHub repository (Settings &amp;gt; Deploy keys &amp;gt; Add deploy key &amp;gt; check Allow write access &amp;gt; paste the Flux public key &amp;gt; click Add key)&lt;/p>
+&lt;p>You are all set. If everything runs smooth you&amp;rsquo;ll find a new deployment in your cluster with the &lt;strong>dni-function&lt;/strong> name.&lt;/p>
+&lt;p>To learn more about GitOps check: &lt;a href="https://www.weave.works/technologies/gitops/">Weaveworks&lt;/a>&lt;/p>
+&lt;p>Click here to learn more about &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Kured: Restart your Azure Kubernetes Service Nodes</title><link>https://carlos.mendible.com/2019/07/28/kured-restart-your-azure-kubernetes-service-nodes/</link><pubDate>Sun, 28 Jul 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/07/28/kured-restart-your-azure-kubernetes-service-nodes/</guid><description>&lt;p>Two weeks ago I got an email message from Microsoft Azure explaining that Azure Kubernetes Services had been patched but that I had to restart my nodes (reboot the clusters) to complete the operation.&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/posts/aks_update_kured.png" alt="The Microsoft Azure email explaining that I had to reboot my clusters">&lt;/p>
+&lt;p>The first thing you need to know is that, when things like this happens, the Azure platform creates a file called &lt;code>/var/run/reboot-required&lt;/code> in each of the nodes of your cluster.&lt;/p>
+&lt;p>The second thing is that a Kubernetes Reboot Daemon named &lt;a href="https://github.com/weaveworks/kured">Kured&lt;/a> exists and if installed in your cluster will run on each pod watching for the existence of the &lt;code>/var/run/reboot-required&lt;/code> file. &lt;a href="https://github.com/weaveworks/kured">Kured&lt;/a> then takes care of the reboots for you so only one node is restarted at a time.&lt;/p>
+&lt;p>So how do you install it and check what&amp;rsquo;s going on with your nodes? Let&amp;rsquo;s see:&lt;/p>
+&lt;h2 id="1-check-the-nodes">1. Check the nodes&lt;/h2>
+&lt;hr>
+&lt;p>Damn I was running the affected kernel version: 4.15.0-1049-azure.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get nodes -o wide
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">NAME STATUS ROLES AGE VERSION EXTERNAL-IP OS-IMAGE KERNEL-VERSION CONTAINER-RUNTIME
+aks-agentpool-14502547-0 Ready agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1049-azure docker://3.0.4
+aks-agentpool-14502547-1 Ready agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1049-azure docker://3.0.4
+aks-agentpool-14502547-2 Ready agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1049-azure docker://3.0.4
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-install-kuredhttpsgithubcomweaveworkskured">2. Install &lt;a href="https://github.com/weaveworks/kured">Kured&lt;/a>&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f https://github.com/weaveworks/kured/releases/download/1.2.0/kured-1.2.0-dockerhub.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-check-the-nodes-again">3. Check the nodes again&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get nodes -o wide
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can see that the first two nodes already restarted and the second has scheduling disabled cause it was still in the process.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">aks-agentpool-14502547-0 Ready agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1049-azure docker://3.0.4
+aks-agentpool-14502547-1 Ready agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1050-azure docker://3.0.4
+aks-agentpool-14502547-2 Ready,SchedulingDisabled agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1050-azure docker://3.0.4
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about &lt;a href="https://github.com/weaveworks/kured">Kured&lt;/a> and the features it offers, please check &lt;a href="https://github.com/weaveworks/kured">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

@@ -1,0 +1,97 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Classifier on Code it Yourself...</title><link>https://carlos.mendible.com/tags/classifier/</link><description>Recent content in Classifier on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 10 Jun 2018 20:39:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/classifier/feed.xml" rel="self" type="application/rss+xml"/><item><title>Simple Machine Learning with .NET Core Sample</title><link>https://carlos.mendible.com/2018/06/10/simple-machine-learning-with-dotnet-core-sample/</link><pubDate>Sun, 10 Jun 2018 20:39:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/06/10/simple-machine-learning-with-dotnet-core-sample/</guid><description>&lt;p>I think that more than a year and a half ago I read &lt;a href="https://www.manning.com/books/real-world-machine-learning">&amp;ldquo;Real-World Machine Learning&amp;rdquo;&lt;/a> by Henrik Brink, Joseph
+Richards, and Mark Fetherolf. A book that is easy to read and goes &amp;ldquo;to the point&amp;rdquo;!!! I&amp;rsquo;m sure you know what I mean.&lt;/p>
+&lt;p>At the time the only thing that prevented me from really enjoying the book samples was that there was no easy way to &amp;ldquo;translate&amp;rdquo; them to .NET Core.&lt;/p>
+&lt;p>Well well, times have changed and now &lt;a href="https://www.microsoft.com/net/learn/apps/machine-learning-and-ai/ml-dotnet/get-started/windows">ML.NET&lt;/a> (aka Microsoft.ML) exists: An open source and cross-platform machine learning framework for .NET.&lt;/p>
+&lt;p>The following sample will show you how to train a model with a binary classifier algorithm to determine if a passenger aboard the Titanic survived or not (Based on the sample provided in chapter 3 of the book).&lt;/p>
+&lt;h2 id="1-create-your-project">1. Create your project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">md titanic.ml
+cd titanic.ml
+dotnet new console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-add-a-reference-to-mlnet">2. Add a reference to ML.NET&lt;/h2>
+&lt;hr>
+&lt;p>The nuget package for ML.NET is: &lt;a href="https://www.nuget.org/packages/Microsoft.ML/">Microsoft.ML&lt;/a> so add a reference to it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.ML -v 0.2.0
+dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-replace-the-content-of-programcs">3. Replace the content of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the content of Program.cs with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.ML;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.ML.Data;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.ML.Runtime.Api;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.ML.Trainers;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.ML.Transforms;
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">namespace&lt;/span> Titanic.ML
+{
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// Create a learning pipeline
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> pipeline = &lt;span style="color:#66d9ef">new&lt;/span> LearningPipeline();
+&lt;span style="color:#75715e">// Load training data and add it to the pipeline
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> dataPath = &lt;span style="color:#e6db74">@&amp;#34;.\data\titanic.training.csv&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> data = &lt;span style="color:#66d9ef">new&lt;/span> TextLoader(dataPath).CreateFrom&amp;lt;TitanicData&amp;gt;(useHeader: &lt;span style="color:#66d9ef">true&lt;/span>, separator: &lt;span style="color:#e6db74">&amp;#39;,&amp;#39;&lt;/span>);
+pipeline.Add(data);
+&lt;span style="color:#75715e">// Transform any text feature to numeric values
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> pipeline.Add(&lt;span style="color:#66d9ef">new&lt;/span> CategoricalOneHotVectorizer(
+&lt;span style="color:#e6db74">&amp;#34;Sex&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Ticket&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Fare&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Cabin&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Embarked&amp;#34;&lt;/span>));
+&lt;span style="color:#75715e">// Put all features into a vector
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> pipeline.Add(&lt;span style="color:#66d9ef">new&lt;/span> ColumnConcatenator(
+&lt;span style="color:#e6db74">&amp;#34;Features&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Pclass&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Sex&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Age&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;SibSp&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Parch&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Ticket&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Fare&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Cabin&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Embarked&amp;#34;&lt;/span>));
+&lt;span style="color:#75715e">// Add a learning algorithm to the pipeline.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// This is a classification scenario (Did this passenger survive?)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> pipeline.Add(&lt;span style="color:#66d9ef">new&lt;/span> FastTreeBinaryClassifier() { NumLeaves = &lt;span style="color:#ae81ff">5&lt;/span>, NumTrees = &lt;span style="color:#ae81ff">5&lt;/span>, MinDocumentsInLeafs = &lt;span style="color:#ae81ff">2&lt;/span> });
+&lt;span style="color:#75715e">// Train your model based on the data set
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Training Titanic.ML model...&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> model = pipeline.Train&amp;lt;TitanicData, TitanicPrediction&amp;gt;();
+&lt;span style="color:#75715e">// Optional: Save the model to a file. You can use teh model in another program!!!
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> modelPath = &lt;span style="color:#e6db74">@&amp;#34;.\data\titanic.model&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">await&lt;/span> model.WriteAsync(modelPath);
+&lt;span style="color:#75715e">// Use your model to make a prediction. Let&amp;#39;s predict what happened to this passenger
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> prediction = model.Predict(&lt;span style="color:#66d9ef">new&lt;/span> TitanicData()
+{
+Pclass = &lt;span style="color:#ae81ff">3f&lt;/span>,
+Name = &lt;span style="color:#e6db74">&amp;#34;Braund, Mr. Owen Harris&amp;#34;&lt;/span>,
+Sex = &lt;span style="color:#e6db74">&amp;#34;male&amp;#34;&lt;/span>,
+Age = &lt;span style="color:#ae81ff">31&lt;/span>,
+SibSp = &lt;span style="color:#ae81ff">0&lt;/span>,
+Parch = &lt;span style="color:#ae81ff">0&lt;/span>,
+Ticket = &lt;span style="color:#e6db74">&amp;#34;335097&amp;#34;&lt;/span>,
+Fare = &lt;span style="color:#e6db74">&amp;#34;7.75&amp;#34;&lt;/span>,
+Cabin = &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+Embarked = &lt;span style="color:#e6db74">&amp;#34;Q&amp;#34;&lt;/span>
+});
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Did this passenger survive? {(prediction.Survived ? &amp;#34;&lt;/span>Yes&lt;span style="color:#e6db74">&amp;#34; : &amp;#34;&lt;/span>No&lt;span style="color:#e6db74">&amp;#34;)}&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Evaluate the model using the test data. In other words let&amp;#39;s test the model
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// to see how accurate it is.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Evaluating Titanic.ML model...&amp;#34;&lt;/span>);
+dataPath = &lt;span style="color:#e6db74">@&amp;#34;.\data\titanic.csv&amp;#34;&lt;/span>;
+data = &lt;span style="color:#66d9ef">new&lt;/span> TextLoader(dataPath).CreateFrom&amp;lt;TitanicData&amp;gt;(useHeader: &lt;span style="color:#66d9ef">true&lt;/span>, separator: &lt;span style="color:#e6db74">&amp;#39;,&amp;#39;&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> evaluator = &lt;span style="color:#66d9ef">new&lt;/span> Microsoft.ML.Models.BinaryClassificationEvaluator();
+&lt;span style="color:#66d9ef">var&lt;/span> metrics = evaluator.Evaluate(model, data);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Accuracy: {metrics.Accuracy:P2}&amp;#34;&lt;/span>);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Auc: {metrics.Auc:P2}&amp;#34;&lt;/span>);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;F1Score: {metrics.F1Score:P2}&amp;#34;&lt;/span>);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note:&lt;/strong> I splitted the original dataset from the &lt;a href="https://github.com/brinkar/real-world-machine-learning">book&lt;/a> for this post.&lt;/p>
+&lt;p>Please find the code and data files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/titanic.ml">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

@@ -1,0 +1,255 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>aks on Code it Yourself...</title><link>https://carlos.mendible.com/tags/aks/</link><description>Recent content in aks on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 30 Nov 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/aks/feed.xml" rel="self" type="application/rss+xml"/><item><title>AKS: Read Azure Key Vault secrets using AAD Pod Identity</title><link>https://carlos.mendible.com/2019/11/30/aks-read-azure-key-vault-secrets-using-aad-pod-identity/</link><pubDate>Sat, 30 Nov 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/11/30/aks-read-azure-key-vault-secrets-using-aad-pod-identity/</guid><description>&lt;p>What if I tell you that it&amp;rsquo;s possible to connect you AKS pods to an &lt;strong>Azure Key Vault&lt;/strong> using identities but without having to use credentials in an explicit way?&lt;/p>
+&lt;p>Well with &lt;strong>AAD Pod Identities&lt;/strong> you can enable your Kubernetes applications to access Azure cloud resources securely using &lt;strong>Azure Active Directory&lt;/strong> (AAD) including &lt;strong>Azure Key Vault&lt;/strong>.&lt;/p>
+&lt;p>The following &lt;a href="https://gist.github.com/cmendible/4dd5c48a45480d5a0db0d6ed68e4cd01">gist&lt;/a> show a &lt;strong>PowerShell&lt;/strong> script that will help you setup everything inside your RBAC enabled AKS cluster. You will also need to have &lt;strong>Azure CLI&lt;/strong> installed on your box and an &lt;strong>Azure Key Vault&lt;/strong> deployed in the same resource group where your AKS lives.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#66d9ef">param&lt;/span>(
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$resourceGroupName,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$identityName,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$identitySelector,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$aksName,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$keyVaultName
+)
+&lt;span style="color:#75715e"># Get the current subscription&lt;/span>
+$subscriptionId = (az account show | ConvertFrom-Json).id
+&lt;span style="color:#75715e"># Get aks so we can extract it&amp;#39;s Service Princpal later&lt;/span>
+$aks = az aks show `
+-g $resourceGroupName `
+-n $aksName | ConvertFrom-Json
+&lt;span style="color:#75715e"># Create Managed Identity&lt;/span>
+$identity = az identity create `
+-g $resourceGroupName `
+-n $identityName `
+-o json | ConvertFrom-Json
+&lt;span style="color:#75715e"># Assign the Reader role to the Managed Identity&lt;/span>
+az role assignment create `
+--role &lt;span style="color:#e6db74">&amp;#34;Reader&amp;#34;&lt;/span> `
+--assignee $identity.principalId `
+--scope /subscriptions/$subscriptionId/resourcegroups/$resourceGroupName
+&lt;span style="color:#75715e"># Assign the Managed Identity Operator role to the AKS Service Principal&lt;/span>
+az role assignment create `
+--role &lt;span style="color:#e6db74">&amp;#34;Managed Identity Operator&amp;#34;&lt;/span> `
+--assignee $aks.servicePrincipalProfile.clientId `
+--scope $identity.id
+&lt;span style="color:#75715e"># Add policy to the Key Vault so the Managed Identity can read secrets&lt;/span>
+az keyvault set-policy `
+--name $keyVaultName `
+--spn $identity.clientId `
+--secret-permissions get list
+&lt;span style="color:#75715e"># Enable AAD Pod Identity on AKS&lt;/span>
+kubectl apply &lt;span style="color:#f92672">-f&lt;/span> https&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml
+&lt;span style="color:#75715e"># Create the Azure Identity and AzureIdentityBinding yaml on the fly&lt;/span>
+$k8sAzureIdentityandBinding = &lt;span style="color:#e6db74">@&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">apiVersion: &amp;#34;aadpodidentity.k8s.io/v1&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">kind: AzureIdentity
+&lt;/span>&lt;span style="color:#e6db74">metadata:
+&lt;/span>&lt;span style="color:#e6db74"> name: &lt;/span>$($identityName)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">spec:
+&lt;/span>&lt;span style="color:#e6db74"> type: 0
+&lt;/span>&lt;span style="color:#e6db74"> ResourceID: &lt;/span>$($identity.id)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74"> ClientID: &lt;/span>$($identity.clientId)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">---
+&lt;/span>&lt;span style="color:#e6db74">apiVersion: &amp;#34;aadpodidentity.k8s.io/v1&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">kind: AzureIdentityBinding
+&lt;/span>&lt;span style="color:#e6db74">metadata:
+&lt;/span>&lt;span style="color:#e6db74"> name: &lt;/span>$($identityName)&lt;span style="color:#e6db74">-identity-binding
+&lt;/span>&lt;span style="color:#e6db74">spec:
+&lt;/span>&lt;span style="color:#e6db74"> AzureIdentity: &lt;/span>$($identityName)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74"> Selector: &lt;/span>$($identitySelector)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">&amp;#34;@&lt;/span>
+&lt;span style="color:#75715e"># Deploy the yamls &lt;/span>
+$k8sAzureIdentityandBinding | kubectl apply &lt;span style="color:#f92672">-f&lt;/span> -
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The script creates a Manged Identity, assigns some permissions to it and creates a policy inside the Key Vault enabling the Identity to list and get secrets.&lt;/p>
+&lt;p>Then the &lt;strong>&lt;a href="https://github.com/Azure/aad-pod-identity#components">Managed Identity Controller (MIC) deployment and the Node Managed Identity (NMI) daemon set&lt;/a>&lt;/strong> are deployed inside the cluster.&lt;/p>
+&lt;p>In the last step, two resources are deployed. The first one is an &lt;strong>AzureIdentity&lt;/strong> that will be used to identify the Managed Identity inside your cluster and the second one is an &lt;strong>AzureIdentityBinding&lt;/strong> that binds the azure Identity with a Selector.&lt;/p>
+&lt;p>Let&amp;rsquo;s run the PowerShell command with the following parameters:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Resource Group&lt;/strong>: myResourceGroup&lt;/li>
+&lt;li>&lt;strong>Managed Identity Name&lt;/strong>: myId&lt;/li>
+&lt;li>&lt;strong>Identity Selector&lt;/strong>: requires-vault&lt;/li>
+&lt;li>&lt;strong>AKS Name&lt;/strong>: myAKS&lt;/li>
+&lt;li>&lt;strong>Key Vault Name&lt;/strong>: myKeyVault&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">.\SetupPodIdentityKeyVaultIntegration.ps1 myResourceGroup myId requires-vault myAKS myKeyVault
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Once the command is done, any pod marked with the &lt;em>&lt;strong>aadpodidbinding: requires-vault&lt;/strong>&lt;/em> label will get an Identity assigned.&lt;/p>
+&lt;p>To check that everything is working as expected you can create a &lt;strong>deployment.yaml&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: az-keyvault-reader-test
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#66d9ef">template&lt;/span>:
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: az-keyvault-reader-test
+&lt;span style="color:#66d9ef">aadpodidbinding&lt;/span>: requires-vault
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: busybox
+&lt;span style="color:#66d9ef">image&lt;/span>: busybox
+&lt;span style="color:#66d9ef">command&lt;/span>:
+[
+&lt;span style="color:#e6db74">&amp;#34;sh&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;-c&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;wget --tries=70 -qO- http://127.0.0.1:8333/secrets/&amp;lt;SECRET_NAME&amp;gt;/&amp;#34;&lt;/span>,
+]
+&lt;span style="color:#66d9ef">imagePullPolicy&lt;/span>: Always
+&lt;span style="color:#66d9ef">resources&lt;/span>:
+&lt;span style="color:#66d9ef">requests&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;4Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;100m&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">limits&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;8Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;200m&amp;#34;&lt;/span>
+- &lt;span style="color:#66d9ef">name&lt;/span>: az-keyvault-reader-sidecar
+&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/az-keyvault-reader:&lt;span style="color:#ae81ff">0.2&lt;/span>
+&lt;span style="color:#66d9ef">imagePullPolicy&lt;/span>: Always
+&lt;span style="color:#66d9ef">env&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: AZURE_KEYVAULT_NAME
+&lt;span style="color:#66d9ef">value&lt;/span>: &amp;lt;AZURE_KEYVAULT_NAME&lt;span style="color:#e6db74">&amp;gt;
+&lt;/span>&lt;span style="color:#e6db74"> resources:&lt;/span>
+&lt;span style="color:#66d9ef">requests&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;8Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;100m&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">limits&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;16Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;200m&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">restartPolicy&lt;/span>: Always
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: Replace the values for &amp;lt;AZURE_KEYVAULT_NAME&amp;gt; with the name of your Key Vault and &amp;lt;SECRET_NAME&amp;gt; with the name of an existing secret stored in your Key Vault:&lt;/p>
+&lt;p>Now deploy to Kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> ./deployment.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and check the logs for the &lt;strong>busybox&lt;/strong> pod:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl logs &lt;span style="color:#f92672">-f&lt;/span> $(kubectl get po --selector=app=az-keyvault-reader-test -o jsonpath=&lt;span style="color:#e6db74">&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span>) -c busybox -w
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything is OK you should see the value of your secret dumped in the logs (Bad security practice here)!!! And yes you did all this without knowing any credentials!&lt;/p>
+&lt;p>Please find the code used to connect to the &lt;strong>Azure KeyVault&lt;/strong> here: &lt;a href="https://github.com/cmendible/az-keyvault-reader/blob/master/src/az-keyvault-reader.go">az-keyvault-reader.go&lt;/a> and check &lt;a href="https://github.com/Azure/aad-pod-identity">AAD Pod Identity&lt;/a> for more information on how this &amp;ldquo;magic&amp;rdquo; works.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Kubernetes: Despliegue en Azure</title><link>https://carlos.mendible.com/2019/11/24/kubernetes-despliegue-en-azure/</link><pubDate>Sun, 24 Nov 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/11/24/kubernetes-despliegue-en-azure/</guid><description>&lt;p>Durante el mes de Octubre tuve la suerte de grabar en LinkedIn Learning mi primer curso online sobre Kubernetes.&lt;/p>
+&lt;p>Aun me queda mucho por aprender y mejorar en este formato, ya que mientras grabas los cursos no recibes feedback inmediato como sí ocurre cuando das una charla o haces una presentación.&lt;/p>
+&lt;h2 id="detalles-del-curso">Detalles del curso&lt;/h2>
+&lt;p>Domina los conceptos básicos de Azure Kubernetes Service o AKS. Introdúcete con este curso en su arquitectura, en la gestión general del servicio y en las operaciones que puede realizar. Además, despliega paso a paso tu primera aplicación en clúster. Al terminar este curso estarás preparado para trabajar con Azure Kubernetes Service y dar el salto a un nivel más avanzado.&lt;/p>
+&lt;p>Os dejo el enlace por &lt;a href="https://www.linkedin.com/learning-login/share?forceAccount=false&amp;amp;redirect=https%3A%2F%2Fwww.linkedin.com%2Flearning%2Fkubernetes-despliegue-en-azure%3Ftrk%3Dshare_ent_url">aquí&lt;/a>&lt;/p>
+&lt;p>Espero que os guste!&lt;/p></description></item><item><title>GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux</title><link>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</link><pubDate>Sun, 04 Aug 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</guid><description>&lt;p>Recently I learned about GitOps which is a way to manage your Kubernetes clusters and the applications you run on top using Git. The idea is that you can declaratively describe the desired state of your systems in Git and roll out changes as soon as merges occur.&lt;/p>
+&lt;p>You can immediately see the main benefits of such an approach: Your Git repositories become the single source of truth for both your infrastructure and application code, allowing the teams to increase productivity and stability (you get the Git log to audit changes).&lt;/p>
+&lt;p>To implement GitOps you can use and configure &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> following some simple steps:&lt;/p>
+&lt;h2 id="1-download-the-helm-template">1. Download the helm template&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">helm fetch `
+--repo https&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//fluxcd.github.io/flux `
+--untar `
+--untardir .\.charts `
+--version 0.10.2 `
+flux
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-bake-the-template-with-your-repo-i-dont-use-tiller">2. Bake the template with your repo (I don&amp;rsquo;t use Tiller)&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">helm template flux `
+--set git.url=&lt;span style="color:#e6db74">&amp;#34;git@github.com:cmendible/kubernetes.samples&amp;#34;&lt;/span> `
+--set git.path=&lt;span style="color:#e6db74">&amp;#34;19.flux&amp;#34;&lt;/span> `
+--set git.pollInterval=&lt;span style="color:#e6db74">&amp;#34;5s&amp;#34;&lt;/span> `
+--namespace flux `
+--output-dir .\.baked .\.charts\fluxcd
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see I&amp;rsquo;m configuring &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> to use my k8s sample repo and the &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/19.flux">19.flux&lt;/a> folder, which contains a simple deployment &lt;a href="https://github.com/cmendible/kubernetes.samples/blob/main/19.flux/dni-function.yaml">file&lt;/a>, but of course you can have more resource definitions.&lt;/p>
+&lt;h2 id="3-deploy-the-configuration-to-your-cluster">3. Deploy the configuration to your cluster&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> .\.baked\flux\templates\
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-get-the-fluxctl-cli">4. Get the fluxctl CLI&lt;/h2>
+&lt;p>Download the &lt;a href="https://github.com/fluxcd/flux/releases/tag/1.13.2">fluxctl CLI&lt;/a>&lt;/p>
+&lt;h2 id="5-use-fluxctl-to-get-the-public-key">5. Use fluxctl to get the public key&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">fluxctl identity --k8s-fwd-ns flux
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This key is needed to sync your cluster state with the Git repository (GitHub): Copy the key you obtained and use it to create a &lt;strong>deploy key&lt;/strong> with write access on your GitHub repository (Settings &amp;gt; Deploy keys &amp;gt; Add deploy key &amp;gt; check Allow write access &amp;gt; paste the Flux public key &amp;gt; click Add key)&lt;/p>
+&lt;p>You are all set. If everything runs smooth you&amp;rsquo;ll find a new deployment in your cluster with the &lt;strong>dni-function&lt;/strong> name.&lt;/p>
+&lt;p>To learn more about GitOps check: &lt;a href="https://www.weave.works/technologies/gitops/">Weaveworks&lt;/a>&lt;/p>
+&lt;p>Click here to learn more about &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Kured: Restart your Azure Kubernetes Service Nodes</title><link>https://carlos.mendible.com/2019/07/28/kured-restart-your-azure-kubernetes-service-nodes/</link><pubDate>Sun, 28 Jul 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/07/28/kured-restart-your-azure-kubernetes-service-nodes/</guid><description>&lt;p>Two weeks ago I got an email message from Microsoft Azure explaining that Azure Kubernetes Services had been patched but that I had to restart my nodes (reboot the clusters) to complete the operation.&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/posts/aks_update_kured.png" alt="The Microsoft Azure email explaining that I had to reboot my clusters">&lt;/p>
+&lt;p>The first thing you need to know is that, when things like this happens, the Azure platform creates a file called &lt;code>/var/run/reboot-required&lt;/code> in each of the nodes of your cluster.&lt;/p>
+&lt;p>The second thing is that a Kubernetes Reboot Daemon named &lt;a href="https://github.com/weaveworks/kured">Kured&lt;/a> exists and if installed in your cluster will run on each pod watching for the existence of the &lt;code>/var/run/reboot-required&lt;/code> file. &lt;a href="https://github.com/weaveworks/kured">Kured&lt;/a> then takes care of the reboots for you so only one node is restarted at a time.&lt;/p>
+&lt;p>So how do you install it and check what&amp;rsquo;s going on with your nodes? Let&amp;rsquo;s see:&lt;/p>
+&lt;h2 id="1-check-the-nodes">1. Check the nodes&lt;/h2>
+&lt;hr>
+&lt;p>Damn I was running the affected kernel version: 4.15.0-1049-azure.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get nodes -o wide
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">NAME STATUS ROLES AGE VERSION EXTERNAL-IP OS-IMAGE KERNEL-VERSION CONTAINER-RUNTIME
+aks-agentpool-14502547-0 Ready agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1049-azure docker://3.0.4
+aks-agentpool-14502547-1 Ready agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1049-azure docker://3.0.4
+aks-agentpool-14502547-2 Ready agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1049-azure docker://3.0.4
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-install-kuredhttpsgithubcomweaveworkskured">2. Install &lt;a href="https://github.com/weaveworks/kured">Kured&lt;/a>&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f https://github.com/weaveworks/kured/releases/download/1.2.0/kured-1.2.0-dockerhub.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-check-the-nodes-again">3. Check the nodes again&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get nodes -o wide
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can see that the first two nodes already restarted and the second has scheduling disabled cause it was still in the process.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">aks-agentpool-14502547-0 Ready agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1049-azure docker://3.0.4
+aks-agentpool-14502547-1 Ready agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1050-azure docker://3.0.4
+aks-agentpool-14502547-2 Ready,SchedulingDisabled agent 3d v1.12.8 &amp;lt;none&amp;gt; Ubuntu 16.04.6 LTS 4.15.0-1050-azure docker://3.0.4
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about &lt;a href="https://github.com/weaveworks/kured">Kured&lt;/a> and the features it offers, please check &lt;a href="https://github.com/weaveworks/kured">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Webcast - Azure Summer Ask the Experts</title><link>https://carlos.mendible.com/events/2019-07-17-azure-summer-ask-the-experts/</link><pubDate>Wed, 17 Jul 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2019-07-17-azure-summer-ask-the-experts/</guid><description>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/Om7FQLBrv-Y" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>Global Azure Bootcamp Madrid - Mission: Azure Kuberentes Service</title><link>https://carlos.mendible.com/events/2019/04/27/mission-azure-kubernetes-service/</link><pubDate>Sat, 27 Apr 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2019/04/27/mission-azure-kubernetes-service/</guid><description>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/z6Dv_kvHMm4" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>Global Online Azure Bootcamp - Mission: Azure Kuberentes Service</title><link>https://carlos.mendible.com/events/2019/04/27/global-online-azure-bootcamp-mission-azure-kubernetes-service/</link><pubDate>Sat, 27 Apr 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2019/04/27/global-online-azure-bootcamp-mission-azure-kubernetes-service/</guid><description>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/xT9U9c3uyDw" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>Meetup MadridDotNet - El estado del ecosistema del desarrollador por @cmendibl3</title><link>https://carlos.mendible.com/events/2019/02/13/developer-ecosystem/</link><pubDate>Wed, 13 Feb 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2019/02/13/developer-ecosystem/</guid><description>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/VV8sjBQcPGU" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>Develop and build ASP.NET Core applications to run on Kubernetes with Draft</title><link>https://carlos.mendible.com/2018/11/18/develop-and-build-aspnetcore-applications-to-run-on-kubernetes-with-draft/</link><pubDate>Sun, 18 Nov 2018 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/11/18/develop-and-build-aspnetcore-applications-to-run-on-kubernetes-with-draft/</guid><description>&lt;p>You start developing an ASP.NET Core application to run it in Kubernetes and suddenly you find yourself creating a docker file, building an image, pushing the image to a registry, creating both a deployment and a service definition for Kubernetes and you wonder if there is a tool out there to help you streamline the whole process.&lt;/p>
+&lt;p>Meet &lt;a href="https://github.com/Azure/draft">Draft&lt;/a> a tool that will not only help you create the artifacts needed to build and run applications in Kubernetes but to also build the container image and deploy it.&lt;/p>
+&lt;h2 id="prerequisites">Prerequisites:&lt;/h2>
+&lt;ol>
+&lt;li>A Kubernetes cluster and the &lt;a href="https://kubernetes.io/docs/reference/kubectl/kubectl/">kubectl&lt;/a> CLI tool&lt;/li>
+&lt;li>Installation of &lt;a href="https://github.com/Kubernetes/helm">Helm&lt;/a> on your Kubernetes cluster&lt;/li>
+&lt;li>A Container Registry&lt;/li>
+&lt;/ol>
+&lt;h2 id="install-and-configure-draft">Install and Configure Draft&lt;/h2>
+&lt;p>To install Draft I run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">cinst -y draft
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then configure it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">draft config set registry &amp;lt;registry full name&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Be sure to log on to the Container Registry:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">docker login &amp;lt;registry full name&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>or if working with Azure Container Registry:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">az acr login --name &amp;lt;acrName&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-and-prepare-the-application">Create and prepare the application&lt;/h2>
+&lt;p>Creat an ASP.NET Core MVC application and create the artifacts with Draft:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet new mvc
+draft create --pack&lt;span style="color:#f92672">=&lt;/span>csharp -a mvcdraft
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that I&amp;rsquo;ve specified two parameters:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>pack&lt;/strong> to tell draft that we are using C# as the language.&lt;/li>
+&lt;li>&lt;strong>a&lt;/strong> to specify the name of the Helm release we will run on Kubernetes&lt;/li>
+&lt;/ul>
+&lt;h2 id="deploy-and-test-your-application">Deploy and test your application&lt;/h2>
+&lt;p>Run the following command to build the container image and then deploy the application to Kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">draft up
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The first time you run the command it will take a while. The output should look similar to this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">Draft Up Started: &lt;span style="color:#e6db74">&amp;#39;netcoredraft&amp;#39;&lt;/span>: 01CWKAZ79WR6W66PHHR2AFRSGC
+netcoredraft: Building Docker Image: SUCCESS ⚓ &lt;span style="color:#f92672">(&lt;/span>1.0008s&lt;span style="color:#f92672">)&lt;/span>
+netcoredraft: Pushing Docker Image: SUCCESS ⚓ &lt;span style="color:#f92672">(&lt;/span>3.2891s&lt;span style="color:#f92672">)&lt;/span>
+netcoredraft: Releasing Application: SUCCESS ⚓ &lt;span style="color:#f92672">(&lt;/span>2.7629s&lt;span style="color:#f92672">)&lt;/span>
+Inspect the logs with &lt;span style="color:#e6db74">`&lt;/span>draft logs 01CWKAZ79WR6W66PHHR2AFRSGC&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To test the application run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">draft connect
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The output should look similar to:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">Connect to netcoredraft:80 on localhost:50998
+&lt;span style="color:#f92672">[&lt;/span>netcoredraft&lt;span style="color:#f92672">]&lt;/span>: No XML encryptor configured. Key &lt;span style="color:#f92672">{&lt;/span>ea9dac08-e7af-468c-9e00-cbe38ab40fa8&lt;span style="color:#f92672">}&lt;/span> may be persisted to storage in unencrypted form.
+&lt;span style="color:#f92672">[&lt;/span>netcoredraft&lt;span style="color:#f92672">]&lt;/span>: Hosting environment: Production
+&lt;span style="color:#f92672">[&lt;/span>netcoredraft&lt;span style="color:#f92672">]&lt;/span>: Content root path: /app
+&lt;span style="color:#f92672">[&lt;/span>netcoredraft&lt;span style="color:#f92672">]&lt;/span>: Now listening on: http://&lt;span style="color:#f92672">[&lt;/span>::&lt;span style="color:#f92672">]&lt;/span>:80
+&lt;span style="color:#f92672">[&lt;/span>netcoredraft&lt;span style="color:#f92672">]&lt;/span>: Application started. Press Ctrl+C to shut down.
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Browse to the url shown in the output (i.e. http://localhost:50998) and you should be good to go!!!&lt;/p>
+&lt;h2 id="cleaning-up">Cleaning up&lt;/h2>
+&lt;p>Once you finish your tests you can cleanup with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">draft delete
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!!!&lt;/p></description></item><item><title>Deploying Elastic Search, Fluentd, Kibana on AKS with Helm</title><link>https://carlos.mendible.com/2018/10/14/deploying-elastic-search-fluentd-kibana-on-aks-with-helm/</link><pubDate>Sun, 14 Oct 2018 14:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/10/14/deploying-elastic-search-fluentd-kibana-on-aks-with-helm/</guid><description>&lt;p>For my recent talk at &lt;a href="http://netconfmad2018.azurewebsites.net/">.NET Conf Madrid&lt;/a> I managed to install Elastic Search, Fluentd and Kibana (EFK) as a logging solution for the AKS cluster I used in my demos.&lt;/p>
+&lt;p>The fact is that such deployment was possible thanks to Tim Park and his post &lt;a href="https://medium.com/@timfpark/efk-logging-on-kubernetes-on-azure-4c54402459c4">Logging with Fluentd, ElasticSearch, and Kibana (EFK) on Kubernetes on Azure&lt;/a> where I learned that to effectively deploy EFK on AKS I would have to tweak the resource definitions found in the &lt;a href="https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/fluentd-elasticsearch">Kubernetes&lt;/a> project.&lt;/p>
+&lt;p>I followed Tim&amp;rsquo;s advice and took it to the next level creating my first Helm chart: &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/13.efk.helm">efk-aks&lt;/a> so now you can deploy the EFK stack on AKS using Helm.&lt;/p>
+&lt;p>Feel free to get the Helm chart &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/13.efk.helm">here&lt;/a>.&lt;/p></description></item></channel></rss>

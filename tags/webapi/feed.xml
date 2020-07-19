@@ -1,0 +1,436 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WebAPI on Code it Yourself...</title><link>https://carlos.mendible.com/tags/webapi/</link><description>Recent content in WebAPI on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Tue, 04 Jul 2017 12:59:05 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/webapi/feed.xml" rel="self" type="application/rss+xml"/><item><title>Deploy your ASP.NET Core Web API to AWS Lambda</title><link>https://carlos.mendible.com/2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/</link><pubDate>Tue, 04 Jul 2017 12:59:05 +0000</pubDate><guid>https://carlos.mendible.com/2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to &lt;strong>Deploy your ASP.NET Core Web API to AWS Lambda&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;ul>
+&lt;li>You&amp;rsquo;ll need an AWS account: &lt;!-- raw HTML omitted -->&lt;a href="https://aws.amazon.com/">https://aws.amazon.com/&lt;/a>&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>You&amp;rsquo;ll need AWS CLI installed: &lt;!-- raw HTML omitted -->&lt;a href="http://docs.aws.amazon.com/cli/latest/userguide/installing.html">http://docs.aws.amazon.com/cli/latest/userguide/installing.html&lt;/a>&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>You&amp;rsquo;ll need your AWS security credentials&lt;/li>
+&lt;li>Some basic knowledge on &lt;!-- raw HTML omitted -->AWS Stacks&lt;!-- raw HTML omitted -->, &lt;!-- raw HTML omitted -->API Gateway&lt;!-- raw HTML omitted -->, &lt;!-- raw HTML omitted -->Lambda&lt;!-- raw HTML omitted --> and &lt;!-- raw HTML omitted -->Buckets&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;/ul>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aws.lambda
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd aws.lambda
+dotnet new webapi
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-replace-the-contents-of-awslambdacsproj">3. Replace the contents of aws.lambda.csproj&lt;/h2>
+&lt;hr>
+&lt;p>You need to target &lt;strong>netcoreapp1.0&lt;/strong> in order for your Web API to work on AWS Lambda. You&amp;rsquo;ll also need to reference some nuget packages from aws so replace the contents of the &lt;strong>aws.lamda.csproj&lt;/strong> file with the following lines:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;Project&lt;/span> &lt;span style="color:#a6e22e">Sdk=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.NET.Sdk.Web&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;TargetFramework&amp;gt;&lt;/span>netcoreapp1.0&lt;span style="color:#f92672">&amp;lt;/TargetFramework&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;UserSecretsId&amp;gt;&lt;/span>aspnet-aws.lambda-FD62E418-7AF9-462F-B391-DD806F38F03A&lt;span style="color:#f92672">&amp;lt;/UserSecretsId&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PreserveCompilationContext&amp;gt;&lt;/span>false&lt;span style="color:#f92672">&amp;lt;/PreserveCompilationContext&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Folder&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;wwwroot\&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Server.IISIntegration&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Server.Kestrel&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Mvc&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Routing&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Configuration.EnvironmentVariables&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Configuration.FileExtensions&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Configuration.Json&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Logging&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Options.ConfigurationExtensions&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;AWSSDK.Extensions.NETCore.Setup&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;3.3.0.3&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Amazon.Lambda.Core&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Amazon.Lambda.Serialization.Json&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.1.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Amazon.Lambda.AspNetCoreServer&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;0.10.1-preview1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Amazon.Lambda.Logging.AspNetCore&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.1.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;DotNetCliToolReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.VisualStudio.Web.CodeGeneration.Tools&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;DotNetCliToolReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Amazon.Lambda.Tools&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.6.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Project&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-restore-the-packages">4. Restore the packages&lt;/h2>
+&lt;hr>
+&lt;p>You just changed the project files so restore the packages:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-rename-programcs-and-replace-its-contents">5. Rename Program.cs and replace it&amp;rsquo;s contents&lt;/h2>
+&lt;hr>
+&lt;p>Rename &lt;strong>Program.cs&lt;/strong> to &lt;strong>LocalEntrypoint.cs&lt;/strong> and replace the contents of the file with the following lines:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aws.lambda
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// The Main function can be used to run the ASP.NET Core application locally using the Kestrel webserver.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">LocalEntryPoint&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> host = &lt;span style="color:#66d9ef">new&lt;/span> WebHostBuilder()
+.UseKestrel()
+.UseContentRoot(Directory.GetCurrentDirectory())
+.UseIISIntegration()
+.UseStartup&amp;lt;Startup&amp;gt;()
+.Build();
+host.Run();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: This will be the entry point while you are developing.&lt;/p>
+&lt;h2 id="6-create-a-file-lambdafunctioncs">6. Create a file LambdaFunction.cs&lt;/h2>
+&lt;hr>
+&lt;p>Create a &lt;strong>LambdaFunction.cs&lt;/strong> file and copy the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aws.lambda
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">LambdaFunction&lt;/span> : Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction
+{
+&lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">override&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Init(IWebHostBuilder builder)
+{
+builder
+.UseContentRoot(Directory.GetCurrentDirectory())
+.UseStartup&amp;lt;Startup&amp;gt;()
+.UseApiGateway();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: This class will be the entry point once you deploy the Web API to AWS Lambda.&lt;/p>
+&lt;h2 id="7-replace-the-contents-of-startupcs">7. Replace the contents of Startup.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Startup.cs&lt;/strong> file with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.DependencyInjection;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Logging;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aws.lambda
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Startup&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> Startup(IHostingEnvironment env)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> builder = &lt;span style="color:#66d9ef">new&lt;/span> ConfigurationBuilder()
+.SetBasePath(env.ContentRootPath)
+.AddJsonFile(&lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">false&lt;/span>, reloadOnChange: &lt;span style="color:#66d9ef">true&lt;/span>)
+.AddJsonFile(&lt;span style="color:#e6db74">$&amp;#34;appsettings.{env.EnvironmentName}.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">true&lt;/span>);
+builder.AddEnvironmentVariables();
+Configuration = builder.Build();
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> IConfigurationRoot Configuration { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to add services to the container
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> ConfigureServices(IServiceCollection services)
+{
+services.AddMvc();
+&lt;span style="color:#75715e">// Pull in any SDK configuration from Configuration object
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+}
+&lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+{
+loggerFactory.AddLambdaLogger(Configuration.GetLambdaLoggerOptions());
+app.UseMvc();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: Check lines 34 &amp;amp; 40 for special AWS configurations.&lt;/p>
+&lt;h2 id="8-create-aws-lambda-tools-defaultsjson">8. Create aws-lambda-tools-defaults.json&lt;/h2>
+&lt;p>Create a aws-lambda-tools-defaults.json file with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;Information&amp;#34;&lt;/span>: [
+&lt;span style="color:#e6db74">&amp;#34;This file provides default values for the deployment wizard inside Visual Studio and the AWS Lambda commands added to the .NET Core CLI.&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;To learn more about the Lambda commands with the .NET Core CLI execute the following command at the command line in the project root directory.&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;dotnet lambda help&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;All the command line options for the Lambda command can be specified in this file.&amp;#34;&lt;/span>
+],
+&lt;span style="color:#f92672">&amp;#34;profile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;default&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;region&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;eu-west-1&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;configuration&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Release&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;framework&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;netcoreapp1.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;function-runtime&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dotnetcore1.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;template&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;serverless.template&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: Be aware of teh region specified in this file.&lt;/p>
+&lt;h2 id="9-create-serverlesstemplate">9. Create serverless.template&lt;/h2>
+&lt;hr>
+&lt;p>Create a file: serverless.template with the following contents&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;AWSTemplateFormatVersion&amp;#34;&lt;/span> : &lt;span style="color:#e6db74">&amp;#34;2010-09-09&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Transform&amp;#34;&lt;/span> : &lt;span style="color:#e6db74">&amp;#34;AWS::Serverless-2016-10-31&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Description&amp;#34;&lt;/span> : &lt;span style="color:#e6db74">&amp;#34;Starting template for an AWS Serverless Application.&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Parameters&amp;#34;&lt;/span> : {
+},
+&lt;span style="color:#f92672">&amp;#34;Resources&amp;#34;&lt;/span> : {
+&lt;span style="color:#f92672">&amp;#34;DefaultFunction&amp;#34;&lt;/span> : {
+&lt;span style="color:#f92672">&amp;#34;Type&amp;#34;&lt;/span> : &lt;span style="color:#e6db74">&amp;#34;AWS::Serverless::Function&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Properties&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Handler&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;aws.lambda::aws.lambda.LambdaFunction::FunctionHandlerAsync&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Runtime&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dotnetcore1.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;CodeUri&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Description&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Default function&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;MemorySize&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">256&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Timeout&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">30&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Role&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">null&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Policies&amp;#34;&lt;/span>: [ &lt;span style="color:#e6db74">&amp;#34;AWSLambdaFullAccess&amp;#34;&lt;/span> ],
+&lt;span style="color:#f92672">&amp;#34;Events&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;PutResource&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Api&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Properties&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Path&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;/{proxy+}&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Method&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;ANY&amp;#34;&lt;/span>
+}
+}
+}
+}
+}
+},
+&lt;span style="color:#f92672">&amp;#34;Outputs&amp;#34;&lt;/span> : {
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: be aware of the Handler property in this file. It should be in the form:&lt;!-- raw HTML omitted --> &lt;strong>[Assembly Name]::[Namespace].LambdaFunction::FunctionHandlerAsync&lt;/strong>&lt;/p>
+&lt;h2 id="10-build-the-application">10. Build the application&lt;/h2>
+&lt;hr>
+&lt;p>Build the application:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="11-deploy-to-aws-lambda">11. Deploy to AWS Lambda&lt;/h2>
+&lt;hr>
+&lt;p>Run the following commands (you&amp;rsquo;ll need your access key for AWS):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">aws configure
+aws s3api create-bucket --bucket mylambdabucket --region eu-west-1 --create-bucket-configuration LocationConstraint=eu-west-1
+dotnet lambda deploy-serverless
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="12-get-your-api-id">12. Get your api id&lt;/h2>
+&lt;hr>
+&lt;p>Run the following commands and copy the api id for your stack:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">aws apigateway get-rest-apis
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="13-browse-to-your-web-api">13. Browse to your web api&lt;/h2>
+&lt;hr>
+&lt;p>You are good to go so browse to:&lt;!-- raw HTML omitted --> &lt;strong>https://[api id from step 11].execute-api.eu-west-1.amazonaws.com/Prod/api/values&lt;/strong>&lt;/p>
+&lt;p>The browser should show: [“value1″,&amp;ldquo;value2&amp;rdquo;]&lt;/p>
+&lt;p>You can get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aws.lambda">https://github.com/cmendible/dotnetcore.samples/tree/main/aws.lambda&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>.Net Core and NancyFX: can writing a WebApi get any simpler?</title><link>https://carlos.mendible.com/2017/01/16/net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/</link><pubDate>Mon, 16 Jan 2017 14:54:55 +0000</pubDate><guid>https://carlos.mendible.com/2017/01/16/net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/</guid><description>&lt;p>Last Thursday I attended a Meetup hosted by my friends of &lt;!-- raw HTML omitted -->@MsCodersMadrid&lt;!-- raw HTML omitted --> in Madrid where, thanks to &lt;!-- raw HTML omitted -->@snavarropino&lt;!-- raw HTML omitted -->, I learned a bit about the &lt;strong>&lt;!-- raw HTML omitted -->NancyFX&lt;!-- raw HTML omitted -->&lt;/strong> open source framework.&lt;/p>
+&lt;p>I really couldn&amp;rsquo;t believe my eyes when I saw how simple it is to use &lt;strong>&lt;!-- raw HTML omitted -->NancyFX&lt;!-- raw HTML omitted -->&lt;/strong> to write a Web API. Two of the things that got my attention were: the out of the box content negotiation and zero configuration dependency injection.&lt;/p>
+&lt;p>What are we waiting for? Lets&amp;rsquo;s put in the mix &lt;strong>.Net Core and &lt;!-- raw HTML omitted -->NancyFX&lt;!-- raw HTML omitted -->&lt;/strong> and ask ourselves: &lt;strong>can a WebApi get any simpler?&lt;/strong>.&lt;/p>
+&lt;p>Steps:&lt;/p>
+&lt;h2 id="1-create-the-application">1. Create the application&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> md nancyfx.sample
+cd nancyfx.sample
+dotnet new
+dotnet restore
+code .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-replace-the-contents-of-projectjson">2. Replace the contents of project.json&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents on &lt;strong>project.json&lt;/strong> file. Be sure to include the references to &lt;strong>Microsoft.AspNetCore.Owin&lt;/strong> and &lt;strong>Nancy&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.NETCore.App&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.1.0-preview1-001153-00&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;platform&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;Microsoft.AspNetCore.Server.IISIntegration&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.AspNetCore.Server.Kestrel&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.AspNetCore.Owin&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Nancy&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0-clinteastwood&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;tools&amp;#34;&lt;/span>: {},
+&lt;span style="color:#f92672">&amp;#34;frameworks&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;netcoreapp1.1&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;imports&amp;#34;&lt;/span>: [
+&lt;span style="color:#e6db74">&amp;#34;dotnet5.6&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;dnxcore50&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;portable-net45+win8&amp;#34;&lt;/span>
+]
+}
+},
+&lt;span style="color:#f92672">&amp;#34;buildOptions&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;debugType&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;portable&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;emitEntryPoint&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;preserveCompilationContext&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;runtimeOptions&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;configProperties&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;System.GC.Server&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;publishOptions&amp;#34;&lt;/span>: {},
+&lt;span style="color:#f92672">&amp;#34;scripts&amp;#34;&lt;/span>: {},
+&lt;span style="color:#f92672">&amp;#34;tooling&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;defaultNamespace&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;WebApplication&amp;#34;&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-replace-the-contents-of-programcs">3. Replace the contents of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Let&amp;rsquo;s host the Web API with AspNetCore&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">namespace&lt;/span> WebApplication
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> host = &lt;span style="color:#66d9ef">new&lt;/span> WebHostBuilder()
+.UseKestrel()
+.UseContentRoot(Directory.GetCurrentDirectory())
+.UseIISIntegration()
+.UseStartup&amp;lt;Startup&amp;gt;()
+.Build();
+host.Run();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-add-a-startupcs">4. Add a Startup.cs&lt;/h2>
+&lt;hr>
+&lt;p>This one-liner hooks &lt;strong>&lt;!-- raw HTML omitted -->NancyFX&lt;!-- raw HTML omitted -->&lt;/strong> to our application.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Nancy.Owin;
+&lt;span style="color:#66d9ef">namespace&lt;/span> WebApplication
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Startup&lt;/span>
+{
+&lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Configure(IApplicationBuilder app)
+{
+app.UseOwin(x =&amp;gt; x.UseNancy());
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-a-service-to-return-some-random-message">5. Create a service to return some random message&lt;/h2>
+&lt;hr>
+&lt;p>Add a new file (i.e BaconIpsumService.cs) to hold the application logic and add the following sample content&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">namespace&lt;/span> WebApplication
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">BaconIpsumMessage&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Body {&lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>;}
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> IBaconIpsumService
+{
+Task&amp;lt;BaconIpsumMessage&amp;gt; GenerateAsync();
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">BaconIpsumService&lt;/span> : IBaconIpsumService
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;BaconIpsumMessage&amp;gt; GenerateAsync()
+{
+&lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> HttpClient())
+{
+&lt;span style="color:#66d9ef">var&lt;/span> message = &lt;span style="color:#66d9ef">new&lt;/span> BaconIpsumMessage();
+&lt;span style="color:#75715e">// Post the message
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> message.Body = &lt;span style="color:#66d9ef">await&lt;/span> client.GetStringAsync(
+&lt;span style="color:#e6db74">$&amp;#34;https://baconipsum.com/api/?type=meat-and-filler&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">return&lt;/span> message;
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-a-nancyfx-module-to-host-the-webapi">5. Create a NancyFX module to host the WebAPI&lt;/h2>
+&lt;hr>
+&lt;p>Create a new file (i.e BaconIpsumModule .cs) to hold the routes and actions for the Web API&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> Nancy;
+&lt;span style="color:#66d9ef">namespace&lt;/span> WebApplication
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">BaconIpsumModule&lt;/span> : NancyModule
+{
+&lt;span style="color:#66d9ef">public&lt;/span> BaconIpsumModule(IBaconIpsumService baconIpsumService)
+{
+Get(&lt;span style="color:#e6db74">&amp;#34;/&amp;#34;&lt;/span>, args =&amp;gt; &lt;span style="color:#e6db74">&amp;#34;Super Duper Happy Path running on .NET Core&amp;#34;&lt;/span>);
+Get(&lt;span style="color:#e6db74">&amp;#34;/baconipsum&amp;#34;&lt;/span>, &lt;span style="color:#66d9ef">async&lt;/span> args =&amp;gt; &lt;span style="color:#66d9ef">await&lt;/span> baconIpsumService.GenerateAsync());
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The first route returns a string and the second one calls our service and returns a &lt;strong>BaconIpsumMessage&lt;/strong> instance (And yes! &lt;!-- raw HTML omitted -->NancyFX&lt;!-- raw HTML omitted --> supports async too!).&lt;/p>
+&lt;p>Also note that the module requires an instance of &lt;strong>IBaconIpsumService&lt;/strong> in the constructor but don&amp;rsquo;t worry because &lt;strong>&lt;!-- raw HTML omitted -->NancyFX&lt;!-- raw HTML omitted -->&lt;/strong> will inject it for you without any special configuration or registration!&lt;/p>
+&lt;h2 id="6-run-and-test-the-application">6. Run and test the application&lt;/h2>
+&lt;hr>
+&lt;p>Run the following commands&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Navigate to &lt;!-- raw HTML omitted -->http://localhost:5000&lt;!-- raw HTML omitted --> and the browser should show the message: &lt;strong>Super Duper Happy Path running on .NET Core&lt;/strong>&lt;/p>
+&lt;p>Navigate to &lt;!-- raw HTML omitted -->http://localhost:5000/baconipsum&lt;!-- raw HTML omitted --> and because of automatic content navigation &lt;strong>&lt;!-- raw HTML omitted -->NancyFX&lt;!-- raw HTML omitted -->&lt;/strong> will try to find a view to display the &lt;strong>BaconIpsumMessage&lt;/strong> which we didn&amp;rsquo;t register and therefore results in an internal server error:&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Now call the same url: &lt;!-- raw HTML omitted -->http://localhost:5000/baconipsum&lt;!-- raw HTML omitted --> using postman and you&amp;rsquo;ll get the expected json:&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Get a copy of the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/nancyfx.sample">https://github.com/cmendible/dotnetcore.samples/tree/main/nancyfx.sample&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Add Swagger to your .NET Core Web API</title><link>https://carlos.mendible.com/2016/07/04/add-swagger-to-your-.net-core-web-api/</link><pubDate>Mon, 04 Jul 2016 08:20:15 +0000</pubDate><guid>https://carlos.mendible.com/2016/07/04/add-swagger-to-your-.net-core-web-api/</guid><description>&lt;p>Last week &lt;!-- raw HTML omitted -->.NET Core&lt;!-- raw HTML omitted --> was released, and the first thing I tried to solve was how to &lt;strong>Add Swagger to your .NET Core Web API&lt;/strong>:&lt;/p>
+&lt;h2 id="1-dependencies">1. Dependencies&lt;/h2>
+&lt;hr>
+&lt;p>At the time of writing you should add the following dependency to your &lt;strong>project.json&lt;/strong> file&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#e6db74">&amp;#34;Swashbuckle&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;6.0.0-beta901&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-using-statement">2. Using statement&lt;/h2>
+&lt;hr>
+&lt;p>In your &lt;strong>Startup&lt;/strong> class add the following using statement&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#66d9ef">using&lt;/span> Swashbuckle.Swagger.Model;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-swagger-as-a-service">3. Add Swagger as a service&lt;/h2>
+&lt;hr>
+&lt;p>In your &lt;strong>Startup&lt;/strong> class add the following code to the &lt;strong>ConfigureServices&lt;/strong> method&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to add services to the container.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> ConfigureServices(IServiceCollection services)
+{
+...
+services.AddSwaggerGen();
+services.ConfigureSwaggerGen(options =&amp;gt;
+{
+options.SingleApiVersion(&lt;span style="color:#66d9ef">new&lt;/span> Info
+{
+Version = &lt;span style="color:#e6db74">&amp;#34;v1&amp;#34;&lt;/span>,
+Title = &lt;span style="color:#e6db74">&amp;#34;Your API title here&amp;#34;&lt;/span>,
+Description = &lt;span style="color:#e6db74">&amp;#34;Your API description here&amp;#34;&lt;/span>,
+TermsOfService = &lt;span style="color:#e6db74">&amp;#34;Your API terms of service here&amp;#34;&lt;/span>
+});
+});
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-add-swagger-to-the-http-request-pipeline">4. Add Swagger to the HTTP request pipeline&lt;/h2>
+&lt;hr>
+&lt;p>And finally add the following lines to the &lt;strong>Configure&lt;/strong> method of your &lt;strong>Startup&lt;/strong> class&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+{
+...
+app.UseSwagger();
+app.UseSwaggerUi();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And that&amp;rsquo;s it you are ready to go!&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Remove RavenDb's API from Swagger</title><link>https://carlos.mendible.com/2016/06/12/remove-ravendbs-api-from-swagger/</link><pubDate>Sun, 12 Jun 2016 20:24:54 +0000</pubDate><guid>https://carlos.mendible.com/2016/06/12/remove-ravendbs-api-from-swagger/</guid><description>&lt;p>I&amp;rsquo;ve been working on a small IoT project where we expose a simple REST API and use &lt;!-- raw HTML omitted -->RavenDB &lt;!-- raw HTML omitted -->Embedded as the database. Once we enabled &lt;!-- raw HTML omitted -->Swagger&lt;!-- raw HTML omitted --> on our project we noticed that the generated documentation was not only showing our API but those exposed by RavenDB too. So the question came up: how can we &lt;strong>Remove RavenDb&amp;rsquo;s API from &lt;!-- raw HTML omitted -->Swagger&lt;!-- raw HTML omitted -->&lt;/strong> Documentation?&lt;/p>
+&lt;p>Turns out that &lt;strong>&lt;!-- raw HTML omitted -->Swashbuckle.Swagger&lt;!-- raw HTML omitted -->&lt;/strong> let&amp;rsquo;s you create your own Document Filters implementing the &lt;strong>IDocumentFilter&lt;/strong> interface.&lt;/p>
+&lt;p>Below you&amp;rsquo;ll find the fast solution I came up with, and it&amp;rsquo;s easy to modify if you need to remove any other type from your Swagger documentation.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#66d9ef">using&lt;/span> Swashbuckle.Swagger;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Web.Http.Description;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">HideRavenDocumentFilter&lt;/span> : IDocumentFilter
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
+{
+&lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> apiDescription &lt;span style="color:#66d9ef">in&lt;/span> apiExplorer.ApiDescriptions)
+{
+&lt;span style="color:#66d9ef">if&lt;/span> (!apiDescription.ActionDescriptor.ControllerDescriptor.ControllerType.Namespace.StartsWith(&lt;span style="color:#e6db74">&amp;#34;Raven&amp;#34;&lt;/span>))
+{
+&lt;span style="color:#66d9ef">continue&lt;/span>;
+}
+&lt;span style="color:#66d9ef">var&lt;/span> routeToRemove = swaggerDoc.paths.Where(r =&amp;gt; r.Key.Contains(apiDescription.ActionDescriptor.ControllerDescriptor.ControllerName))
+.FirstOrDefault();
+&lt;span style="color:#66d9ef">if&lt;/span> (!routeToRemove.Equals(&lt;span style="color:#66d9ef">default&lt;/span>(KeyValuePair&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>, PathItem&amp;gt;)))
+{
+swaggerDoc.paths.Remove(routeToRemove);
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

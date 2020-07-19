@@ -1,0 +1,167 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>msbuild on Code it Yourself...</title><link>https://carlos.mendible.com/tags/msbuild/</link><description>Recent content in msbuild on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 21 Sep 2017 17:23:14 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/msbuild/feed.xml" rel="self" type="application/rss+xml"/><item><title>.NET Core CLI and MSBUILD Cheat Sheet</title><link>https://carlos.mendible.com/2017/09/21/dotnet-core-cli-and-msbuild-cheat-sheet/</link><pubDate>Thu, 21 Sep 2017 17:23:14 +0000</pubDate><guid>https://carlos.mendible.com/2017/09/21/dotnet-core-cli-and-msbuild-cheat-sheet/</guid><description>&lt;p>This is a small &lt;strong>.NET Core CLI and MSBUILD Cheat Sheet&lt;/strong> with the list of commands and settings I use almost on daily basis when working with .NET Core, the command line and Visual Studio Code.&lt;/p>
+&lt;h2 id="checks">Checks&lt;/h2>
+&lt;h3 id="check-installed-cli-version">Check installed CLI version:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet --version
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="show-available-templates">Show available templates:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="solutions">Solutions&lt;/h2>
+&lt;h3 id="create-a-solution-with-the-name-of-current-the-folder">Create a solution with the name of current the folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new sln
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="create-a-solution-with-a-specific-name">Create a solution with a specific name:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new sln --name &lt;span style="color:#66d9ef">[solution name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="add-a-project-to-a-solution">Add a project to a solution:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add sln &lt;span style="color:#66d9ef">[relative path to csproj file]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="packages">Packages&lt;/h2>
+&lt;h3 id="add-package-reference-to-the-project-in-the-current-folder">Add package reference to the project in the current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package &lt;span style="color:#66d9ef">[package name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="remove-a-package-reference-from-the-project-in-the-current-folder">Remove a package reference from the project in the current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet remove package &lt;span style="color:#66d9ef">[package name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="add-a-specific-package-version-reference-to-the-project-in-the-current-folder">Add a specific package version reference to the project in the current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package &lt;span style="color:#66d9ef">[package name]&lt;/span>-v &lt;span style="color:#66d9ef">[version]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="restore-packages">Restore packages:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="create-a-nuget-package-for-the-project-in-current-folder">Create a nuget package for the project in current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet pack
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="project-templates">Project Templates&lt;/h2>
+&lt;h3 id="install-a-new-project-template">Install a new project template:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new --install &lt;span style="color:#66d9ef">[dotnet template name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="remove-a-project-template">Remove a project template:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new --uninstall &lt;span style="color:#66d9ef">[dotnet template name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="run-test-defined-in-current-folder-project">Run test defined in current folder project&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet test
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="builds">Builds&lt;/h2>
+&lt;h3 id="build-currents-folder-solution-or-project">Build current&amp;rsquo;s folder solution or project&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="build-currents-folder-solution-or-project-with-release-configuration">Build current&amp;rsquo;s folder solution or project with release configuration&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build -c Release
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="publish-artifacts-for-currents-folder-solution-or-project">Publish artifacts for current&amp;rsquo;s folder solution or project.&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet publish
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="msbuild">MSBUILD&lt;/h2>
+&lt;h3 id="to-add-a-reference-to-a-local-assembly-without-nuget-package-edit-your-csproj-and-add-a-reference-as-shown-in-the-following-sample">To add a reference to a local assembly without nuget package, edit your csproj and add a Reference as shown in the following sample:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;code&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Reference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[Relative path to the Assembly dll file]&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/code&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="force-a-file-to-be-copied-to-the-output-folder-edit-your-csproj-and-add-a-content-section-as-shown-in-the-following-sample">Force a file to be copied to the output folder, edit your csproj and add a Content section as shown in the following sample:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;code&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Content&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[name of the file]&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;CopyToOutputDirectory&amp;gt;&lt;/span>PreserveNewest&lt;span style="color:#f92672">&amp;lt;/CopyToOutputDirectory&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Content&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/code&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item><item><title>First steps with .NET Core Tools MSBuild "alpha"</title><link>https://carlos.mendible.com/2016/11/29/first-steps-net-core-tools-msbuild-alpha/</link><pubDate>Tue, 29 Nov 2016 12:49:28 +0000</pubDate><guid>https://carlos.mendible.com/2016/11/29/first-steps-net-core-tools-msbuild-alpha/</guid><description>&lt;p>On November 16th, Microsoft announced the &lt;!-- raw HTML omitted -->.NET Core Tools MSBuild&amp;quot;alpha&amp;quot;&lt;!-- raw HTML omitted -->. I&amp;rsquo;ve been developing .Net Core applications with Visual Studio Code for a while now, and I needed to try the new tooling.&lt;/p>
+&lt;p>In this post I&amp;rsquo;ll show you which were my &lt;strong>First steps with .NET Core Tools MSBuild &amp;ldquo;alpha&amp;rdquo;&lt;/strong>&lt;/p>
+&lt;h2 id="1-installing-net-core-sdk-10-preview-3-build-004056">1. Installing .NET Core SDK 1.0 Preview 3 build 004056&lt;/h2>
+&lt;hr>
+&lt;p>The first step was to install the new tools from: &lt;!-- raw HTML omitted -->.NET Core SDK 1.0 Preview 3 build 004056&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="2-creating-a-sample-console-application">2. Creating a Sample Console Application&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run the following commands&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> md test.msbuild
+cd test.msbuild
+dotnet new
+code .
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Surprise Code shows two files and one is &lt;strong>test.msbuild.csproj&lt;/strong>. Bye bye &lt;strong>project.json&lt;/strong>!!!&lt;/p>
+&lt;h2 id="3-there-is-no-intellisense-for-csproj-files">3. There is no Intellisense for csproj files&lt;/h2>
+&lt;hr>
+&lt;p>This will make things difficult for a while but right now you have to forget about Intellisense and Autocomplete on your &lt;strong>csproj&lt;/strong> file, which makes adding references a real pain.&lt;/p>
+&lt;h2 id="4-the-csproj-file-does-not-target-net-core-11-by-default">4. The csproj file does not target .Net Core 1.1 by default&lt;/h2>
+&lt;hr>
+&lt;p>You&amp;rsquo;ll have to edit the &lt;strong>csproj&lt;/strong> file to target .Net Core 1.1 (lines 6 and 16)&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;Project&lt;/span> &lt;span style="color:#a6e22e">ToolsVersion=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;15.0&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">xmlns=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;http://schemas.microsoft.com/developer/msbuild/2003&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Import&lt;/span> &lt;span style="color:#a6e22e">Project=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;OutputType&amp;gt;&lt;/span>Exe&lt;span style="color:#f92672">&amp;lt;/OutputType&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;TargetFramework&amp;gt;&lt;/span>netcoreapp1.1&lt;span style="color:#f92672">&amp;lt;/TargetFramework&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Compile&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;**\*.cs&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;EmbeddedResource&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;**\*.resx&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.NETCore.App&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Version&amp;gt;&lt;/span>1.1.0&lt;span style="color:#f92672">&amp;lt;/Version&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/PackageReference&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.NET.Sdk&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Version&amp;gt;&lt;/span>1.0.0-alpha-20161104-2&lt;span style="color:#f92672">&amp;lt;/Version&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PrivateAssets&amp;gt;&lt;/span>All&lt;span style="color:#f92672">&amp;lt;/PrivateAssets&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/PackageReference&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Import&lt;/span> &lt;span style="color:#a6e22e">Project=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;$(MSBuildToolsPath)\Microsoft.CSharp.targets&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Project&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-launchjson">5. Create launch.json&lt;/h2>
+&lt;hr>
+&lt;p>Hit F5 and select .NET Core. Visual Studio Code will create a &lt;strong>launch.json&lt;/strong> file and because the tooling is not yet fully supported you&amp;rsquo;ll have to edit the file manually with the following values&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.2.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;configurations&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.NET Core Launch (console)&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;coreclr&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;request&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;launch&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;preLaunchTask&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;build&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;program&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceRoot}/bin/Debug/netcoreapp1.1/test.msbuild.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [],
+&lt;span style="color:#f92672">&amp;#34;cwd&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceRoot}&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;stopAtEntry&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;externalConsole&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+},
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.NET Core Attach&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;coreclr&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;request&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;attach&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;processId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${command.pickProcess}&amp;#34;&lt;/span>
+}
+]
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-create-taskjson">6. Create task.json&lt;/h2>
+&lt;hr>
+&lt;p>Hit F5 again and select .NET Core. Visual Studio Code will create a &lt;strong>task.json&lt;/strong> file which you won&amp;rsquo;t have to modify.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">See&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">https://go.microsoft.com/fwlink/?LinkId=733558&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">for&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">documentation&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">about&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">tasks.json&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">format&lt;/span>
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.1.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dotnet&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;isShellCommand&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [],
+&lt;span style="color:#f92672">&amp;#34;tasks&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;taskName&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;build&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [ ],
+&lt;span style="color:#f92672">&amp;#34;isBuildCommand&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;showOutput&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;silent&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;problemMatcher&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;$msCompile&amp;#34;&lt;/span>
+}
+]
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-restore-packages">7. Restore packages&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command from the Visual Studio Code terminal or the command prompt from step 1&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Visual Studio Code won&amp;rsquo;t prompt automatically to restore so failing to run this step manually will prevent you from building the application.&lt;/p>
+&lt;h2 id="8-run-and-debug-the-application">8. Run and debug the application&lt;/h2>
+&lt;hr>
+&lt;p>Place a break point in line 7 of the &lt;strong>Program.cs&lt;/strong> file&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">using System;
+class Program
+{
+static void Main(string[] args)
+{
+Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;Hello World!&amp;#34;&lt;/span>);
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hit F5 and the program should stop at the break point and you are good to go!&lt;/p>
+&lt;h2 id="9-side-by-side-with-projectjson-tooling-no-migration">9. Side by side with project.json tooling (no migration)&lt;/h2>
+&lt;hr>
+&lt;p>To be able to run my applications based on the &lt;strong>project.json&lt;/strong> tools I had to add a &lt;strong>global.json&lt;/strong> file in the root folder, with the following content&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;sdk&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0-preview2-1-003177&amp;#34;&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you are not sure of which versions you have installed, just run the following powershell command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">ls $env:programfiles\dotnet\sdk
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And change the value in the &lt;strong>global.json&lt;/strong> file as desired.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

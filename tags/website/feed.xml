@@ -1,0 +1,82 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WebSite on Code it Yourself...</title><link>https://carlos.mendible.com/tags/website/</link><description>Recent content in WebSite on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 05 Jun 2016 19:08:30 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/website/feed.xml" rel="self" type="application/rss+xml"/><item><title>Stop or Start all WebApps in your Azure subscription</title><link>https://carlos.mendible.com/2016/06/05/stop-start-webapps-azure-subscription/</link><pubDate>Sun, 05 Jun 2016 19:08:30 +0000</pubDate><guid>https://carlos.mendible.com/2016/06/05/stop-start-webapps-azure-subscription/</guid><description>&lt;p>&lt;strong>Stop or Start all WebApps in your Azure subscription&lt;/strong> with &lt;a href="https://gallery.technet.microsoft.com/scriptcenter/Stop-or-Start-all-WebApps-9533dda6/file/153545/1/Stop-Start-All-WebApps.ps1">Stop-Start-All-WebApps.ps1&lt;/a> a simple PowerShell workflow runbook that will help you automate the process of stopping or starting every single WebApp (Website) you&amp;rsquo;ve deployed.&lt;/p>
+&lt;p>The script receives two required parameters:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Stop&lt;/strong>: If set to true stop the WebApps (Websites) otherwise start the WebApps (Websites)&lt;/li>
+&lt;li>&lt;strong>CredentialAssetName&lt;/strong>: The name of a valid Credential Asset (AutomationPSCredential) you must have previously configured.&lt;/li>
+&lt;/ul>
+&lt;p>As you can see below, the script is quite simple and uses the following PowerShell Activities and Cmdlets:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>Here is the script:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#75715e">&amp;lt;#
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.SYNOPSIS&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Start or Stop all WebApps (Websites) in your subscription.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.DESCRIPTION&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Runbook which allows you to start/stop all WebApps (Websites) in your subscription.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> Stop
+&lt;/span>&lt;span style="color:#75715e"> If set to true: stop the WebApps (Websites). Otherwise start the WebApps (Websites)
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> CredentialAssetName
+&lt;/span>&lt;span style="color:#75715e"> The name of a working AutomationPSCredential
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.NOTES&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> AUTHOR: Carlos Mendible
+&lt;/span>&lt;span style="color:#75715e"> LASTEDIT: June 2, 2016
+&lt;/span>&lt;span style="color:#75715e">#&amp;gt;&lt;/span>
+Workflow Stop-Start-All-WebApps
+{
+&lt;span style="color:#75715e"># Parameters &lt;/span>
+&lt;span style="color:#66d9ef">Param&lt;/span>(
+[&lt;span style="color:#66d9ef">Parameter&lt;/span> (&lt;span style="color:#66d9ef">Mandatory&lt;/span>= $true)]
+&lt;span style="color:#66d9ef">[bool]&lt;/span>$Stop,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span> (&lt;span style="color:#66d9ef">Mandatory&lt;/span>= $true)]
+&lt;span style="color:#66d9ef">[string]&lt;/span>$CredentialAssetName
+)
+&lt;span style="color:#75715e">#The name of the Automation Credential Asset this runbook will use to authenticate to Azure. &lt;/span>
+$CredentialAssetName = $CredentialAssetName;
+&lt;span style="color:#75715e">#Get the credential with the above name from the Automation Asset store &lt;/span>
+$Cred = Get-AutomationPSCredential -Name $CredentialAssetName
+&lt;span style="color:#66d9ef">if&lt;/span>(!$Cred) {
+&lt;span style="color:#66d9ef">Throw&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Could not find an Automation Credential Asset named &amp;#39;${CredentialAssetName}&amp;#39;. Make sure you have created one in this Automation Account.&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e">#Connect to your Azure Account &lt;/span>
+Add-AzureRmAccount -Credential $Cred
+Add-AzureAccount -Credential $Cred
+$status = &lt;span style="color:#e6db74">&amp;#39;Stopped&amp;#39;&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> ($Stop)
+{
+$status = &lt;span style="color:#e6db74">&amp;#39;Running&amp;#39;&lt;/span>
+}
+&lt;span style="color:#75715e"># Get Running WebApps (Websites) &lt;/span>
+$websites = Get-AzureWebsite | where-object -FilterScript{$_.state &lt;span style="color:#f92672">-eq&lt;/span> $status }
+&lt;span style="color:#66d9ef">foreach&lt;/span> -parallel ($website &lt;span style="color:#66d9ef">In&lt;/span> $websites)
+{
+&lt;span style="color:#66d9ef">if&lt;/span> ($Stop)
+{
+$result = Stop-AzureWebsite $website.Name
+&lt;span style="color:#66d9ef">if&lt;/span>($result)
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;- &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> did not shutdown successfully&amp;#34;&lt;/span>
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;+ &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> shutdown successfully&amp;#34;&lt;/span>
+}
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+$result = Start-AzureWebsite $website.Name
+&lt;span style="color:#66d9ef">if&lt;/span>($result)
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;- &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> did not start successfully&amp;#34;&lt;/span>
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+Write-Output &lt;span style="color:#e6db74">&amp;#34;+ &lt;/span>$($website.Name)&lt;span style="color:#e6db74"> started successfully&amp;#34;&lt;/span>
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can download the script from the &lt;!-- raw HTML omitted -->Technet Script Gallery&lt;!-- raw HTML omitted -->, import it as a runbook for your automation account in the Azure portal or simply copy the code from this post.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

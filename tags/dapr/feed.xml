@@ -1,0 +1,340 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dapr on Code it Yourself...</title><link>https://carlos.mendible.com/tags/dapr/</link><description>Recent content in dapr on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Wed, 20 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/dapr/feed.xml" rel="self" type="application/rss+xml"/><item><title>The GitHub Actions Team</title><link>https://carlos.mendible.com/events/2020/05/20/the-github-actions-team/</link><pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/05/20/the-github-actions-team/</guid><description>&lt;p>En noviembre de 2019, algunos de los mejores desarrolladores de GitHub lanzaron la beta de GitHub Actions,
+la solución para CI/CD de GitHub. No tardo en popularizarse entre los mejores desarrolladores de cualquier entorno&amp;hellip;&lt;/p>
+&lt;p>Si te apetece usarlo y puedes permitírtelo, mirate este video donde acompaño a Sergion Navarro Pino:&lt;/p>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/uqsG999muxk" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>Interfaz Podcast Episodio 139 – Conociendo Dapr con Carlos Mendible</title><link>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</link><pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</guid><description>&lt;p>Check the podcast &lt;a href="https://rdiazconcha.com/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/">here&lt;/a>&lt;/p></description></item><item><title>Kubernetes NGINX ingress controller with Dapr</title><link>https://carlos.mendible.com/2020/04/05/kubernetes-nginx-ingress-controller-with-dapr/</link><pubDate>Sun, 05 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/04/05/kubernetes-nginx-ingress-controller-with-dapr/</guid><description>&lt;p>In this post I&amp;rsquo;ll show you how to expose your &amp;ldquo;Daprized&amp;rdquo; applications using and NGINX ingress controller.&lt;/p>
+&lt;h2 id="prerequistes">Prerequistes&lt;/h2>
+&lt;ul>
+&lt;li>A working &lt;a href="https://kubernetes.io/">kubernetes&lt;/a> cluster with Dapr installed. If you need instructions please find them &lt;a href="https://github.com/dapr/docs/blob/master/getting-started/environment-setup.md#installing-dapr-on-a-kubernetes-cluster">here&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="deploy-an-application-to-your-kubernetes-cluster">Deploy an application to your Kubernetes cluster&lt;/h2>
+&lt;p>I&amp;rsquo;ll be using a simple Azure Function I created back in 2017 in the following post: &lt;strong>&lt;a href="https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/">Run a Precompiled .NET Core Azure Function in a Container&lt;/a>&lt;/strong> which exposes a simple validation function.&lt;/p>
+&lt;p>Create a &lt;em>function.yaml&lt;/em> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#66d9ef">template&lt;/span>:
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">annotations&lt;/span>:
+&lt;span style="color:#66d9ef">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dni&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/dni:&lt;span style="color:#ae81ff">1.0.0&lt;/span>
+&lt;span style="color:#66d9ef">ports&lt;/span>:
+- &lt;span style="color:#66d9ef">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note the &lt;em>dapr.io&lt;/em> annotations used to instruct Dapr to inject the sidecar in your pod.&lt;/p>
+&lt;p>Now deploy the function into kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f ./function.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="deploy-nginx-ingress-controller-with-dapr">Deploy NGINX Ingress Controller with Dapr&lt;/h2>
+&lt;p>We are going to &amp;ldquo;Daprize&amp;rdquo; the NGINX Ingress Controller so traffic flows as shown in the following picture &lt;a href="#references">[1]&lt;/a>:&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/posts/dapr-nginx-ingress.png" alt="Daprized NGINX Ingress Controller">&lt;/p>
+&lt;p>In order to add the &lt;em>dapr.io&lt;/em> annotations to the NGINX pod, create a &lt;em>dapr-annotations.yaml&lt;/em> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">controller&lt;/span>:
+&lt;span style="color:#66d9ef">podAnnotations&lt;/span>:
+&lt;span style="color:#66d9ef">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;nginx-ingress&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and deploy the NGINX ingress controller:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm install nginx stable/nginx-ingress -f .&lt;span style="color:#ae81ff">\d&lt;/span>apr-annotations.yaml -n default
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Since we´ll also be adding TLS termination to the mix, run the following commands to generate the certificate and deploy the corresponding secret into kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">openssl req -x509 -nodes -days &lt;span style="color:#ae81ff">365&lt;/span> -newkey rsa:2048 -keyout tls.key -out tls.crt -subj &lt;span style="color:#e6db74">&amp;#34;/CN=hydra/O=hydra&amp;#34;&lt;/span>
+kubectl create secret tls tls-secret --key tls.key --cert tls.cert
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create the ingress rule (&lt;em>ingress.yaml&lt;/em>* file) with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: extensions/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Ingress
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: ingress-rules
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;span style="color:#66d9ef">annotations&lt;/span>:
+&lt;span style="color:#66d9ef">kubernetes.io/ingress.class&lt;/span>: nginx
+&lt;span style="color:#66d9ef">nginx.ingress.kubernetes.io/rewrite-target&lt;/span>: /
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">tls&lt;/span>:
+- &lt;span style="color:#66d9ef">hosts&lt;/span>:
+- hydra
+&lt;span style="color:#66d9ef">secretName&lt;/span>: tls-secret
+&lt;span style="color:#66d9ef">rules&lt;/span>:
+- &lt;span style="color:#66d9ef">host&lt;/span>: hydra
+&lt;span style="color:#66d9ef">http&lt;/span>:
+&lt;span style="color:#66d9ef">paths&lt;/span>:
+- &lt;span style="color:#66d9ef">path&lt;/span>: /
+&lt;span style="color:#66d9ef">backend&lt;/span>:
+&lt;span style="color:#66d9ef">serviceName&lt;/span>: nginx-ingress-dapr
+&lt;span style="color:#66d9ef">servicePort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that the rule is calling the &lt;em>nginx-ingress-dapr&lt;/em> service which was created by Dapr when we deployed the Daprized version of the ingress controller. This means that all trafic with the &lt;em>hydra&lt;/em> host will be sent to the Dapr sidecar of your NGINX controller pod.&lt;/p>
+&lt;p>Deploy the ingress rule:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f ./ingress.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-daprized-application">Test the &amp;ldquo;Daprized&amp;rdquo; application&lt;/h2>
+&lt;p>To test the application we&amp;rsquo;ll need the public IP of the ingress service, so run the following command and copy the resulting IP address:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get service --selector&lt;span style="color:#f92672">=&lt;/span>app&lt;span style="color:#f92672">=&lt;/span>nginx-ingress,component&lt;span style="color:#f92672">=&lt;/span>controller -o jsonpath&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;{.items[*].status.loadBalancer.ingress[0].ip}&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now make a simple curl request, using the &lt;a href="https://github.com/dapr/docs/blob/master/reference/api/service_invocation_api.md">Dapr invocation api specification&lt;/a>, to the application:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">curl -k -H &lt;span style="color:#e6db74">&amp;#34;Host: hydra&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;https://&amp;lt;ingress ip&amp;gt;/v1.0/invoke/dni/method/api/validate?dni=54495436H&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything runs as expected you should get the following result:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">true
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p>
+&lt;p>Learn more about Dapr &lt;a href="https://github.com/dapr/docs/tree/master/">here&lt;/a> and Dapr service invocation &lt;a href="https://github.com/dapr/docs/tree/master/howto/invoke-and-discover-services">here&lt;/a>&lt;/p>
+&lt;h2 id="references">References&lt;/h2>
+&lt;p>[1] Image from the &lt;a href="https://github.com/dapr/docs/blob/master/presentations/Dapr%20Presentation%20Deck.pptx">Dapr Predentation deck&lt;/a>&lt;/p></description></item><item><title>Reading Kubernetes Secrets with Dapr and .NET Core</title><link>https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/</link><pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/</guid><description>&lt;p>&lt;a href="https://dapr.io">Dapr&lt;/a> is an event-driven, portable runtime for building microservices on cloud and edge.&lt;/p>
+&lt;p>&lt;a href="https://dapr.io">Dapr&lt;/a> supports the fundamental features you&amp;rsquo;ll need such as: service invocation, state management, publish/subscribe messaging and since version &lt;a href="https://github.com/dapr/dapr/releases/tag/v0.5.0">0.5.0&lt;/a> the ability to read from secret stores!&lt;/p>
+&lt;p>This post will show you to read kubernetes secrets using &lt;a href="https://dapr.io">Dapr&lt;/a> and .NET Core:&lt;/p>
+&lt;h2 id="prerequistes">Prerequistes&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://dotnet.microsoft.com/download">.Net Core SDK 3.1&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/dapr/cli">Dapr CLI&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/dapr/dotnet-sdk">Dapr DotNet SDK&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.docker.com/">Docker&lt;/a>&lt;/li>
+&lt;li>A working &lt;a href="https://kubernetes.io/">kubernetes&lt;/a> cluster&lt;/li>
+&lt;/ul>
+&lt;h2 id="create-an-net-core-project-and-add-dependencies">Create an .NET Core project and add dependencies&lt;/h2>
+&lt;p>Open the command line and type:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">dotnet new web -o dapr.k8s.secrets
+cd dapr.k8s.secrets
+dotnet add package Dapr.Client -v 0.5.0-preview02
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="update-startupcs">Update Startup.cs&lt;/h2>
+&lt;p>Update &lt;em>Startup.cs&lt;/em> with the following contents in order to expose a &lt;em>secret&lt;/em> endpoint and use &lt;a href="https://dapr.io">Dapr&lt;/a> to fetch a kubernetes secret:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> dapr.k8s.secrets
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System.Text.Json;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.DependencyInjection;
+&lt;span style="color:#66d9ef">using&lt;/span> Dapr.Client;
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Startup&lt;/span>
+{
+&lt;span style="color:#75715e">// Dapr listens for requets on localhost
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">const&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> localhost = &lt;span style="color:#e6db74">&amp;#34;127.0.0.1&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Get the Dapr gRPC port
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> daprPort =&amp;gt; Environment.GetEnvironmentVariable(&lt;span style="color:#e6db74">&amp;#34;DAPR_GRPC_PORT&amp;#34;&lt;/span>) ?? &lt;span style="color:#e6db74">&amp;#34;50001&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">public&lt;/span> Startup(IConfiguration configuration)
+{
+Configuration = configuration;
+}
+&lt;span style="color:#66d9ef">public&lt;/span> IConfiguration Configuration { &lt;span style="color:#66d9ef">get&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> ConfigureServices(IServiceCollection services)
+{
+&lt;span style="color:#75715e">// Create Dapr Client
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> DaprClientBuilder()
+.UseEndpoint(&lt;span style="color:#e6db74">$&amp;#34;https://{localhost}:{daprPort}&amp;#34;&lt;/span>)
+.Build();
+&lt;span style="color:#75715e">// Add the DaprClient to DI.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> services.AddSingleton&amp;lt;DaprClient&amp;gt;(client);
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Configure(IApplicationBuilder app, IWebHostEnvironment env, DaprClient client)
+{
+&lt;span style="color:#66d9ef">if&lt;/span> (env.IsDevelopment())
+{
+app.UseDeveloperExceptionPage();
+}
+app.UseRouting();
+app.UseEndpoints(endpoints =&amp;gt;
+{
+&lt;span style="color:#75715e">// Add the secrets route
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> endpoints.MapGet(&lt;span style="color:#e6db74">&amp;#34;secret&amp;#34;&lt;/span>, Secret);
+});
+&lt;span style="color:#66d9ef">async&lt;/span> Task Secret(HttpContext context)
+{
+&lt;span style="color:#75715e">// Get the secret from kubernetes
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> secretValues = &lt;span style="color:#66d9ef">await&lt;/span> client.GetSecretAsync(
+&lt;span style="color:#e6db74">&amp;#34;kubernetes&amp;#34;&lt;/span>, &lt;span style="color:#75715e">// Name of the Dapr Secret Store
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#e6db74">&amp;#34;super-secret&amp;#34;&lt;/span>, &lt;span style="color:#75715e">// Name of the k8s secret
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Dictionary&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;() { { &lt;span style="color:#e6db74">&amp;#34;namespace&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;default&amp;#34;&lt;/span> } }); &lt;span style="color:#75715e">// Namespace where the k8s secret is deployed
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Get the secret value
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> secretValue = secretValues[&lt;span style="color:#e6db74">&amp;#34;super-secret&amp;#34;&lt;/span>];
+context.Response.ContentType = &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">await&lt;/span> JsonSerializer.SerializeAsync(context.Response.Body, secretValue);
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-a-dockerfile-with-the-following-contents">Create a Dockerfile with the following contents:&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">FROM mcr.microsoft.com/dotnet/core/sdk:&lt;span style="color:#ae81ff">3.1&lt;/span> AS builder
+WORKDIR /app
+&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> caches restore result &lt;span style="color:#66d9ef">by&lt;/span> copying csproj file separately
+COPY *.csproj .
+RUN dotnet restore
+COPY . .
+RUN dotnet publish --output /app/ --configuration Release
+RUN sed -n &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>s:.*&amp;lt;AssemblyName&amp;gt;&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>(.*&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>)&amp;lt;/AssemblyName&amp;gt;.*:&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>:p&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span> *.csproj &amp;gt; __assemblyname
+RUN &lt;span style="color:#66d9ef">if&lt;/span> [ ! -s __assemblyname ]; then filename=&lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>(ls *.csproj); echo &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>{filename%.*} &amp;gt; __assemblyname; fi
+&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> Stage &lt;span style="color:#ae81ff">2&lt;/span>
+FROM mcr.microsoft.com/dotnet/core/aspnet:&lt;span style="color:#ae81ff">3.1&lt;/span>
+WORKDIR /app
+COPY --&lt;span style="color:#66d9ef">from&lt;/span>=builder /app .
+ENV PORT &lt;span style="color:#ae81ff">80&lt;/span>
+EXPOSE &lt;span style="color:#ae81ff">80&lt;/span>
+ENTRYPOINT dotnet &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>(cat /app/__assemblyname).dll
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="build-the-docker-image-and-push-it-to-a-container-registry">Build the Docker image and push it to a container registry&lt;/h2>
+&lt;p>I&amp;rsquo;ll be pushing the container to &lt;a href="https://hub.docker.com/r/cmendibl3/dapr-k8s-secrets">Docker Hub&lt;/a>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell"> docker build -t cmendibl3/dapr-k8s-secrets:1.0.0 .
+docker push cmendibl3/dapr-k8s-secrets:1.0.0
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-manifest-and-deploy-the-application-to-kubernetes">Create manifest and deploy the application to kubernetes&lt;/h2>
+&lt;p>Create a &lt;em>deployment.yaml&lt;/em> with the following contents (remember to replace the image with your own values):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#75715e"># ASP.NET Core Application&lt;/span>
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dapr-k8s-secrets
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#66d9ef">template&lt;/span>:
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: dapr-k8s-secrets
+&lt;span style="color:#66d9ef">aadpodidbinding&lt;/span>: requires-vault
+&lt;span style="color:#66d9ef">annotations&lt;/span>:
+&lt;span style="color:#66d9ef">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dapr-k8s-secrets&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: dapr-k8s-secrets
+&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/dapr-k8s-secrets:&lt;span style="color:#ae81ff">1.0.0&lt;/span>
+&lt;span style="color:#66d9ef">ports&lt;/span>:
+- &lt;span style="color:#66d9ef">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#66d9ef">imagePullPolicy&lt;/span>: Always
+---
+&lt;span style="color:#75715e"># Create a Kubernetes Secret&lt;/span>
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Secret
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: super-secret
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;span style="color:#66d9ef">type&lt;/span>: Opaque
+&lt;span style="color:#66d9ef">data&lt;/span>:
+&lt;span style="color:#66d9ef">super-secret&lt;/span>: eW91ciBzdXBlciBzZWNyZXQK
+---
+&lt;span style="color:#75715e"># If RBAC is enabled in K8s, give the default service account access to read secrets in the default namespace&lt;/span>
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: rbac.authorization.k8s.io/v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: ClusterRoleBinding
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dapr-secret-reader
+&lt;span style="color:#66d9ef">roleRef&lt;/span>:
+&lt;span style="color:#66d9ef">apiGroup&lt;/span>: rbac.authorization.k8s.io
+&lt;span style="color:#66d9ef">kind&lt;/span>: ClusterRole
+&lt;span style="color:#66d9ef">name&lt;/span>: secret-reader
+&lt;span style="color:#66d9ef">subjects&lt;/span>:
+- &lt;span style="color:#66d9ef">kind&lt;/span>: ServiceAccount
+&lt;span style="color:#66d9ef">name&lt;/span>: default
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you haven&amp;rsquo;t installed Dapr in your kuberntes cluster run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dapr init --kubernetes
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now deploy the application to kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f ./deployment.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-application">Test the application&lt;/h2>
+&lt;p>Get the pod name and execute a port forward to test the API&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">$pod &lt;span style="color:#f92672">=&lt;/span> kubectl get po --selector&lt;span style="color:#f92672">=&lt;/span>app&lt;span style="color:#f92672">=&lt;/span>dapr-k8s-secrets -n default -o jsonpath&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span>
+kubectl port-forward $pod 80:80
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run the following command in other terminal:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">curl http://localhost/secret
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything is working you should read:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">&lt;span style="color:#e6db74">&amp;#34;your super secret&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p>
+&lt;p>Please find all code and files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.k8s.secrets">here&lt;/a>, and learn more about Dapr and the Secret API &lt;a href="https://github.com/dapr/docs/tree/master/concepts/secrets">here&lt;/a>&lt;/p></description></item><item><title>Azure Kubernetes Service: Lessons Learned</title><link>https://carlos.mendible.com/events/2020/02/29/aks-lessons-learned/</link><pubDate>Sat, 29 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/02/29/aks-lessons-learned/</guid><description>&lt;p>This is the perfect session if you want to understand the tools, features and best practices we&amp;rsquo;ve learned from customer engagements, that will allow your enterprise to deploy, use and operate Azure Kubernetes Service (AKS) with confidence.&lt;/p>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/fTay9HEJTdA" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div>
+&lt;p>And here a picture taken during the session:&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020-02-netcoreconf-valencia.jfif" alt="">&lt;/p></description></item><item><title>Introduction to Dapr: a runtime for building microservices</title><link>https://carlos.mendible.com/events/2020/02/28/indrouction-to-dapr/</link><pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/02/28/indrouction-to-dapr/</guid><description>&lt;p>An introduction to Dapr.&lt;/p>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/tOEVHpp1JtQ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div>
+&lt;p>And we took a picture of the group:&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020_02_Dapr.jpg" alt="">&lt;/p></description></item><item><title>Dapr: Debugging .NET Core with Visual Studio Code</title><link>https://carlos.mendible.com/2020/02/09/dapr-debugging-dotnetcore-with-visual-studio-code/</link><pubDate>Sun, 09 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/02/09/dapr-debugging-dotnetcore-with-visual-studio-code/</guid><description>&lt;p>So you are new to &lt;a href="https://dapr.io">Dapr&lt;/a> and you are trying to understand how it works with you .NET Core application. You already tried launching your app with the Dapr CLI and then you find yourself wondering on how to debug the mix with Visual Studio Code.&lt;/p>
+&lt;p>Well, follow this simple steps and you&amp;rsquo;ll be ready:&lt;/p>
+&lt;h2 id="modify-launchjson">Modify launch.json&lt;/h2>
+&lt;p>Change the &lt;strong>preLaunchTask&lt;/strong> so instead it calls a task named &lt;strong>daprd-debug&lt;/strong> instead of &lt;strong>build&lt;/strong>&lt;/p>
+&lt;p>Your &lt;strong>launch.json&lt;/strong> file should look like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">IntelliSense&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">learn&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">about&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">possible&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">attributes.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Hover&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">view&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">descriptions&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">of&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">existing&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">attributes.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">For&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">more&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">information,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">visit:&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">https://go.microsoft.com/fwlink/?linkid=830387&lt;/span>
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.2.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;configurations&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.NET Core Launch (web)&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;coreclr&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;request&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;launch&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;preLaunchTask&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd-debug&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;program&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}/bin/Debug/netcoreapp3.1/&amp;lt;your assembly name&amp;gt;.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [],
+&lt;span style="color:#f92672">&amp;#34;cwd&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;stopAtEntry&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;serverReadyAction&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;action&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;openExternally&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;pattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^\\s*Now listening on:\\s+(https?://\\S+)&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;env&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;ASPNETCORE_ENVIRONMENT&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Development&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;sourceFileMap&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;/Views&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}/Views&amp;#34;&lt;/span>
+}
+},
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.NET Core Attach&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;coreclr&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;request&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;attach&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;processId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${command:pickProcess}&amp;#34;&lt;/span>
+}
+]
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="modify-tasksjson">Modify tasks.json&lt;/h2>
+&lt;p>A new task to &lt;strong>tasks.json&lt;/strong> and name it &lt;strong>daprd-debug&lt;/strong> or whatever name you choosed in te previous step.&lt;/p>
+&lt;p>Your &lt;strong>tasks.json&lt;/strong> should look like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;tasks&amp;#34;&lt;/span>: [
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Ommited&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">tasks.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">...&lt;/span>
+{
+&lt;span style="color:#f92672">&amp;#34;label&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd-debug&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [
+&lt;span style="color:#e6db74">&amp;#34;-dapr-id&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;routing&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;-app-port&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;5000&amp;#34;&lt;/span>
+],
+&lt;span style="color:#f92672">&amp;#34;isBackground&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;problemMatcher&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;pattern&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;regexp&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;file&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;location&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">2&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;message&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;background&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;beginsPattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^.*starting Dapr Runtime.*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;endsPattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^.*waiting on port.*&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;dependsOn&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;build&amp;#34;&lt;/span>
+}
+]
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note:&lt;/strong> the new task depends on the &lt;strong>build&lt;/strong> task.&lt;/p>
+&lt;h2 id="hit-f5-and-enjoy">Hit F5 and enjoy&lt;/h2>
+&lt;p>Hit F5 and enjoy debugging your &amp;ldquo;Daprized&amp;rdquo; .NET Core application.&lt;/p>
+&lt;p>You can download a working sample from this &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.debug.vscode/">repo&lt;/a>.&lt;/p></description></item></channel></rss>

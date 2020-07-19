@@ -1,0 +1,921 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>aspNetCore on Code it Yourself...</title><link>https://carlos.mendible.com/tags/aspnetcore/</link><description>Recent content in aspNetCore on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 31 May 2019 09:12:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/aspnetcore/feed.xml" rel="self" type="application/rss+xml"/><item><title>Scale a Kubernetes Deployment with .NET Core</title><link>https://carlos.mendible.com/2019/05/31/scale-a-kubernetes-deployment-with-dotnet-core/</link><pubDate>Fri, 31 May 2019 09:12:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/05/31/scale-a-kubernetes-deployment-with-dotnet-core/</guid><description>&lt;p>Let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">mkdir kuberenetes.scale
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">cd kuberenetes.scale
+dotnet new api
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-the-references-to-kubernetesclient">3. Add the references to KubernetesClient&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet add package KubernetesClient -v 1.5.18
+dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-a-podscontrollercs-with-the-following-code">4. Create a PodsController.cs with the following code&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> k8s;
+&lt;span style="color:#66d9ef">using&lt;/span> k8s.Models;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.JsonPatch;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Mvc;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">namespace&lt;/span> kubernetes.scale
+{
+&lt;span style="color:#a6e22e"> [Route(&amp;#34;api/[controller]&lt;/span>&lt;span style="color:#e6db74">&amp;#34;)]
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span>&lt;span style="color:#a6e22e"> [ApiController]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">PodsController&lt;/span> : ControllerBase
+{
+&lt;span style="color:#66d9ef">private&lt;/span> KubernetesClientConfiguration k8sConfig = &lt;span style="color:#66d9ef">null&lt;/span>;
+&lt;span style="color:#66d9ef">public&lt;/span> PodsController(IConfiguration config)
+{
+&lt;span style="color:#75715e">// Reading configuration to know if running inside a cluster or in local mode.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> useKubeConfig = &lt;span style="color:#66d9ef">bool&lt;/span>.Parse(config[&lt;span style="color:#e6db74">&amp;#34;UseKubeConfig&amp;#34;&lt;/span>]);
+&lt;span style="color:#66d9ef">if&lt;/span> (!useKubeConfig)
+{
+&lt;span style="color:#75715e">// Running inside a k8s cluser
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> k8sConfig = KubernetesClientConfiguration.InClusterConfig();
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+&lt;span style="color:#75715e">// Running on dev machine
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> k8sConfig = KubernetesClientConfiguration.BuildConfigFromConfigFile();
+}
+}
+&lt;span style="color:#a6e22e">
+&lt;/span>&lt;span style="color:#a6e22e"> [HttpPatch(&amp;#34;scale&amp;#34;)]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> IActionResult Scale([FromBody]ReplicaRequest request)
+{
+&lt;span style="color:#75715e">// Use the config object to create a client.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> Kubernetes(k8sConfig))
+{
+&lt;span style="color:#75715e">// Create a json patch for the replicas
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> jsonPatch = &lt;span style="color:#66d9ef">new&lt;/span> JsonPatchDocument&amp;lt;V1Scale&amp;gt;();
+&lt;span style="color:#75715e">// Set the new number of repplcias
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> jsonPatch.Replace(e =&amp;gt; e.Spec.Replicas, request.Replicas);
+&lt;span style="color:#75715e">// Creat the patch
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> patch = &lt;span style="color:#66d9ef">new&lt;/span> V1Patch(jsonPatch);
+&lt;span style="color:#75715e">// Patch the &amp;#34;minions&amp;#34; Deployment in the &amp;#34;default&amp;#34; namespace
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> client.PatchNamespacedDeploymentScale(patch, request.Deployment, request.Namespace);
+&lt;span style="color:#66d9ef">return&lt;/span> NoContent();
+}
+}
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ReplicaRequest&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Deployment { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Namespace { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> Replicas { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-replace-the-contents-of-the-appsettingsdevelopmentjson-file">5. Replace the contents of the appsettings.Development.json file&lt;/h2>
+&lt;p>Note the &lt;strong>UseKubeConfig&lt;/strong> property is set to &lt;strong>true&lt;/strong>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;Logging&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;LogLevel&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Default&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Debug&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;System&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Information&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Information&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;UseKubeConfig&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-replace-the-contents-of-the-appsettingsjson-file">6. Replace the contents of the appsettings.json file&lt;/h2>
+&lt;p>Note the &lt;strong>UseKubeConfig&lt;/strong> property is set to &lt;strong>false&lt;/strong>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;Logging&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;LogLevel&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Default&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Warning&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;AllowedHosts&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;UseKubeConfig&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-test-the-application">7. Test the application&lt;/h2>
+&lt;hr>
+&lt;p>Test the app from your dev machine running:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet run
+curl -k -i -H &lt;span style="color:#e6db74">&amp;#39;Content-Type: application/json&amp;#39;&lt;/span> -d &lt;span style="color:#e6db74">&amp;#39;{&amp;#34;Deployment&amp;#34;: &amp;#34;&amp;lt;YOUR DEPLOYMENT NAME&amp;gt;&amp;#34;, &amp;#34;Namespace&amp;#34;: &amp;#34;&amp;lt;YOUR NAMESPACE&amp;gt;&amp;#34;, &amp;#34;Replicas&amp;#34;: 3}&amp;#39;&lt;/span> -X PATCH https://localhost:5001/api/pods/scale
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: You must have a valid config file to connect to the k8s cluster.&lt;/p>
+&lt;p>Please find all the code used in this post &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/kubernetes.scale">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Updated Step by step: Serilog with ASP.NET Core</title><link>https://carlos.mendible.com/2019/01/14/updated-step-step-serilog-asp-net-core/</link><pubDate>Mon, 14 Jan 2019 18:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/01/14/updated-step-step-serilog-asp-net-core/</guid><description>&lt;p>Many of you come to my site to read the post &lt;a href="https://carlos.mendible.com/2016/09/19/step-step-serilog-asp-net-core/">Step by step: Serilog with ASP.NET Core&lt;/a> which I wrote in 2016 and is completely out of date, so with this post I will show you how to setup &lt;a href="https://serilog.net/">Serilog&lt;/a> to work with your ASP.NET Core 2.2 applications.&lt;/p>
+&lt;h2 id="1-create-an-aspnet-core-project">1. Create an ASP.NET Core project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> md aspnet.serilog.sample
+cd aspnet.serilog.sample
+dotnet new mvc
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-add-the-following-dependencies-to-your-project">2. Add the following dependencies to your project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash"> dotnet add package Serilog.AspNetCore
+dotnet add package Serilog.Extensions.Logging
+dotnet add package Serilog.Sinks.ColoredConsole
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-change-your-programcs-file-to-look-like-the-following">3. Change your Program.cs file to look like the following&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Logging;
+&lt;span style="color:#66d9ef">using&lt;/span> Serilog;
+&lt;span style="color:#66d9ef">using&lt;/span> Serilog.Core;
+&lt;span style="color:#66d9ef">using&lt;/span> Serilog.Events;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aspnet.serilog.sample
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+Log.Logger = &lt;span style="color:#66d9ef">new&lt;/span> LoggerConfiguration()
+.Enrich.FromLogContext()
+.MinimumLevel.Debug()
+.WriteTo.ColoredConsole(
+LogEventLevel.Verbose,
+&lt;span style="color:#e6db74">&amp;#34;{NewLine}{Timestamp:HH:mm:ss} [{Level}] ({CorrelationToken}) {Message}{NewLine}{Exception}&amp;#34;&lt;/span>)
+.CreateLogger();
+&lt;span style="color:#66d9ef">try&lt;/span>
+{
+CreateWebHostBuilder(args).Build().Run();
+}
+&lt;span style="color:#66d9ef">finally&lt;/span>
+{
+Log.CloseAndFlush();
+}
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> IWebHostBuilder CreateWebHostBuilder(&lt;span style="color:#66d9ef">string&lt;/span>[] args) =&amp;gt;
+WebHost.CreateDefaultBuilder(args)
+.UseSerilog()
+.UseStartup&amp;lt;Startup&amp;gt;();
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-inject-the-logger-to-your-services-or-controllers">4. Inject the logger to your services or controllers&lt;/h2>
+&lt;hr>
+&lt;p>Change the home controller and log some actions:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Diagnostics;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Mvc;
+&lt;span style="color:#66d9ef">using&lt;/span> aspnet.serilog.sample.Models;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Logging;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aspnet.serilog.sample.Controllers
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">HomeController&lt;/span> : Controller
+{
+ILogger&amp;lt;HomeController&amp;gt; logger;
+&lt;span style="color:#66d9ef">public&lt;/span> HomeController(ILogger&amp;lt;HomeController&amp;gt; logger)
+{
+&lt;span style="color:#66d9ef">this&lt;/span>.logger = logger;
+}
+&lt;span style="color:#66d9ef">public&lt;/span> IActionResult Index()
+{
+&lt;span style="color:#66d9ef">this&lt;/span>.logger.LogDebug(&lt;span style="color:#e6db74">&amp;#34;Index was called&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">return&lt;/span> View();
+}
+&lt;span style="color:#66d9ef">public&lt;/span> IActionResult Privacy()
+{
+&lt;span style="color:#66d9ef">return&lt;/span> View();
+}
+&lt;span style="color:#a6e22e">
+&lt;/span>&lt;span style="color:#a6e22e"> [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> IActionResult Error()
+{
+&lt;span style="color:#66d9ef">return&lt;/span> View(&lt;span style="color:#66d9ef">new&lt;/span> ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Download the complete code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.serilog.sample2.2">here&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Revisiting Docker Multi Stage Builds to build an ASP.NET Core Echo Server</title><link>https://carlos.mendible.com/2018/09/25/revisiting-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</link><pubDate>Tue, 25 Sep 2018 20:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/09/25/revisiting-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</guid><description>&lt;p>On April I wrote a post about &lt;a href="https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server">Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server&lt;/a> and these days while preparing a talk, on CI/CD and kubernetes, I started to play with the &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver">simple sample&lt;/a> I wrote back then.&lt;/p>
+&lt;p>Soon enough I noticed that with each &lt;code>docker build&lt;/code> command I issued the dependencies for the echoserver were always restored, even if no changes were made to the project file (csproj).&lt;/p>
+&lt;p>Let see what was going on:&lt;/p>
+&lt;p>This was the original dockerfile:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-docker" data-lang="docker">&lt;span style="color:#75715e"># This stage builds the application&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-sdk-2.1.101-jessie AS builder&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> . src&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> src&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet restore&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet publish -c release&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># This stages uses the output from the build&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-runtime-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder src/bin/release/netcoreapp2.0/publish app&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> app&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ASPNETCORE_URLS http://*:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">EXPOSE&lt;/span>&lt;span style="color:#e6db74"> 80&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;dotnet&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;echoserver.dll&amp;#34;&lt;/span>]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see the culprit was between the lines 3 and 5. I was restoring the dependencies after copying all the code! And I fixed it with the following new dockerfile:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-docker" data-lang="docker">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-sdk-2.1.101-jessie AS builder&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> ./*.csproj ./src/&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> /src&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet restore&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> . /src&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet publish -c release&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-runtime-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder src/bin/release/netcoreapp2.0/publish app&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> app&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ASPNETCORE_URLS http://*:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">EXPOSE&lt;/span>&lt;span style="color:#e6db74"> 80&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;dotnet&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;echoserver.dll&amp;#34;&lt;/span>]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now the dependencies are restored after copying just the project files (*.csproj) then we copy the rest of the files and build as usual, and yes! with this dockerfile in place the image build times are faster if no dependencies are changed!&lt;/p>
+&lt;p>Hope it helps!&lt;/p>
+&lt;p>Feel free to get the code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver.improved">here&lt;/a>.&lt;/p></description></item><item><title>Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server</title><link>https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</link><pubDate>Wed, 04 Apr 2018 15:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to create a simple Echo Server with ASP.NET Core and then a Docker Image using &lt;a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build&lt;/a>:&lt;/p>
+&lt;h2 id="1-create-the-application">1. Create the Application&lt;/h2>
+&lt;hr>
+&lt;p>Open a PowerShell promt and run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir echoserver
+cd echoserver
+dotnet new console
+dotnet add package Microsoft.AspNetCore -v 2.0.2
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-replace-the-contents-of-programcs">2. Replace the contents of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> EchoServer
+{
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore;
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+WebHost.CreateDefaultBuilder()
+.UseKestrel()
+.Configure(app =&amp;gt;
+{
+app.Run(httpContext =&amp;gt;
+{
+&lt;span style="color:#66d9ef">var&lt;/span> request = httpContext.Request;
+&lt;span style="color:#66d9ef">var&lt;/span> response = httpContext.Response;
+&lt;span style="color:#75715e">// Echo the Headers
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> header &lt;span style="color:#66d9ef">in&lt;/span> request.Headers)
+{
+response.Headers.Add(header);
+}
+&lt;span style="color:#75715e">// Echo the body
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> request.Body.CopyToAsync(response.Body);
+});
+})
+.Build()
+.Run();
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-build-and-test">3. Build and Test&lt;/h2>
+&lt;hr>
+&lt;p>Run the folowing commands to build the application:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The Echo Server will be running on: &lt;a href="http://localhost:5000">http://localhost:5000&lt;/a> and to test it just send any request and the server should return it back to you.&lt;/p>
+&lt;p>Let&amp;rsquo;s try sending a GET request with a custom header:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -H &lt;span style="color:#e6db74">&amp;#34;Custom-Header: echo&amp;#34;&lt;/span> http://localhost:5000/ -i
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>the response should read:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">HTTP/1.1 &lt;span style="color:#ae81ff">200&lt;/span> OK
+Date: Wed, &lt;span style="color:#ae81ff">04&lt;/span> Apr &lt;span style="color:#ae81ff">2018&lt;/span> 10:10:55 GMT
+Server: Kestrel
+Content-Length: &lt;span style="color:#ae81ff">0&lt;/span>
+Accept: */*
+Host: localhost:5000
+User-Agent: curl/7.35.0
+Custom-Header: echo
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-a-dockerfile">4. Create a Dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>In order to run the Echo Server in a container create a Dockerfile with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-docker" data-lang="docker">&lt;span style="color:#75715e"># This stage builds the application&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-sdk-2.1.101-jessie AS builder&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> . src&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> src&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet restore&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet publish -c release&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># This stages uses the output from the build&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-runtime-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder src/bin/release/netcoreapp2.0/publish app&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> app&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ASPNETCORE_URLS http://*:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">EXPOSE&lt;/span>&lt;span style="color:#e6db74"> 80&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;dotnet&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;echoserver.dll&amp;#34;&lt;/span>]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: The previous Dockerfile defines a &lt;a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build&lt;/a>:&lt;/p>
+&lt;ul>
+&lt;li>The first stage copies the source code to the image and builds the application.&lt;/li>
+&lt;li>The second stage uses the output of the first stage (builder) to create the final and optimized image (i.e. No need to remove the sdk or the source code).&lt;/li>
+&lt;li>Docker 17.05 or higher is needed in order to build and image based on a multi-stage Dockerfile.&lt;/li>
+&lt;/ul>
+&lt;h2 id="5-build-and-test-the-image">5. Build and test the image&lt;/h2>
+&lt;hr>
+&lt;p>Run the folowing commands to build and run the docker image:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker build -t echoserver .
+docker run -p 5000&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>80 echoserver
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To test the image just repeat the tests from step 3.&lt;/p>
+&lt;p>Hope it helps!&lt;/p>
+&lt;p>Feel free to get the code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver">here&lt;/a>.&lt;/p></description></item><item><title>Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0</title><link>https://carlos.mendible.com/2017/09/01/toggle-raspberry-pi-gpio-pins-with-asp-net-core-20/</link><pubDate>Fri, 01 Sep 2017 09:39:08 +0000</pubDate><guid>https://carlos.mendible.com/2017/09/01/toggle-raspberry-pi-gpio-pins-with-asp-net-core-20/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to &lt;strong>Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;!-- raw HTML omitted -->.NET Core 2.0 SDK&lt;!-- raw HTML omitted -->&lt;/strong>&lt;/li>
+&lt;li>&lt;strong>A Raspberry Pi 3 Running Raspbian&lt;/strong>&lt;/li>
+&lt;li>Install linux dependencies: sudo apt-get install curl libunwind8 gettext&lt;/li>
+&lt;/ul>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aspnet.webapi.rpi.gpio
+cd aspnet.webapi.rpi.gpio
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-an-aspnet-core-web-api-project">2. Create an ASP.NET Core Web API project&lt;/h2>
+&lt;hr>
+&lt;p>Create an ASP.NET Core Web API project with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new webapi
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-a-reference-to-unosquareraspberryio">3. Add a reference to Unosquare.Raspberry.IO&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Unosquare.Raspberry.IO
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now restore the packages:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-blinkycontrollercs">4. Create BlinkyController.cs&lt;/h2>
+&lt;hr>
+&lt;p>In the Controllers folder, create a BlinkyController.cs file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Mvc;
+&lt;span style="color:#66d9ef">using&lt;/span> Unosquare.RaspberryIO;
+&lt;span style="color:#66d9ef">using&lt;/span> Unosquare.RaspberryIO.Gpio;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aspnet.webapi.rpi.gpio.Controllers
+{
+&lt;span style="color:#a6e22e"> [Route(&amp;#34;api/[controller]&lt;/span>&lt;span style="color:#e6db74">&amp;#34;)]
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">BlinkyController&lt;/span> : Controller
+{
+&lt;span style="color:#a6e22e"> [HttpPost]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Post([FromBody]&lt;span style="color:#66d9ef">bool&lt;/span> isOn)
+{
+&lt;span style="color:#75715e">// Control GPIO pin 5
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> pin = Pi.Gpio.Pin05;
+pin.PinMode = GpioPinDriveMode.Output;
+pin.Write(!isOn);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: The sample toggles GPIO pin 5.&lt;/p>
+&lt;h2 id="5-publish-the-application">5. Publish the application&lt;/h2>
+&lt;hr>
+&lt;p>Publish the application with the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet publish -c Release -r linux-arm
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-copy-the-files-to-your-raspberry">6. Copy the files to your Raspberry&lt;/h2>
+&lt;hr>
+&lt;p>Copy the contents of the folder &lt;strong>\aspnet.on.rpi\bin\Release\netcoreapp2.0\linux-arm\publish&lt;/strong> to the Raspberry (i.e. /home/pi/publish)&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> For this task I connect to the Raspberry via SFTP using &lt;!-- raw HTML omitted -->WinSCP&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="7-run-the-application">7. Run the application&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using ssh and then run the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">sudo -i
+cd /home/pi/publish
+chmod +x aspnet.webapi.rpi.gpio
+export ASPNETCORE_URLS=&lt;span style="color:#e6db74">&amp;#34;http://*:5000&amp;#34;&lt;/span>
+./aspnet.webapi.rpi.gpio
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: Unosquare.Raspberry.IO must be run with elevated privileges.&lt;/p>
+&lt;h2 id="8-call-the-web-api-to-toggle-the-gpio-pin">8. Call the Web API to Toggle the GPIO pin&lt;/h2>
+&lt;hr>
+&lt;p>Post data to the Web API to toggle the GPIO pin.&lt;/p>
+&lt;p>To turn it on:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">curl -H &lt;span style="color:#e6db74">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> -d &lt;span style="color:#e6db74">&amp;#39;true&amp;#39;&lt;/span> http&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//&lt;span style="color:#66d9ef">[ip of your raspberry]&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>5000/api/blinky
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To Turn it off:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">curl -H &lt;span style="color:#e6db74">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> -d &lt;span style="color:#e6db74">&amp;#39;false&amp;#39;&lt;/span> http&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//&lt;span style="color:#66d9ef">[ip of your raspberry]&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>5000/api/blinky
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get the code &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Run ASP.NET Core on OpenShift</title><link>https://carlos.mendible.com/2017/07/26/run-asp.net-core-on-openshift/</link><pubDate>Wed, 26 Jul 2017 09:55:19 +0000</pubDate><guid>https://carlos.mendible.com/2017/07/26/run-asp.net-core-on-openshift/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to &lt;strong>Run ASP.NET Core on OpenShift&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;ul>
+&lt;li>You&amp;rsquo;ll need a working Docker installation. If you are using Windows 10 you can get Docker for Windows &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/li>
+&lt;li>Be sure to &lt;strong>Disable TLS for 127.0.0.1:2375&lt;/strong> for your Docker installation&lt;/li>
+&lt;li>Be sure to set &lt;strong>172.30.0.0/16 as an Insecure Registry&lt;/strong> in your Docker installation&lt;/li>
+&lt;li>Be sure to set &lt;strong>172.30.1.1:5000 as a Registry Mirror&lt;/strong> in your Docker installation&lt;/li>
+&lt;li>You&amp;rsquo;ll need download the &lt;!-- raw HTML omitted -->oc Client Tools&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Note&lt;/strong>: If you want to learn about OpenShift and what can you do with it, I recommend the free book: &lt;!-- raw HTML omitted -->Openshift for Developers&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aspnet.on.openshift
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd aspnet.on.openshift
+dotnet new web
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>No you have a working Hello World application.&lt;/p>
+&lt;h2 id="3-publish-your-application">3. Publish your application&lt;/h2>
+&lt;hr>
+&lt;p>Restore the nuget packages and publish your application with the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+dotnet publish -c release
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-a-dockerfile">4. Create a Dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>Create a Dockerfile (be aware of the capital D) with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">FROM microsoft/dotnet
+&lt;span style="color:#75715e"># Set ASPNETCORE_URLS&lt;/span>
+ENV ASPNETCORE_URLS=https://&lt;span style="color:#75715e">*:8080&lt;/span>
+&lt;span style="color:#75715e"># Switch to root for changing dir ownership/permissions&lt;/span>
+USER &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;span style="color:#75715e"># Copy the binaries&lt;/span>
+COPY /bin/release/netcoreapp1&lt;span style="color:#ae81ff">.1&lt;/span>/publish app
+&lt;span style="color:#75715e"># Change to app directory&lt;/span>
+WORKDIR app
+&lt;span style="color:#75715e"># In order to drop the root user, we have to make some directories world&lt;/span>
+&lt;span style="color:#75715e"># writable as OpenShift default security model is to run the container under&lt;/span>
+&lt;span style="color:#75715e"># random UID.&lt;/span>
+RUN chown -R &lt;span style="color:#ae81ff">1001&lt;/span>:&lt;span style="color:#ae81ff">0&lt;/span> /app &lt;span style="color:#75715e">&amp;amp;&amp;amp;&lt;/span> chmod -R og+rwx /app
+&lt;span style="color:#75715e"># Expose port 8080 for the application.&lt;/span>
+EXPOSE &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;span style="color:#75715e"># Run container by default as user with id 1001 (default)&lt;/span>
+USER &lt;span style="color:#ae81ff">1001&lt;/span>
+&lt;span style="color:#75715e"># Start the application using dotnet!!!&lt;/span>
+ENTRYPOINT dotnet aspnet.on.openshift.dll
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-you-openshift-cluster">5. Create you OpenShift Cluster&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc cluster up --host-data-dir=/mydata --version=v1.5.1
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should have a working cluster. To get the url of your cluster run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc status
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Browse to your cluster (i.e &lt;!-- raw HTML omitted -->https://10.0.75.2:8443&lt;!-- raw HTML omitted -->) and login with username: &lt;strong>developer&lt;/strong> and password &lt;strong>developer&lt;/strong>&lt;/p>
+&lt;h2 id="6-create-an-app-in-openshift">6. Create an app in OpenShift&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc new-app . --name=aspnetoc
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-build-your-openshift-image">7. Build your OpenShift image&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc start-build aspnetoc --from-dir=.
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-create-a-route-so-you-can-access-the-application">8. Create a route so you can access the application&lt;/h2>
+&lt;hr>
+&lt;p>Run the following commands&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc create route edge --service=aspnetoc
+oc get route aspnetoc
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Copy the host/port output of the previous command (i.e. aspnetoc-myproject.10.0.75.2.nip.io)&lt;/p>
+&lt;h2 id="9-check-the-status-and-browse-to-you-application">9. Check the status and browse to you application&lt;/h2>
+&lt;hr>
+&lt;p>Check the status with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc status
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>When your pod has been deployed browse to your application using the host you copied in step 8 (i.e. &lt;!-- raw HTML omitted -->&lt;a href="https://aspnetoc-myproject.10.0.75.2.nip.io">https://aspnetoc-myproject.10.0.75.2.nip.io&lt;/a>&lt;!-- raw HTML omitted -->).&lt;/p>
+&lt;p>Enjoy! you just deployed your ASP.NET Core application to OpenShift.&lt;/p>
+&lt;p>You can get the code &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Deploy your ASP.NET Core Web API to AWS Lambda</title><link>https://carlos.mendible.com/2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/</link><pubDate>Tue, 04 Jul 2017 12:59:05 +0000</pubDate><guid>https://carlos.mendible.com/2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to &lt;strong>Deploy your ASP.NET Core Web API to AWS Lambda&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;ul>
+&lt;li>You&amp;rsquo;ll need an AWS account: &lt;!-- raw HTML omitted -->&lt;a href="https://aws.amazon.com/">https://aws.amazon.com/&lt;/a>&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>You&amp;rsquo;ll need AWS CLI installed: &lt;!-- raw HTML omitted -->&lt;a href="http://docs.aws.amazon.com/cli/latest/userguide/installing.html">http://docs.aws.amazon.com/cli/latest/userguide/installing.html&lt;/a>&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>You&amp;rsquo;ll need your AWS security credentials&lt;/li>
+&lt;li>Some basic knowledge on &lt;!-- raw HTML omitted -->AWS Stacks&lt;!-- raw HTML omitted -->, &lt;!-- raw HTML omitted -->API Gateway&lt;!-- raw HTML omitted -->, &lt;!-- raw HTML omitted -->Lambda&lt;!-- raw HTML omitted --> and &lt;!-- raw HTML omitted -->Buckets&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;/ul>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aws.lambda
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd aws.lambda
+dotnet new webapi
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-replace-the-contents-of-awslambdacsproj">3. Replace the contents of aws.lambda.csproj&lt;/h2>
+&lt;hr>
+&lt;p>You need to target &lt;strong>netcoreapp1.0&lt;/strong> in order for your Web API to work on AWS Lambda. You&amp;rsquo;ll also need to reference some nuget packages from aws so replace the contents of the &lt;strong>aws.lamda.csproj&lt;/strong> file with the following lines:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;Project&lt;/span> &lt;span style="color:#a6e22e">Sdk=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.NET.Sdk.Web&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;TargetFramework&amp;gt;&lt;/span>netcoreapp1.0&lt;span style="color:#f92672">&amp;lt;/TargetFramework&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;UserSecretsId&amp;gt;&lt;/span>aspnet-aws.lambda-FD62E418-7AF9-462F-B391-DD806F38F03A&lt;span style="color:#f92672">&amp;lt;/UserSecretsId&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PreserveCompilationContext&amp;gt;&lt;/span>false&lt;span style="color:#f92672">&amp;lt;/PreserveCompilationContext&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Folder&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;wwwroot\&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Server.IISIntegration&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Server.Kestrel&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Mvc&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Routing&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Configuration.EnvironmentVariables&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Configuration.FileExtensions&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Configuration.Json&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Logging&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Options.ConfigurationExtensions&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;AWSSDK.Extensions.NETCore.Setup&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;3.3.0.3&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Amazon.Lambda.Core&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Amazon.Lambda.Serialization.Json&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.1.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Amazon.Lambda.AspNetCoreServer&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;0.10.1-preview1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Amazon.Lambda.Logging.AspNetCore&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.1.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;DotNetCliToolReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.VisualStudio.Web.CodeGeneration.Tools&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;DotNetCliToolReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Amazon.Lambda.Tools&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.6.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Project&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-restore-the-packages">4. Restore the packages&lt;/h2>
+&lt;hr>
+&lt;p>You just changed the project files so restore the packages:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-rename-programcs-and-replace-its-contents">5. Rename Program.cs and replace it&amp;rsquo;s contents&lt;/h2>
+&lt;hr>
+&lt;p>Rename &lt;strong>Program.cs&lt;/strong> to &lt;strong>LocalEntrypoint.cs&lt;/strong> and replace the contents of the file with the following lines:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aws.lambda
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// The Main function can be used to run the ASP.NET Core application locally using the Kestrel webserver.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">LocalEntryPoint&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> host = &lt;span style="color:#66d9ef">new&lt;/span> WebHostBuilder()
+.UseKestrel()
+.UseContentRoot(Directory.GetCurrentDirectory())
+.UseIISIntegration()
+.UseStartup&amp;lt;Startup&amp;gt;()
+.Build();
+host.Run();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: This will be the entry point while you are developing.&lt;/p>
+&lt;h2 id="6-create-a-file-lambdafunctioncs">6. Create a file LambdaFunction.cs&lt;/h2>
+&lt;hr>
+&lt;p>Create a &lt;strong>LambdaFunction.cs&lt;/strong> file and copy the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aws.lambda
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">LambdaFunction&lt;/span> : Amazon.Lambda.AspNetCoreServer.APIGatewayProxyFunction
+{
+&lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">override&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Init(IWebHostBuilder builder)
+{
+builder
+.UseContentRoot(Directory.GetCurrentDirectory())
+.UseStartup&amp;lt;Startup&amp;gt;()
+.UseApiGateway();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: This class will be the entry point once you deploy the Web API to AWS Lambda.&lt;/p>
+&lt;h2 id="7-replace-the-contents-of-startupcs">7. Replace the contents of Startup.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Startup.cs&lt;/strong> file with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.DependencyInjection;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Logging;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aws.lambda
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Startup&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> Startup(IHostingEnvironment env)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> builder = &lt;span style="color:#66d9ef">new&lt;/span> ConfigurationBuilder()
+.SetBasePath(env.ContentRootPath)
+.AddJsonFile(&lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">false&lt;/span>, reloadOnChange: &lt;span style="color:#66d9ef">true&lt;/span>)
+.AddJsonFile(&lt;span style="color:#e6db74">$&amp;#34;appsettings.{env.EnvironmentName}.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">true&lt;/span>);
+builder.AddEnvironmentVariables();
+Configuration = builder.Build();
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> IConfigurationRoot Configuration { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to add services to the container
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> ConfigureServices(IServiceCollection services)
+{
+services.AddMvc();
+&lt;span style="color:#75715e">// Pull in any SDK configuration from Configuration object
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+}
+&lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+{
+loggerFactory.AddLambdaLogger(Configuration.GetLambdaLoggerOptions());
+app.UseMvc();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: Check lines 34 &amp;amp; 40 for special AWS configurations.&lt;/p>
+&lt;h2 id="8-create-aws-lambda-tools-defaultsjson">8. Create aws-lambda-tools-defaults.json&lt;/h2>
+&lt;p>Create a aws-lambda-tools-defaults.json file with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;Information&amp;#34;&lt;/span>: [
+&lt;span style="color:#e6db74">&amp;#34;This file provides default values for the deployment wizard inside Visual Studio and the AWS Lambda commands added to the .NET Core CLI.&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;To learn more about the Lambda commands with the .NET Core CLI execute the following command at the command line in the project root directory.&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;dotnet lambda help&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;All the command line options for the Lambda command can be specified in this file.&amp;#34;&lt;/span>
+],
+&lt;span style="color:#f92672">&amp;#34;profile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;default&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;region&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;eu-west-1&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;configuration&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Release&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;framework&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;netcoreapp1.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;function-runtime&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dotnetcore1.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;template&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;serverless.template&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: Be aware of teh region specified in this file.&lt;/p>
+&lt;h2 id="9-create-serverlesstemplate">9. Create serverless.template&lt;/h2>
+&lt;hr>
+&lt;p>Create a file: serverless.template with the following contents&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;AWSTemplateFormatVersion&amp;#34;&lt;/span> : &lt;span style="color:#e6db74">&amp;#34;2010-09-09&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Transform&amp;#34;&lt;/span> : &lt;span style="color:#e6db74">&amp;#34;AWS::Serverless-2016-10-31&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Description&amp;#34;&lt;/span> : &lt;span style="color:#e6db74">&amp;#34;Starting template for an AWS Serverless Application.&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Parameters&amp;#34;&lt;/span> : {
+},
+&lt;span style="color:#f92672">&amp;#34;Resources&amp;#34;&lt;/span> : {
+&lt;span style="color:#f92672">&amp;#34;DefaultFunction&amp;#34;&lt;/span> : {
+&lt;span style="color:#f92672">&amp;#34;Type&amp;#34;&lt;/span> : &lt;span style="color:#e6db74">&amp;#34;AWS::Serverless::Function&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Properties&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Handler&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;aws.lambda::aws.lambda.LambdaFunction::FunctionHandlerAsync&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Runtime&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dotnetcore1.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;CodeUri&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Description&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Default function&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;MemorySize&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">256&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Timeout&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">30&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Role&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">null&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Policies&amp;#34;&lt;/span>: [ &lt;span style="color:#e6db74">&amp;#34;AWSLambdaFullAccess&amp;#34;&lt;/span> ],
+&lt;span style="color:#f92672">&amp;#34;Events&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;PutResource&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Api&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Properties&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Path&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;/{proxy+}&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Method&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;ANY&amp;#34;&lt;/span>
+}
+}
+}
+}
+}
+},
+&lt;span style="color:#f92672">&amp;#34;Outputs&amp;#34;&lt;/span> : {
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: be aware of the Handler property in this file. It should be in the form:&lt;!-- raw HTML omitted --> &lt;strong>[Assembly Name]::[Namespace].LambdaFunction::FunctionHandlerAsync&lt;/strong>&lt;/p>
+&lt;h2 id="10-build-the-application">10. Build the application&lt;/h2>
+&lt;hr>
+&lt;p>Build the application:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="11-deploy-to-aws-lambda">11. Deploy to AWS Lambda&lt;/h2>
+&lt;hr>
+&lt;p>Run the following commands (you&amp;rsquo;ll need your access key for AWS):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">aws configure
+aws s3api create-bucket --bucket mylambdabucket --region eu-west-1 --create-bucket-configuration LocationConstraint=eu-west-1
+dotnet lambda deploy-serverless
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="12-get-your-api-id">12. Get your api id&lt;/h2>
+&lt;hr>
+&lt;p>Run the following commands and copy the api id for your stack:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">aws apigateway get-rest-apis
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="13-browse-to-your-web-api">13. Browse to your web api&lt;/h2>
+&lt;hr>
+&lt;p>You are good to go so browse to:&lt;!-- raw HTML omitted --> &lt;strong>https://[api id from step 11].execute-api.eu-west-1.amazonaws.com/Prod/api/values&lt;/strong>&lt;/p>
+&lt;p>The browser should show: [“value1″,&amp;ldquo;value2&amp;rdquo;]&lt;/p>
+&lt;p>You can get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aws.lambda">https://github.com/cmendible/dotnetcore.samples/tree/main/aws.lambda&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Start with Elasticssearch, Kibana and ASP.NET Core</title><link>https://carlos.mendible.com/2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/</link><pubDate>Tue, 30 May 2017 11:58:00 +0000</pubDate><guid>https://carlos.mendible.com/2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/</guid><description>&lt;p>You want to &lt;strong>Start with &lt;!-- raw HTML omitted -->Elasticssearch&lt;!-- raw HTML omitted -->, &lt;!-- raw HTML omitted -->Kibana&lt;!-- raw HTML omitted --> and ASP.NET Core&lt;/strong> and also want to do it fast? Let&amp;rsquo;s use Docker and find out how easy it can be:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aspnet.elk.sample
+cd aspnet.elk.sample
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-new-aspnet-core-project">2. Create a new ASP.NET Core project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new mvc
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-the-following-serilog-packages">3. Add the following Serilog packages&lt;/h2>
+&lt;hr>
+&lt;p>You´ll send the logs to ElasticSearch using Serilog:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Serilog -v 2.4.0
+dotnet add package Serilog.Extensions.Logging -v 1.4.0
+dotnet add package Serilog.Sinks.ElasticSearch -v 5.1.0
+dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-replace-the-contents-of-the-startupcs-file">4. Replace the contents of the Startup.cs file&lt;/h2>
+&lt;hr>
+&lt;p>Lines 27 and 66 are key to enable Serilog and the Elasticsearch sink:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.DependencyInjection;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Logging;
+&lt;span style="color:#66d9ef">using&lt;/span> Serilog;
+&lt;span style="color:#66d9ef">using&lt;/span> Serilog.Events;
+&lt;span style="color:#66d9ef">using&lt;/span> Serilog.Sinks.Elasticsearch;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aspnet.elk.sample
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Startup&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> Startup(IHostingEnvironment env)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> builder = &lt;span style="color:#66d9ef">new&lt;/span> ConfigurationBuilder()
+.SetBasePath(env.ContentRootPath)
+.AddJsonFile(&lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">false&lt;/span>, reloadOnChange: &lt;span style="color:#66d9ef">true&lt;/span>)
+.AddJsonFile(&lt;span style="color:#e6db74">$&amp;#34;appsettings.{env.EnvironmentName}.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">true&lt;/span>)
+.AddEnvironmentVariables();
+&lt;span style="color:#75715e">// Create Serilog Elasticsearch logger
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Log.Logger = &lt;span style="color:#66d9ef">new&lt;/span> LoggerConfiguration()
+.Enrich.FromLogContext()
+.MinimumLevel.Debug()
+.WriteTo.Elasticsearch().WriteTo.Elasticsearch(&lt;span style="color:#66d9ef">new&lt;/span> ElasticsearchSinkOptions(&lt;span style="color:#66d9ef">new&lt;/span> Uri(&lt;span style="color:#e6db74">&amp;#34;http://localhost:9200&amp;#34;&lt;/span>))
+{
+MinimumLogEventLevel = LogEventLevel.Verbose,
+AutoRegisterTemplate = &lt;span style="color:#66d9ef">true&lt;/span>,
+})
+.CreateLogger();
+Configuration = builder.Build();
+}
+&lt;span style="color:#66d9ef">public&lt;/span> IConfigurationRoot Configuration { &lt;span style="color:#66d9ef">get&lt;/span>; }
+&lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to add services to the container.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> ConfigureServices(IServiceCollection services)
+{
+&lt;span style="color:#75715e">// Add framework services.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> services.AddMvc();
+}
+&lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+{
+&lt;span style="color:#75715e">// loggerFactory.AddConsole(Configuration.GetSection(&amp;#34;Logging&amp;#34;));
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> loggerFactory.AddDebug();
+&lt;span style="color:#66d9ef">if&lt;/span> (env.IsDevelopment())
+{
+app.UseDeveloperExceptionPage();
+app.UseBrowserLink();
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+app.UseExceptionHandler(&lt;span style="color:#e6db74">&amp;#34;/Home/Error&amp;#34;&lt;/span>);
+}
+&lt;span style="color:#75715e">// Add serilog
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> loggerFactory.AddSerilog();
+app.UseStaticFiles();
+app.UseMvc(routes =&amp;gt;
+{
+routes.MapRoute(
+name: &lt;span style="color:#e6db74">&amp;#34;default&amp;#34;&lt;/span>,
+template: &lt;span style="color:#e6db74">&amp;#34;{controller=Home}/{action=Index}/{id?}&amp;#34;&lt;/span>);
+});
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-use-docker-to-start-elasticsearch-and-kibana">5. Use Docker to start Elasticsearch and Kibana&lt;/h2>
+&lt;hr>
+&lt;p>You&amp;rsquo;ll need to add the following address range to your &lt;strong>docker unsafe registry&lt;/strong>: &lt;strong>172.19.0.2:9200&lt;/strong>&lt;/p>
+&lt;p>Run the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker pull nshou/elasticsearch-kibana
+docker run -d -p 9200&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>9200 -p 5601&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>5601 nshou/elasticsearch-kibana
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>It will take a while but you&amp;rsquo;ll get a working Elasticsearch + Kibana installation.&lt;/p>
+&lt;h2 id="6-run-the-program-and-navigate">6. Run the program and navigate&lt;/h2>
+&lt;p>Run the program&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And navigate through some of the pages: &lt;!-- raw HTML omitted -->http://localhost:5000&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="7-setup-kibana-and-search-your-logs">7. Setup Kibana and search your logs&lt;/h2>
+&lt;hr>
+&lt;p>Open &lt;!-- raw HTML omitted -->http://localhost:5601&lt;!-- raw HTML omitted --> and configure the Index Pattern with the default values (Click Create at the bottom of the page).&lt;/p>
+&lt;p>Now click Discover on the side bar and start searching your logs. Enjoy!&lt;/p>
+&lt;p>Get the code and related files here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.elk.sample">https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.elk.sample&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Raspberry Pi: Run ASP.NET Core on Startup</title><link>https://carlos.mendible.com/2017/03/26/raspberry-pi-run-aspnet-core-on-startup/</link><pubDate>Sun, 26 Mar 2017 12:37:16 +0000</pubDate><guid>https://carlos.mendible.com/2017/03/26/raspberry-pi-run-aspnet-core-on-startup/</guid><description>&lt;p>Last week I wrote: &lt;strong>&lt;a href="https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/">Step by step: Running ASP.NET Core on Raspberry Pi&lt;/a>&lt;/strong> and didn&amp;rsquo;t have the time to write about running the application on startup.&lt;/p>
+&lt;p>After browsing for a while I found this great post: &lt;a href="https://microsoft.hackster.io/en-US/falafel-software/windows-iot-core-running-a-powershell-script-on-startup-0aa534">Windows IoT Core: Running a PowerShell Script on Startup&lt;/a> which showed me the way!&lt;/p>
+&lt;p>As a prerequisite read and run the sample provided here: &lt;strong>&lt;a href="https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/">Step by step: Running ASP.NET Core on Raspberry Pi&lt;/a>&lt;/strong>&lt;/p>
+&lt;p>Let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-startupps1">1. Create startup.ps1&lt;/h2>
+&lt;hr>
+&lt;p>Create &lt;strong>startup.ps1&lt;/strong> with the following contents&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Set-Location C:\publish\
+.\aspnet.on.rpi.exe
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-startupbat">2. Create startup.bat&lt;/h2>
+&lt;hr>
+&lt;p>Create &lt;strong>startup.bat&lt;/strong> with the following contents&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">powershell -command &lt;span style="color:#e6db74">&amp;#34;C:\startup.ps1&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-copy-the-files-to-your-raspberry">3. Copy the files to your Raspberry&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using powershell, start the ftp server&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Enter-PSSession -ComputerName &amp;lt;Raspberry IP&amp;gt; -Credential &amp;lt;Raspberry IP&amp;gt;\Administrator
+start C:\Windows\System32\ftpd.exe
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open the &lt;strong>File Explorer&lt;/strong> ftp://&amp;lt;TARGET_DEVICE&amp;gt; and copy both &lt;strong>startup.ps1&lt;/strong> and &lt;strong>startup.cmd&lt;/strong> to your Raspberry&lt;/p>
+&lt;h2 id="4-schedule-the-command-to-run-on-startup">4. Schedule the command to run on Startup&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using powershell and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Enter-PSSession -ComputerName &amp;lt;Raspberry IP&amp;gt; -Credential &amp;lt;Raspberry IP&amp;gt;\Administrator
+schtasks /create /tn &lt;span style="color:#e6db74">&amp;#34;Startup Web&amp;#34;&lt;/span> /tr c:\Startup.bat /sc onstart /ru SYSTEM
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-restart-and-verify">5. Restart and verify&lt;/h2>
+&lt;hr>
+&lt;p>Restart your Raspberry and after a bit your ASP.NET Core app should be up and running.&lt;/p>
+&lt;p>Get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi.startup">https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi.startup&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Step by step: Running ASP.NET Core on Raspberry Pi</title><link>https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/</link><pubDate>Tue, 21 Mar 2017 11:24:05 +0000</pubDate><guid>https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/</guid><description>&lt;p>After reading &lt;!-- raw HTML omitted -->.NET Core on Raspberry Pi&lt;!-- raw HTML omitted --> and successfully running a console application on &lt;strong>Windows 10 IoT Core&lt;/strong> on my &lt;strong>Raspberry Pi 3&lt;/strong> I decided to write: &lt;strong>Step by step: Running ASP.NET Core on Raspberry Pi&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;!-- raw HTML omitted -->Windows 10 IoT Core&lt;!-- raw HTML omitted -->&lt;/strong> I&amp;rsquo;m running Insider Preview v.10.0.15058.0&lt;/li>
+&lt;li>&lt;strong>&lt;!-- raw HTML omitted -->.NET Core 2.0 SDK&lt;!-- raw HTML omitted -->&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aspnet.on.rpi
+cd aspnet.on.rpi
+code .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-globaljson-file">2. Create a global.json file&lt;/h2>
+&lt;hr>
+&lt;p>To specify the correct sdk create a &lt;strong>global.json&lt;/strong> with the following contents&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;sdk&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0-preview1-005448&amp;#34;&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-the-aspnet-core-project">3. Create the ASP.NET Core project&lt;/h2>
+&lt;hr>
+&lt;p>Create the ASP.NET Core project with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new mvc
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-modify-the-project-file">4. Modify the project file&lt;/h2>
+&lt;hr>
+&lt;p>Modify the &lt;strong>aspnet.on.rpi.csproj&lt;/strong> to add the correct &lt;strong>OutputType&lt;/strong>, &lt;strong>TargetFramework&lt;/strong>, &lt;strong>RuntimeFrameworkVersion&lt;/strong>and &lt;strong>RuntimeIdentifiers&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;Project&lt;/span> &lt;span style="color:#a6e22e">Sdk=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.NET.Sdk.Web&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;OutputType&amp;gt;&lt;/span>Exe&lt;span style="color:#f92672">&amp;lt;/OutputType&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;TargetFramework&amp;gt;&lt;/span>netcoreapp2.0&lt;span style="color:#f92672">&amp;lt;/TargetFramework&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;RuntimeFrameworkVersion&amp;gt;&lt;/span>2.0.0-beta-001776-00&lt;span style="color:#f92672">&amp;lt;/RuntimeFrameworkVersion&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;RuntimeIdentifiers&amp;gt;&lt;/span>win8-arm&lt;span style="color:#f92672">&amp;lt;/RuntimeIdentifiers&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.3&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Mvc&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.2&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.StaticFiles&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Logging.Debug&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.VisualStudio.Web.BrowserLink&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Libuv&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.10.0-preview1-22036&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Project&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-add-a-nugetconfig-file-and-restore-packages">5. Add a Nuget.config file and restore packages&lt;/h2>
+&lt;p>Create a &lt;strong>Nuget.config&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#75715e">&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;utf-8&amp;#34;?&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;configuration&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;packageSources&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;add&lt;/span> &lt;span style="color:#a6e22e">key=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;dotnet-core&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">value=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;https://dotnet.myget.org/F/dotnet-core/api/v3/index.json&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/packageSources&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/configuration&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now restore the packages:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-modify-programcs">6. Modify Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aspnet.on.rpi
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> host = &lt;span style="color:#66d9ef">new&lt;/span> WebHostBuilder()
+.UseKestrel()
+.UseUrls(&lt;span style="color:#e6db74">&amp;#34;http://*:5000&amp;#34;&lt;/span>) &lt;span style="color:#75715e">// Using * to bind to all network interfaces
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> .UseContentRoot(Directory.GetCurrentDirectory())
+.UseIISIntegration()
+.UseStartup&amp;lt;Startup&amp;gt;()
+.Build();
+host.Run();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-publish-the-application">7. Publish the application&lt;/h2>
+&lt;hr>
+&lt;p>Publish the application with the following commands&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet publish -r win8-arm
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;!-- raw HTML omitted -->We need to publish for win7-arm as a workaround to copy the correct &lt;strong>libuv.dll&lt;/strong> in the next step.&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;ol start="8">
+&lt;li>Copy libuv.dll&lt;/li>
+&lt;/ol>
+&lt;hr>
+&lt;p>&lt;!-- raw HTML omitted -->Copy &lt;strong>libuv.dll&lt;/strong> from &lt;strong>\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win7-arm\publish&lt;/strong> to &lt;strong>\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win8-arm\publish&lt;/strong>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>This step is no longer needed cause we added &lt;strong>libuv&lt;/strong> as a dependency in the &lt;strong>csproj&lt;/strong> file&lt;/p>
+&lt;h2 id="9-copy-the-files-to-your-raspberry">9. Copy the files to your Raspberry&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using PowerShell, start the ftp server and open port 5000 on the Raspberry&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Enter-PSSession -ComputerName &amp;lt;Raspberry IP&amp;gt; -Credential &amp;lt;Raspberry IP&amp;gt;\Administrator
+start C:\Windows\System32\ftpd.exe
+netsh advfirewall firewall add rule name=&lt;span style="color:#e6db74">&amp;#34;Open Port 5000&amp;#34;&lt;/span> dir=&lt;span style="color:#66d9ef">in&lt;/span> action=allow protocol=TCP localport=5000
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open the &lt;strong>File Explorer&lt;/strong> ftp://&amp;lt;TARGET_DEVICE&amp;gt; and copy the contents of &lt;strong>\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win8-arm\publish&lt;/strong> to a folder on your Raspberry (i.e. c:\publish).&lt;/p>
+&lt;h2 id="10-run-the-application">10. Run the application&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using PowerShell and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd c:\publish\
+.\aspnet.on.rpi.exe
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should be good to go and be able to browse on port 5000 of you RPi.&lt;/p>
+&lt;p>Get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi">https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

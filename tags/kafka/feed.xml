@@ -1,0 +1,140 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>kafka on Code it Yourself...</title><link>https://carlos.mendible.com/tags/kafka/</link><description>Recent content in kafka on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 28 Sep 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/kafka/feed.xml" rel="self" type="application/rss+xml"/><item><title>Netcoreconf Galicia - Decoupling your Application with .NET Core, Azure and Events</title><link>https://carlos.mendible.com/events/2019/09/28/netcoreconf-galicia-decoupling-your-application-with-dotnetcore-azure-events/</link><pubDate>Sat, 28 Sep 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2019/09/28/netcoreconf-galicia-decoupling-your-application-with-dotnetcore-azure-events/</guid><description>&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020-09-netcoreconf-galicia.jfif" alt="">&lt;/p></description></item><item><title>NetConf Barcelona - Decoupling your Application with .NET Core, Azure and Events</title><link>https://carlos.mendible.com/events/2019/01/26/netconf-barcelona-decoupling-your-application-with-dotnetcore-azure-events/</link><pubDate>Sat, 26 Jan 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2019/01/26/netconf-barcelona-decoupling-your-application-with-dotnetcore-azure-events/</guid><description>&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020-01-netconf.jfif" alt="">&lt;/p></description></item><item><title>Consuming Azure Event Hubs Events With Kafka Connect</title><link>https://carlos.mendible.com/2018/02/18/consuming-azure-event-hubs-events-with-kafka-connect/</link><pubDate>Sun, 18 Feb 2018 17:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/02/18/consuming-azure-event-hubs-events-with-kafka-connect/</guid><description>&lt;p>So last week I was in a rush to find a fast and easy way to consume events from Azure Event Hubs and send them to a Kafka topic.&lt;/p>
+&lt;p>After googling a bit I found this project: &lt;a href="https://github.com/Azure/toketi-kafka-connect-iothub/releases">Kafka Connect Azure IoT Hub&lt;/a>. Yes the name of the project can be misleading, but since IoT Hub is a service which relies on Event Hubs and also taking a close look to the code showed that it uses the Event Hubs client for java, I decided to give it a try.&lt;/p>
+&lt;p>I will asume not only that you have working knowledge with Event Hubs, but also that you have an instance deployed, plus a working Kafka and Kafka Connect (Distributed mode) setup.&lt;/p>
+&lt;p>Let&amp;rsquo;s kick it:&lt;/p>
+&lt;h1 id="1-download-the-kafka-connect-azure-iot-hub">1. Download the Kafka Connect Azure IoT Hub&lt;/h1>
+&lt;p>Download the &lt;a href="https://github.com/Azure/toketi-kafka-connect-iothub/releases/tag/v0.6">Kafka Connect Azure IoT Hub 0.6 jar&lt;/a> and copy the file in the Kafka installation libs folder (usually under KAFKA_HOME/libs).&lt;/p>
+&lt;p>Be sure to start Zookeper, Kafka and Kafka connect.&lt;/p>
+&lt;h1 id="2-create-a-connect-eventhub-sourcejson-file">2. Create a connect-eventhub-source.json file&lt;/h1>
+&lt;p>Update the following json and save it as &lt;strong>connect-eventhub-source.json&lt;/strong>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;eventhub-source&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;config&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;connector.class&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;com.microsoft.azure.iot.kafka.connect.IotHubSourceConnector&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;tasks.max&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Number of task == Number Event Hub Partitions]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Kafka.Topic&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Target Kafka Topic]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.EventHubCompatibleName&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Event Hubs Name]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.EventHubCompatibleEndpoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;sb://[Event Hubs Namespace].servicebus.windows.net/&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.AccessKeyName&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Access key name for the Event Hub]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.AccessKeyValue&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Access key value for the Event Hub]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.ConsumerGroup&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Consumer group (Can use $Default)]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.Partitions&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Number of Event Hub Partitions]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.StartTime&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.Offsets&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;BatchSize&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;100&amp;#34;&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I&amp;rsquo;ve submited a &lt;a href="https://github.com/Azure/toketi-kafka-connect-iothub/pull/16">pull request&lt;/a> to fix some of the descriptions you&amp;rsquo;ll find for the fields &lt;a href="https://github.com/Azure/toketi-kafka-connect-iothub/blob/master/README_Source.md">here&lt;/a>&lt;/p>
+&lt;h1 id="3-post-the-configuration-to-the-kafka-connect-endpoint">3. Post the configuration to the Kafka Connect endpoint&lt;/h1>
+&lt;p>Assuming your Kafka Connect is running on &lt;strong>localhost&lt;/strong> and listening to the default port &lt;strong>8083&lt;/strong> execute the followinmg command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -H &lt;span style="color:#e6db74">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> -d @connect-eventhub-source.json -X POST http://127.0.0.1:8083/connectors
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>After a while you should start receiving the events in the Kafka Topic you configured.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Step by step: Kafka Pub/Sub with Docker and .Net Core</title><link>https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/</link><pubDate>Mon, 08 May 2017 10:55:32 +0000</pubDate><guid>https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/</guid><description>&lt;p>Last week I attended to a &lt;!-- raw HTML omitted -->Kafka&lt;!-- raw HTML omitted --> workshop and this is my attempt to show you a simple &lt;strong>Step by step: Kafka Pub/Sub with Docker and .Net Core&lt;/strong> tutorial.&lt;/p>
+&lt;p>Let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir kafka.pubsub.console
+cd kafka.pubsub.console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-console-project">2. Create a console project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-the-confluentkafka-nuget-package">3. Add the Confluent.Kafka nuget package&lt;/h2>
+&lt;hr>
+&lt;p>Add the &lt;strong>Confluent.Kafka&lt;/strong> nuget package to your project:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Confluent.Kafka -v 0.9.5
+dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-replace-the-contents-of-programcs">4. Replace the contents of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Text;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Confluent.Kafka;
+&lt;span style="color:#66d9ef">using&lt;/span> Confluent.Kafka.Serialization;
+&lt;span style="color:#66d9ef">namespace&lt;/span> kafka.pubsub.console
+{
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// The Kafka endpoint address
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> kafkaEndpoint = &lt;span style="color:#e6db74">&amp;#34;127.0.0.1:9092&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// The Kafka topic we&amp;#39;ll be using
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> kafkaTopic = &lt;span style="color:#e6db74">&amp;#34;testtopic&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Create the producer configuration
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> producerConfig = &lt;span style="color:#66d9ef">new&lt;/span> Dictionary&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#66d9ef">object&lt;/span>&amp;gt; { { &lt;span style="color:#e6db74">&amp;#34;bootstrap.servers&amp;#34;&lt;/span>, kafkaEndpoint } };
+&lt;span style="color:#75715e">// Create the producer
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> producer = &lt;span style="color:#66d9ef">new&lt;/span> Producer&amp;lt;Null, &lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(producerConfig, &lt;span style="color:#66d9ef">null&lt;/span>, &lt;span style="color:#66d9ef">new&lt;/span> StringSerializer(Encoding.UTF8)))
+{
+&lt;span style="color:#75715e">// Send 10 messages to the topic
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> (&lt;span style="color:#66d9ef">int&lt;/span> i = &lt;span style="color:#ae81ff">0&lt;/span>; i &amp;lt; &lt;span style="color:#ae81ff">10&lt;/span>; i++)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> message = &lt;span style="color:#e6db74">$&amp;#34;Event {i}&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> result = producer.ProduceAsync(kafkaTopic, &lt;span style="color:#66d9ef">null&lt;/span>, message).GetAwaiter().GetResult();
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Event {i} sent on Partition: {result.Partition} with Offset: {result.Offset}&amp;#34;&lt;/span>);
+}
+}
+&lt;span style="color:#75715e">// Create the consumer configuration
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> consumerConfig = &lt;span style="color:#66d9ef">new&lt;/span> Dictionary&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#66d9ef">object&lt;/span>&amp;gt;
+{
+{ &lt;span style="color:#e6db74">&amp;#34;group.id&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;myconsumer&amp;#34;&lt;/span> },
+{ &lt;span style="color:#e6db74">&amp;#34;bootstrap.servers&amp;#34;&lt;/span>, kafkaEndpoint },
+};
+&lt;span style="color:#75715e">// Create the consumer
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> consumer = &lt;span style="color:#66d9ef">new&lt;/span> Consumer&amp;lt;Null, &lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(consumerConfig, &lt;span style="color:#66d9ef">null&lt;/span>, &lt;span style="color:#66d9ef">new&lt;/span> StringDeserializer(Encoding.UTF8)))
+{
+&lt;span style="color:#75715e">// Subscribe to the OnMessage event
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> consumer.OnMessage += (obj, msg) =&amp;gt;
+{
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Received: {msg.Value}&amp;#34;&lt;/span>);
+};
+&lt;span style="color:#75715e">// Subscribe to the Kafka topic
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> consumer.Subscribe(&lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;() { kafkaTopic });
+&lt;span style="color:#75715e">// Handle Cancel Keypress
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> cancelled = &lt;span style="color:#66d9ef">false&lt;/span>;
+Console.CancelKeyPress += (_, e) =&amp;gt;
+{
+e.Cancel = &lt;span style="color:#66d9ef">true&lt;/span>; &lt;span style="color:#75715e">// prevent the process from terminating.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> cancelled = &lt;span style="color:#66d9ef">true&lt;/span>;
+};
+Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;Ctrl-C to exit.&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Poll for messages
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">while&lt;/span> (!cancelled)
+{
+consumer.Poll();
+}
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-start-kafka-with-docker">5. Start Kafka with Docker&lt;/h2>
+&lt;hr>
+&lt;p>You&amp;rsquo;ll need to add the following address range to your &lt;strong>docker unsafe registry&lt;/strong>: &lt;strong>172.18.0.0/16&lt;/strong>
+Create a &lt;strong>docker-compose.yml&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;2&amp;#39;&lt;/span>
+&lt;span style="color:#66d9ef">services&lt;/span>:
+&lt;span style="color:#66d9ef">zookeeper&lt;/span>:
+&lt;span style="color:#66d9ef">image&lt;/span>: wurstmeister/zookeeper
+&lt;span style="color:#66d9ef">ports&lt;/span>:
+- &lt;span style="color:#e6db74">&amp;#34;2181:2181&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">kafka&lt;/span>:
+&lt;span style="color:#66d9ef">image&lt;/span>: wurstmeister/kafka:&lt;span style="color:#ae81ff">0.10.2.0&lt;/span>
+&lt;span style="color:#66d9ef">ports&lt;/span>:
+- &lt;span style="color:#e6db74">&amp;#34;9092:9092&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">environment&lt;/span>:
+&lt;span style="color:#66d9ef">KAFKA_ADVERTISED_HOST_NAME&lt;/span>: &lt;span style="color:#ae81ff">127.0.0.1&lt;/span>
+&lt;span style="color:#66d9ef">KAFKA_CREATE_TOPICS&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;testtopic:1:1&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">KAFKA_ZOOKEEPER_CONNECT&lt;/span>: zookeeper:&lt;span style="color:#ae81ff">2181&lt;/span>
+&lt;span style="color:#66d9ef">volumes&lt;/span>:
+- /var/run/docker.sock:/var/run/docker.sock
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker-compose up
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>It will take a while but you&amp;rsquo;ll get a working Kafka installation.&lt;/p>
+&lt;h2 id="6-run-the-program">6. Run the program&lt;/h2>
+&lt;hr>
+&lt;p>Run the program and enjoy!&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get the code and related files here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/kafka.pubsub.console">https://github.com/cmendible/dotnetcore.samples/tree/main/kafka.pubsub.console&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

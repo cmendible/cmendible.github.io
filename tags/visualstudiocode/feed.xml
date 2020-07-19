@@ -1,0 +1,93 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>VisualStudioCode on Code it Yourself...</title><link>https://carlos.mendible.com/tags/visualstudiocode/</link><description>Recent content in VisualStudioCode on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 11 Dec 2016 12:49:54 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/visualstudiocode/feed.xml" rel="self" type="application/rss+xml"/><item><title>Debug ASP.NET Core on Docker with Visual Studio Code</title><link>https://carlos.mendible.com/2016/12/11/debug-asp-net-core-on-docker-with-visual-studio-code/</link><pubDate>Sun, 11 Dec 2016 12:49:54 +0000</pubDate><guid>https://carlos.mendible.com/2016/12/11/debug-asp-net-core-on-docker-with-visual-studio-code/</guid><description>&lt;p>Last Thursday I started reading the Free eBook: &lt;!-- raw HTML omitted -->&amp;quot;Containerized Docker Application Lifecycle with Microsoft Tools and Platform&amp;quot;&lt;!-- raw HTML omitted --> by Cesar de la Torre. The book is really easy to read and really gives the reader a glimpse on the way to approach the overall application lifecycle when using containers and Microsoft Technologies. One of the interesting things he mentions is the ability to debug your source code inside a container using Visual Studio or Visual Studio Code, so I decided to try it out and &lt;strong>Debug ASP.NET Core on Docker with Visual Studio Code&lt;/strong>&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;strong>Prerequisites&lt;/strong>&lt;/th>
+&lt;th>&lt;strong>Command&lt;/strong>&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>.NET Core 1.1 SDK for Windows&lt;/td>
+&lt;td>Download and install: &lt;!-- raw HTML omitted -->.NET Core 1.1 SDK for Windows&lt;!-- raw HTML omitted -->&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Docker for Windows&lt;/td>
+&lt;td>Download and install: &lt;!-- raw HTML omitted -->Docker for Windows (stable)&lt;!-- raw HTML omitted -->&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Visual Studio Code and C# Plugin&lt;/td>
+&lt;td>Download and install from here: &lt;!-- raw HTML omitted -->Code&lt;!-- raw HTML omitted -->&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Node.js&lt;/td>
+&lt;td>Download and install from here: &lt;!-- raw HTML omitted -->Node.js v6.9.2&lt;!-- raw HTML omitted -->&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Yeoman&lt;/td>
+&lt;td>From a Command Prompt run the following: &lt;strong>npm install -g yo&lt;/strong>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Generator-docker&lt;/td>
+&lt;td>Run the following command: &lt;strong>npm install -g generator-docker&lt;/strong>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Bower&lt;/td>
+&lt;td>Run the following command: &lt;strong>npm install -g bower&lt;/strong>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Gulp&lt;/td>
+&lt;td>Run the following command: &lt;strong>npm install -g gulp&lt;/strong>&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Now let&amp;rsquo;s create an ASP .NET Core application and debug it inside Docker:&lt;/p>
+&lt;h2 id="1-create-an-asp-net-core-application">1. Create an ASP .NET Core application&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> md debug.on.docker
+cd debug.on.docker
+dotnet new -t web
+dotnet restore
+code .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-change-your-application-port-in-programcs">2. Change your application port in Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Let&amp;rsquo;s use port &lt;strong>5000&lt;/strong> to host the application&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> host = &lt;span style="color:#66d9ef">new&lt;/span> WebHostBuilder()
+.UseUrls(&lt;span style="color:#e6db74">&amp;#34;http://*:5000&amp;#34;&lt;/span>)
+.UseKestrel()
+.UseContentRoot(Directory.GetCurrentDirectory())
+.UseIISIntegration()
+.UseStartup&amp;lt;Startup&amp;gt;()
+.Build();
+host.Run();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-the-artifacts-needed-to-debug-on-docker">3. Create the artifacts needed to Debug on Docker&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command in the root folder of your project.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> yo docker
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Answer the questions as follows:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">What language is your project using? .NET Core
+Which version of .NET Core is your project using? rtm
+Does your project use a web server? Yes
+Which port is your app listening to? 5000
+What &lt;span style="color:#66d9ef">do&lt;/span> you want to name your image? debug.on.docker
+What &lt;span style="color:#66d9ef">do&lt;/span> you want to name your service? debug.on.docker
+What &lt;span style="color:#66d9ef">do&lt;/span> you want to name your compose project? debugondocker
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-change-dockertaskps1">4. Change dockerTask.ps1&lt;/h2>
+&lt;hr>
+&lt;p>The Yeoman generator is not ready for .Net Core 1.1 so change &lt;strong>dockerTask.ps1&lt;/strong> line &lt;strong>47&lt;/strong> with&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> $framework = &lt;span style="color:#e6db74">&amp;#34;netcoreapp1.1&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-change-the-docker-files">5. Change the docker files&lt;/h2>
+&lt;hr>
+&lt;p>Change the fist line of both &lt;strong>Dockerfile&lt;/strong> and &lt;strong>Dockerfile.debug&lt;/strong> in order to use the latest image for .NET Core 1.1&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> FROM microsoft/dotnet
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-debug-your-application">6. Debug your application&lt;/h2>
+&lt;hr>
+&lt;p>Place a break point in your code (i.e. line 14 of Program.cs) and hit &lt;strong>F5&lt;/strong> in Visual Studio Code.&lt;/p>
+&lt;p>The first time it will take some time, but your application will run as a container and you&amp;rsquo;ll be able to debug it!!!&lt;/p>
+&lt;p>You can get a copy of the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/debug.on.docker">https://github.com/cmendible/dotnetcore.samples/tree/main/debug.on.docker&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

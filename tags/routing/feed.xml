@@ -1,0 +1,33 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>routing on Code it Yourself...</title><link>https://carlos.mendible.com/tags/routing/</link><description>Recent content in routing on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 10 Jan 2019 15:20:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/routing/feed.xml" rel="self" type="application/rss+xml"/><item><title>AKS: Configure TLS termination with the http application routing addon</title><link>https://carlos.mendible.com/2019/01/10/aks-configure-tls-termination-with-the-http-application-routing-addon/</link><pubDate>Thu, 10 Jan 2019 15:20:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/01/10/aks-configure-tls-termination-with-the-http-application-routing-addon/</guid><description>&lt;p>When you install a AKS cluster you can configure it to deploy the &lt;a href="https://docs.microsoft.com/en-us/azure/aks/http-application-routing">http application routing addon&lt;/a> or you you can update an existing cluster to deploy it.&lt;/p>
+&lt;p>Either way you end up with an &lt;a href="https://github.com/kubernetes/ingress-nginx">NGINX Ingress Controller&lt;/a> running, in the &lt;strong>kube-system&lt;/strong> namespace of your cluster, with the following properties:&lt;/p>
+&lt;ul>
+&lt;li>&lt;em>ingress-class: addon-http-application-routing&lt;/em>&lt;/li>
+&lt;li>&lt;em>annotations-prefix: nginx.ingress.kubernetes.io&lt;/em>&lt;/li>
+&lt;/ul>
+&lt;p>Does this means that you can use this controller for TLS termination? The answer is yes! And you can also use rate limits, and whitelisting as described in my post &lt;a href="https://carlos.mendible.com/2018/03/20/secure-your-kubernetes-services-with-nginx-ingress-controller-tls-and-more/">Secure your Kubernetes services with NGINX ingress controller, tls and more.&lt;/a>&lt;/p>
+&lt;p>So to try it out, follow steps &lt;strong>2&lt;/strong> and &lt;strong>5&lt;/strong> of the previous post, but be sure to replace the contents of the &lt;strong>ingress_rules.yaml&lt;/strong> file with the following yaml (Don&amp;rsquo;t forget to replace the DNS Zone Name):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: extensions/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Ingress
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">namespace&lt;/span>: default
+&lt;span style="color:#66d9ef">annotations&lt;/span>:
+&lt;span style="color:#66d9ef">kubernetes.io/ingress.class&lt;/span>: addon-http-application-routing
+&lt;span style="color:#66d9ef">nginx.ingress.kubernetes.io/rewrite-target&lt;/span>: /
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">tls&lt;/span>:
+- &lt;span style="color:#66d9ef">hosts&lt;/span>:
+- dni-function.&amp;lt;YOUR CLUSTERS DNS ZONE NAME&lt;span style="color:#e6db74">&amp;gt;
+&lt;/span>&lt;span style="color:#e6db74"> secretName: tls-secret&lt;/span>
+&lt;span style="color:#66d9ef">rules&lt;/span>:
+- &lt;span style="color:#66d9ef">host&lt;/span>: dni-function.&amp;lt;YOUR CLUSTERS DNS ZONE NAME&lt;span style="color:#e6db74">&amp;gt;
+&lt;/span>&lt;span style="color:#e6db74"> http:&lt;/span>
+&lt;span style="color:#66d9ef">paths&lt;/span>:
+- &lt;span style="color:#66d9ef">path&lt;/span>: /
+&lt;span style="color:#66d9ef">backend&lt;/span>:
+&lt;span style="color:#66d9ef">serviceName&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">servicePort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that the &lt;strong>kubernetes.io/ingress.class&lt;/strong> value must be: &lt;strong>addon-http-application-routing&lt;/strong>&lt;/p>
+&lt;p>Once you have tls working go ahead and try rate limits and whitelisting!&lt;/p>
+&lt;p>Hope it helps.&lt;/p>
+&lt;p>Please download all code and files &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/15.http-application-routing-tls">here&lt;/a> and be sure to check the &lt;a href="https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md">online documentation&lt;/a> to learn more about the annotations and other NGINX features.&lt;/p></description></item></channel></rss>

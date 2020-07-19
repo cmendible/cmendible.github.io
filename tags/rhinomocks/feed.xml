@@ -1,0 +1,25 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>RhinoMocks on Code it Yourself...</title><link>https://carlos.mendible.com/tags/rhinomocks/</link><description>Recent content in RhinoMocks on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 10 Dec 2009 12:15:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/rhinomocks/feed.xml" rel="self" type="application/rss+xml"/><item><title>Rhino Mocks Method &amp;#8216;YYY' requires a return value or an exception to throw.</title><link>https://carlos.mendible.com/2009/12/10/rhino-mocks-method-yyy-requires-a-return-value-or-an-exception-to-throw/</link><pubDate>Thu, 10 Dec 2009 12:15:00 +0000</pubDate><guid>https://carlos.mendible.com/2009/12/10/rhino-mocks-method-yyy-requires-a-return-value-or-an-exception-to-throw/</guid><description>&lt;p>Yesterday I found myself stucked with a strange exception while programming a unit test using Rhino Mocks.&lt;/p>
+&lt;p>Supose you have an interface like the following one.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> ITest
+{
+&lt;span style="color:#66d9ef">object&lt;/span> Freak();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can try a mock like the following:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">var&lt;/span> test = MockRepository.GenerateMock();
+test.Expect(t =&amp;amp;gt; t.Freak()).IgnoreArguments()
+.WhenCalled(x =&amp;amp;gt; x.ReturnValue = &lt;span style="color:#e6db74">&amp;#34;THIS IS A RETURN VALUE&amp;#34;&lt;/span>)
+.Repeat.Any();
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Calling &lt;strong>test.Freak();&lt;/strong> will result in a return value of &lt;strong>“THIS IS A RETURN VALUE&amp;rdquo;&lt;/strong>&lt;/p>
+&lt;p>Now change the interface to be:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> ITest
+{
+&lt;span style="color:#66d9ef">string&lt;/span> Freak();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Calling &lt;strong>test.Freak();&lt;/strong> results in the following exception: &lt;strong>&lt;em>Method ‘ITest.Freak();&amp;rsquo; requires a return value or an exception to throw.&lt;/em>&lt;/strong>&lt;/p>
+&lt;p>The solution is easy just change the Expect call to look like this one:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">test.Expect(t =&amp;gt;; t.Freak()).IgnoreArguments()
+.WhenCalled(x =&amp;gt;; x.ReturnValue = &lt;span style="color:#e6db74">&amp;#34;THIS IS A RETURN VALUE&amp;#34;&lt;/span>)
+.Return(&lt;span style="color:#66d9ef">string&lt;/span>.Empty) &lt;span style="color:#75715e">// THIS IS NEEDED SO RHINO MOCKS KNOWS THE TYPE RETURNED FROM THE METHOD CALL.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> .Repeat.Any();
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The fake return value is ignored in favor of the given by the WhenCalled delegate!!!&lt;/p>
+&lt;p>Hope it helps.&lt;/p></description></item></channel></rss>

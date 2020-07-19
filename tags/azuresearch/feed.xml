@@ -1,0 +1,184 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AzureSearch on Code it Yourself...</title><link>https://carlos.mendible.com/tags/azuresearch/</link><description>Recent content in AzureSearch on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Wed, 09 Aug 2017 15:51:07 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/azuresearch/feed.xml" rel="self" type="application/rss+xml"/><item><title>Step by step: .Net Core and Azure Search</title><link>https://carlos.mendible.com/2017/08/09/step-by-step-net-core-and-azure-search/</link><pubDate>Wed, 09 Aug 2017 15:51:07 +0000</pubDate><guid>https://carlos.mendible.com/2017/08/09/step-by-step-net-core-and-azure-search/</guid><description>&lt;p>&lt;strong>Step by step: .Net Core and Azure Search&lt;/strong> is small introduction on how to connect to &lt;!-- raw HTML omitted -->Azure Search&lt;!-- raw HTML omitted -->, create and delete indexes, models, add documents and perform basic queries.&lt;/p>
+&lt;p>Let&amp;rsquo;s go for it:&lt;/p>
+&lt;h2 id="1-create-an-azure-search-service">1. Create an Azure Search service&lt;/h2>
+&lt;hr>
+&lt;p>Create an &lt;!-- raw HTML omitted -->Azure Search&lt;!-- raw HTML omitted --> service in your Azure subscription, and get the Azure Search name and primary Read-Write key.&lt;/p>
+&lt;p>Find the steps &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;h2 id="2-create-a-folder-for-your-project">2. Create a folder for your project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir netCoreAzureSearch
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-the-project">3. Create the project&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd netCoreAzureSearch
+dotnet new console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-add-a-reference-to-microsoftazuresearch">4. Add a reference to Microsoft.Azure.Search&lt;/h2>
+&lt;hr>
+&lt;p>&lt;!-- raw HTML omitted -->Microsoft.Azure.Search&lt;!-- raw HTML omitted --> will allow your application to talk with Azure Search.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.Azure.Search -v 3.0.4
+dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-replace-the-content-of-programcs">5. Replace the content of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the content of Program.cs with the following contents and be sure to replace the values in lines 13 and 16 with the Azure Search service name and key from step 1:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> netCoreAzureSearch
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.Search;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.Search.Models;
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> azureSearchName = &lt;span style="color:#e6db74">&amp;#34;[Your Azure Search Name]&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// The key to you cosmosdb
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> azureSearchKey = &lt;span style="color:#e6db74">&amp;#34;[Your Azure Search Key]&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Index name variable
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> indexName = &lt;span style="color:#e6db74">&amp;#34;books&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Create a service client connection
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> ISearchServiceClient azureSearchService = &lt;span style="color:#66d9ef">new&lt;/span> SearchServiceClient(azureSearchName, &lt;span style="color:#66d9ef">new&lt;/span> SearchCredentials(azureSearchKey));
+&lt;span style="color:#75715e">// Get the Azure Search Index
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> ISearchIndexClient indexClient = azureSearchService.Indexes.GetClient(indexName);
+&lt;span style="color:#75715e">// If the Azure Search Index exists delete it.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine( &lt;span style="color:#e6db74">&amp;#34;Deleting index...\n&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">if&lt;/span> (azureSearchService.Indexes.Exists(indexName))
+{
+azureSearchService.Indexes.Delete(indexName);
+}
+&lt;span style="color:#75715e">// Create an Index Model
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine( &lt;span style="color:#e6db74">&amp;#34;Creating index Model...\n&amp;#34;&lt;/span>);
+Index indexModel = &lt;span style="color:#66d9ef">new&lt;/span> Index()
+{
+Name = indexName,
+Fields = &lt;span style="color:#66d9ef">new&lt;/span>[]
+{
+&lt;span style="color:#66d9ef">new&lt;/span> Field(&lt;span style="color:#e6db74">&amp;#34;ISBN&amp;#34;&lt;/span>, DataType.String) { IsKey = &lt;span style="color:#66d9ef">true&lt;/span>, IsRetrievable = &lt;span style="color:#66d9ef">true&lt;/span>, IsFacetable = &lt;span style="color:#66d9ef">false&lt;/span> },
+&lt;span style="color:#66d9ef">new&lt;/span> Field(&lt;span style="color:#e6db74">&amp;#34;Titulo&amp;#34;&lt;/span>, DataType.String) {IsRetrievable = &lt;span style="color:#66d9ef">true&lt;/span>, IsSearchable = &lt;span style="color:#66d9ef">true&lt;/span>, IsFacetable = &lt;span style="color:#66d9ef">false&lt;/span> },
+&lt;span style="color:#66d9ef">new&lt;/span> Field(&lt;span style="color:#e6db74">&amp;#34;Autores&amp;#34;&lt;/span>, DataType.Collection(DataType.String)) {IsSearchable = &lt;span style="color:#66d9ef">true&lt;/span>, IsRetrievable = &lt;span style="color:#66d9ef">true&lt;/span>, IsFilterable = &lt;span style="color:#66d9ef">true&lt;/span>, IsFacetable = &lt;span style="color:#66d9ef">false&lt;/span> },
+&lt;span style="color:#66d9ef">new&lt;/span> Field(&lt;span style="color:#e6db74">&amp;#34;FechaPublicacion&amp;#34;&lt;/span>, DataType.DateTimeOffset) { IsFilterable = &lt;span style="color:#66d9ef">true&lt;/span>, IsRetrievable = &lt;span style="color:#66d9ef">false&lt;/span>, IsSortable = &lt;span style="color:#66d9ef">true&lt;/span>, IsFacetable = &lt;span style="color:#66d9ef">false&lt;/span> },
+&lt;span style="color:#66d9ef">new&lt;/span> Field(&lt;span style="color:#e6db74">&amp;#34;Categoria&amp;#34;&lt;/span>, DataType.String) { IsFacetable = &lt;span style="color:#66d9ef">true&lt;/span>, IsFilterable= &lt;span style="color:#66d9ef">true&lt;/span>, IsRetrievable = &lt;span style="color:#66d9ef">true&lt;/span> }
+}
+};
+&lt;span style="color:#75715e">// Create the Index in AzureSearch
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine( &lt;span style="color:#e6db74">&amp;#34;Creating index...\n&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> resultIndex = azureSearchService.Indexes.Create(indexModel);
+&lt;span style="color:#75715e">// Add documents to the Index
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine( &lt;span style="color:#e6db74">&amp;#34;Add documents...\n&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> listBooks = &lt;span style="color:#66d9ef">new&lt;/span> BookModel().GetBooks();
+indexClient.Documents.Index(IndexBatch.MergeOrUpload&amp;lt;BookModel&amp;gt;(listBooks));
+System.Threading.Thread.Sleep(&lt;span style="color:#ae81ff">1000&lt;/span>);
+&lt;span style="color:#75715e">// Search by word
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;{0}&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Searching documents &amp;#39;Cloud&amp;#39;...\n&amp;#34;&lt;/span>);
+Search(indexClient, searchText: &lt;span style="color:#e6db74">&amp;#34;Cloud&amp;#34;&lt;/span>);
+System.Threading.Thread.Sleep(&lt;span style="color:#ae81ff">1000&lt;/span>);
+&lt;span style="color:#75715e">// Search everything and filter
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;\n{0}&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Filter documents by Autores &amp;#39;Eugenio Betts&amp;#39;...\n&amp;#34;&lt;/span>);
+Search(indexClient, searchText: &lt;span style="color:#e6db74">&amp;#34;*&amp;#34;&lt;/span>, filter: &lt;span style="color:#e6db74">&amp;#34;Autores / any(t: t eq &amp;#39;Eugenio Betts&amp;#39;)&amp;#34;&lt;/span>);
+System.Threading.Thread.Sleep(&lt;span style="color:#ae81ff">1000&lt;/span>);
+&lt;span style="color:#75715e">// Search everything and order
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;\n{0}&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;order by FechaPublicacion\n&amp;#34;&lt;/span>);
+Search(indexClient, searchText: &lt;span style="color:#e6db74">&amp;#34;*&amp;#34;&lt;/span>, order: &lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;() { &lt;span style="color:#e6db74">&amp;#34;FechaPublicacion&amp;#34;&lt;/span> });
+System.Threading.Thread.Sleep(&lt;span style="color:#ae81ff">1000&lt;/span>);
+&lt;span style="color:#75715e">//Search everything and facet
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;\n{0}&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Facet by Categoria \n&amp;#34;&lt;/span>);
+Search(indexClient, searchText: &lt;span style="color:#e6db74">&amp;#34;*&amp;#34;&lt;/span>, facets: &lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;() { &lt;span style="color:#e6db74">&amp;#34;Categoria&amp;#34;&lt;/span> });
+System.Threading.Thread.Sleep(&lt;span style="color:#ae81ff">1000&lt;/span>);
+}
+&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Search(ISearchIndexClient indexClient, &lt;span style="color:#66d9ef">string&lt;/span> searchText, &lt;span style="color:#66d9ef">string&lt;/span> filter = &lt;span style="color:#66d9ef">null&lt;/span>, List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt; order = &lt;span style="color:#66d9ef">null&lt;/span>, List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt; facets = &lt;span style="color:#66d9ef">null&lt;/span>)
+{
+&lt;span style="color:#75715e">// Execute search based on search text and optional filter
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> sp = &lt;span style="color:#66d9ef">new&lt;/span> SearchParameters();
+&lt;span style="color:#75715e">// Add Filter
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (!String.IsNullOrEmpty(filter))
+{
+sp.Filter = filter;
+}
+&lt;span style="color:#75715e">// Order
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (order != &lt;span style="color:#66d9ef">null&lt;/span> &amp;amp;&amp;amp; order.Count &amp;gt; &lt;span style="color:#ae81ff">0&lt;/span>)
+{
+sp.OrderBy = order;
+}
+&lt;span style="color:#75715e">// facets
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (facets != &lt;span style="color:#66d9ef">null&lt;/span> &amp;amp;&amp;amp; facets.Count &amp;gt; &lt;span style="color:#ae81ff">0&lt;/span>)
+{
+sp.Facets = facets;
+}
+&lt;span style="color:#75715e">// Search
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> DocumentSearchResult&amp;lt;BookModel&amp;gt; response = indexClient.Documents.Search&amp;lt;BookModel&amp;gt;(searchText, sp);
+&lt;span style="color:#66d9ef">foreach&lt;/span> (SearchResult&amp;lt;BookModel&amp;gt; result &lt;span style="color:#66d9ef">in&lt;/span> response.Results)
+{
+Console.WriteLine(result.Document + &lt;span style="color:#e6db74">&amp;#34; - Score: &amp;#34;&lt;/span> + result.Score);
+}
+&lt;span style="color:#66d9ef">if&lt;/span> (response.Facets != &lt;span style="color:#66d9ef">null&lt;/span>)
+{
+&lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> facet &lt;span style="color:#66d9ef">in&lt;/span> response.Facets)
+{
+Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;\n Facet Name: &amp;#34;&lt;/span> + facet.Key);
+&lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#66d9ef">value&lt;/span> &lt;span style="color:#66d9ef">in&lt;/span> facet.Value)
+{
+Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;Value :&amp;#34;&lt;/span> + &lt;span style="color:#66d9ef">value&lt;/span>.Value + &lt;span style="color:#e6db74">&amp;#34; - Count: &amp;#34;&lt;/span> + &lt;span style="color:#66d9ef">value&lt;/span>.Count);
+}
+}
+}
+}
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// A simple class representing a book
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">BookModel&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> ISBN { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Titulo { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt; Autores { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> DateTimeOffset FechaPublicacion { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Categoria { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> List&amp;lt;BookModel&amp;gt; GetBooks()
+{
+&lt;span style="color:#66d9ef">var&lt;/span> listBooks = &lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;BookModel&amp;gt;();
+listBooks.Add(&lt;span style="color:#66d9ef">new&lt;/span> BookModel()
+{
+ISBN = &lt;span style="color:#e6db74">&amp;#34;9781430224792&amp;#34;&lt;/span>,
+Titulo = &lt;span style="color:#e6db74">&amp;#34;Windows Azure Platform (Expert&amp;#39;s Voice in .NET)&amp;#34;&lt;/span>,
+Categoria = &lt;span style="color:#e6db74">&amp;#34;Comic&amp;#34;&lt;/span>,
+Autores = &lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;() {&lt;span style="color:#e6db74">&amp;#34;Redkar&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Tejasw&amp;#34;&lt;/span> },
+FechaPublicacion = DateTimeOffset.Now.AddDays(-&lt;span style="color:#ae81ff">2&lt;/span>)
+});
+listBooks.Add(&lt;span style="color:#66d9ef">new&lt;/span> BookModel()
+{
+ISBN = &lt;span style="color:#e6db74">&amp;#34;9780470506387&amp;#34;&lt;/span>,
+Titulo = &lt;span style="color:#e6db74">&amp;#34;Cloud Computing with the Windows Azure Platform&amp;#34;&lt;/span>,
+Categoria = &lt;span style="color:#e6db74">&amp;#34;Terror&amp;#34;&lt;/span>,
+Autores = &lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;() { &lt;span style="color:#e6db74">&amp;#34;Roger Jennings&amp;#34;&lt;/span>},
+FechaPublicacion = DateTimeOffset.Now
+});
+listBooks.Add(&lt;span style="color:#66d9ef">new&lt;/span> BookModel()
+{
+ISBN = &lt;span style="color:#e6db74">&amp;#34;9780889222861&amp;#34;&lt;/span>,
+Titulo = &lt;span style="color:#e6db74">&amp;#34;Azure Blues&amp;#34;&lt;/span>,
+Categoria = &lt;span style="color:#e6db74">&amp;#34;Terror&amp;#34;&lt;/span>,
+Autores = &lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;() { &lt;span style="color:#e6db74">&amp;#34;Gilbert&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Gerry&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Rogery Landing&amp;#34;&lt;/span>},
+FechaPublicacion = DateTimeOffset.Now.AddMonths(-&lt;span style="color:#ae81ff">3&lt;/span>)
+});
+listBooks.Add(&lt;span style="color:#66d9ef">new&lt;/span> BookModel()
+{
+ISBN = &lt;span style="color:#e6db74">&amp;#34;9780735649675&amp;#34;&lt;/span>,
+Titulo = &lt;span style="color:#e6db74">&amp;#34;Moving Applications to the Cloud on the Microsoft Azure(TM) Platform&amp;#34;&lt;/span>,
+Categoria = &lt;span style="color:#e6db74">&amp;#34;Fiction&amp;#34;&lt;/span>,
+Autores = &lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;() { &lt;span style="color:#e6db74">&amp;#34;Pace&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Eugenio Betts&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Dominic Densmore&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Scott; Dunn&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Ryan Narumoto&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Masashi Woloski&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Matias&amp;#34;&lt;/span> },
+FechaPublicacion = DateTimeOffset.Now
+});
+&lt;span style="color:#66d9ef">return&lt;/span> listBooks;
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">override&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> ToString()
+{
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#e6db74">&amp;#34;ISBN: &amp;#34;&lt;/span> + &lt;span style="color:#66d9ef">this&lt;/span>.ISBN + &lt;span style="color:#e6db74">&amp;#34; - titulo: &amp;#34;&lt;/span> + &lt;span style="color:#66d9ef">this&lt;/span>.Titulo + &lt;span style="color:#e6db74">&amp;#34; - Autores: &amp;#34;&lt;/span> + String.Join(&lt;span style="color:#e6db74">&amp;#34;, &amp;#34;&lt;/span>, &lt;span style="color:#66d9ef">this&lt;/span>.Autores);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-run-the-application">6. Run the application&lt;/h2>
+&lt;hr>
+&lt;p>Run the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can get the code &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>See you soon!&lt;/p></description></item></channel></rss>

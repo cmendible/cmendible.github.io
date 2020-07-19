@@ -1,0 +1,93 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Cloud on Code it Yourself...</title><link>https://carlos.mendible.com/tags/cloud/</link><description>Recent content in Cloud on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Wed, 19 Dec 2018 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/cloud/feed.xml" rel="self" type="application/rss+xml"/><item><title>Prepare yourself to work in Cloud</title><link>https://carlos.mendible.com/2018/12/19/prepare-yourself-to-work-in-cloud/</link><pubDate>Wed, 19 Dec 2018 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/12/19/prepare-yourself-to-work-in-cloud/</guid><description>&lt;p>Nowadays it&amp;rsquo;s clear that IT trends such as serverless computing, containerization, cloud native apps, DevOps artificial intelligence, machine learning and both hybrid and multi-cloud solutions are becoming main stream or the &amp;ldquo;new normal&amp;rdquo;. All businesses, big or small, are looking for cloud experts with key skills in many of these hot trends.
+With serverless architectures, applications are separated into various individual functions which are triggered by different types of events. This changes the way we normally think about applications and also the way we must approach operations in terms of monitoring performance, tracing, scaling and high availability. Good knowledge of &lt;a href="https://aws.amazon.com/es/lambda">AWS Lambda&lt;/a>, &lt;a href="https://azure.microsoft.com/es-es/services/functions/">Azure Functions&lt;/a>, &lt;a href="https://cloud.google.com/functions/">Google Cloud Functions&lt;/a>, and event-driven architectures are skills employers will be looking for.&lt;/p>
+&lt;p>Containerization and cloud native apps are all about deploying and running distributed applications and micro-services using public cloud provider services and technologies such as &lt;a href="https://www.docker.com/">Docker&lt;/a> and &lt;a href="https://kubernetes.io/">Kubernetes&lt;/a>. This combination increases productivity and quality enabling a more agile enterprise that fosters a DevOps culture through automation, application lifecycle management, service provisioning and homogeneous operations. Be aware that your potential employers will seek IT professionals who are conversant in micro-services, containers, and container orchestration engines such as Kubernetes.&lt;/p>
+&lt;p>Performing artificial intelligence, data analytics and machine learning at an enterprise scale requires CPU power and storage at a scale which is not usually available on-premises. This is one of the major drivers for public cloud adoption and certainly one of the areas you&amp;rsquo;ll want to keep in mind when mapping out your career path&lt;/p>
+&lt;p>Today enterprises all over the world are looking for new ways to become flexible enough to choose where to run their workloads depending on overall cost, location, data protection laws, security, the technologies involved and many other factors. This is why many companies are placing their bets on hybrid and multi-cloud models deploying a combination of public and private clouds. Therefore organizations are looking for IT professionals who can speak the management languages of various cloud providers and automation tools such as &lt;a href="https://www.terraform.io/">Terraform&lt;/a> or &lt;a href="https://www.terraform.io/">Ansible&lt;/a>.&lt;/p>
+&lt;p>As a consequence of this landscape, you must build or update your skills to keep up the pace with these ever-ending technological and cultural changes, and the path you take will depend on your current skill set and experience. During this evolution your &amp;ldquo;existing IT skills will remain but become of less value than the newer, cloud-centric skills&amp;rdquo;, Barry Brigs and Eduardo Kassner in their book Enterprise Cloud Strategy.&lt;/p>
+&lt;p>There is no rule of thumb on how to approach this transformation but if you are a developer, you&amp;rsquo;ll probably focus on developing Business Architect, Solution Architect or DevOps related skills. Business architects plan the evolution of technical assets and business processes. Solution architects focus on envisioning and enhancing applications focused on a particular domain also providing oversight and direction to the development of new features and capabilities. And the DevOps skills are related to a movement that is all about merging the development and operations teams.&lt;/p>
+&lt;p>If you are a tester or an operations professional, you&amp;rsquo;ll probably evolve to find yourself creating automated configuration, deploying or monitoring scripts, orchestrating flows, using cloud provider tools and even writing cloud applications, in a way in which, the once clear line between the developer, tester, and operation roles begin to blur.&lt;/p>
+&lt;p>If you are a DBA, statistician or data analyst you&amp;rsquo;ll want to focus on the roles of a data scientist or information architect. Big Data is a huge topic and if you are interested in learning please check Oriol Torrecilla&amp;rsquo;s post: &lt;a href="https://blog.everis.com/en/blog/technology/how-become-big-data-expert">How to become a big data expert&lt;/a>.&lt;/p>
+&lt;p>Now that you have an idea of what&amp;rsquo;s going on in the wild, you are probably asking yourself where can you start looking to prepare yourself for a Cloud-Centric role. If that is the case, please check the following list of useful online resources.&lt;/p>
+&lt;p>&lt;strong>Microsoft Azure&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.edx.org/learn/azure">EDX Azure&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/learn/azure">Microsoft Learning&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://cloudacademy.com/library/azure/">Cloud Academy&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://mva.microsoft.com/product-training/microsoft-azure#!lang=1033">Microsoft Virtual Academy - azure&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://mva.microsoft.com/training-topics/devops#!lang=1033">Microsoft Virtual Academy - devops&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.microsoft.com/en-us/learning/azure-exams.aspx">Azure Certifications&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Amazon Web Services&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.edx.org/school/aws">EDX AWS&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://aws.amazon.com/training/course-descriptions/advanced-architecting/?nc1=h_ls">Advance Architecting on AWS&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://cloudacademy.com/library/amazon-web-services/">Cloud Academy&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://aws.amazon.com/certification/">Certification&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Google Cloud Platform&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.coursera.org/googlecloud">Coursera&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://cloud.google.com/certification/">Certification&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Docker&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.udemy.com/learn-docker">Docker for the Absolute Beginner - Hands On - devops&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.docker.com/get-started/">Get Started&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Kubernetes&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://kubernetes.io/docs/home/?path=users&amp;amp;persona=app-developer&amp;amp;level=foundational">Documentation&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.udemy.com/learn-devops-the-complete-kubernetes-course">Learn DevOps: The Complete Kubernetes Course&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>This post was first published in the &lt;!-- raw HTML omitted -->everis&lt;!-- raw HTML omitted --> blog.&lt;/p></description></item><item><title>Cloud Design Patterns: Prepara tu aplicación para Azure</title><link>https://carlos.mendible.com/2016/04/13/cloud-design-patterns-prepara-tu-aplicacion-para-azure/</link><pubDate>Wed, 13 Apr 2016 15:34:11 +0000</pubDate><guid>https://carlos.mendible.com/2016/04/13/cloud-design-patterns-prepara-tu-aplicacion-para-azure/</guid><description>&lt;p>En esta sesión: &lt;!-- raw HTML omitted -->Cloud Design Patterns: Prepara tu aplicación para Azure&lt;!-- raw HTML omitted --> discutiremos los beneficios de aplicar patrones en el desarrollo de aplicaciones para la nube y los problemas que estos intentan resolver: disponibilidad, escalabilidad, resiliencia, seguridad, etc..&lt;/p>
+&lt;p>Esta es la agenda:&lt;/p>
+&lt;ul>
+&lt;li>Design for the Cloud&lt;/li>
+&lt;li>Problem Areas in the Cloud
+&lt;ul>
+&lt;li>
+&lt;p>Availability&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Data Management&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Design and Implementation&lt;/p>
+&lt;p>Messaging&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Management and Monitoring&lt;/p>
+&lt;p>Performance and Scalability&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Resiliency&lt;/p>
+&lt;p>Security&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Cloud Design Patterns
+&lt;ul>
+&lt;li>
+&lt;p>Cache-aside&lt;/p>
+&lt;p>Circuit Breaker&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Competing Consumers&lt;/p>
+&lt;p>CQRS&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Event Sourcing&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Valet Key&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Health Endpoint Monitoring&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Static Content Hosting&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>El código de la sesión lo podéis descargar en: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/CloudDesignPatterns">https://github.com/cmendible/CloudDesignPatterns&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p></description></item></channel></rss>

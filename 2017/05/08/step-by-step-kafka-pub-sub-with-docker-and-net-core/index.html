@@ -1,0 +1,109 @@
+<!doctype html><html lang=en-us><head><title>Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/><link rel=canonical href=https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/ itemprop=url><meta name=url content="https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content="Step by step: Kafka Pub/Sub with Docker and .Net Core,dotnet"><meta name=news_keywords content="dotnet"><meta property="article:tag" content="Docker, kafka, pubsub"><meta property="og:title" content="Step by step: Kafka Pub/Sub with Docker and .Net Core"><meta property="og:description" content="Step by step: Kafka Pub/Sub with Docker and .Net Core"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/"><meta property="og:image" content="https://carlos.mendible.com/wp-content/uploads/2017/05/kafka-logo-wide.png"><meta property="article:published_time" content="2017-05-08T10:55:32+00:00"><meta property="article:modified_time" content="2017-05-08T10:55:32+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/wp-content/uploads/2017/05/kafka-logo-wide.png"><meta name=twitter:title content="Step by step: Kafka Pub/Sub with Docker and .Net Core"><meta name=twitter:description content="Step by step: Kafka Pub/Sub with Docker and .Net Core"><meta name=generator content="Hugo 0.74.2"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>Step by step: Kafka Pub/Sub with Docker and .Net Core</h1><aside><ul><li><time class=post-date datetime=2017-05-08T10:55:32Z>May 8, 2017</time></li><li>Categories:
+<em><a href=https://carlos.mendible.com/categories/dotnet>dotnet</a></em></li><li><em><a href=https://carlos.mendible.com/tags/docker>#Docker</a>
+,
+<a href=https://carlos.mendible.com/tags/kafka>#kafka</a>
+,
+<a href=https://carlos.mendible.com/tags/pubsub>#pubsub</a></em></li><li>2 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/ title="Step by step: Kafka Pub/Sub with Docker and .Net Core"><img src=https://carlos.mendible.com/wp-content/uploads/2017/05/kafka-logo-wide.png></a></div><p>Last week I attended to a Kafka workshop and this is my attempt to show you a simple <strong>Step by step: Kafka Pub/Sub with Docker and .Net Core</strong> tutorial.</p><p>Let&rsquo;s start:</p><h2 id=1-create-a-folder-for-your-new-project>1. Create a folder for your new project</h2><hr><p>Open a command prompt an run</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>mkdir kafka.pubsub.console
+cd kafka.pubsub.console
+</code></pre></div><h2 id=2-create-a-console-project>2. Create a console project</h2><hr><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>dotnet new console
+</code></pre></div><h2 id=3-add-the-confluentkafka-nuget-package>3. Add the Confluent.Kafka nuget package</h2><hr><p>Add the <strong>Confluent.Kafka</strong> nuget package to your project:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>dotnet add package Confluent.Kafka -v 0.9.5
+dotnet restore
+</code></pre></div><h2 id=4-replace-the-contents-of-programcs>4. Replace the contents of Program.cs</h2><hr><p>Replace the contents of the <strong>Program.cs</strong> file with the following code:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>using</span> System;
+<span style=color:#66d9ef>using</span> System.Collections.Generic;
+<span style=color:#66d9ef>using</span> System.Text;
+<span style=color:#66d9ef>using</span> System.Threading.Tasks;
+<span style=color:#66d9ef>using</span> Confluent.Kafka;
+<span style=color:#66d9ef>using</span> Confluent.Kafka.Serialization;
+
+<span style=color:#66d9ef>namespace</span> kafka.pubsub.console
+{
+    <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Program</span>
+    {
+        <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> Main(<span style=color:#66d9ef>string</span>[] args)
+        {
+            <span style=color:#75715e>// The Kafka endpoint address
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>string</span> kafkaEndpoint = <span style=color:#e6db74>&#34;127.0.0.1:9092&#34;</span>;
+
+            <span style=color:#75715e>// The Kafka topic we&#39;ll be using
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>string</span> kafkaTopic = <span style=color:#e6db74>&#34;testtopic&#34;</span>;
+
+            <span style=color:#75715e>// Create the producer configuration
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>var</span> producerConfig = <span style=color:#66d9ef>new</span> Dictionary&lt;<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>object</span>&gt; { { <span style=color:#e6db74>&#34;bootstrap.servers&#34;</span>, kafkaEndpoint } };
+
+            <span style=color:#75715e>// Create the producer
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>using</span> (<span style=color:#66d9ef>var</span> producer = <span style=color:#66d9ef>new</span> Producer&lt;Null, <span style=color:#66d9ef>string</span>&gt;(producerConfig, <span style=color:#66d9ef>null</span>, <span style=color:#66d9ef>new</span> StringSerializer(Encoding.UTF8)))
+            {
+                <span style=color:#75715e>// Send 10 messages to the topic
+</span><span style=color:#75715e></span>                <span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>int</span> i = <span style=color:#ae81ff>0</span>; i &lt; <span style=color:#ae81ff>10</span>; i++)
+                {
+                    <span style=color:#66d9ef>var</span> message = <span style=color:#e6db74>$&#34;Event {i}&#34;</span>;
+                    <span style=color:#66d9ef>var</span> result = producer.ProduceAsync(kafkaTopic, <span style=color:#66d9ef>null</span>, message).GetAwaiter().GetResult();
+                    Console.WriteLine(<span style=color:#e6db74>$&#34;Event {i} sent on Partition: {result.Partition} with Offset: {result.Offset}&#34;</span>);
+                }
+            }
+
+            <span style=color:#75715e>// Create the consumer configuration
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>var</span> consumerConfig = <span style=color:#66d9ef>new</span> Dictionary&lt;<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>object</span>&gt;
+            {
+                { <span style=color:#e6db74>&#34;group.id&#34;</span>, <span style=color:#e6db74>&#34;myconsumer&#34;</span> },
+                { <span style=color:#e6db74>&#34;bootstrap.servers&#34;</span>, kafkaEndpoint },
+            };
+
+            <span style=color:#75715e>// Create the consumer
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>using</span> (<span style=color:#66d9ef>var</span> consumer = <span style=color:#66d9ef>new</span> Consumer&lt;Null, <span style=color:#66d9ef>string</span>&gt;(consumerConfig, <span style=color:#66d9ef>null</span>, <span style=color:#66d9ef>new</span> StringDeserializer(Encoding.UTF8)))
+            {
+                <span style=color:#75715e>// Subscribe to the OnMessage event
+</span><span style=color:#75715e></span>                consumer.OnMessage += (obj, msg) =&gt;
+                {
+                    Console.WriteLine(<span style=color:#e6db74>$&#34;Received: {msg.Value}&#34;</span>);
+                };
+
+                <span style=color:#75715e>// Subscribe to the Kafka topic
+</span><span style=color:#75715e></span>                consumer.Subscribe(<span style=color:#66d9ef>new</span> List&lt;<span style=color:#66d9ef>string</span>&gt;() { kafkaTopic });
+
+                <span style=color:#75715e>// Handle Cancel Keypress 
+</span><span style=color:#75715e></span>                <span style=color:#66d9ef>var</span> cancelled = <span style=color:#66d9ef>false</span>;
+                Console.CancelKeyPress += (_, e) =&gt;
+                {
+                    e.Cancel = <span style=color:#66d9ef>true</span>; <span style=color:#75715e>// prevent the process from terminating.
+</span><span style=color:#75715e></span>                    cancelled = <span style=color:#66d9ef>true</span>;
+                };
+
+                Console.WriteLine(<span style=color:#e6db74>&#34;Ctrl-C to exit.&#34;</span>);
+
+                <span style=color:#75715e>// Poll for messages
+</span><span style=color:#75715e></span>                <span style=color:#66d9ef>while</span> (!cancelled)
+                {
+                    consumer.Poll();
+                }
+            }
+        }
+    }
+}
+</code></pre></div><h2 id=5-start-kafka-with-docker>5. Start Kafka with Docker</h2><hr><p>You&rsquo;ll need to add the following address range to your <strong>docker unsafe registry</strong>: <strong>172.18.0.0/16</strong>
+Create a <strong>docker-compose.yml</strong> file with the following contents:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yml data-lang=yml><span style=color:#66d9ef>version</span>: <span style=color:#e6db74>&#39;2&#39;</span>
+<span style=color:#66d9ef>services</span>:
+  <span style=color:#66d9ef>zookeeper</span>:
+    <span style=color:#66d9ef>image</span>: wurstmeister/zookeeper
+    <span style=color:#66d9ef>ports</span>:
+      - <span style=color:#e6db74>&#34;2181:2181&#34;</span>
+  <span style=color:#66d9ef>kafka</span>:
+    <span style=color:#66d9ef>image</span>: wurstmeister/kafka:<span style=color:#ae81ff>0.10.2.0</span>
+    <span style=color:#66d9ef>ports</span>:
+      - <span style=color:#e6db74>&#34;9092:9092&#34;</span>
+    <span style=color:#66d9ef>environment</span>:
+      <span style=color:#66d9ef>KAFKA_ADVERTISED_HOST_NAME</span>: <span style=color:#ae81ff>127.0.0.1</span>
+      <span style=color:#66d9ef>KAFKA_CREATE_TOPICS</span>: <span style=color:#e6db74>&#34;testtopic:1:1&#34;</span>
+      <span style=color:#66d9ef>KAFKA_ZOOKEEPER_CONNECT</span>: zookeeper:<span style=color:#ae81ff>2181</span>
+    <span style=color:#66d9ef>volumes</span>:
+      - /var/run/docker.sock:/var/run/docker.sock
+</code></pre></div><p>And run the following command:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>docker-compose up
+</code></pre></div><p>It will take a while but you&rsquo;ll get a working Kafka installation.</p><h2 id=6-run-the-program>6. Run the program</h2><hr><p>Run the program and enjoy!</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>dotnet run
+</code></pre></div><p>Get the code and related files here: <a href=https://github.com/cmendible/dotnetcore.samples/tree/main/kafka.pubsub.console>https://github.com/cmendible/dotnetcore.samples/tree/main/kafka.pubsub.console</a></p><p>Hope it helps!</p></article><section class=post-nav><ul><li><a href=https://carlos.mendible.com/2017/04/29/step-by-step-couchbase-lite-with-net-core/><i class="fa fa-chevron-circle-left"></i>Step by step: Couchbase Lite with .Net Core</a></li><li><a href=https://carlos.mendible.com/2017/05/15/use-azure-media-services-to-find-filler-words/>Use Azure Media Services to Find Filler Words <i class="fa fa-chevron-circle-right"></i></a></li></ul></section><section class=comments-block><button id=show-comments style=display:none><i class="fa fa-comments"></i></button></section><section id=disqus_thread></section><script>(function(){if(window.location.hostname=="localhost")
+return;var disqus_loaded=false;var disqus_shortname='codeityourself';var disqus_button=document.getElementById("show-comments");var disqus_title='Step by step: Kafka Pub\/Sub with Docker and .Net Core'
+var disqus_autoload=true;disqus_button.style.display="";if(disqus_autoload){disqus();}else{disqus_button.addEventListener("click",disqus,false);}
+function disqus(){if(!disqus_loaded){disqus_loaded=true;var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="//"+disqus_shortname+".disqus.com/embed.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e);document.getElementById("show-comments").style.display="none";}}
+var hash=window.location.hash.substr(1);if(hash.length>8){if(hash.substring(0,8)=="comment-"){disqus();}}
+if(/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)){disqus();}})();</script></main><footer><h6>Copyright © 2020 - Carlos Mendible |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://carlos.mendible.com/feed.xml>Subscribe</a></h6></footer></div><script src=https://carlos.mendible.com/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-11243417-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

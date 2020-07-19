@@ -1,0 +1,65 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ApplicationInsights on Code it Yourself...</title><link>https://carlos.mendible.com/tags/applicationinsights/</link><description>Recent content in ApplicationInsights on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 06 May 2016 07:18:05 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/applicationinsights/feed.xml" rel="self" type="application/rss+xml"/><item><title>NHInsights an OracleManagedDataClientDriver for NHibernate and Application Insights</title><link>https://carlos.mendible.com/2016/05/06/nhinsights-an-oraclemanageddataclientdriver-for-nhibernate-and-application-insights/</link><pubDate>Fri, 06 May 2016 07:18:05 +0000</pubDate><guid>https://carlos.mendible.com/2016/05/06/nhinsights-an-oraclemanageddataclientdriver-for-nhibernate-and-application-insights/</guid><description>&lt;p>Let&amp;rsquo;s talk about &lt;strong>&lt;!-- raw HTML omitted -->NHInsights&lt;!-- raw HTML omitted --> an OracleManagedDataClientDriver for NHibernate and Application Insights&lt;/strong>&lt;/p>
+&lt;p>If you use Oracle and NHibernate and you are trying to use Application Insights to diagnose issues with your database calls you will notice that for ASP.NET applications &lt;!-- raw HTML omitted -->the out-of-the-box dependency monitor currently reports calls to these types of dependencies&lt;!-- raw HTML omitted -->:&lt;/p>
+&lt;ul>
+&lt;li>SQL databases&lt;/li>
+&lt;li>ASP.NET web and WCF services that use HTTP-based bindings&lt;/li>
+&lt;li>Local or remote HTTP calls&lt;/li>
+&lt;li>Azure DocumentDb, table, blob storage, and queue&lt;/li>
+&lt;/ul>
+&lt;p>So how can you track your queries as a dependency?&lt;/p>
+&lt;p>Well I checked the &lt;!-- raw HTML omitted -->Track Dependency API&lt;!-- raw HTML omitted --> which is really simple and also remembered that some time ago I had used &lt;!-- raw HTML omitted -->MiniProfiler&lt;!-- raw HTML omitted --> together with NHibernate and managed to track SQL Server response times.&lt;/p>
+&lt;p>I downloaded &lt;!-- raw HTML omitted -->MiniProfiler&lt;!-- raw HTML omitted --> source code and learned how they implemented their &lt;!-- raw HTML omitted -->ProfiledDbCommand&lt;!-- raw HTML omitted --> and also the &lt;!-- raw HTML omitted -->MiniProfilerSql2008ClientDriver&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Based on those two great pieces of code and the original &lt;!-- raw HTML omitted -->OracleManagedDataClientDriver&lt;!-- raw HTML omitted --> code I managed to create &lt;!-- raw HTML omitted -->NHInsights&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>What&amp;rsquo;s the secret? to create a driver capable of returning a profiled DbCommand (i.e. &lt;!-- raw HTML omitted -->InsightsDbCommand&lt;!-- raw HTML omitted -->):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">OracleManagedDataClientDriver&lt;/span> : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
+{
+...
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">override&lt;/span> IDbCommand CreateCommand()
+{
+&lt;span style="color:#66d9ef">var&lt;/span> command = &lt;span style="color:#66d9ef">base&lt;/span>.CreateCommand();
+command = &lt;span style="color:#66d9ef">new&lt;/span> **InsightsDbCommand**((DbCommand)command, (DbConnection)command.Connection) &lt;span style="color:#66d9ef">as&lt;/span> IDbCommand;
+&lt;span style="color:#66d9ef">return&lt;/span> command;
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Go ahead and try it! To start sending your queries as dependencies just install the nuget package:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Install-Package NHInsights
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And then reference the NHInsights.OracleManagedDataClientDriver in your NHibernate configuration:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;hibernate-configuration&lt;/span> &lt;span style="color:#a6e22e">xmlns=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;urn:nhibernate-configuration-2.2&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;session-factory&amp;gt;&lt;/span>
+...
+&lt;span style="color:#f92672">&amp;lt;property&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;connection.driver_class&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>NHInsights.OracleManagedDataClientDriver, NHInsights, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null&lt;span style="color:#f92672">&amp;lt;/property&amp;gt;&lt;/span>
+...
+&lt;span style="color:#f92672">&amp;lt;/session-factory&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/hibernate-configuration&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item><item><title>Application Insights Analytics</title><link>https://carlos.mendible.com/2016/03/28/application-insights-analytics/</link><pubDate>Mon, 28 Mar 2016 12:01:42 +0000</pubDate><guid>https://carlos.mendible.com/2016/03/28/application-insights-analytics/</guid><description>&lt;p>For the last couple of months I&amp;rsquo;ve been using &lt;strong>&lt;!-- raw HTML omitted -->Application Insights&lt;!-- raw HTML omitted -->&lt;/strong> to monitor, detect and diagnose performance issues in our applications. Last week I noticed that the &lt;em>Analytics&lt;/em> button on the &lt;!-- raw HTML omitted -->Application Insights&lt;!-- raw HTML omitted --> blade was working:&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Once you click it, your browser will open the &lt;strong>Application Insights Analytics&lt;/strong> page with the following taxonomy:&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;ul>
+&lt;li>A left panel (named SCHEMA) which shows all the tables you can use to query the telemetry from your applications.&lt;/li>
+&lt;li>A top panel where you must write your queries.&lt;/li>
+&lt;li>And a bottom panel to show the query results or charts.&lt;/li>
+&lt;/ul>
+&lt;!-- raw HTML omitted -->
+&lt;p>To write your queries you must use the &lt;!-- raw HTML omitted -->Insights Query Language&lt;!-- raw HTML omitted --> and start with a source table followed by a series of operators separated by |.&lt;/p>
+&lt;p>The following example is a simple query that will render a pie chart with the average &lt;em>Requests/Sec&lt;/em> served by role instances (servers):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sql" data-lang="sql"> metrics
+&lt;span style="color:#f92672">|&lt;/span> &lt;span style="color:#66d9ef">where&lt;/span> name &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Requests/Sec&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">|&lt;/span> project value, cloud_RoleInstance
+&lt;span style="color:#f92672">|&lt;/span> summarize &lt;span style="color:#66d9ef">avg&lt;/span>(value) &lt;span style="color:#66d9ef">by&lt;/span> cloud_RoleInstance
+&lt;span style="color:#f92672">|&lt;/span> render piechart
+&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>Line 1 specifies the &lt;em>metrics&lt;/em> table as the source of the query.&lt;/li>
+&lt;li>Line 2 uses the &lt;em>where&lt;/em> operator to filter the table.&lt;/li>
+&lt;li>Line 3 selects the columns to include using the &lt;em>project&lt;/em> operator.&lt;/li>
+&lt;li>Line 4 calculates the &lt;em>average&lt;/em> of the metric by &lt;em>cloud_RoleInstance&lt;/em> (server)&lt;/li>
+&lt;li>Line 5 renders the results as a pie chart.&lt;/li>
+&lt;/ul>
+&lt;p>You must be thinking: do I have to learn another language? The short answer is yes! But it&amp;rsquo;s nothing you won&amp;rsquo;t be able to handle and once you get used to it, you will unleash the full power of the queries and gain a better understanding of your applications. For instances now we can answer the following questions:&lt;/p>
+&lt;ul>
+&lt;li>What method of our application throws more exceptions?&lt;/li>
+&lt;li>What exceptions are related to a given user?&lt;/li>
+&lt;li>What pages are being used and which ones are not?&lt;/li>
+&lt;/ul>
+&lt;p>To learn much more you can visit the &lt;!-- raw HTML omitted -->Queries in Analytics&lt;!-- raw HTML omitted --> page which is a great resource and is well organized.&lt;/p>
+&lt;p>Hope it helps.&lt;/p></description></item></channel></rss>

@@ -1,0 +1,96 @@
+<!doctype html><html lang=en-us><head><title>Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2016/10/11/deal-with-time-dependencies-in-tests/><link rel=canonical href=https://carlos.mendible.com/2016/10/11/deal-with-time-dependencies-in-tests/ itemprop=url><meta name=url content="https://carlos.mendible.com/2016/10/11/deal-with-time-dependencies-in-tests/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content="Deal with time dependencies in Tests,dotnet"><meta name=news_keywords content="dotnet"><meta property="article:tag" content="DateTime, UnitTests, xUnit"><meta property="og:title" content="Deal with time dependencies in Tests"><meta property="og:description" content="Deal with time dependencies in Tests"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2016/10/11/deal-with-time-dependencies-in-tests/"><meta property="og:image" content="https://carlos.mendible.com/wp-content/uploads/2016/10/SystemDateTime.jpg"><meta property="article:published_time" content="2016-10-11T07:37:35+00:00"><meta property="article:modified_time" content="2016-10-11T07:37:35+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/wp-content/uploads/2016/10/SystemDateTime.jpg"><meta name=twitter:title content="Deal with time dependencies in Tests"><meta name=twitter:description content="Deal with time dependencies in Tests"><meta name=generator content="Hugo 0.74.2"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>Deal with time dependencies in Tests</h1><aside><ul><li><time class=post-date datetime=2016-10-11T07:37:35Z>Oct 11, 2016</time></li><li>Categories:
+<em><a href=https://carlos.mendible.com/categories/dotnet>dotnet</a></em></li><li><em><a href=https://carlos.mendible.com/tags/datetime>#DateTime</a>
+,
+<a href=https://carlos.mendible.com/tags/unittests>#UnitTests</a>
+,
+<a href=https://carlos.mendible.com/tags/xunit>#xUnit</a></em></li><li>3 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2016/10/11/deal-with-time-dependencies-in-tests/ title="Deal with time dependencies in Tests"><img src=https://carlos.mendible.com/wp-content/uploads/2016/10/SystemDateTime.jpg></a></div><p>Las week we discovered that some of our test would"randomly&rdquo; fail depending of the time of the day. After investigating the issue we found that the culprit was that the service being tested was taking decisions based on the current system time (DateTime.Now) leading to different outcomes through the day. So how <strong>do we deal with time dependencies in tests</strong>?</p><p>My first thought was creating an IClock interface and injecting an implementation to the service. It seemed like an overkill and then I googled enough to find a short and very simple solution in Ayende&rsquo;s 2008 article: Dealing with time in tests</p><p>I&rsquo;ll use .NET Core and xUnit to illustrate the problem and the proposed solution.</p><p>Now let&rsquo;s start:</p><h2 id=1-create-a-test-project>1. Create a test project</h2><hr><p>Open a command prompt and run the following commands</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>mkdir remove.datetime.dependency.test
+cd remove.datetime.dependency.test
+dotnet new -t xunittest
+</code></pre></div><h2 id=2-create-a-systemdatetime-helper-class>2. Create a SystemDateTime helper class</h2><hr><p>This is the helper class a proposed by Ayende</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>namespace</span> MyServices
+{
+    <span style=color:#66d9ef>using</span> System;
+
+    <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// Helper class that will return DateTime.Now, but can be changed to deal with tests.
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// https://ayende.com/blog/3408/dealing-with-time-in-tests
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>SystemDateTime</span>
+    {
+        
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// Gets a function that when evaluated returns a local date and time.   
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;returns&gt;A function that when evaluated returns a local date and time.&lt;/returns&gt;
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> Func&lt;DateTime&gt; Now = () =&gt; DateTime.Now;
+    }
+}
+</code></pre></div><h2 id=3-create-a-service-with-a-dependency-on-time>3. Create a Service with a dependency on time</h2><p>The service will have two methods: one will use System.DateTime.Now and one will use the helper created on step 2</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>namespace</span> MyServices
+{
+    <span style=color:#66d9ef>using</span> System;
+
+    <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// A time dependent on DateTime.Now 
+</span><span style=color:#75715e></span>    <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>TimeDependentService</span>
+    {
+
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// Tells if it&#39;s morning.
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;returns&gt;true if it&#39;s before 12&lt;/returns&gt;
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>bool</span> OldIsMorning()
+        {
+            <span style=color:#66d9ef>return</span> DateTime.Now.Hour &lt; <span style=color:#ae81ff>12</span>;
+        }
+
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// Tells if it&#39;s morning using the helper by Ayende. 
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;returns&gt;true if it&#39;s before 12&lt;/returns&gt;
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>bool</span> IsMorning()
+        {
+            <span style=color:#66d9ef>return</span> SystemDateTime.Now().Hour &lt; <span style=color:#ae81ff>12</span>;
+        }
+    }
+}
+</code></pre></div><h2 id=4-create-the-tests>4. Create the tests</h2><hr><p>Replace the content of Tests.cs with the following code</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#66d9ef>namespace</span> Tests
+{
+    <span style=color:#66d9ef>using</span> System;
+    <span style=color:#66d9ef>using</span> MyServices;
+    <span style=color:#66d9ef>using</span> Xunit;
+
+    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Tests</span>
+    {
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// If this test is run after 12PM it will fail cause of the dependency on the system time.
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span><span style=color:#a6e22e>        [Fact]</span>
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> Will_Fail_After_Noon()
+        {
+            <span style=color:#66d9ef>var</span> svc = <span style=color:#66d9ef>new</span> TimeDependentService();
+            Assert.True(svc.OldIsMorning());
+        }
+
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// This test will run OK no matter the systems time, cause we are using the Ayende 
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// approach to tests with time dependencies.
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span><span style=color:#a6e22e>        [Fact]</span>
+        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> Will_Run_OK_No_Matter_The_Real_Time()
+        {
+            <span style=color:#75715e>// With Ayende&#39;s helper we can for the time to 11 AM
+</span><span style=color:#75715e></span>            SystemDateTime.Now = () =&gt; <span style=color:#66d9ef>new</span> DateTime(<span style=color:#ae81ff>2016</span>, <span style=color:#ae81ff>10</span>, <span style=color:#ae81ff>10</span>, <span style=color:#ae81ff>11</span>, <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>0</span>);
+            <span style=color:#66d9ef>var</span> svc = <span style=color:#66d9ef>new</span> TimeDependentService();
+            Assert.True(svc.IsMorning());
+        }
+    }
+}
+</code></pre></div><h2 id=5-run-the-tests>5. Run the tests</h2><hr><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>dotnet test
+</code></pre></div><p>No matter the system time the test: <strong>Will_Run_OK_No_Matter_The_Real_Time</strong> will always pass, while the <strong>Will_Fail_After_Noon</strong> test will fail any time after 12 PM.</p><p>You can get the code here: <a href=https://github.com/cmendible/dotnetcore.samples/tree/main/remove.datetime.dependency.test>https://github.com/cmendible/dotnetcore.samples/tree/main/remove.datetime.dependency.test</a></p><p>Hope it helps!</p></article><section class=post-nav><ul><li><a href=https://carlos.mendible.com/2016/10/02/get-ready-exam-70-533-implementing-microsoft-azure-infrastructure-solutions/><i class="fa fa-chevron-circle-left"></i>Get Ready: Exam 70-533 Implementing Microsoft Azure Infrastructure Solutions</a></li><li><a href=https://carlos.mendible.com/2016/10/17/is-privacy-dead/>Is Privacy Dead? <i class="fa fa-chevron-circle-right"></i></a></li></ul></section><section class=comments-block><button id=show-comments style=display:none><i class="fa fa-comments"></i></button></section><section id=disqus_thread></section><script>(function(){if(window.location.hostname=="localhost")
+return;var disqus_loaded=false;var disqus_shortname='codeityourself';var disqus_button=document.getElementById("show-comments");var disqus_title='Deal with time dependencies in Tests'
+var disqus_autoload=true;disqus_button.style.display="";if(disqus_autoload){disqus();}else{disqus_button.addEventListener("click",disqus,false);}
+function disqus(){if(!disqus_loaded){disqus_loaded=true;var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="//"+disqus_shortname+".disqus.com/embed.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e);document.getElementById("show-comments").style.display="none";}}
+var hash=window.location.hash.substr(1);if(hash.length>8){if(hash.substring(0,8)=="comment-"){disqus();}}
+if(/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)){disqus();}})();</script></main><footer><h6>Copyright © 2020 - Carlos Mendible |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://carlos.mendible.com/feed.xml>Subscribe</a></h6></footer></div><script src=https://carlos.mendible.com/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-11243417-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

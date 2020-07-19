@@ -1,0 +1,32 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>kafkaconnect on Code it Yourself...</title><link>https://carlos.mendible.com/tags/kafkaconnect/</link><description>Recent content in kafkaconnect on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 18 Feb 2018 17:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/kafkaconnect/feed.xml" rel="self" type="application/rss+xml"/><item><title>Consuming Azure Event Hubs Events With Kafka Connect</title><link>https://carlos.mendible.com/2018/02/18/consuming-azure-event-hubs-events-with-kafka-connect/</link><pubDate>Sun, 18 Feb 2018 17:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/02/18/consuming-azure-event-hubs-events-with-kafka-connect/</guid><description>&lt;p>So last week I was in a rush to find a fast and easy way to consume events from Azure Event Hubs and send them to a Kafka topic.&lt;/p>
+&lt;p>After googling a bit I found this project: &lt;a href="https://github.com/Azure/toketi-kafka-connect-iothub/releases">Kafka Connect Azure IoT Hub&lt;/a>. Yes the name of the project can be misleading, but since IoT Hub is a service which relies on Event Hubs and also taking a close look to the code showed that it uses the Event Hubs client for java, I decided to give it a try.&lt;/p>
+&lt;p>I will asume not only that you have working knowledge with Event Hubs, but also that you have an instance deployed, plus a working Kafka and Kafka Connect (Distributed mode) setup.&lt;/p>
+&lt;p>Let&amp;rsquo;s kick it:&lt;/p>
+&lt;h1 id="1-download-the-kafka-connect-azure-iot-hub">1. Download the Kafka Connect Azure IoT Hub&lt;/h1>
+&lt;p>Download the &lt;a href="https://github.com/Azure/toketi-kafka-connect-iothub/releases/tag/v0.6">Kafka Connect Azure IoT Hub 0.6 jar&lt;/a> and copy the file in the Kafka installation libs folder (usually under KAFKA_HOME/libs).&lt;/p>
+&lt;p>Be sure to start Zookeper, Kafka and Kafka connect.&lt;/p>
+&lt;h1 id="2-create-a-connect-eventhub-sourcejson-file">2. Create a connect-eventhub-source.json file&lt;/h1>
+&lt;p>Update the following json and save it as &lt;strong>connect-eventhub-source.json&lt;/strong>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;eventhub-source&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;config&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;connector.class&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;com.microsoft.azure.iot.kafka.connect.IotHubSourceConnector&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;tasks.max&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Number of task == Number Event Hub Partitions]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Kafka.Topic&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Target Kafka Topic]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.EventHubCompatibleName&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Event Hubs Name]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.EventHubCompatibleEndpoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;sb://[Event Hubs Namespace].servicebus.windows.net/&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.AccessKeyName&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Access key name for the Event Hub]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.AccessKeyValue&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Access key value for the Event Hub]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.ConsumerGroup&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Consumer group (Can use $Default)]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.Partitions&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[Number of Event Hub Partitions]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.StartTime&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;IotHub.Offsets&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;BatchSize&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;100&amp;#34;&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>I&amp;rsquo;ve submited a &lt;a href="https://github.com/Azure/toketi-kafka-connect-iothub/pull/16">pull request&lt;/a> to fix some of the descriptions you&amp;rsquo;ll find for the fields &lt;a href="https://github.com/Azure/toketi-kafka-connect-iothub/blob/master/README_Source.md">here&lt;/a>&lt;/p>
+&lt;h1 id="3-post-the-configuration-to-the-kafka-connect-endpoint">3. Post the configuration to the Kafka Connect endpoint&lt;/h1>
+&lt;p>Assuming your Kafka Connect is running on &lt;strong>localhost&lt;/strong> and listening to the default port &lt;strong>8083&lt;/strong> execute the followinmg command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -H &lt;span style="color:#e6db74">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> -d @connect-eventhub-source.json -X POST http://127.0.0.1:8083/connectors
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>After a while you should start receiving the events in the Kafka Topic you configured.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

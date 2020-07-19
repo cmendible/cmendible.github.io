@@ -1,0 +1,157 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Monitoring on Code it Yourself...</title><link>https://carlos.mendible.com/tags/monitoring/</link><description>Recent content in Monitoring on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 12 Feb 2017 14:06:42 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/monitoring/feed.xml" rel="self" type="application/rss+xml"/><item><title>.NET Core Health Endpoint Monitoring Middleware</title><link>https://carlos.mendible.com/2017/02/12/dotnet-core-health-endpoint-monitoring-middleware/</link><pubDate>Sun, 12 Feb 2017 14:06:42 +0000</pubDate><guid>https://carlos.mendible.com/2017/02/12/dotnet-core-health-endpoint-monitoring-middleware/</guid><description>&lt;p>Today I&amp;rsquo;ll show a simple example of how to create a &lt;strong>.Net Core Health Endpoint Monitoring &lt;!-- raw HTML omitted -->Middleware&lt;!-- raw HTML omitted -->&lt;/strong>.&lt;/p>
+&lt;p>If you need to know about the Health Endpoint Monitoring Pattern check: &lt;!-- raw HTML omitted -->&lt;a href="https://msdn.microsoft.com/en-us/library/dn589789.aspx">https://msdn.microsoft.com/en-us/library/dn589789.aspx&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="1-create-the-application">1. Create the application&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> md service.status.middleware
+cd service.status.middleware
+dotnet new
+dotnet restore
+code .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-add-the-middleware-servicestatusmiddleware-class">2. Add the middleware ServiceStatusMiddleware class&lt;/h2>
+&lt;hr>
+&lt;p>Create a Middleware folder in your project and add a ServiceStatusMiddleware.cs file with the following contents&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> WebApplication
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> Newtonsoft.Json;
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Service Status Middleware used to check the Health of your service.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ServiceStatusMiddleware&lt;/span>
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Next request RequestDelegate
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">readonly&lt;/span> RequestDelegate next;
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Health check function.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">readonly&lt;/span> Func&amp;lt;Task&amp;lt;&lt;span style="color:#66d9ef">bool&lt;/span>&amp;gt;&amp;gt; serviceStatusCheck;
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// ServiceStatus enpoint path
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">readonly&lt;/span> PathString statePath = &lt;span style="color:#66d9ef">new&lt;/span> PathString(&lt;span style="color:#e6db74">&amp;#34;/_check&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Constructor
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> ServiceStatusMiddleware(RequestDelegate next, Func&amp;lt;Task&amp;lt;&lt;span style="color:#66d9ef">bool&lt;/span>&amp;gt;&amp;gt; serviceStatusCheck)
+{
+&lt;span style="color:#66d9ef">this&lt;/span>.next = next;
+&lt;span style="color:#66d9ef">this&lt;/span>.serviceStatusCheck = serviceStatusCheck;
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Where the middleware magic happens
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;Task&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task Invoke(HttpContext httpContext)
+{
+&lt;span style="color:#75715e">// If the path is different from the statePath let the request through the normal pipeline.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (!httpContext.Request.Path.Equals(statePath))
+{
+&lt;span style="color:#66d9ef">await&lt;/span> &lt;span style="color:#66d9ef">this&lt;/span>.next.Invoke(httpContext);
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+&lt;span style="color:#75715e">// If the path is statePath call the health check function.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">await&lt;/span> CheckAsync(httpContext);
+}
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Call the health check function and set the response.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;Task&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task CheckAsync(HttpContext httpContext)
+{
+&lt;span style="color:#66d9ef">if&lt;/span> (&lt;span style="color:#66d9ef">await&lt;/span> &lt;span style="color:#66d9ef">this&lt;/span>.serviceStatusCheck().ConfigureAwait(&lt;span style="color:#66d9ef">false&lt;/span>))
+{
+&lt;span style="color:#75715e">// Service is available.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">await&lt;/span> WriteResponseAsync(httpContext, HttpStatusCode.OK, &lt;span style="color:#66d9ef">new&lt;/span> ServiceStatus(&lt;span style="color:#66d9ef">true&lt;/span>));
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+&lt;span style="color:#75715e">// Service is unavailable.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">await&lt;/span> WriteResponseAsync(httpContext, HttpStatusCode.ServiceUnavailable, &lt;span style="color:#66d9ef">new&lt;/span> ServiceStatus(&lt;span style="color:#66d9ef">false&lt;/span>));
+}
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Writes a response of the Service Status Check.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;Task&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> Task WriteResponseAsync(HttpContext httpContext, HttpStatusCode httpStatusCode, ServiceStatus serviceStatus)
+{
+&lt;span style="color:#75715e">// Set content type.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> httpContext.Response.Headers[&lt;span style="color:#e6db74">&amp;#34;Content-Type&amp;#34;&lt;/span>] = &lt;span style="color:#66d9ef">new&lt;/span>[] { &lt;span style="color:#e6db74">&amp;#34;application/json&amp;#34;&lt;/span> };
+&lt;span style="color:#75715e">// Minimum set of headers to disable caching of the response.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> httpContext.Response.Headers[&lt;span style="color:#e6db74">&amp;#34;Cache-Control&amp;#34;&lt;/span>] = &lt;span style="color:#66d9ef">new&lt;/span>[] { &lt;span style="color:#e6db74">&amp;#34;no-cache, no-store, must-revalidate&amp;#34;&lt;/span> };
+httpContext.Response.Headers[&lt;span style="color:#e6db74">&amp;#34;Pragma&amp;#34;&lt;/span>] = &lt;span style="color:#66d9ef">new&lt;/span>[] { &lt;span style="color:#e6db74">&amp;#34;no-cache&amp;#34;&lt;/span> };
+httpContext.Response.Headers[&lt;span style="color:#e6db74">&amp;#34;Expires&amp;#34;&lt;/span>] = &lt;span style="color:#66d9ef">new&lt;/span>[] { &lt;span style="color:#e6db74">&amp;#34;0&amp;#34;&lt;/span> };
+&lt;span style="color:#75715e">// Set status code.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> httpContext.Response.StatusCode = (&lt;span style="color:#66d9ef">int&lt;/span>)httpStatusCode;
+&lt;span style="color:#75715e">// Write the content.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> content = JsonConvert.SerializeObject(serviceStatus);
+&lt;span style="color:#66d9ef">return&lt;/span> httpContext.Response.WriteAsync(content);
+}
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// ServiceStatus to hold the response.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ServiceStatus&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> ServiceStatus(&lt;span style="color:#66d9ef">bool&lt;/span> available)
+{
+Available = available;
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Tells if the service is available
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;True if the service is available&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">bool&lt;/span> Available { &lt;span style="color:#66d9ef">get&lt;/span>; }
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Service Status Middleware Extensions
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ServiceStatusMiddlewareExtensions&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> IApplicationBuilder UseServiceStatus(
+&lt;span style="color:#66d9ef">this&lt;/span> IApplicationBuilder app,
+Func&amp;lt;Task&amp;lt;&lt;span style="color:#66d9ef">bool&lt;/span>&amp;gt;&amp;gt; serviceStatusCheck)
+{
+app.UseMiddleware&amp;lt;ServiceStatusMiddleware&amp;gt;(serviceStatusCheck);
+&lt;span style="color:#66d9ef">return&lt;/span> app;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-the-middleware-to-the-pipeline">3. Add the middleware to the pipeline&lt;/h2>
+&lt;hr>
+&lt;p>In the &lt;strong>Startup&lt;/strong> class find the &lt;strong>app.AddMvc&lt;/strong> line and add the following just above&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#75715e">// Call the ServiceStatus middleware with a random failing function.
+&lt;/span>&lt;span style="color:#75715e">// Feel free to replace the function with any check you need.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>Random random = &lt;span style="color:#66d9ef">new&lt;/span> Random();
+app.UseServiceStatus(() =&amp;gt;
+{
+&lt;span style="color:#66d9ef">return&lt;/span> Task.FromResult(random.Next(&lt;span style="color:#ae81ff">10&lt;/span>) != &lt;span style="color:#ae81ff">1&lt;/span>);
+});
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-run-the-application">4. Run the application&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Browse to: &lt;!-- raw HTML omitted -->http://localhost:5000/_check&lt;!-- raw HTML omitted --> and your browser should show&lt;/p>
+&lt;pre>&lt;code class="language-json"" data-lang="json"">{&amp;quot;Available&amp;quot;:true}
+&lt;/code>&lt;/pre>&lt;p>or&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{&lt;span style="color:#f92672">&amp;#34;Available&amp;#34;&lt;/span>:&lt;span style="color:#66d9ef">false&lt;/span>}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>depending on the result of the random function we added to the middleware.&lt;/p>
+&lt;p>Checkout &lt;!-- raw HTML omitted -->AspNetCore.Health&lt;!-- raw HTML omitted --> for nice and extensible implementation of the pattern.&lt;/p>
+&lt;p>Also find a copy of the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/service.status.middleware">https://github.com/cmendible/dotnetcore.samples/tree/main/service.status.middleware&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

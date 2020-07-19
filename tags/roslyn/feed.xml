@@ -1,0 +1,249 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Roslyn on Code it Yourself...</title><link>https://carlos.mendible.com/tags/roslyn/</link><description>Recent content in Roslyn on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 02 Mar 2017 07:28:14 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/roslyn/feed.xml" rel="self" type="application/rss+xml"/><item><title>Create a class with .NET Core and Roslyn</title><link>https://carlos.mendible.com/2017/03/02/create-a-class-with-net-core-and-roslyn/</link><pubDate>Thu, 02 Mar 2017 07:28:14 +0000</pubDate><guid>https://carlos.mendible.com/2017/03/02/create-a-class-with-net-core-and-roslyn/</guid><description>&lt;p>After my post first post on: &lt;strong>&lt;!-- raw HTML omitted -->Code Generation&lt;!-- raw HTML omitted -->&lt;/strong> I decided to go a bit further, so today we&amp;rsquo;ll &lt;strong>Create a class with .NET Core and Roslyn&lt;/strong> and write the output to the console.&lt;/p>
+&lt;p>Let&amp;rsquo;s see:&lt;/p>
+&lt;h2 id="1-create-the-application">1. Create the application&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> md roslyn.create.class
+cd roslyn.create.class
+dotnet new
+dotnet restore
+code .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-replace-the-contents-of-projectjson">2. Replace the contents of project.json&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents on &lt;strong>project.json&lt;/strong> file in order to include the references to: &lt;strong>Microsoft.CodeAnalysis.CSharp&lt;/strong> and **Microsoft.CodeAnalysis.Compilers&lt;!-- raw HTML omitted --> **&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0-*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;buildOptions&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;debugType&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;portable&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;emitEntryPoint&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.CodeAnalysis.CSharp&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0-rc4&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.CodeAnalysis.Compilers&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0-rc4&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;frameworks&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;netcoreapp1.1&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.NETCore.App&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;platform&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.1.0&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;imports&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dnxcore50&amp;#34;&lt;/span>
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-replace-the-contents-of-programcs">3. Replace the contents of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>The &lt;strong>CreateClass&lt;/strong> method is where the magic occurs. Each relevant line is explained to help you understand each step.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.CodeAnalysis;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.CodeAnalysis.CSharp;
+&lt;span style="color:#66d9ef">namespace&lt;/span> Roslyn.CodeGeneration
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// Create a class
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> CreateClass();
+&lt;span style="color:#75715e">// Wait to exit.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.Read();
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Create a class from scratch.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> CreateClass()
+{
+&lt;span style="color:#75715e">// Create a namespace: (namespace CodeGenerationSample)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> @namespace = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(&lt;span style="color:#e6db74">&amp;#34;CodeGenerationSample&amp;#34;&lt;/span>)).NormalizeWhitespace();
+&lt;span style="color:#75715e">// Add System using statement: (using System)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> @namespace = @namespace.AddUsings(SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(&lt;span style="color:#e6db74">&amp;#34;System&amp;#34;&lt;/span>)));
+&lt;span style="color:#75715e">// Create a class: (class Order)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> classDeclaration = SyntaxFactory.ClassDeclaration(&lt;span style="color:#e6db74">&amp;#34;Order&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Add the public modifier: (public class Order)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> classDeclaration = classDeclaration.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+&lt;span style="color:#75715e">// Inherit BaseEntity&amp;lt;T&amp;gt; and implement IHaveIdentity: (public class Order : BaseEntity&amp;lt;T&amp;gt;, IHaveIdentity)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> classDeclaration = classDeclaration.AddBaseListTypes(
+SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(&lt;span style="color:#e6db74">&amp;#34;BaseEntity&amp;lt;Order&amp;gt;&amp;#34;&lt;/span>)),
+SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(&lt;span style="color:#e6db74">&amp;#34;IHaveIdentity&amp;#34;&lt;/span>)));
+&lt;span style="color:#75715e">// Create a string variable: (bool canceled;)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName(&lt;span style="color:#e6db74">&amp;#34;bool&amp;#34;&lt;/span>))
+.AddVariables(SyntaxFactory.VariableDeclarator(&lt;span style="color:#e6db74">&amp;#34;canceled&amp;#34;&lt;/span>));
+&lt;span style="color:#75715e">// Create a field declaration: (private bool canceled;)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> fieldDeclaration = SyntaxFactory.FieldDeclaration(variableDeclaration)
+.AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+&lt;span style="color:#75715e">// Create a Property: (public int Quantity { get; set; })
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> propertyDeclaration = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(&lt;span style="color:#e6db74">&amp;#34;int&amp;#34;&lt;/span>), &lt;span style="color:#e6db74">&amp;#34;Quantity&amp;#34;&lt;/span>)
+.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+.AddAccessorListAccessors(
+SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
+SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
+&lt;span style="color:#75715e">// Create a stament with the body of a method.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> syntax = SyntaxFactory.ParseStatement(&lt;span style="color:#e6db74">&amp;#34;canceled = true;&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Create a method
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> methodDeclaration = SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName(&lt;span style="color:#e6db74">&amp;#34;void&amp;#34;&lt;/span>), &lt;span style="color:#e6db74">&amp;#34;MarkAsCanceled&amp;#34;&lt;/span>)
+.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+.WithBody(SyntaxFactory.Block(syntax));
+&lt;span style="color:#75715e">// Add the field, the property and method to the class.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> classDeclaration = classDeclaration.AddMembers(fieldDeclaration, propertyDeclaration, methodDeclaration);
+&lt;span style="color:#75715e">// Add the class to the namespace.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> @namespace = @namespace.AddMembers(classDeclaration);
+&lt;span style="color:#75715e">// Normalize and get code as string.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> code = @namespace
+.NormalizeWhitespace()
+.ToFullString();
+&lt;span style="color:#75715e">// Output new code to the console.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(code);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-run-the-application">4. Run the application&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> dotnet restore
+dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The output should read:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> CodeGenerationSample
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Order&lt;/span> : BaseEntity&amp;lt;Order&amp;gt;, IHaveIdentity
+{
+&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">bool&lt;/span> canceled;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> Quantity
+{
+&lt;span style="color:#66d9ef">get&lt;/span>;
+&lt;span style="color:#66d9ef">set&lt;/span>;
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> MarkAsCanceled()
+{
+canceled = &lt;span style="color:#66d9ef">true&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get a copy of the code here: &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/roslyn.create.class">https://github.com/cmendible/dotnetcore.samples/tree/main/roslyn.create.class&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>.NET Core, Roslyn and Code Generation</title><link>https://carlos.mendible.com/2017/01/29/net-core-roslyn-and-code-generation/</link><pubDate>Sun, 29 Jan 2017 20:31:41 +0000</pubDate><guid>https://carlos.mendible.com/2017/01/29/net-core-roslyn-and-code-generation/</guid><description>&lt;p>For ages I&amp;rsquo;ve been using T4 templates as main tool for code generation and scaffolding, but now that I&amp;rsquo;m an absolute fan of Visual Studio Code and .Net Core I need to explore other options such as Yeoman, Scripty and Roslyn. This post is just the result of my first and simplest experiment with &lt;strong>.Net Core, Roslyn and Code Generation&lt;/strong>.&lt;/p>
+&lt;p>In the following sample we will take a class and replace the namespace with another. My intention is just to show you the tip of the iceberg of what you can accomplish with these tools!&lt;/p>
+&lt;h2 id="1-create-the-application">1. Create the application&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> md roslyn.codegeneration
+cd roslyn.codegeneration
+dotnet new
+dotnet restore
+code .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-replace-the-contents-of-projectjson">2. Replace the contents of project.json&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents on &lt;strong>project.json&lt;/strong> file in order to include the references to both: &lt;strong>Microsoft.CodeAnalysis.CSharp&lt;/strong> and &lt;strong>Microsoft.CodeAnalysis.Compilers&lt;/strong>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0-*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;buildOptions&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;debugType&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;portable&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;emitEntryPoint&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.CodeAnalysis.CSharp&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0-rc2&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.CodeAnalysis.Compilers&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0-rc2&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;frameworks&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;netcoreapp1.1&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.NETCore.App&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;platform&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.1.0&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;imports&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dnxcore50&amp;#34;&lt;/span>
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-replace-the-contents-of-programcs">3. Replace the contents of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>The &lt;strong>ChangeNamespaceAsync&lt;/strong> method is where the magic occurs. It takes the code in a string, parses it, replaces the namespace and finally writes the class to the console and a file.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.CodeAnalysis;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.CodeAnalysis.CSharp;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.CodeAnalysis.CSharp.Syntax;
+&lt;span style="color:#66d9ef">namespace&lt;/span> Roslyn.CodeGeneration
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// We will change the namespace of this sample code.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> code =
+&lt;span style="color:#e6db74">@&amp;#34; using System;
+&lt;/span>&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74"> namespace OldNamespace
+&lt;/span>&lt;span style="color:#e6db74"> {
+&lt;/span>&lt;span style="color:#e6db74"> public class Person
+&lt;/span>&lt;span style="color:#e6db74"> {
+&lt;/span>&lt;span style="color:#e6db74"> public string Name { get; set; }
+&lt;/span>&lt;span style="color:#e6db74"> public int Age {get; set; }
+&lt;/span>&lt;span style="color:#e6db74"> }
+&lt;/span>&lt;span style="color:#e6db74"> }&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Use Task to call ChangeNamespaceAsync
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Task.Run(&lt;span style="color:#66d9ef">async&lt;/span> () =&amp;gt;
+{
+&lt;span style="color:#66d9ef">await&lt;/span> ChangeNamespaceAsync(code, &lt;span style="color:#e6db74">&amp;#34;NamespaceChangedUsingRoslyn&amp;#34;&lt;/span>);
+})
+.GetAwaiter()
+.GetResult();
+&lt;span style="color:#75715e">// Wait to exit.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.Read();
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Changes the namespace for the given code.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task ChangeNamespaceAsync(&lt;span style="color:#66d9ef">string&lt;/span> code, &lt;span style="color:#66d9ef">string&lt;/span> @namespace)
+{
+&lt;span style="color:#75715e">// Parse the code into a SyntaxTree.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> tree = CSharpSyntaxTree.ParseText(code);
+&lt;span style="color:#75715e">// Get the root CompilationUnitSyntax.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> root = &lt;span style="color:#66d9ef">await&lt;/span> tree.GetRootAsync().ConfigureAwait(&lt;span style="color:#66d9ef">false&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> CompilationUnitSyntax;
+&lt;span style="color:#75715e">// Get the namespace declaration.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> oldNamespace = root.Members.Single(m =&amp;gt; m &lt;span style="color:#66d9ef">is&lt;/span> NamespaceDeclarationSyntax) &lt;span style="color:#66d9ef">as&lt;/span> NamespaceDeclarationSyntax;
+&lt;span style="color:#75715e">// Get all class declarations inside the namespace.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> classDeclarations = oldNamespace.Members.Where(m =&amp;gt; m &lt;span style="color:#66d9ef">is&lt;/span> ClassDeclarationSyntax);
+&lt;span style="color:#75715e">// Create a new namespace declaration.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> newNamespace = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(@namespace)).NormalizeWhitespace();
+&lt;span style="color:#75715e">// Add the class declarations to the new namespace.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> newNamespace = newNamespace.AddMembers(classDeclarations.Cast&amp;lt;MemberDeclarationSyntax&amp;gt;().ToArray());
+&lt;span style="color:#75715e">// Replace the oldNamespace with the newNamespace and normailize.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> root = root.ReplaceNode(oldNamespace, newNamespace).NormalizeWhitespace();
+&lt;span style="color:#66d9ef">string&lt;/span> newCode = root.ToFullString();
+&lt;span style="color:#75715e">// Write the new file.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> File.WriteAllText(&lt;span style="color:#e6db74">&amp;#34;Person.cs&amp;#34;&lt;/span>, root.ToFullString());
+&lt;span style="color:#75715e">// Output new code to the console.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(newCode);
+Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;Namespace replaced...&amp;#34;&lt;/span>);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-run-the-application">4. Run the application&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The output should read:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">namespace&lt;/span> NamespaceChangedUsingRoslyn
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Person&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Name
+{
+&lt;span style="color:#66d9ef">get&lt;/span>;
+&lt;span style="color:#66d9ef">set&lt;/span>;
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> Age
+{
+&lt;span style="color:#66d9ef">get&lt;/span>;
+&lt;span style="color:#66d9ef">set&lt;/span>;
+}
+}
+}
+Namespace replaced...
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get a copy of the code here: &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/roslyn.codegeneration">https://github.com/cmendible/dotnetcore.samples/tree/main/roslyn.codegeneration&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

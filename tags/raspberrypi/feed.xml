@@ -1,0 +1,229 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>RaspberryPi on Code it Yourself...</title><link>https://carlos.mendible.com/tags/raspberrypi/</link><description>Recent content in RaspberryPi on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 01 Sep 2017 09:39:08 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/raspberrypi/feed.xml" rel="self" type="application/rss+xml"/><item><title>Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0</title><link>https://carlos.mendible.com/2017/09/01/toggle-raspberry-pi-gpio-pins-with-asp-net-core-20/</link><pubDate>Fri, 01 Sep 2017 09:39:08 +0000</pubDate><guid>https://carlos.mendible.com/2017/09/01/toggle-raspberry-pi-gpio-pins-with-asp-net-core-20/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to &lt;strong>Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;!-- raw HTML omitted -->.NET Core 2.0 SDK&lt;!-- raw HTML omitted -->&lt;/strong>&lt;/li>
+&lt;li>&lt;strong>A Raspberry Pi 3 Running Raspbian&lt;/strong>&lt;/li>
+&lt;li>Install linux dependencies: sudo apt-get install curl libunwind8 gettext&lt;/li>
+&lt;/ul>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aspnet.webapi.rpi.gpio
+cd aspnet.webapi.rpi.gpio
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-an-aspnet-core-web-api-project">2. Create an ASP.NET Core Web API project&lt;/h2>
+&lt;hr>
+&lt;p>Create an ASP.NET Core Web API project with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new webapi
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-a-reference-to-unosquareraspberryio">3. Add a reference to Unosquare.Raspberry.IO&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Unosquare.Raspberry.IO
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now restore the packages:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-blinkycontrollercs">4. Create BlinkyController.cs&lt;/h2>
+&lt;hr>
+&lt;p>In the Controllers folder, create a BlinkyController.cs file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Mvc;
+&lt;span style="color:#66d9ef">using&lt;/span> Unosquare.RaspberryIO;
+&lt;span style="color:#66d9ef">using&lt;/span> Unosquare.RaspberryIO.Gpio;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aspnet.webapi.rpi.gpio.Controllers
+{
+&lt;span style="color:#a6e22e"> [Route(&amp;#34;api/[controller]&lt;/span>&lt;span style="color:#e6db74">&amp;#34;)]
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">BlinkyController&lt;/span> : Controller
+{
+&lt;span style="color:#a6e22e"> [HttpPost]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Post([FromBody]&lt;span style="color:#66d9ef">bool&lt;/span> isOn)
+{
+&lt;span style="color:#75715e">// Control GPIO pin 5
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> pin = Pi.Gpio.Pin05;
+pin.PinMode = GpioPinDriveMode.Output;
+pin.Write(!isOn);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: The sample toggles GPIO pin 5.&lt;/p>
+&lt;h2 id="5-publish-the-application">5. Publish the application&lt;/h2>
+&lt;hr>
+&lt;p>Publish the application with the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet publish -c Release -r linux-arm
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-copy-the-files-to-your-raspberry">6. Copy the files to your Raspberry&lt;/h2>
+&lt;hr>
+&lt;p>Copy the contents of the folder &lt;strong>\aspnet.on.rpi\bin\Release\netcoreapp2.0\linux-arm\publish&lt;/strong> to the Raspberry (i.e. /home/pi/publish)&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> For this task I connect to the Raspberry via SFTP using &lt;!-- raw HTML omitted -->WinSCP&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="7-run-the-application">7. Run the application&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using ssh and then run the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">sudo -i
+cd /home/pi/publish
+chmod +x aspnet.webapi.rpi.gpio
+export ASPNETCORE_URLS=&lt;span style="color:#e6db74">&amp;#34;http://*:5000&amp;#34;&lt;/span>
+./aspnet.webapi.rpi.gpio
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: Unosquare.Raspberry.IO must be run with elevated privileges.&lt;/p>
+&lt;h2 id="8-call-the-web-api-to-toggle-the-gpio-pin">8. Call the Web API to Toggle the GPIO pin&lt;/h2>
+&lt;hr>
+&lt;p>Post data to the Web API to toggle the GPIO pin.&lt;/p>
+&lt;p>To turn it on:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">curl -H &lt;span style="color:#e6db74">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> -d &lt;span style="color:#e6db74">&amp;#39;true&amp;#39;&lt;/span> http&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//&lt;span style="color:#66d9ef">[ip of your raspberry]&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>5000/api/blinky
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To Turn it off:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">curl -H &lt;span style="color:#e6db74">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> -d &lt;span style="color:#e6db74">&amp;#39;false&amp;#39;&lt;/span> http&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//&lt;span style="color:#66d9ef">[ip of your raspberry]&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>5000/api/blinky
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get the code &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>dotnet new templates for AWS Lambda and Raspberry Pi</title><link>https://carlos.mendible.com/2017/07/18/dotnet-new-templates-for-aws-lambda-and-raspberry-pi/</link><pubDate>Tue, 18 Jul 2017 08:56:48 +0000</pubDate><guid>https://carlos.mendible.com/2017/07/18/dotnet-new-templates-for-aws-lambda-and-raspberry-pi/</guid><description>&lt;p>After reading the following articles:&lt;/p>
+&lt;ul>
+&lt;li>&lt;!-- raw HTML omitted -->How to create your own templates for dotnet new&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;!-- raw HTML omitted -->Custom Project Templates Using dotnet new&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;/ul>
+&lt;p>and having a twitter conversation with &lt;!-- raw HTML omitted -->Sayed-Ibrahim-Hashimi&lt;!-- raw HTML omitted --> I decided it was a nice idea to create some templates based on the code of some of my posts.&lt;/p>
+&lt;p>So here are the results:&lt;/p>
+&lt;h2 id="1-create-a-an-aspnet-core-web-api-project-ready-for-aws-lambda">1. Create a an ASP.NET Core Web API project ready for AWS lambda&lt;/h2>
+&lt;hr>
+&lt;ul>
+&lt;li>&lt;strong>Name:&lt;/strong> CodeItYourself.WebAPI.AWS.Lambda&lt;/li>
+&lt;li>&lt;strong>Type&lt;/strong>: Web/API&lt;/li>
+&lt;li>&lt;strong>Installation:&lt;/strong> &lt;!-- raw HTML omitted -->dotnet new &amp;ndash;install CodeItYourself.WebAPI.AWS.Lambda::*&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;strong>Usage:&lt;/strong> &lt;!-- raw HTML omitted -->dotnet new webapilambda&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;strong>Related post:&lt;/strong> &lt;a href="https://carlos.mendible.com/2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/">Deploy your ASP.NET Core Web API to AWS Lambda&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="2-create-an-aspnet-core-web-project-for-raspberrypi">2. Create an ASP.NET Core Web project for RaspberryPi&lt;/h2>
+&lt;hr>
+&lt;ul>
+&lt;li>&lt;strong>Name:&lt;/strong> CodeItYourself.ASPNET.Raspberry&lt;/li>
+&lt;li>&lt;strong>Type&lt;/strong>: Web&lt;/li>
+&lt;li>&lt;strong>Installation:&lt;/strong> &lt;!-- raw HTML omitted -->dotnet new &amp;ndash;install CodeItYourself.ASPNET.Raspberry::*&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;strong>Usage:&lt;/strong> &lt;!-- raw HTML omitted -->dotnet new webrpi&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;li>&lt;strong>Related post:&lt;/strong> &lt;a href="https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/">Step by step: Running ASP.NET Core on Raspberry Pi&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>You can clone the code for the templates &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Raspberry Pi: Run ASP.NET Core on Startup</title><link>https://carlos.mendible.com/2017/03/26/raspberry-pi-run-aspnet-core-on-startup/</link><pubDate>Sun, 26 Mar 2017 12:37:16 +0000</pubDate><guid>https://carlos.mendible.com/2017/03/26/raspberry-pi-run-aspnet-core-on-startup/</guid><description>&lt;p>Last week I wrote: &lt;strong>&lt;a href="https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/">Step by step: Running ASP.NET Core on Raspberry Pi&lt;/a>&lt;/strong> and didn&amp;rsquo;t have the time to write about running the application on startup.&lt;/p>
+&lt;p>After browsing for a while I found this great post: &lt;a href="https://microsoft.hackster.io/en-US/falafel-software/windows-iot-core-running-a-powershell-script-on-startup-0aa534">Windows IoT Core: Running a PowerShell Script on Startup&lt;/a> which showed me the way!&lt;/p>
+&lt;p>As a prerequisite read and run the sample provided here: &lt;strong>&lt;a href="https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/">Step by step: Running ASP.NET Core on Raspberry Pi&lt;/a>&lt;/strong>&lt;/p>
+&lt;p>Let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-startupps1">1. Create startup.ps1&lt;/h2>
+&lt;hr>
+&lt;p>Create &lt;strong>startup.ps1&lt;/strong> with the following contents&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Set-Location C:\publish\
+.\aspnet.on.rpi.exe
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-startupbat">2. Create startup.bat&lt;/h2>
+&lt;hr>
+&lt;p>Create &lt;strong>startup.bat&lt;/strong> with the following contents&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">powershell -command &lt;span style="color:#e6db74">&amp;#34;C:\startup.ps1&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-copy-the-files-to-your-raspberry">3. Copy the files to your Raspberry&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using powershell, start the ftp server&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Enter-PSSession -ComputerName &amp;lt;Raspberry IP&amp;gt; -Credential &amp;lt;Raspberry IP&amp;gt;\Administrator
+start C:\Windows\System32\ftpd.exe
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open the &lt;strong>File Explorer&lt;/strong> ftp://&amp;lt;TARGET_DEVICE&amp;gt; and copy both &lt;strong>startup.ps1&lt;/strong> and &lt;strong>startup.cmd&lt;/strong> to your Raspberry&lt;/p>
+&lt;h2 id="4-schedule-the-command-to-run-on-startup">4. Schedule the command to run on Startup&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using powershell and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Enter-PSSession -ComputerName &amp;lt;Raspberry IP&amp;gt; -Credential &amp;lt;Raspberry IP&amp;gt;\Administrator
+schtasks /create /tn &lt;span style="color:#e6db74">&amp;#34;Startup Web&amp;#34;&lt;/span> /tr c:\Startup.bat /sc onstart /ru SYSTEM
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-restart-and-verify">5. Restart and verify&lt;/h2>
+&lt;hr>
+&lt;p>Restart your Raspberry and after a bit your ASP.NET Core app should be up and running.&lt;/p>
+&lt;p>Get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi.startup">https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi.startup&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Step by step: Running ASP.NET Core on Raspberry Pi</title><link>https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/</link><pubDate>Tue, 21 Mar 2017 11:24:05 +0000</pubDate><guid>https://carlos.mendible.com/2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/</guid><description>&lt;p>After reading &lt;!-- raw HTML omitted -->.NET Core on Raspberry Pi&lt;!-- raw HTML omitted --> and successfully running a console application on &lt;strong>Windows 10 IoT Core&lt;/strong> on my &lt;strong>Raspberry Pi 3&lt;/strong> I decided to write: &lt;strong>Step by step: Running ASP.NET Core on Raspberry Pi&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;!-- raw HTML omitted -->Windows 10 IoT Core&lt;!-- raw HTML omitted -->&lt;/strong> I&amp;rsquo;m running Insider Preview v.10.0.15058.0&lt;/li>
+&lt;li>&lt;strong>&lt;!-- raw HTML omitted -->.NET Core 2.0 SDK&lt;!-- raw HTML omitted -->&lt;/strong>&lt;/li>
+&lt;/ul>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aspnet.on.rpi
+cd aspnet.on.rpi
+code .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-globaljson-file">2. Create a global.json file&lt;/h2>
+&lt;hr>
+&lt;p>To specify the correct sdk create a &lt;strong>global.json&lt;/strong> with the following contents&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;sdk&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0-preview1-005448&amp;#34;&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-the-aspnet-core-project">3. Create the ASP.NET Core project&lt;/h2>
+&lt;hr>
+&lt;p>Create the ASP.NET Core project with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new mvc
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-modify-the-project-file">4. Modify the project file&lt;/h2>
+&lt;hr>
+&lt;p>Modify the &lt;strong>aspnet.on.rpi.csproj&lt;/strong> to add the correct &lt;strong>OutputType&lt;/strong>, &lt;strong>TargetFramework&lt;/strong>, &lt;strong>RuntimeFrameworkVersion&lt;/strong>and &lt;strong>RuntimeIdentifiers&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;Project&lt;/span> &lt;span style="color:#a6e22e">Sdk=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.NET.Sdk.Web&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;OutputType&amp;gt;&lt;/span>Exe&lt;span style="color:#f92672">&amp;lt;/OutputType&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;TargetFramework&amp;gt;&lt;/span>netcoreapp2.0&lt;span style="color:#f92672">&amp;lt;/TargetFramework&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;RuntimeFrameworkVersion&amp;gt;&lt;/span>2.0.0-beta-001776-00&lt;span style="color:#f92672">&amp;lt;/RuntimeFrameworkVersion&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;RuntimeIdentifiers&amp;gt;&lt;/span>win8-arm&lt;span style="color:#f92672">&amp;lt;/RuntimeIdentifiers&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.3&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Mvc&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.2&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.StaticFiles&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Logging.Debug&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.VisualStudio.Web.BrowserLink&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Libuv&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;1.10.0-preview1-22036&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Project&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-add-a-nugetconfig-file-and-restore-packages">5. Add a Nuget.config file and restore packages&lt;/h2>
+&lt;p>Create a &lt;strong>Nuget.config&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#75715e">&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;utf-8&amp;#34;?&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;configuration&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;packageSources&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;add&lt;/span> &lt;span style="color:#a6e22e">key=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;dotnet-core&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">value=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;https://dotnet.myget.org/F/dotnet-core/api/v3/index.json&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/packageSources&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/configuration&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now restore the packages:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-modify-programcs">6. Modify Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.IO;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aspnet.on.rpi
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> host = &lt;span style="color:#66d9ef">new&lt;/span> WebHostBuilder()
+.UseKestrel()
+.UseUrls(&lt;span style="color:#e6db74">&amp;#34;http://*:5000&amp;#34;&lt;/span>) &lt;span style="color:#75715e">// Using * to bind to all network interfaces
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> .UseContentRoot(Directory.GetCurrentDirectory())
+.UseIISIntegration()
+.UseStartup&amp;lt;Startup&amp;gt;()
+.Build();
+host.Run();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-publish-the-application">7. Publish the application&lt;/h2>
+&lt;hr>
+&lt;p>Publish the application with the following commands&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet publish -r win8-arm
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;!-- raw HTML omitted -->We need to publish for win7-arm as a workaround to copy the correct &lt;strong>libuv.dll&lt;/strong> in the next step.&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;ol start="8">
+&lt;li>Copy libuv.dll&lt;/li>
+&lt;/ol>
+&lt;hr>
+&lt;p>&lt;!-- raw HTML omitted -->Copy &lt;strong>libuv.dll&lt;/strong> from &lt;strong>\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win7-arm\publish&lt;/strong> to &lt;strong>\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win8-arm\publish&lt;/strong>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>This step is no longer needed cause we added &lt;strong>libuv&lt;/strong> as a dependency in the &lt;strong>csproj&lt;/strong> file&lt;/p>
+&lt;h2 id="9-copy-the-files-to-your-raspberry">9. Copy the files to your Raspberry&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using PowerShell, start the ftp server and open port 5000 on the Raspberry&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">Enter-PSSession -ComputerName &amp;lt;Raspberry IP&amp;gt; -Credential &amp;lt;Raspberry IP&amp;gt;\Administrator
+start C:\Windows\System32\ftpd.exe
+netsh advfirewall firewall add rule name=&lt;span style="color:#e6db74">&amp;#34;Open Port 5000&amp;#34;&lt;/span> dir=&lt;span style="color:#66d9ef">in&lt;/span> action=allow protocol=TCP localport=5000
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open the &lt;strong>File Explorer&lt;/strong> ftp://&amp;lt;TARGET_DEVICE&amp;gt; and copy the contents of &lt;strong>\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win8-arm\publish&lt;/strong> to a folder on your Raspberry (i.e. c:\publish).&lt;/p>
+&lt;h2 id="10-run-the-application">10. Run the application&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using PowerShell and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd c:\publish\
+.\aspnet.on.rpi.exe
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should be good to go and be able to browse on port 5000 of you RPi.&lt;/p>
+&lt;p>Get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi">https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.on.rpi&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

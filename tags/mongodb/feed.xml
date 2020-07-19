@@ -1,0 +1,122 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>mongodb on Code it Yourself...</title><link>https://carlos.mendible.com/tags/mongodb/</link><description>Recent content in mongodb on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 09 Feb 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/mongodb/feed.xml" rel="self" type="application/rss+xml"/><item><title>MongoDB Enterprise Operator: Deploying MongoDB in AKS</title><link>https://carlos.mendible.com/2020/02/09/mongodb-enterprise-operator-deploying-mongodb-in-aks/</link><pubDate>Sun, 09 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/02/09/mongodb-enterprise-operator-deploying-mongodb-in-aks/</guid><description>&lt;p>a couple of weeks ago I was trying to deploy MongoDB in AKS using the &lt;a href="https://docs.mongodb.com/kubernetes-operator/master/tutorial/install-k8s-operator/">MongoDB Enterprise Operator&lt;/a> and had trouble finding a simple tutorial to make the thing work. This post intends to fill that gap with a straight to the point approach.&lt;/p>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;p>Be sure to deploy AKS with a set of nodes with at least 8GB of RAM. I used &lt;strong>Standard_D3_v2&lt;/strong>&lt;/p>
+&lt;h2 id="first-clone-the-mongodb-enterprise-kubernetes-repo">First clone the MongoDB Enterprise Kubernetes repo&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">git clone https://github.com/mongodb/mongodb-enterprise-kubernetes.git
+cd mongodb-enterprise-kubernetes
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="create-the-mongodb-namespace-inside-your-cluster">Create the MongoDB namespace inside your cluster&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl create namespace mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="deploy-the-custom-resource-definitions">Deploy the Custom Resource Definitions&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f crds.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="deploy-the-mongodb-enterprise-operator">Deploy the MongoDB Enterprise Operator&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f mongodb-enterprise.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="create-a-secret-for-the-ops-manager">Create a secret for the Ops Manager&lt;/h2>
+&lt;p>As part of the installation you&amp;rsquo;ll have to deploy the Ops Manager to the cluster. Be sure to set a complex password otherwise the Ops Manager wont start.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl create secret generic ops-manager-admin-secret &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>Username&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Username&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>Password&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Password&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>FirstName&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Name&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>LastName&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Last Name&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
+-n mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="deploy-the-ops-manager">Deploy the Ops Manager&lt;/h2>
+&lt;p>Create &lt;strong>ops-manager.yaml&lt;/strong> with the following contents (Note that we are using 1 replica):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: mongodb.com/v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: MongoDBOpsManager
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: ops-manager
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#75715e"># the number of Ops Manager instances to run. Set to value bigger&lt;/span>
+&lt;span style="color:#75715e"># than 1 to get high availability and upgrades without downtime&lt;/span>
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#75715e"># the version of Ops Manager distro to use&lt;/span>
+&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.4&lt;/span>
+&lt;span style="color:#75715e"># the name of the secret containing admin user credentials.&lt;/span>
+&lt;span style="color:#75715e"># Either remove the secret or change the password using Ops Manager UI after the Ops Manager&lt;/span>
+&lt;span style="color:#75715e"># resource is created!&lt;/span>
+&lt;span style="color:#66d9ef">adminCredentials&lt;/span>: ops-manager-admin-secret
+&lt;span style="color:#75715e"># the Ops Manager configuration. All the values must be of type string&lt;/span>
+&lt;span style="color:#66d9ef">configuration&lt;/span>:
+&lt;span style="color:#66d9ef">mms.fromEmailAddr&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;admin@thecompany.com&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># the application database backing Ops Manager. Replica Set is the only supported type&lt;/span>
+&lt;span style="color:#75715e"># Application database has the SCRAM-SHA authentication mode always enabled&lt;/span>
+&lt;span style="color:#66d9ef">applicationDatabase&lt;/span>:
+&lt;span style="color:#66d9ef">members&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
+&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.0&lt;/span>
+&lt;span style="color:#66d9ef">persistent&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#66d9ef">podSpec&lt;/span>:
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.25&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the Ops Manager:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f .&lt;span style="color:#ae81ff">\o&lt;/span>ps-manager.yaml -n mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="wait-until-the-ops-manager-is-ready">Wait until the Ops Manager is ready&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get om -n mongodb -o yaml -w
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="port-forward-so-you-can-access-ops-manager-from-your-pc">Port Forward so you can access Ops Manager from your PC&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl port-forward pods/ops-manager-0 8080:8080 -n mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="setup-de-ops-manager">Setup de Ops Manager&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Login into the Ops Manager (http://localhost:8080) using the same user and password you deployed as a secret.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a href="http://docs.opsmanager.mongodb.com/current/tutorial/manage-organizations/">Create an Organization&lt;/a>. Copy the &lt;strong>Organnization Id&lt;/strong> so you can use it later.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a href="https://docs.opsmanager.mongodb.com/rapid/tutorial/configure-public-api-access/#configure-public-api-access">Create Public &amp;amp; Private Key for the Organization&lt;/a>. Copy both keys so you can use them later.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a href="https://docs.opsmanager.mongodb.com/rapid/tutorial/configure-public-api-access/#create-org-app-api-key">White List the Operator IPs&lt;/a>. To get the IPs run:&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get po --selector&lt;span style="color:#f92672">=&lt;/span>app&lt;span style="color:#f92672">=&lt;/span>mongodb-enterprise-operator -n mongodb -o jsonpath&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;{.items[*].status.podIP}&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="create-a-secret-that-will-be-used-by-the-operator-to-connect-with-the-ops-manager">Create a secret that will be used by the operator to connect with the ops manager&lt;/h2>
+&lt;p>Use the Public and Private keys copied in previous steps to run tyhe following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl -n mongodb &lt;span style="color:#e6db74">`&lt;/span>
+create secret generic my-credentials &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;user=&amp;lt;private key&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
+--from-literal&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;publicApiKey=&amp;lt;public key&amp;gt;&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="create-a-project">Create a project&lt;/h2>
+&lt;p>Create &lt;strong>project.yaml&lt;/strong> with the following contents and be sure to replace the &lt;strong>Organization Id&lt;/strong> you copied in previous steps:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: ConfigMap
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: mongodb-test
+&lt;span style="color:#66d9ef">data&lt;/span>:
+&lt;span style="color:#66d9ef">projectName&lt;/span>: mongodb-test
+&lt;span style="color:#66d9ef">baseUrl&lt;/span>: http://ops-manager-svc.mongodb.svc.cluster.local:&lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;span style="color:#66d9ef">orgId&lt;/span>: &amp;lt;Organization Id&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the project ConfigMap definition:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply .&lt;span style="color:#ae81ff">\p&lt;/span>roject.yaml -n mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;h2 id="create-a-standalone-mongodb-instance">Create a standalone MongoDB instance&lt;/h2>
+&lt;p>Create &lt;strong>standalone.yaml&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: mongodb.com/v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: MongoDB
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: my-standalone
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.1&lt;/span>
+&lt;span style="color:#66d9ef">type&lt;/span>: Standalone
+&lt;span style="color:#66d9ef">opsManager&lt;/span>:
+&lt;span style="color:#66d9ef">configMapRef&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: mongodb-test
+&lt;span style="color:#66d9ef">credentials&lt;/span>: my-credentials
+&lt;span style="color:#75715e"># This flag allows the creation of pods without persistent volumes. This is for&lt;/span>
+&lt;span style="color:#75715e"># testing only, and must not be used in production. &amp;#39;false&amp;#39; will disable&lt;/span>
+&lt;span style="color:#75715e"># Persistent Volume Claims. The default is &amp;#39;true&amp;#39;&lt;/span>
+&lt;span style="color:#66d9ef">persistent&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the standalone MongoDB:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f .&lt;span style="color:#ae81ff">\s&lt;/span>tandalone.yaml -n mongodb
+&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
+&lt;p>Enjoy! You have MongoDB up and running!&lt;/p>
+&lt;p>To learn more about the MongoDB Enterprise Operator please check &lt;a href="https://docs.mongodb.com/kubernetes-operator/master/tutorial/install-k8s-operator/">here&lt;/a>.&lt;/p></description></item></channel></rss>

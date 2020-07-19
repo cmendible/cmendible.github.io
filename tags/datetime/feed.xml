@@ -1,0 +1,96 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>DateTime on Code it Yourself...</title><link>https://carlos.mendible.com/tags/datetime/</link><description>Recent content in DateTime on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Tue, 11 Oct 2016 07:37:35 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/datetime/feed.xml" rel="self" type="application/rss+xml"/><item><title>Deal with time dependencies in Tests</title><link>https://carlos.mendible.com/2016/10/11/deal-with-time-dependencies-in-tests/</link><pubDate>Tue, 11 Oct 2016 07:37:35 +0000</pubDate><guid>https://carlos.mendible.com/2016/10/11/deal-with-time-dependencies-in-tests/</guid><description>&lt;p>Las week we discovered that some of our test would&amp;quot;randomly&amp;rdquo; fail depending of the time of the day. After investigating the issue we found that the culprit was that the service being tested was taking decisions based on the current system time (DateTime.Now) leading to different outcomes through the day. So how &lt;strong>do we deal with time dependencies in tests&lt;/strong>?&lt;/p>
+&lt;p>My first thought was creating an IClock interface and injecting an implementation to the service. It seemed like an overkill and then I googled enough to find a short and very simple solution in Ayende&amp;rsquo;s 2008 article: &lt;!-- raw HTML omitted -->Dealing with time in tests&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>I&amp;rsquo;ll use .NET Core and xUnit to illustrate the problem and the proposed solution.&lt;/p>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-test-project">1. Create a test project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run the following commands&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir remove.datetime.dependency.test
+cd remove.datetime.dependency.test
+dotnet new -t xunittest
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-systemdatetime-helper-class">2. Create a SystemDateTime helper class&lt;/h2>
+&lt;hr>
+&lt;p>This is the helper class a proposed by Ayende&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> MyServices
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Helper class that will return DateTime.Now, but can be changed to deal with tests.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// https://ayende.com/blog/3408/dealing-with-time-in-tests
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">SystemDateTime&lt;/span>
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Gets a function that when evaluated returns a local date and time.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;A function that when evaluated returns a local date and time.&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> Func&amp;lt;DateTime&amp;gt; Now = () =&amp;gt; DateTime.Now;
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-a-service-with-a-dependency-on-time">3. Create a Service with a dependency on time&lt;/h2>
+&lt;p>The service will have two methods: one will use System.DateTime.Now and one will use the helper created on step 2&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> MyServices
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// A time dependent on DateTime.Now
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">TimeDependentService&lt;/span>
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Tells if it&amp;#39;s morning.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;true if it&amp;#39;s before 12&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">bool&lt;/span> OldIsMorning()
+{
+&lt;span style="color:#66d9ef">return&lt;/span> DateTime.Now.Hour &amp;lt; &lt;span style="color:#ae81ff">12&lt;/span>;
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Tells if it&amp;#39;s morning using the helper by Ayende.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;true if it&amp;#39;s before 12&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">bool&lt;/span> IsMorning()
+{
+&lt;span style="color:#66d9ef">return&lt;/span> SystemDateTime.Now().Hour &amp;lt; &lt;span style="color:#ae81ff">12&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-the-tests">4. Create the tests&lt;/h2>
+&lt;hr>
+&lt;p>Replace the content of Tests.cs with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> Tests
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> MyServices;
+&lt;span style="color:#66d9ef">using&lt;/span> Xunit;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Tests&lt;/span>
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// If this test is run after 12PM it will fail cause of the dependency on the system time.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e"> [Fact]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Will_Fail_After_Noon()
+{
+&lt;span style="color:#66d9ef">var&lt;/span> svc = &lt;span style="color:#66d9ef">new&lt;/span> TimeDependentService();
+Assert.True(svc.OldIsMorning());
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// This test will run OK no matter the systems time, cause we are using the Ayende
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// approach to tests with time dependencies.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e"> [Fact]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Will_Run_OK_No_Matter_The_Real_Time()
+{
+&lt;span style="color:#75715e">// With Ayende&amp;#39;s helper we can for the time to 11 AM
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> SystemDateTime.Now = () =&amp;gt; &lt;span style="color:#66d9ef">new&lt;/span> DateTime(&lt;span style="color:#ae81ff">2016&lt;/span>, &lt;span style="color:#ae81ff">10&lt;/span>, &lt;span style="color:#ae81ff">10&lt;/span>, &lt;span style="color:#ae81ff">11&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> svc = &lt;span style="color:#66d9ef">new&lt;/span> TimeDependentService();
+Assert.True(svc.IsMorning());
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-run-the-tests">5. Run the tests&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet test
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>No matter the system time the test: &lt;strong>Will_Run_OK_No_Matter_The_Real_Time&lt;/strong> will always pass, while the &lt;strong>Will_Fail_After_Noon&lt;/strong> test will fail any time after 12 PM.&lt;/p>
+&lt;p>You can get the code here: &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/remove.datetime.dependency.test">https://github.com/cmendible/dotnetcore.samples/tree/main/remove.datetime.dependency.test&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

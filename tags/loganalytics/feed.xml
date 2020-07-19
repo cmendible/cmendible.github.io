@@ -1,0 +1,170 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LogAnalytics on Code it Yourself...</title><link>https://carlos.mendible.com/tags/loganalytics/</link><description>Recent content in LogAnalytics on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 16 May 2019 15:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/loganalytics/feed.xml" rel="self" type="application/rss+xml"/><item><title>ARM: Enable Container Monitoring Solution on an existing Log Analytics Workspace</title><link>https://carlos.mendible.com/2019/05/16/arm-enable-container-solution-on-an-existing-loganalytics-workspace/</link><pubDate>Thu, 16 May 2019 15:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/05/16/arm-enable-container-solution-on-an-existing-loganalytics-workspace/</guid><description>&lt;p>Recently I had to update a bunch of &lt;a href="https://www.google.com/url?sa=t&amp;amp;rct=j&amp;amp;q=&amp;amp;esrc=s&amp;amp;source=web&amp;amp;cd=1&amp;amp;cad=rja&amp;amp;uact=8&amp;amp;ved=2ahUKEwiFrof58qDiAhXqyIUKHWPuBaIQFjAAegQIARAB&amp;amp;url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fazure%2Fazure-monitor%2Flearn%2Fquick-create-workspace&amp;amp;usg=AOvVaw3DvKwidPs8__aX0fQ0vjQf">Log Analytics Workspaces&lt;/a> resources to enable the &lt;a href="https://docs.microsoft.com/en-us/azure/azure-monitor/insights/containers">Container Monitoring Solution&lt;/a>. So I came up with this ARM Template that I want to share with you:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;$schema&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;contentVersion&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;parameters&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;LogAnalyticsWorkspaceName&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;string&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;metadata&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;description&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Log Analytics Workspace name&amp;#34;&lt;/span>
+}
+}
+},
+&lt;span style="color:#f92672">&amp;#34;variables&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;workspaceResourceId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[resourceId(&amp;#39;Microsoft.OperationalInsights/workspaces/&amp;#39;, parameters(&amp;#39;LogAnalyticsWorkspaceName&amp;#39;))]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;containerSolutionName&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[concat(parameters(&amp;#39;LogAnalyticsWorkspaceName&amp;#39;), &amp;#39;-containers&amp;#39;)]&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;resources&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Microsoft.OperationsManagement/solutions&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;apiVersion&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2015-11-01-preview&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[variables(&amp;#39;containerSolutionName&amp;#39;)]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;location&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[resourceGroup().location]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;plan&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[variables(&amp;#39;containerSolutionName&amp;#39;)]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;product&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[concat(&amp;#39;OMSGallery/&amp;#39;, &amp;#39;ContainerInsights&amp;#39;)]&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;promotionCode&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;publisher&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Microsoft&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;properties&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;workspaceResourceId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[variables(&amp;#39;workspaceResourceId&amp;#39;)]&amp;#34;&lt;/span>
+}
+}
+],
+&lt;span style="color:#f92672">&amp;#34;outputs&amp;#34;&lt;/span>: {}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;!-- raw HTML omitted -->
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Read Azure Service Health Activity Logs with .NET Core</title><link>https://carlos.mendible.com/2017/08/04/read-azure-service-health-activity-logs-with-net-core/</link><pubDate>Fri, 04 Aug 2017 08:50:13 +0000</pubDate><guid>https://carlos.mendible.com/2017/08/04/read-azure-service-health-activity-logs-with-net-core/</guid><description>&lt;p>This week there was a small outage within the Azure Data Lake Store service and as consequence I wondered how could I &lt;strong>Read Azure Service Health Activity Logs with .NET Core.&lt;/strong>&lt;/p>
+&lt;p>Let&amp;rsquo;s go for it:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir azure.health
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd azure.health
+dotnet new console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-the-references-needed-to-query-azure-health-events">3. Add the references needed to query Azure Health Events&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.Azure.Insights -v 0.15.0-preview
+dotnet add package Microsoft.Azure.Management.Fluent
+dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;!-- raw HTML omitted -->Microsoft.Azure.Insights&lt;!-- raw HTML omitted --> will let you query the events and &lt;!-- raw HTML omitted -->Microsoft.Azure.Management.Fluent&lt;!-- raw HTML omitted --> will let the application authenticate to Azure&lt;/p>
+&lt;h2 id="4-replace-the-content-of-programcs">4. Replace the content of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the content of Program.cs with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">/// Query Azure.Health Events using .NET Core
+&lt;/span>&lt;span style="color:#75715e">/// The code was inspired on: How to Retrieve Azure Service Health Event Logs (https://code.msdn.microsoft.com/windowsapps/How-To-Programmatically-49df487d/view/Reviews)
+&lt;/span>&lt;span style="color:#75715e">/// by Matt Loflin
+&lt;/span>&lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">namespace&lt;/span> azure.health
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.Insights;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.Insights.Models;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.Management.Fluent;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.Management.ResourceManager.Fluent;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Rest.Azure.OData;
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// The file with the Azure Service Principal Credentials.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> authFile = &lt;span style="color:#e6db74">&amp;#34;my.azureauth&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Parse the credentials from the file.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> credentials = SdkContext.AzureCredentialsFactory.FromFile(authFile);
+&lt;span style="color:#75715e">// Authenticate with Azure
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> azure = Azure
+.Configure()
+.Authenticate(credentials)
+.WithDefaultSubscription();
+&lt;span style="color:#75715e">// Create an InsightsClient instance.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> InsightsClient(credentials);
+&lt;span style="color:#75715e">// If we subscription is not set the API call will fail.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> client.SubscriptionId = credentials.DefaultSubscriptionId;
+&lt;span style="color:#75715e">// Create the OData filter for a time interval and the Azure.Health Provider.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// Search back one day.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> days = -&lt;span style="color:#ae81ff">1&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> endDateTime = DateTime.Now;
+&lt;span style="color:#66d9ef">var&lt;/span> startDateTime = endDateTime.AddDays(days);
+&lt;span style="color:#66d9ef">string&lt;/span> filterString = FilterString.Generate&amp;lt;EventDataForFilter&amp;gt;(eventData =&amp;gt;
+(eventData.EventTimestamp &amp;gt;= startDateTime) &amp;amp;&amp;amp;
+(eventData.EventTimestamp &amp;lt;= endDateTime) &amp;amp;&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span>&lt;span style="color:#ae81ff">038&lt;/span>;&amp;amp;&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span>&lt;span style="color:#ae81ff">038&lt;/span>;
+(eventData.ResourceProvider == &lt;span style="color:#e6db74">&amp;#34;Azure.Health&amp;#34;&lt;/span>));
+&lt;span style="color:#75715e">// Get the Events from Azure.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> response = client.Events.List(filterString);
+&lt;span style="color:#66d9ef">while&lt;/span> (response != &lt;span style="color:#66d9ef">null&lt;/span> &amp;amp;&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span>&lt;span style="color:#ae81ff">038&lt;/span>;&amp;amp;&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span>&lt;span style="color:#ae81ff">038&lt;/span>; response.Any())
+{
+&lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> eventData &lt;span style="color:#66d9ef">in&lt;/span> response)
+{
+&lt;span style="color:#75715e">// Set the Console Color according to the Event Status.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (eventData.Status.Value != &lt;span style="color:#e6db74">&amp;#34;Resolved&amp;#34;&lt;/span> &amp;amp;&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span>&lt;span style="color:#ae81ff">038&lt;/span>;&amp;amp;&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span>&lt;span style="color:#ae81ff">038&lt;/span>;
+eventData.Level &amp;lt;= EventLevel.Warning)
+{
+Console.ForegroundColor = ConsoleColor.Red;
+}
+&lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (eventData.Status.Value == &lt;span style="color:#e6db74">&amp;#34;Resolved&amp;#34;&lt;/span>)
+{
+Console.ForegroundColor = ConsoleColor.Green;
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+Console.ForegroundColor = ConsoleColor.White;
+}
+&lt;span style="color:#75715e">// Write event data to the console
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;{eventData.EventTimestamp.ToLocalTime()} - {eventData.ResourceProviderName.Value} - {eventData.OperationName.Value}&amp;#34;&lt;/span>);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Status:\t {eventData.Status.Value}&amp;#34;&lt;/span>);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Level:\t {eventData.Level.ToString()}&amp;#34;&lt;/span>);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;CorrelationId:\t {eventData.CorrelationId}&amp;#34;&lt;/span>);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Resource Type:\t {eventData.ResourceType.Value}&amp;#34;&lt;/span>);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Description:\t {eventData.Description}&amp;#34;&lt;/span>);
+}
+&lt;span style="color:#75715e">// Get more events if available.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (!&lt;span style="color:#66d9ef">string&lt;/span>.IsNullOrEmpty(response.NextPageLink))
+{
+response = client.Events.ListNext(response.NextPageLink);
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+response = &lt;span style="color:#66d9ef">null&lt;/span>;
+}
+}
+Console.ForegroundColor = ConsoleColor.Green;
+Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;No more events...&amp;#34;&lt;/span>);
+Console.ForegroundColor = ConsoleColor.White;
+}
+}
+&lt;span style="color:#75715e">// EventData Filter.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">EventDataForFilter&lt;/span>
+{
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Event Timestamp
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> DateTime EventTimestamp { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Resource Provider
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> ResourceProvider { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-the-myazureauth-file">5. Create the my.azureauth file&lt;/h2>
+&lt;hr>
+&lt;p>To authenticate you&amp;rsquo;ll need a my.azureauth file with the following format:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">subscription=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+client=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+tenant=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+key=XXXXXX
+managementURI=https\://management.core.windows.net/
+baseURL=https\://management.azure.com/
+authURL=https\://login.windows.net/
+https\://graph.windows.net/
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see you&amp;rsquo;ll be needing your &lt;strong>Azure Subscription Id&lt;/strong>, &lt;strong>Tenand Id&lt;/strong> and a valid &lt;strong>&lt;!-- raw HTML omitted -->Service Principal&lt;!-- raw HTML omitted -->&lt;/strong> and &lt;strong>Key&lt;/strong>.&lt;/p>
+&lt;p>If you check my previous post: &lt;!-- raw HTML omitted -->Create a Service Principal and write required parameters to a .azureauth file&lt;!-- raw HTML omitted --> and run the script you&amp;rsquo;ll get a file with the credentials.&lt;/p>
+&lt;h2 id="6-run-the-application">6. Run the application&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can get the code &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

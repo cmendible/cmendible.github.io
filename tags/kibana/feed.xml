@@ -1,0 +1,107 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>kibana on Code it Yourself...</title><link>https://carlos.mendible.com/tags/kibana/</link><description>Recent content in kibana on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 14 Oct 2018 14:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/kibana/feed.xml" rel="self" type="application/rss+xml"/><item><title>Deploying Elastic Search, Fluentd, Kibana on AKS with Helm</title><link>https://carlos.mendible.com/2018/10/14/deploying-elastic-search-fluentd-kibana-on-aks-with-helm/</link><pubDate>Sun, 14 Oct 2018 14:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/10/14/deploying-elastic-search-fluentd-kibana-on-aks-with-helm/</guid><description>&lt;p>For my recent talk at &lt;a href="http://netconfmad2018.azurewebsites.net/">.NET Conf Madrid&lt;/a> I managed to install Elastic Search, Fluentd and Kibana (EFK) as a logging solution for the AKS cluster I used in my demos.&lt;/p>
+&lt;p>The fact is that such deployment was possible thanks to Tim Park and his post &lt;a href="https://medium.com/@timfpark/efk-logging-on-kubernetes-on-azure-4c54402459c4">Logging with Fluentd, ElasticSearch, and Kibana (EFK) on Kubernetes on Azure&lt;/a> where I learned that to effectively deploy EFK on AKS I would have to tweak the resource definitions found in the &lt;a href="https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/fluentd-elasticsearch">Kubernetes&lt;/a> project.&lt;/p>
+&lt;p>I followed Tim&amp;rsquo;s advice and took it to the next level creating my first Helm chart: &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/13.efk.helm">efk-aks&lt;/a> so now you can deploy the EFK stack on AKS using Helm.&lt;/p>
+&lt;p>Feel free to get the Helm chart &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/13.efk.helm">here&lt;/a>.&lt;/p></description></item><item><title>Start with Elasticssearch, Kibana and ASP.NET Core</title><link>https://carlos.mendible.com/2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/</link><pubDate>Tue, 30 May 2017 11:58:00 +0000</pubDate><guid>https://carlos.mendible.com/2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/</guid><description>&lt;p>You want to &lt;strong>Start with &lt;!-- raw HTML omitted -->Elasticssearch&lt;!-- raw HTML omitted -->, &lt;!-- raw HTML omitted -->Kibana&lt;!-- raw HTML omitted --> and ASP.NET Core&lt;/strong> and also want to do it fast? Let&amp;rsquo;s use Docker and find out how easy it can be:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aspnet.elk.sample
+cd aspnet.elk.sample
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-new-aspnet-core-project">2. Create a new ASP.NET Core project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new mvc
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-the-following-serilog-packages">3. Add the following Serilog packages&lt;/h2>
+&lt;hr>
+&lt;p>You´ll send the logs to ElasticSearch using Serilog:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Serilog -v 2.4.0
+dotnet add package Serilog.Extensions.Logging -v 1.4.0
+dotnet add package Serilog.Sinks.ElasticSearch -v 5.1.0
+dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-replace-the-contents-of-the-startupcs-file">4. Replace the contents of the Startup.cs file&lt;/h2>
+&lt;hr>
+&lt;p>Lines 27 and 66 are key to enable Serilog and the Elasticsearch sink:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.DependencyInjection;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Logging;
+&lt;span style="color:#66d9ef">using&lt;/span> Serilog;
+&lt;span style="color:#66d9ef">using&lt;/span> Serilog.Events;
+&lt;span style="color:#66d9ef">using&lt;/span> Serilog.Sinks.Elasticsearch;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aspnet.elk.sample
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Startup&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> Startup(IHostingEnvironment env)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> builder = &lt;span style="color:#66d9ef">new&lt;/span> ConfigurationBuilder()
+.SetBasePath(env.ContentRootPath)
+.AddJsonFile(&lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">false&lt;/span>, reloadOnChange: &lt;span style="color:#66d9ef">true&lt;/span>)
+.AddJsonFile(&lt;span style="color:#e6db74">$&amp;#34;appsettings.{env.EnvironmentName}.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">true&lt;/span>)
+.AddEnvironmentVariables();
+&lt;span style="color:#75715e">// Create Serilog Elasticsearch logger
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Log.Logger = &lt;span style="color:#66d9ef">new&lt;/span> LoggerConfiguration()
+.Enrich.FromLogContext()
+.MinimumLevel.Debug()
+.WriteTo.Elasticsearch().WriteTo.Elasticsearch(&lt;span style="color:#66d9ef">new&lt;/span> ElasticsearchSinkOptions(&lt;span style="color:#66d9ef">new&lt;/span> Uri(&lt;span style="color:#e6db74">&amp;#34;http://localhost:9200&amp;#34;&lt;/span>))
+{
+MinimumLogEventLevel = LogEventLevel.Verbose,
+AutoRegisterTemplate = &lt;span style="color:#66d9ef">true&lt;/span>,
+})
+.CreateLogger();
+Configuration = builder.Build();
+}
+&lt;span style="color:#66d9ef">public&lt;/span> IConfigurationRoot Configuration { &lt;span style="color:#66d9ef">get&lt;/span>; }
+&lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to add services to the container.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> ConfigureServices(IServiceCollection services)
+{
+&lt;span style="color:#75715e">// Add framework services.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> services.AddMvc();
+}
+&lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+{
+&lt;span style="color:#75715e">// loggerFactory.AddConsole(Configuration.GetSection(&amp;#34;Logging&amp;#34;));
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> loggerFactory.AddDebug();
+&lt;span style="color:#66d9ef">if&lt;/span> (env.IsDevelopment())
+{
+app.UseDeveloperExceptionPage();
+app.UseBrowserLink();
+}
+&lt;span style="color:#66d9ef">else&lt;/span>
+{
+app.UseExceptionHandler(&lt;span style="color:#e6db74">&amp;#34;/Home/Error&amp;#34;&lt;/span>);
+}
+&lt;span style="color:#75715e">// Add serilog
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> loggerFactory.AddSerilog();
+app.UseStaticFiles();
+app.UseMvc(routes =&amp;gt;
+{
+routes.MapRoute(
+name: &lt;span style="color:#e6db74">&amp;#34;default&amp;#34;&lt;/span>,
+template: &lt;span style="color:#e6db74">&amp;#34;{controller=Home}/{action=Index}/{id?}&amp;#34;&lt;/span>);
+});
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-use-docker-to-start-elasticsearch-and-kibana">5. Use Docker to start Elasticsearch and Kibana&lt;/h2>
+&lt;hr>
+&lt;p>You&amp;rsquo;ll need to add the following address range to your &lt;strong>docker unsafe registry&lt;/strong>: &lt;strong>172.19.0.2:9200&lt;/strong>&lt;/p>
+&lt;p>Run the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker pull nshou/elasticsearch-kibana
+docker run -d -p 9200&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>9200 -p 5601&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>5601 nshou/elasticsearch-kibana
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>It will take a while but you&amp;rsquo;ll get a working Elasticsearch + Kibana installation.&lt;/p>
+&lt;h2 id="6-run-the-program-and-navigate">6. Run the program and navigate&lt;/h2>
+&lt;p>Run the program&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And navigate through some of the pages: &lt;!-- raw HTML omitted -->http://localhost:5000&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="7-setup-kibana-and-search-your-logs">7. Setup Kibana and search your logs&lt;/h2>
+&lt;hr>
+&lt;p>Open &lt;!-- raw HTML omitted -->http://localhost:5601&lt;!-- raw HTML omitted --> and configure the Index Pattern with the default values (Click Create at the bottom of the page).&lt;/p>
+&lt;p>Now click Discover on the side bar and start searching your logs. Enjoy!&lt;/p>
+&lt;p>Get the code and related files here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.elk.sample">https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.elk.sample&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

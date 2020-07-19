@@ -1,0 +1,86 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>SMS on Code it Yourself...</title><link>https://carlos.mendible.com/tags/sms/</link><description>Recent content in SMS on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 02 Mar 2017 07:59:30 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/sms/feed.xml" rel="self" type="application/rss+xml"/><item><title>Twilio with .NET Core</title><link>https://carlos.mendible.com/2017/03/02/twilio-with-net-core/</link><pubDate>Thu, 02 Mar 2017 07:59:30 +0000</pubDate><guid>https://carlos.mendible.com/2017/03/02/twilio-with-net-core/</guid><description>&lt;p>Last night after reading this tweet, I decided to try out &lt;strong>&lt;!-- raw HTML omitted -->Twilio&lt;!-- raw HTML omitted --> with .NET Core&lt;/strong>&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;p>Let&amp;rsquo;s create the sample console app:&lt;/p>
+&lt;h2 id="1-create-the-application">1. Create the application&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> md twilio.console
+cd twilio.console
+dotnet new
+dotnet restore
+code .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-replace-the-contents-of-projectjson">2. Replace the contents of project.json&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents on &lt;strong>project.json&lt;/strong> file in order to include the references to: &lt;strong>Twilio&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0-*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;buildOptions&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;debugType&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;portable&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;emitEntryPoint&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Twilio&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;5.0.2&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;frameworks&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;netcoreapp1.1&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.NETCore.App&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;platform&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.1.0&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;imports&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dnxcore50&amp;#34;&lt;/span>
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-replace-the-contents-of-programcs">3. Replace the contents of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>The &lt;strong>CreateClass&lt;/strong> method is where the magic occurs. Each relevant line is explained to help you understand each step.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Twilio;
+&lt;span style="color:#66d9ef">using&lt;/span> Twilio.Rest.Api.V2010.Account;
+&lt;span style="color:#66d9ef">using&lt;/span> Twilio.Types;
+&lt;span style="color:#66d9ef">namespace&lt;/span> ConsoleApplication
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// Send the SMS
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> messageSid = Task.Run(() =&amp;gt;
+{
+&lt;span style="color:#66d9ef">return&lt;/span> SendSms();
+})
+.GetAwaiter()
+.GetResult();
+&lt;span style="color:#75715e">// Write the message Id to the console.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(messageSid);
+Console.Read();
+}
+&lt;span style="color:#75715e">// Send SMS with async feature!
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt; SendSms()
+{
+&lt;span style="color:#75715e">// Your Account SID from twilio.com/console
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> accountSid = &lt;span style="color:#e6db74">&amp;#34;[Account SID]&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Your Auth Token from twilio.com/console
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> authToken = &lt;span style="color:#e6db74">&amp;#34;[Auth Token]&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Initialize Twilio Client
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> TwilioClient.Init(accountSid, authToken);
+&lt;span style="color:#75715e">// Create &amp;amp; Send Message (New lib supports async await)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> message = &lt;span style="color:#66d9ef">await&lt;/span> MessageResource.CreateAsync(
+to: &lt;span style="color:#66d9ef">new&lt;/span> PhoneNumber(&lt;span style="color:#e6db74">&amp;#34;[Target Phone Number]&amp;#34;&lt;/span>),
+&lt;span style="color:#66d9ef">from&lt;/span>: &lt;span style="color:#66d9ef">new&lt;/span> PhoneNumber(&lt;span style="color:#e6db74">&amp;#34;[Your Twilio Phone Number]&amp;#34;&lt;/span>),
+body: &lt;span style="color:#e6db74">&amp;#34;Hello from dotnetcore&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">return&lt;/span> message.Sid;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-run-the-application">4. Run the application&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt and run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> dotnet restore
+dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get a copy of the code here: &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/twilio.console">https://github.com/cmendible/dotnetcore.samples/tree/main/twilio.console&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

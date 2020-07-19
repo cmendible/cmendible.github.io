@@ -1,0 +1,501 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Dockerfile on Code it Yourself...</title><link>https://carlos.mendible.com/tags/dockerfile/</link><description>Recent content in Dockerfile on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Tue, 25 Sep 2018 20:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/dockerfile/feed.xml" rel="self" type="application/rss+xml"/><item><title>Revisiting Docker Multi Stage Builds to build an ASP.NET Core Echo Server</title><link>https://carlos.mendible.com/2018/09/25/revisiting-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</link><pubDate>Tue, 25 Sep 2018 20:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/09/25/revisiting-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</guid><description>&lt;p>On April I wrote a post about &lt;a href="https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server">Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server&lt;/a> and these days while preparing a talk, on CI/CD and kubernetes, I started to play with the &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver">simple sample&lt;/a> I wrote back then.&lt;/p>
+&lt;p>Soon enough I noticed that with each &lt;code>docker build&lt;/code> command I issued the dependencies for the echoserver were always restored, even if no changes were made to the project file (csproj).&lt;/p>
+&lt;p>Let see what was going on:&lt;/p>
+&lt;p>This was the original dockerfile:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-docker" data-lang="docker">&lt;span style="color:#75715e"># This stage builds the application&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-sdk-2.1.101-jessie AS builder&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> . src&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> src&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet restore&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet publish -c release&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># This stages uses the output from the build&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-runtime-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder src/bin/release/netcoreapp2.0/publish app&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> app&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ASPNETCORE_URLS http://*:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">EXPOSE&lt;/span>&lt;span style="color:#e6db74"> 80&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;dotnet&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;echoserver.dll&amp;#34;&lt;/span>]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see the culprit was between the lines 3 and 5. I was restoring the dependencies after copying all the code! And I fixed it with the following new dockerfile:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-docker" data-lang="docker">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-sdk-2.1.101-jessie AS builder&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> ./*.csproj ./src/&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> /src&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet restore&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> . /src&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet publish -c release&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-runtime-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder src/bin/release/netcoreapp2.0/publish app&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> app&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ASPNETCORE_URLS http://*:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">EXPOSE&lt;/span>&lt;span style="color:#e6db74"> 80&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;dotnet&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;echoserver.dll&amp;#34;&lt;/span>]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now the dependencies are restored after copying just the project files (*.csproj) then we copy the rest of the files and build as usual, and yes! with this dockerfile in place the image build times are faster if no dependencies are changed!&lt;/p>
+&lt;p>Hope it helps!&lt;/p>
+&lt;p>Feel free to get the code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver.improved">here&lt;/a>.&lt;/p></description></item><item><title>Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server</title><link>https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</link><pubDate>Wed, 04 Apr 2018 15:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to create a simple Echo Server with ASP.NET Core and then a Docker Image using &lt;a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build&lt;/a>:&lt;/p>
+&lt;h2 id="1-create-the-application">1. Create the Application&lt;/h2>
+&lt;hr>
+&lt;p>Open a PowerShell promt and run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir echoserver
+cd echoserver
+dotnet new console
+dotnet add package Microsoft.AspNetCore -v 2.0.2
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-replace-the-contents-of-programcs">2. Replace the contents of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> EchoServer
+{
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore;
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+WebHost.CreateDefaultBuilder()
+.UseKestrel()
+.Configure(app =&amp;gt;
+{
+app.Run(httpContext =&amp;gt;
+{
+&lt;span style="color:#66d9ef">var&lt;/span> request = httpContext.Request;
+&lt;span style="color:#66d9ef">var&lt;/span> response = httpContext.Response;
+&lt;span style="color:#75715e">// Echo the Headers
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> header &lt;span style="color:#66d9ef">in&lt;/span> request.Headers)
+{
+response.Headers.Add(header);
+}
+&lt;span style="color:#75715e">// Echo the body
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> request.Body.CopyToAsync(response.Body);
+});
+})
+.Build()
+.Run();
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-build-and-test">3. Build and Test&lt;/h2>
+&lt;hr>
+&lt;p>Run the folowing commands to build the application:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The Echo Server will be running on: &lt;a href="http://localhost:5000">http://localhost:5000&lt;/a> and to test it just send any request and the server should return it back to you.&lt;/p>
+&lt;p>Let&amp;rsquo;s try sending a GET request with a custom header:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -H &lt;span style="color:#e6db74">&amp;#34;Custom-Header: echo&amp;#34;&lt;/span> http://localhost:5000/ -i
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>the response should read:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">HTTP/1.1 &lt;span style="color:#ae81ff">200&lt;/span> OK
+Date: Wed, &lt;span style="color:#ae81ff">04&lt;/span> Apr &lt;span style="color:#ae81ff">2018&lt;/span> 10:10:55 GMT
+Server: Kestrel
+Content-Length: &lt;span style="color:#ae81ff">0&lt;/span>
+Accept: */*
+Host: localhost:5000
+User-Agent: curl/7.35.0
+Custom-Header: echo
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-a-dockerfile">4. Create a Dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>In order to run the Echo Server in a container create a Dockerfile with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-docker" data-lang="docker">&lt;span style="color:#75715e"># This stage builds the application&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-sdk-2.1.101-jessie AS builder&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> . src&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> src&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet restore&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet publish -c release&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># This stages uses the output from the build&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-runtime-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder src/bin/release/netcoreapp2.0/publish app&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> app&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ASPNETCORE_URLS http://*:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">EXPOSE&lt;/span>&lt;span style="color:#e6db74"> 80&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;dotnet&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;echoserver.dll&amp;#34;&lt;/span>]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: The previous Dockerfile defines a &lt;a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build&lt;/a>:&lt;/p>
+&lt;ul>
+&lt;li>The first stage copies the source code to the image and builds the application.&lt;/li>
+&lt;li>The second stage uses the output of the first stage (builder) to create the final and optimized image (i.e. No need to remove the sdk or the source code).&lt;/li>
+&lt;li>Docker 17.05 or higher is needed in order to build and image based on a multi-stage Dockerfile.&lt;/li>
+&lt;/ul>
+&lt;h2 id="5-build-and-test-the-image">5. Build and test the image&lt;/h2>
+&lt;hr>
+&lt;p>Run the folowing commands to build and run the docker image:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker build -t echoserver .
+docker run -p 5000&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>80 echoserver
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To test the image just repeat the tests from step 3.&lt;/p>
+&lt;p>Hope it helps!&lt;/p>
+&lt;p>Feel free to get the code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver">here&lt;/a>.&lt;/p></description></item><item><title>Run a Durable Azure Function in a Container</title><link>https://carlos.mendible.com/2018/01/14/run-a-durable-azure-function-in-a-container/</link><pubDate>Sun, 14 Jan 2018 15:19:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/01/14/run-a-durable-azure-function-in-a-container/</guid><description>&lt;p>Greetings readers! Hope you all a Happy New Year!&lt;/p>
+&lt;p>Last post I was about &lt;a href="https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container">running a Precompiled .NET Core Azure Function in a Container&lt;/a>. This time let&amp;rsquo;s go one step further and &lt;strong>Run a Durable Azure Function in a Container&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>Prerequisites&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.docker.com">Docker&lt;/a> installed and basic knowledge.&lt;/li>
+&lt;li>&lt;a href="https://www.microsoft.com/net/download/">.NET Core&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account">Azure Storage Account&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-overview">Azure Durable Functions Knowledge&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-create-a-net-core-lib-project">1. Create a .NET Core lib project&lt;/h2>
+&lt;p>Create a .NET Core lib project.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new lib --name durable
+cd dni
+rm .\Class1.cs
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-add-the-required-references-to-be-able-to-use-azure-functions-api-and-the-durable-task-extensions">2. Add the required references to be able to use Azure Functions API and the Durable Task Extensions&lt;/h2>
+&lt;p>Be sure to add the following packages to the project. Sample code will not work with the latest versions of some of the Microsoft.AspNetCore.* packages, so pay special attention to the version parameter.&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Microsoft.AspNetCore.Mvc.WebApiCompatShim&lt;/strong> is needed to use the &lt;strong>ReadAsAsync&lt;/strong> extension (Assembly: System.Net.Http.Formatting) in one of the functions.&lt;/li>
+&lt;li>&lt;strong>Microsoft.Azure.WebJobs.Script.ExtensionsMetadataGenerator&lt;/strong> is need to generate, during build time, the extension file needed to run durable fucntions.&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.AspNetCore.Http -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc.WebApiCompatShim -v 2.0.0
+dotnet add package Microsoft.Azure.WebJobs -v 3.0.0-beta4
+dotnet add package Microsoft.Azure.WebJobs.Extensions.DurableTask -v 1.0.0-beta
+dotnet add package Microsoft.Azure.WebJobs.Script.ExtensionsMetadataGenerator -v 1.0.0-beta2
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-the-wwwroot-and-the-folders-needed-to-hold-the-functions">3. Create the wwwroot and the folders needed to hold the functions&lt;/h2>
+&lt;p>Create some foders. The first one &lt;strong>wwwroot&lt;/strong> will hold all the functions and global configuration. The others will hold the specific files for each of the 3 azure functions you&amp;rsquo;ll deploy:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">md wwwroot
+md wwwroot/httpstart
+md wwwroot/activity
+md wwwroot/orchestrator
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-hostjson-file-in-the-wwwroot-folder">4. Create host.json file in the wwwroot folder&lt;/h2>
+&lt;p>Create a &lt;strong>host.json&lt;/strong> file in the &lt;strong>wwwroot&lt;/strong> folder with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{ }
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-the-activity-function">5. Create the activity function&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/activity&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;name&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;activityTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//durable.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;DurableFunctions.Activity.Run&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create a &lt;strong>Activity.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">namespace&lt;/span> DurableFunctions
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Activity&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Run(&lt;span style="color:#66d9ef">string&lt;/span> name)
+{
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#e6db74">$&amp;#34;Hello {name}!&amp;#34;&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: this function uses an &lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Activity Trigger&lt;/a>.&lt;/p>
+&lt;h2 id="6-create-an-orchestrator-function">6. Create an orchestrator function&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/orchestrator&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;context&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;orchestrationTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//durable.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;DurableFunctions.Orchestrator.Run&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create a &lt;strong>Orchestrator.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">namespace&lt;/span> DurableFunctions
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Orchestrator&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;&amp;gt; Run(
+DurableOrchestrationContext context)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> outputs = &lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;();
+outputs.Add(&lt;span style="color:#66d9ef">await&lt;/span> context.CallActivityAsync&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;activity&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Tokyo&amp;#34;&lt;/span>));
+outputs.Add(&lt;span style="color:#66d9ef">await&lt;/span> context.CallActivityAsync&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;activity&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Seattle&amp;#34;&lt;/span>));
+outputs.Add(&lt;span style="color:#66d9ef">await&lt;/span> context.CallActivityAsync&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;activity&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;London&amp;#34;&lt;/span>));
+&lt;span style="color:#75715e">// returns [&amp;#34;Hello Tokyo!&amp;#34;, &amp;#34;Hello Seattle!&amp;#34;, &amp;#34;Hello London!&amp;#34;]
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> outputs;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: this function uses an &lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Orchestration Trigger&lt;/a>.&lt;/p>
+&lt;h2 id="7-create-the-orchestrator-client">7. Create the Orchestrator Client&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/httpstart&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;authLevel&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;anonymous&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;req&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;httpTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;route&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;orchestrators/{functionName}&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;methods&amp;#34;&lt;/span>: [
+&lt;span style="color:#e6db74">&amp;#34;post&amp;#34;&lt;/span>
+]
+},
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;starter&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;orchestrationClient&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//durable.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;DurableFunctions.HttpStart.Run&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create a &lt;strong>HttpStart.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http.Headers;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs.Host;
+&lt;span style="color:#66d9ef">namespace&lt;/span> DurableFunctions
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">HttpStart&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;HttpResponseMessage&amp;gt; Run(
+HttpRequestMessage req,
+DurableOrchestrationClient starter,
+&lt;span style="color:#66d9ef">string&lt;/span> functionName,
+TraceWriter log)
+{
+&lt;span style="color:#75715e">// Function input comes from the request content.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">dynamic&lt;/span> eventData = &lt;span style="color:#66d9ef">await&lt;/span> req.Content.ReadAsAsync&amp;lt;&lt;span style="color:#66d9ef">object&lt;/span>&amp;gt;();
+&lt;span style="color:#66d9ef">string&lt;/span> instanceId = &lt;span style="color:#66d9ef">await&lt;/span> starter.StartNewAsync(functionName, eventData);
+log.Info(&lt;span style="color:#e6db74">$&amp;#34;Started orchestration with ID = &amp;#39;{instanceId}&amp;#39;.&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> res = starter.CreateCheckStatusResponse(req, instanceId);
+res.Headers.RetryAfter = &lt;span style="color:#66d9ef">new&lt;/span> RetryConditionHeaderValue(TimeSpan.FromSeconds(&lt;span style="color:#ae81ff">10&lt;/span>));
+&lt;span style="color:#66d9ef">return&lt;/span> res;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: this function uses an http trigger and an &lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Orchestration client&lt;/a>.&lt;/p>
+&lt;h2 id="8-create-a-dockerfile">8. Create a dockerfile&lt;/h2>
+&lt;p>Create a &lt;strong>dockerfile&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/azure-functions-runtime:2.0.0-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># If we don&amp;#39;t set WEBSITE_HOSTNAME Azure Function triggers other than HttpTrigger won&amp;#39;t run. (FunctionInvocationException: Webhooks are not configured)&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># I&amp;#39;ve created a pull request to add this variable to the original dockerfile: https://github.com/Azure/azure-webjobs-sdk-script/pull/2285&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> WEBSITE_HOSTNAME&lt;span style="color:#f92672">=&lt;/span>localhost:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Copy all Function files and binaries to /home/site/wwwroot&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ADD&lt;/span> wwwroot /home/site/wwwroot&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Functions must live in: /home/site/wwwroot&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># We expect to receive the Storage Account Connection String from the command line.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ARG&lt;/span> STORAGE_ACCOUNT&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Set the AzureWebJobsStorage Environment Variable. Otherwise Durable Functions Extensions won&amp;#39;t work.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> AzureWebJobsStorage&lt;span style="color:#f92672">=&lt;/span>$STORAGE_ACCOUNT&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that once you execute a docker build on the file all the contents of the &lt;strong>wwwroot&lt;/strong> folder will be copied to the &lt;strong>/home/site/wwwroot&lt;/strong> inside the image.&lt;/p>
+&lt;h2 id="9-build-the-project-and-the-docker-image">9. Build the project and the docker image&lt;/h2>
+&lt;p>Build the .NET Core project so you get the precompiled funtions and then build the docker image:&lt;/p>
+&lt;p>Note: you&amp;rsquo;ll need a valid Azure Storage Account connection string.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build -o .\wwwroot\bin\
+docker build --build-arg STORAGE_ACCOUNT=&lt;span style="color:#e6db74">&amp;#34;[Valid Azure Storage Account Connection String]&amp;#34;&lt;/span> -t durable .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="10-create-a-container-and-test-the-function">10. Create a container and test the function&lt;/h2>
+&lt;p>Run the following to run the Azure Function in a container:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker run -p 5000&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>80 durable
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now POST to the orchestrator client to start the durable functions:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -X POST http://localhost:5000/api/orchestrators/orchestrator -i -H &lt;span style="color:#e6db74">&amp;#34;Content-Length: 0&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can download all code and files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/azure.durable.function.docker">here&lt;/a>.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: The function code is based on the original &lt;a href="https://github.com/Azure/azure-functions-durable-extension">Azure Functions Samples&lt;/a>.&lt;/p>
+&lt;p>Happy coding!&lt;/p></description></item><item><title>Run a Precompiled .NET Core Azure Function in a Container</title><link>https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/</link><pubDate>Thu, 28 Dec 2017 15:13:00 +0000</pubDate><guid>https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/</guid><description>&lt;p>So this morning I found my self browsing through the images Microsoft has published in the &lt;a href="https://hub.docker.com/u/microsoft/">Docker Hub&lt;/a> and then I saw this one: &lt;a href="https://hub.docker.com/r/microsoft/azure-functions-runtime/">microsoft/azure-functions-runtime&lt;/a> and decided to &lt;strong>Run a Precompiled .NET Core Azure Function in a Container&lt;/strong>.&lt;/p>
+&lt;p>&lt;strong>Prerequisites&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.docker.com">Docker&lt;/a> installed and basic knowledge.&lt;/li>
+&lt;li>&lt;a href="https://www.microsoft.com/net/download/">.NET Core&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-create-a-net-core-lib-project">1. Create a .NET Core lib project&lt;/h2>
+&lt;p>Create a .NET Core lib project.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new lib --name dni
+cd dni
+rm .\Class1.cs
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-add-the-required-references-to-be-able-to-use-azure-functions-api">2. Add the required references to be able to use Azure Functions API&lt;/h2>
+&lt;p>Be sure to add the following packages to the project. I couldn&amp;rsquo;t make the sample work with the latest versions of some of the Microsoft.AspNetCore.* packages, so pay special attention to the version parameter.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.AspNetCore.Http -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc -v 2.0.0
+dotnet add package Microsoft.Azure.WebJobs -v 3.0.0-beta4
+dotnet add package Microsoft.Extensions.Primitives -v 2.0.0
+dotnet add package Newtonsoft.Json -v 10.0.3
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-modify-the-output-path-of-the-project">3. Modify the Output Path of the project&lt;/h2>
+&lt;p>Edit dni.csproj and the OutputPath property with the following value: &lt;strong>wwwroot\bin&lt;/strong>. The project contents should now look like the following text:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;Project&lt;/span> &lt;span style="color:#a6e22e">Sdk=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.NET.Sdk&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;TargetFramework&amp;gt;&lt;/span>netstandard2.0&lt;span style="color:#f92672">&amp;lt;/TargetFramework&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;OutputPath&amp;gt;&lt;/span>wwwroot\bin&lt;span style="color:#f92672">&amp;lt;/OutputPath&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Http&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Mvc&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Azure.WebJobs&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;3.0.0-beta4&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Primitives&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Newtonsoft.Json&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;10.0.3&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Project&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-the-wwwroot-and-validate-folders">4. Create the wwwroot and validate folders&lt;/h2>
+&lt;p>Create two folders. The first one &lt;strong>wwwroot&lt;/strong> will hold all the functions and global configuration. The second one: &lt;strong>validate&lt;/strong> will hold the configuration of the &lt;strong>validate&lt;/strong> function we&amp;rsquo;ll be deploying.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">md wwwroot
+md wwwroot/validate
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-hostjson-file-in-the-wwwroot-folder">5. Create host.json file in the wwwroot folder&lt;/h2>
+&lt;p>Create a &lt;strong>host.json&lt;/strong> file in the &lt;strong>wwwroot&lt;/strong> folder with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{ }
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-create-functionjson-and-runcsx-files">6. Create function.json and run.csx files&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/validate&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;authLevel&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;anonymous&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;req&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;httpTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//netstandard2.0//dni.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Dni.HttpTrigger.Run&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that in &lt;strong>functions.json&lt;/strong> we are specifying the function trigger &lt;strong>type&lt;/strong> as &lt;strong>httpTrigger&lt;/strong> and also specifying the &lt;strong>scriptFile&lt;/strong> and &lt;strong>entryPoint&lt;/strong>.&lt;/p>
+&lt;p>Now create a &lt;strong>run.csx&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#75715e">//leave this file empty - all the logic is placed within our precompiled function
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-create-an-httptriggercs-file-to-hold-your-function">7. Create an HttpTrigger.cs file to hold your function&lt;/h2>
+&lt;p>Create a &lt;strong>HttpTrigger.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> Dni
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Mvc;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs.Host;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">HttpTrigger&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> IActionResult Run(HttpRequest req, TraceWriter log)
+{
+log.Info(&lt;span style="color:#e6db74">&amp;#34;DNI Validation function is processing a request.&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">string&lt;/span> dni = req.Query[&lt;span style="color:#e6db74">&amp;#34;dni&amp;#34;&lt;/span>];
+&lt;span style="color:#66d9ef">return&lt;/span> dni != &lt;span style="color:#66d9ef">null&lt;/span>
+? (ActionResult)&lt;span style="color:#66d9ef">new&lt;/span> OkObjectResult(ValidateDNI(dni))
+: &lt;span style="color:#66d9ef">new&lt;/span> BadRequestObjectResult(&lt;span style="color:#e6db74">&amp;#34;Please pass a dni on the query string&amp;#34;&lt;/span>);
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">bool&lt;/span> ValidateDNI(&lt;span style="color:#66d9ef">string&lt;/span> dni)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> table = &lt;span style="color:#e6db74">&amp;#34;TRWAGMYFPDXBNJZSQVHLCKE&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> foreignerDigits = &lt;span style="color:#66d9ef">new&lt;/span> Dictionary&amp;lt;&lt;span style="color:#66d9ef">char&lt;/span>, &lt;span style="color:#66d9ef">char&lt;/span>&amp;gt;()
+{
+{ &lt;span style="color:#e6db74">&amp;#39;X&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>},
+{ &lt;span style="color:#e6db74">&amp;#39;Y&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>},
+{ &lt;span style="color:#e6db74">&amp;#39;Z&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;2&amp;#39;&lt;/span>}
+};
+&lt;span style="color:#66d9ef">var&lt;/span> numbers = &lt;span style="color:#e6db74">&amp;#34;1234567890&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> parsedDNI = dni.ToUpper();
+&lt;span style="color:#66d9ef">if&lt;/span> (parsedDNI.Length == &lt;span style="color:#ae81ff">9&lt;/span>)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> checkDigit = parsedDNI[&lt;span style="color:#ae81ff">8&lt;/span>];
+parsedDNI = parsedDNI.Remove(&lt;span style="color:#ae81ff">8&lt;/span>);
+&lt;span style="color:#66d9ef">if&lt;/span> (foreignerDigits.ContainsKey(parsedDNI[&lt;span style="color:#ae81ff">0&lt;/span>]))
+{
+parsedDNI = parsedDNI.Replace(parsedDNI[&lt;span style="color:#ae81ff">0&lt;/span>], foreignerDigits[parsedDNI[&lt;span style="color:#ae81ff">0&lt;/span>]]);
+}
+&lt;span style="color:#66d9ef">return&lt;/span> parsedDNI.Length == parsedDNI.Where(n =&amp;gt; numbers.Contains(n)).Count() &amp;amp;&amp;amp;
+table[&lt;span style="color:#66d9ef">int&lt;/span>.Parse(parsedDNI) % &lt;span style="color:#ae81ff">23&lt;/span>] == checkDigit;
+}
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Cause I didn&amp;rsquo;t want to create a simple Hello World sample, this Azure Function Code takes the &lt;strong>dni&lt;/strong> parameter from the query string and validates if the given value is a valid &lt;strong>Spanish National Identity Document&lt;/strong> number.&lt;/p>
+&lt;h2 id="8-create-a-dockerfile">8. Create a dockerfile&lt;/h2>
+&lt;p>Create a &lt;strong>dockerfile&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/azure-functions-runtime:v2.0.0-beta1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> AzureWebJobsScriptRoot&lt;span style="color:#f92672">=&lt;/span>/home/site/wwwroot&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ADD&lt;/span> wwwroot /home/site/wwwroot&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that once you execute a docker build on the file all the contents of the &lt;strong>wwwroot&lt;/strong> folder will be copied to the &lt;strong>/home/site/wwwroot&lt;/strong> inside the image.&lt;/p>
+&lt;h2 id="9-build-the-project-and-the-docker-image">9. Build the project and the docker image&lt;/h2>
+&lt;p>Build the .NET Core project so you get a precompiled funtion and then build the docker image:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+docker build -t dni .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="10-create-a-container-and-test-the-function">10. Create a container and test the function&lt;/h2>
+&lt;p>Run the following to run the Azure Function in a container:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker run -p 5000&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>80 dni
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now navigate to: &lt;a href="http://localhost:5000/api/validate?dni=54495436H">http://localhost:5000/api/validate?dni=54495436H&lt;/a> and the page should return &lt;strong>true&lt;/strong>.&lt;/p>
+&lt;p>You can download all code and files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/azure.function.docker">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Run ASP.NET Core on OpenShift</title><link>https://carlos.mendible.com/2017/07/26/run-asp.net-core-on-openshift/</link><pubDate>Wed, 26 Jul 2017 09:55:19 +0000</pubDate><guid>https://carlos.mendible.com/2017/07/26/run-asp.net-core-on-openshift/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to &lt;strong>Run ASP.NET Core on OpenShift&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;ul>
+&lt;li>You&amp;rsquo;ll need a working Docker installation. If you are using Windows 10 you can get Docker for Windows &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/li>
+&lt;li>Be sure to &lt;strong>Disable TLS for 127.0.0.1:2375&lt;/strong> for your Docker installation&lt;/li>
+&lt;li>Be sure to set &lt;strong>172.30.0.0/16 as an Insecure Registry&lt;/strong> in your Docker installation&lt;/li>
+&lt;li>Be sure to set &lt;strong>172.30.1.1:5000 as a Registry Mirror&lt;/strong> in your Docker installation&lt;/li>
+&lt;li>You&amp;rsquo;ll need download the &lt;!-- raw HTML omitted -->oc Client Tools&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Note&lt;/strong>: If you want to learn about OpenShift and what can you do with it, I recommend the free book: &lt;!-- raw HTML omitted -->Openshift for Developers&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aspnet.on.openshift
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd aspnet.on.openshift
+dotnet new web
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>No you have a working Hello World application.&lt;/p>
+&lt;h2 id="3-publish-your-application">3. Publish your application&lt;/h2>
+&lt;hr>
+&lt;p>Restore the nuget packages and publish your application with the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+dotnet publish -c release
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-a-dockerfile">4. Create a Dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>Create a Dockerfile (be aware of the capital D) with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">FROM microsoft/dotnet
+&lt;span style="color:#75715e"># Set ASPNETCORE_URLS&lt;/span>
+ENV ASPNETCORE_URLS=https://&lt;span style="color:#75715e">*:8080&lt;/span>
+&lt;span style="color:#75715e"># Switch to root for changing dir ownership/permissions&lt;/span>
+USER &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;span style="color:#75715e"># Copy the binaries&lt;/span>
+COPY /bin/release/netcoreapp1&lt;span style="color:#ae81ff">.1&lt;/span>/publish app
+&lt;span style="color:#75715e"># Change to app directory&lt;/span>
+WORKDIR app
+&lt;span style="color:#75715e"># In order to drop the root user, we have to make some directories world&lt;/span>
+&lt;span style="color:#75715e"># writable as OpenShift default security model is to run the container under&lt;/span>
+&lt;span style="color:#75715e"># random UID.&lt;/span>
+RUN chown -R &lt;span style="color:#ae81ff">1001&lt;/span>:&lt;span style="color:#ae81ff">0&lt;/span> /app &lt;span style="color:#75715e">&amp;amp;&amp;amp;&lt;/span> chmod -R og+rwx /app
+&lt;span style="color:#75715e"># Expose port 8080 for the application.&lt;/span>
+EXPOSE &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;span style="color:#75715e"># Run container by default as user with id 1001 (default)&lt;/span>
+USER &lt;span style="color:#ae81ff">1001&lt;/span>
+&lt;span style="color:#75715e"># Start the application using dotnet!!!&lt;/span>
+ENTRYPOINT dotnet aspnet.on.openshift.dll
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-you-openshift-cluster">5. Create you OpenShift Cluster&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc cluster up --host-data-dir=/mydata --version=v1.5.1
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should have a working cluster. To get the url of your cluster run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc status
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Browse to your cluster (i.e &lt;!-- raw HTML omitted -->https://10.0.75.2:8443&lt;!-- raw HTML omitted -->) and login with username: &lt;strong>developer&lt;/strong> and password &lt;strong>developer&lt;/strong>&lt;/p>
+&lt;h2 id="6-create-an-app-in-openshift">6. Create an app in OpenShift&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc new-app . --name=aspnetoc
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-build-your-openshift-image">7. Build your OpenShift image&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc start-build aspnetoc --from-dir=.
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-create-a-route-so-you-can-access-the-application">8. Create a route so you can access the application&lt;/h2>
+&lt;hr>
+&lt;p>Run the following commands&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc create route edge --service=aspnetoc
+oc get route aspnetoc
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Copy the host/port output of the previous command (i.e. aspnetoc-myproject.10.0.75.2.nip.io)&lt;/p>
+&lt;h2 id="9-check-the-status-and-browse-to-you-application">9. Check the status and browse to you application&lt;/h2>
+&lt;hr>
+&lt;p>Check the status with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc status
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>When your pod has been deployed browse to your application using the host you copied in step 8 (i.e. &lt;!-- raw HTML omitted -->&lt;a href="https://aspnetoc-myproject.10.0.75.2.nip.io">https://aspnetoc-myproject.10.0.75.2.nip.io&lt;/a>&lt;!-- raw HTML omitted -->).&lt;/p>
+&lt;p>Enjoy! you just deployed your ASP.NET Core application to OpenShift.&lt;/p>
+&lt;p>You can get the code &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

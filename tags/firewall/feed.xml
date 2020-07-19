@@ -1,0 +1,87 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Firewall on Code it Yourself...</title><link>https://carlos.mendible.com/tags/firewall/</link><description>Recent content in Firewall on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 02 Nov 2017 20:53:16 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/firewall/feed.xml" rel="self" type="application/rss+xml"/><item><title>Use PowerShell to enable Azure Storage Account Firewall Rules</title><link>https://carlos.mendible.com/2017/11/02/use-powershell-to-enable-azure-storage-account-firewall-rules/</link><pubDate>Thu, 02 Nov 2017 20:53:16 +0000</pubDate><guid>https://carlos.mendible.com/2017/11/02/use-powershell-to-enable-azure-storage-account-firewall-rules/</guid><description>&lt;p>In this post I&amp;rsquo;ll show you how to &lt;strong>Use PowerShell to enable Azure Storage Account Firewall Rules&lt;/strong>.&lt;/p>
+&lt;p>Be sure to be have &lt;a href="https://www.powershellgallery.com/packages/AzureRM/4.4.1">AzureRM PowerShell 4.4.1&lt;/a> module installed.&lt;/p>
+&lt;h2 id="login-to-your-azure-account">&lt;strong>Login to your Azure Account&lt;/strong>&lt;/h2>
+&lt;p>Launch Powershell and start by Login to your Azure Account.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Login-AzureRmAccount
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="set-resource-group-and-storage-account-name-variables">&lt;strong>Set Resource Group and Storage Account Name Variables&lt;/strong>&lt;/h2>
+&lt;p>Set the following variables&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> $resourceGroupName = &lt;span style="color:#e6db74">&amp;#34;[THE NAME OF THE RESOURCE GROUP]&amp;#34;&lt;/span>
+$storageAccountName = &lt;span style="color:#e6db74">&amp;#34;[THE NAME OF THE STORAGE ACCOUNT]&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="enable-the-firewall">&lt;strong>Enable the Firewall&lt;/strong>&lt;/h2>
+&lt;p>To enable the firewall you&amp;rsquo;ll need to &lt;strong>Deny&lt;/strong> all trafic to the storage account using the &lt;strong>DefaultAction&lt;/strong> parameter and then allow Azure Services to connect to it with the &lt;strong>Bypass parameter&lt;/strong>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Update-AzureRmStorageAccountNetworkRuleSet -ResourceGroupName $resourceGroupName -Name $storageAccountName -DefaultAction Deny -Bypass AzureServices,Metrics,Logging
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To allow an IP Address or an IP Address range you can run the following commands changing the value of the &lt;strong>IPAddressOrRange&lt;/strong> parameter:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Add-AzureRMStorageAccountNetworkRule -ResourceGroupName $resourceGroupName -AccountName $storageAccountName -IPAddressOrRange &lt;span style="color:#e6db74">&amp;#34;79.159.46.90&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell"> Add-AzureRMStorageAccountNetworkRule -ResourceGroupName $resourceGroupName -AccountName $storageAccountName -IPAddressOrRange &lt;span style="color:#e6db74">&amp;#34;79.159.46.0/24&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item><item><title>Use PowerShell to Enable Azure Analysis Services Firewall</title><link>https://carlos.mendible.com/2017/10/06/use-powershell-to-enable-azure-analysis-services-firewall/</link><pubDate>Fri, 06 Oct 2017 10:15:52 +0000</pubDate><guid>https://carlos.mendible.com/2017/10/06/use-powershell-to-enable-azure-analysis-services-firewall/</guid><description>&lt;p>Last week, firewall support was added to Azure Analysis Service (&lt;!-- raw HTML omitted -->&lt;a href="https://azure.microsoft.com/en-us/blog/azure-analysis-services-adds-firewall-support/">https://azure.microsoft.com/en-us/blog/azure-analysis-services-adds-firewall-support/&lt;/a>&lt;!-- raw HTML omitted -->). The thing is that, at the time of writing, there is no AzureRM cmdlet available to &lt;strong>Use PowerShell to Enable Azure Analysis Services Firewall&lt;/strong>&lt;/p>
+&lt;p>So, with the help of &lt;strong>&lt;!-- raw HTML omitted -->Resource Explorer&lt;!-- raw HTML omitted -->&lt;/strong> I found which properties must be added to the service (resource) in order to enable the firewall:&lt;/p>
+&lt;ul>
+&lt;li>ipV4FirewallSettings.firewallRules&lt;/li>
+&lt;li>ipV4FirewallSettings.enablePowerBIService&lt;/li>
+&lt;/ul>
+&lt;p>The following scripts use the &lt;strong>&lt;!-- raw HTML omitted -->Set-AzureRmResource&lt;!-- raw HTML omitted -->&lt;/strong> cmdlet to set those properties.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#66d9ef">Param&lt;/span>
+(
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$resourceGroupName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$analysisServicesName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$firewallRuleName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$rangeStart,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]&lt;span style="color:#66d9ef">[string]&lt;/span>$rangeEnd)
+&lt;span style="color:#66d9ef">function&lt;/span> Add-AnalysisServicesFirewallRule($props, $firewallRuleName, $rangeStart, $rangeEnd) {
+&lt;span style="color:#75715e"># Check if the rule exists&lt;/span>
+$existingRules = $props.ipV4FirewallSettings.firewallRules | `
+Where-Object {$_.firewallRuleName &lt;span style="color:#f92672">-eq&lt;/span> $firewallRuleName}
+&lt;span style="color:#75715e"># Add the rule if needed&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> ($existingRules &lt;span style="color:#f92672">-eq&lt;/span> $null) {
+&lt;span style="color:#75715e"># Create the rule object&lt;/span>
+$ruleProperties = &lt;span style="color:#66d9ef">[ordered]&lt;/span>@{
+&lt;span style="color:#e6db74">&amp;#34;firewallRuleName&amp;#34;&lt;/span> = $firewallRuleName;
+&lt;span style="color:#e6db74">&amp;#34;rangeStart&amp;#34;&lt;/span> = $rangeStart;
+&lt;span style="color:#e6db74">&amp;#34;rangeEnd&amp;#34;&lt;/span> = $rangeEnd;
+}
+$rule = New-Object -TypeName PSObject
+$rule | Add-Member -NotePropertyMembers $ruleProperties
+&lt;span style="color:#75715e"># Add the rule &lt;/span>
+$rules = &lt;span style="color:#66d9ef">[System.Collections.ArrayList]&lt;/span>$props.ipV4FirewallSettings.firewallRules
+$index = $rules.Add($rule)
+$props.ipV4FirewallSettings.firewallRules = $rules
+}
+}
+&lt;span style="color:#66d9ef">function&lt;/span> Add-FirewallSectionAndEnablePowerBIAccess($props) {
+&lt;span style="color:#75715e"># Check if ipV4FirewallSettings property exists&lt;/span>
+$ipV4FirewallSettingsProperty = $props | Get-Member -Name &lt;span style="color:#e6db74">&amp;#34;ipV4FirewallSettings&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> (!$ipV4FirewallSettingsProperty) {
+&lt;span style="color:#75715e"># Create the ipV4FirewallSettings property and enable the PowerBI Service&lt;/span>
+$props | Add-Member @{ipV4FirewallSettings = &lt;span style="color:#66d9ef">[ordered]&lt;/span> @{
+&lt;span style="color:#e6db74">&amp;#34;firewallRules&amp;#34;&lt;/span> = @()
+&lt;span style="color:#e6db74">&amp;#34;enablePowerBIService&amp;#34;&lt;/span> = $true
+}
+}
+}
+}
+&lt;span style="color:#75715e"># Get the AnalysisServices resource properties&lt;/span>
+$resource = Get-AzureRmResource `
+-ResourceGroupName $resourceGroupName `
+-ResourceType &lt;span style="color:#e6db74">&amp;#34;Microsoft.AnalysisServices/servers&amp;#34;&lt;/span> `
+-ResourceName $analysisServicesName
+$props = $resource.Properties
+Add-FirewallSectionAndEnablePowerBIAccess $props
+Add-AnalysisServicesFirewallRule $props $firewallRuleName $rangeStart $rangeEnd
+Set-AzureRmResource `
+-PropertyObject $props `
+-ResourceGroupName $resourceGroupName `
+-ResourceType &lt;span style="color:#e6db74">&amp;#34;Microsoft.AnalysisServices/servers&amp;#34;&lt;/span> `
+-ResourceName $analysisServicesName `
+-Force
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you save the script in a file (i.e Add-AzureRmAnalysisServicesFirewallRule.ps1) you can run it as follows:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">.\Add-AzureRmAnalysisServicesFirewallRule.ps1
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The script will ask you for:&lt;/p>
+&lt;ul>
+&lt;li>The resource group name where the Analysis Service is deployed&lt;/li>
+&lt;li>The Analysis Service Name&lt;/li>
+&lt;li>The firewall rule name&lt;/li>
+&lt;li>The starting ip&lt;/li>
+&lt;li>The end ip&lt;/li>
+&lt;/ul>
+&lt;p>Get the code &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted --> or download the file from the &lt;!-- raw HTML omitted -->Technet Gallery&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

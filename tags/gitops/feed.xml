@@ -1,0 +1,29 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>gitops on Code it Yourself...</title><link>https://carlos.mendible.com/tags/gitops/</link><description>Recent content in gitops on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 04 Aug 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/gitops/feed.xml" rel="self" type="application/rss+xml"/><item><title>GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux</title><link>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</link><pubDate>Sun, 04 Aug 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</guid><description>&lt;p>Recently I learned about GitOps which is a way to manage your Kubernetes clusters and the applications you run on top using Git. The idea is that you can declaratively describe the desired state of your systems in Git and roll out changes as soon as merges occur.&lt;/p>
+&lt;p>You can immediately see the main benefits of such an approach: Your Git repositories become the single source of truth for both your infrastructure and application code, allowing the teams to increase productivity and stability (you get the Git log to audit changes).&lt;/p>
+&lt;p>To implement GitOps you can use and configure &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> following some simple steps:&lt;/p>
+&lt;h2 id="1-download-the-helm-template">1. Download the helm template&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">helm fetch `
+--repo https&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//fluxcd.github.io/flux `
+--untar `
+--untardir .\.charts `
+--version 0.10.2 `
+flux
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-bake-the-template-with-your-repo-i-dont-use-tiller">2. Bake the template with your repo (I don&amp;rsquo;t use Tiller)&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">helm template flux `
+--set git.url=&lt;span style="color:#e6db74">&amp;#34;git@github.com:cmendible/kubernetes.samples&amp;#34;&lt;/span> `
+--set git.path=&lt;span style="color:#e6db74">&amp;#34;19.flux&amp;#34;&lt;/span> `
+--set git.pollInterval=&lt;span style="color:#e6db74">&amp;#34;5s&amp;#34;&lt;/span> `
+--namespace flux `
+--output-dir .\.baked .\.charts\fluxcd
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see I&amp;rsquo;m configuring &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> to use my k8s sample repo and the &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/19.flux">19.flux&lt;/a> folder, which contains a simple deployment &lt;a href="https://github.com/cmendible/kubernetes.samples/blob/main/19.flux/dni-function.yaml">file&lt;/a>, but of course you can have more resource definitions.&lt;/p>
+&lt;h2 id="3-deploy-the-configuration-to-your-cluster">3. Deploy the configuration to your cluster&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> .\.baked\flux\templates\
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-get-the-fluxctl-cli">4. Get the fluxctl CLI&lt;/h2>
+&lt;p>Download the &lt;a href="https://github.com/fluxcd/flux/releases/tag/1.13.2">fluxctl CLI&lt;/a>&lt;/p>
+&lt;h2 id="5-use-fluxctl-to-get-the-public-key">5. Use fluxctl to get the public key&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">fluxctl identity --k8s-fwd-ns flux
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This key is needed to sync your cluster state with the Git repository (GitHub): Copy the key you obtained and use it to create a &lt;strong>deploy key&lt;/strong> with write access on your GitHub repository (Settings &amp;gt; Deploy keys &amp;gt; Add deploy key &amp;gt; check Allow write access &amp;gt; paste the Flux public key &amp;gt; click Add key)&lt;/p>
+&lt;p>You are all set. If everything runs smooth you&amp;rsquo;ll find a new deployment in your cluster with the &lt;strong>dni-function&lt;/strong> name.&lt;/p>
+&lt;p>To learn more about GitOps check: &lt;a href="https://www.weave.works/technologies/gitops/">Weaveworks&lt;/a>&lt;/p>
+&lt;p>Click here to learn more about &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

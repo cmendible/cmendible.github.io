@@ -1,0 +1,42 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Container on Code it Yourself...</title><link>https://carlos.mendible.com/tags/container/</link><description>Recent content in Container on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 15 Oct 2017 12:16:08 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/container/feed.xml" rel="self" type="application/rss+xml"/><item><title>Prepare a .Net Core Console App for Docker</title><link>https://carlos.mendible.com/2017/10/15/prepare-a-net-core-console-app-for-docker/</link><pubDate>Sun, 15 Oct 2017 12:16:08 +0000</pubDate><guid>https://carlos.mendible.com/2017/10/15/prepare-a-net-core-console-app-for-docker/</guid><description>&lt;p>Last week I had the luck to attend the &lt;!-- raw HTML omitted -->Microsoft Azure OpenHack in Amsterdam&lt;!-- raw HTML omitted -->. We spent two and a half days learning a lot about kubernetes, Azure Container Services, Azure Container Registry, Azure OMS and Minecraft!&lt;/p>
+&lt;p>In one of the challenges we decided to implement a &lt;!-- raw HTML omitted -->sidecar container&lt;!-- raw HTML omitted --> for logging purposes. So using .NET Core we created a console application with proper handling of the&amp;quot;Control+C&amp;rdquo; and&amp;quot;Control+Break&amp;rdquo; key shortcuts.&lt;/p>
+&lt;p>The following code shows you the structure of the console app we created and will help you &lt;strong>Prepare a .Net Core Console App for Docker&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">namespace&lt;/span> docker.controlc
+{
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#75715e">// AutoResetEvent to signal when to exit the application.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">readonly&lt;/span> AutoResetEvent waitHandle = &lt;span style="color:#66d9ef">new&lt;/span> AutoResetEvent(&lt;span style="color:#66d9ef">false&lt;/span>);
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// Fire and forget
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Task.Run(() =&amp;gt;
+{
+&lt;span style="color:#66d9ef">var&lt;/span> random = &lt;span style="color:#66d9ef">new&lt;/span> Random(&lt;span style="color:#ae81ff">10&lt;/span>);
+&lt;span style="color:#66d9ef">while&lt;/span> (&lt;span style="color:#66d9ef">true&lt;/span>)
+{
+&lt;span style="color:#75715e">// Write here whatever your side car applications needs to do.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// In this sample we are just writing a random number to the Console (stdout)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Loop = {random.Next()}&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Sleep as long as you need.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Thread.Sleep(&lt;span style="color:#ae81ff">1000&lt;/span>);
+}
+});
+&lt;span style="color:#75715e">// Handle Control+C or Control+Break
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.CancelKeyPress += (o, e) =&amp;gt;
+{
+Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;Exit&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Allow the manin thread to continue and exit...
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> waitHandle.Set();
+};
+&lt;span style="color:#75715e">// Wait
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> waitHandle.WaitOne();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that we are handling the Console.CancelKeyPress because Docker does not behave as expected if you use the typical Console.ReadKey method to make the application run until a key is pressed.&lt;/p>
+&lt;p>Get the code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/docker.controlc">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

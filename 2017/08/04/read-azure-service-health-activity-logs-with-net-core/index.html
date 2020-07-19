@@ -1,0 +1,140 @@
+<!doctype html><html lang=en-us><head><title>Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2017/08/04/read-azure-service-health-activity-logs-with-net-core/><link rel=canonical href=https://carlos.mendible.com/2017/08/04/read-azure-service-health-activity-logs-with-net-core/ itemprop=url><meta name=url content="https://carlos.mendible.com/2017/08/04/read-azure-service-health-activity-logs-with-net-core/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content="Read Azure Service Health Activity Logs with .NET Core,azure,dotnet"><meta name=news_keywords content="azure, dotnet"><meta property="article:tag" content="ActivityLogs, HealthEndpoint, LogAnalytics, ServiceHealth"><meta property="og:title" content="Read Azure Service Health Activity Logs with .NET Core"><meta property="og:description" content="Read Azure Service Health Activity Logs with .NET Core"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2017/08/04/read-azure-service-health-activity-logs-with-net-core/"><meta property="og:image" content="https://carlos.mendible.com/wp-content/uploads/2017/08/loganalytics.png"><meta property="article:published_time" content="2017-08-04T08:50:13+00:00"><meta property="article:modified_time" content="2017-08-04T08:50:13+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/wp-content/uploads/2017/08/loganalytics.png"><meta name=twitter:title content="Read Azure Service Health Activity Logs with .NET Core"><meta name=twitter:description content="Read Azure Service Health Activity Logs with .NET Core"><meta name=generator content="Hugo 0.74.2"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>Read Azure Service Health Activity Logs with .NET Core</h1><aside><ul><li><time class=post-date datetime=2017-08-04T08:50:13Z>Aug 4, 2017</time></li><li>Categories:
+<em><a href=https://carlos.mendible.com/categories/azure>azure</a>
+,
+<a href=https://carlos.mendible.com/categories/dotnet>dotnet</a></em></li><li><em><a href=https://carlos.mendible.com/tags/activitylogs>#ActivityLogs</a>
+,
+<a href=https://carlos.mendible.com/tags/healthendpoint>#HealthEndpoint</a>
+,
+<a href=https://carlos.mendible.com/tags/loganalytics>#LogAnalytics</a>
+,
+<a href=https://carlos.mendible.com/tags/servicehealth>#ServiceHealth</a></em></li><li>3 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2017/08/04/read-azure-service-health-activity-logs-with-net-core/ title="Read Azure Service Health Activity Logs with .NET Core"><img src=https://carlos.mendible.com/wp-content/uploads/2017/08/loganalytics.png></a></div><p>This week there was a small outage within the Azure Data Lake Store service and as consequence I wondered how could I <strong>Read Azure Service Health Activity Logs with .NET Core.</strong></p><p>Let&rsquo;s go for it:</p><h2 id=1-create-a-folder-for-your-new-project>1. Create a folder for your new project</h2><hr><p>Open a command promt an run:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>mkdir azure.health
+</code></pre></div><h2 id=2-create-the-project>2. Create the project</h2><hr><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>cd azure.health
+dotnet new console
+</code></pre></div><h2 id=3-add-the-references-needed-to-query-azure-health-events>3. Add the references needed to query Azure Health Events</h2><hr><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>dotnet add package Microsoft.Azure.Insights -v 0.15.0-preview
+dotnet add package Microsoft.Azure.Management.Fluent
+dotnet restore
+</code></pre></div><p>Microsoft.Azure.Insights will let you query the events and Microsoft.Azure.Management.Fluent will let the application authenticate to Azure</p><h2 id=4-replace-the-content-of-programcs>4. Replace the content of Program.cs</h2><hr><p>Replace the content of Program.cs with the following contents:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-csharp data-lang=csharp><span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e>/// Query Azure.Health Events using .NET Core
+</span><span style=color:#75715e>/// The code was inspired on: How to Retrieve Azure Service Health Event Logs (https://code.msdn.microsoft.com/windowsapps/How-To-Programmatically-49df487d/view/Reviews)
+</span><span style=color:#75715e>/// by Matt Loflin
+</span><span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span><span style=color:#66d9ef>namespace</span> azure.health
+{
+    <span style=color:#66d9ef>using</span> System;
+    <span style=color:#66d9ef>using</span> System.Linq;
+    <span style=color:#66d9ef>using</span> Microsoft.Azure.Insights;
+    <span style=color:#66d9ef>using</span> Microsoft.Azure.Insights.Models;
+    <span style=color:#66d9ef>using</span> Microsoft.Azure.Management.Fluent;
+    <span style=color:#66d9ef>using</span> Microsoft.Azure.Management.ResourceManager.Fluent;
+    <span style=color:#66d9ef>using</span> Microsoft.Rest.Azure.OData;
+
+    <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Program</span>
+    {
+        <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> Main(<span style=color:#66d9ef>string</span>[] args)
+        {
+            <span style=color:#75715e>// The file with the Azure Service Principal Credentials.
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>var</span> authFile = <span style=color:#e6db74>&#34;my.azureauth&#34;</span>;
+
+            <span style=color:#75715e>// Parse the credentials from the file.
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>var</span> credentials = SdkContext.AzureCredentialsFactory.FromFile(authFile);
+
+            <span style=color:#75715e>// Authenticate with Azure
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>var</span> azure = Azure
+                .Configure()
+                .Authenticate(credentials)
+                .WithDefaultSubscription();
+
+            <span style=color:#75715e>// Create an InsightsClient instance.
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>var</span> client = <span style=color:#66d9ef>new</span> InsightsClient(credentials);
+
+            <span style=color:#75715e>// If we subscription is not set the API call will fail. 
+</span><span style=color:#75715e></span>            client.SubscriptionId = credentials.DefaultSubscriptionId;
+
+            <span style=color:#75715e>// Create the OData filter for a time interval and the Azure.Health Provider.
+</span><span style=color:#75715e></span>            <span style=color:#75715e>// Search back one day.
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>var</span> days = -<span style=color:#ae81ff>1</span>;
+            <span style=color:#66d9ef>var</span> endDateTime = DateTime.Now;
+            <span style=color:#66d9ef>var</span> startDateTime = endDateTime.AddDays(days);
+            <span style=color:#66d9ef>string</span> filterString = FilterString.Generate&lt;EventDataForFilter&gt;(eventData =&gt;
+                (eventData.EventTimestamp &gt;= startDateTime) &amp;&amp;
+                (eventData.EventTimestamp &lt;= endDateTime) &amp;<span style=color:#960050;background-color:#1e0010>#</span><span style=color:#ae81ff>038</span>;&amp;<span style=color:#960050;background-color:#1e0010>#</span><span style=color:#ae81ff>038</span>;
+                (eventData.ResourceProvider == <span style=color:#e6db74>&#34;Azure.Health&#34;</span>));
+
+            <span style=color:#75715e>// Get the Events from Azure.
+</span><span style=color:#75715e></span>            <span style=color:#66d9ef>var</span> response = client.Events.List(filterString);
+            <span style=color:#66d9ef>while</span> (response != <span style=color:#66d9ef>null</span> &amp;<span style=color:#960050;background-color:#1e0010>#</span><span style=color:#ae81ff>038</span>;&amp;<span style=color:#960050;background-color:#1e0010>#</span><span style=color:#ae81ff>038</span>; response.Any())
+            {
+                <span style=color:#66d9ef>foreach</span> (<span style=color:#66d9ef>var</span> eventData <span style=color:#66d9ef>in</span> response)
+                {
+                    <span style=color:#75715e>// Set the Console Color according to the Event Status. 
+</span><span style=color:#75715e></span>                    <span style=color:#66d9ef>if</span> (eventData.Status.Value != <span style=color:#e6db74>&#34;Resolved&#34;</span> &amp;<span style=color:#960050;background-color:#1e0010>#</span><span style=color:#ae81ff>038</span>;&amp;<span style=color:#960050;background-color:#1e0010>#</span><span style=color:#ae81ff>038</span>;
+                        eventData.Level &lt;= EventLevel.Warning)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                    }
+                    <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span> (eventData.Status.Value == <span style=color:#e6db74>&#34;Resolved&#34;</span>)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                    }
+                    <span style=color:#66d9ef>else</span>
+                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+
+                    <span style=color:#75715e>// Write event data to the console
+</span><span style=color:#75715e></span>                    Console.WriteLine(<span style=color:#e6db74>$&#34;{eventData.EventTimestamp.ToLocalTime()} - {eventData.ResourceProviderName.Value} - {eventData.OperationName.Value}&#34;</span>);
+                    Console.WriteLine(<span style=color:#e6db74>$&#34;Status:\t {eventData.Status.Value}&#34;</span>);
+                    Console.WriteLine(<span style=color:#e6db74>$&#34;Level:\t {eventData.Level.ToString()}&#34;</span>);
+                    Console.WriteLine(<span style=color:#e6db74>$&#34;CorrelationId:\t {eventData.CorrelationId}&#34;</span>);
+                    Console.WriteLine(<span style=color:#e6db74>$&#34;Resource Type:\t {eventData.ResourceType.Value}&#34;</span>);
+                    Console.WriteLine(<span style=color:#e6db74>$&#34;Description:\t {eventData.Description}&#34;</span>);
+                }
+
+                <span style=color:#75715e>// Get more events if available.
+</span><span style=color:#75715e></span>                <span style=color:#66d9ef>if</span> (!<span style=color:#66d9ef>string</span>.IsNullOrEmpty(response.NextPageLink))
+                {
+                    response = client.Events.ListNext(response.NextPageLink);
+                }
+                <span style=color:#66d9ef>else</span>
+                {
+                    response = <span style=color:#66d9ef>null</span>;
+                }
+            }
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(<span style=color:#e6db74>&#34;No more events...&#34;</span>);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+    }
+
+    <span style=color:#75715e>// EventData Filter. 
+</span><span style=color:#75715e></span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>EventDataForFilter</span>
+    {
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// Event Timestamp
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>public</span> DateTime EventTimestamp { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+
+        <span style=color:#75715e>/// &lt;summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// Resource Provider
+</span><span style=color:#75715e></span>        <span style=color:#75715e>/// &lt;/summary&gt;
+</span><span style=color:#75715e></span>        <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>string</span> ResourceProvider { <span style=color:#66d9ef>get</span>; <span style=color:#66d9ef>set</span>; }
+    }
+}
+</code></pre></div><h2 id=5-create-the-myazureauth-file>5. Create the my.azureauth file</h2><hr><p>To authenticate you&rsquo;ll need a my.azureauth file with the following format:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml>subscription=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+client=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+tenant=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+key=XXXXXX
+managementURI=https\://management.core.windows.net/
+baseURL=https\://management.azure.com/
+authURL=https\://login.windows.net/
+https\://graph.windows.net/
+</code></pre></div><p>As you can see you&rsquo;ll be needing your <strong>Azure Subscription Id</strong>, <strong>Tenand Id</strong> and a valid <strong>Service Principal</strong> and <strong>Key</strong>.</p><p>If you check my previous post: Create a Service Principal and write required parameters to a .azureauth file and run the script you&rsquo;ll get a file with the credentials.</p><h2 id=6-run-the-application>6. Run the application</h2><hr><p>Run the following command:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-powershell data-lang=powershell>dotnet run
+</code></pre></div><p>You can get the code here.</p><p>Hope it helps!</p></article><section class=post-nav><ul><li><a href=https://carlos.mendible.com/2017/08/02/create-service-principal-write-required-parameters-to-azureauth-file/><i class="fa fa-chevron-circle-left"></i>Create a Service Principal and write required parameters to a .azureauth file</a></li><li><a href=https://carlos.mendible.com/2017/08/09/step-by-step-net-core-and-azure-search/>Step by step: .Net Core and Azure Search <i class="fa fa-chevron-circle-right"></i></a></li></ul></section><section class=comments-block><button id=show-comments style=display:none><i class="fa fa-comments"></i></button></section><section id=disqus_thread></section><script>(function(){if(window.location.hostname=="localhost")
+return;var disqus_loaded=false;var disqus_shortname='codeityourself';var disqus_button=document.getElementById("show-comments");var disqus_title='Read Azure Service Health Activity Logs with .NET Core'
+var disqus_autoload=true;disqus_button.style.display="";if(disqus_autoload){disqus();}else{disqus_button.addEventListener("click",disqus,false);}
+function disqus(){if(!disqus_loaded){disqus_loaded=true;var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src="//"+disqus_shortname+".disqus.com/embed.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e);document.getElementById("show-comments").style.display="none";}}
+var hash=window.location.hash.substr(1);if(hash.length>8){if(hash.substring(0,8)=="comment-"){disqus();}}
+if(/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)){disqus();}})();</script></main><footer><h6>Copyright © 2020 - Carlos Mendible |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://carlos.mendible.com/feed.xml>Subscribe</a></h6></footer></div><script src=https://carlos.mendible.com/js/scripts.js></script><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-11243417-1','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

@@ -1,0 +1,83 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Git on Code it Yourself...</title><link>https://carlos.mendible.com/tags/git/</link><description>Recent content in Git on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 04 Aug 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/git/feed.xml" rel="self" type="application/rss+xml"/><item><title>GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux</title><link>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</link><pubDate>Sun, 04 Aug 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</guid><description>&lt;p>Recently I learned about GitOps which is a way to manage your Kubernetes clusters and the applications you run on top using Git. The idea is that you can declaratively describe the desired state of your systems in Git and roll out changes as soon as merges occur.&lt;/p>
+&lt;p>You can immediately see the main benefits of such an approach: Your Git repositories become the single source of truth for both your infrastructure and application code, allowing the teams to increase productivity and stability (you get the Git log to audit changes).&lt;/p>
+&lt;p>To implement GitOps you can use and configure &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> following some simple steps:&lt;/p>
+&lt;h2 id="1-download-the-helm-template">1. Download the helm template&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">helm fetch `
+--repo https&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//fluxcd.github.io/flux `
+--untar `
+--untardir .\.charts `
+--version 0.10.2 `
+flux
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-bake-the-template-with-your-repo-i-dont-use-tiller">2. Bake the template with your repo (I don&amp;rsquo;t use Tiller)&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">helm template flux `
+--set git.url=&lt;span style="color:#e6db74">&amp;#34;git@github.com:cmendible/kubernetes.samples&amp;#34;&lt;/span> `
+--set git.path=&lt;span style="color:#e6db74">&amp;#34;19.flux&amp;#34;&lt;/span> `
+--set git.pollInterval=&lt;span style="color:#e6db74">&amp;#34;5s&amp;#34;&lt;/span> `
+--namespace flux `
+--output-dir .\.baked .\.charts\fluxcd
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see I&amp;rsquo;m configuring &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> to use my k8s sample repo and the &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/19.flux">19.flux&lt;/a> folder, which contains a simple deployment &lt;a href="https://github.com/cmendible/kubernetes.samples/blob/main/19.flux/dni-function.yaml">file&lt;/a>, but of course you can have more resource definitions.&lt;/p>
+&lt;h2 id="3-deploy-the-configuration-to-your-cluster">3. Deploy the configuration to your cluster&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> .\.baked\flux\templates\
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-get-the-fluxctl-cli">4. Get the fluxctl CLI&lt;/h2>
+&lt;p>Download the &lt;a href="https://github.com/fluxcd/flux/releases/tag/1.13.2">fluxctl CLI&lt;/a>&lt;/p>
+&lt;h2 id="5-use-fluxctl-to-get-the-public-key">5. Use fluxctl to get the public key&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">fluxctl identity --k8s-fwd-ns flux
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This key is needed to sync your cluster state with the Git repository (GitHub): Copy the key you obtained and use it to create a &lt;strong>deploy key&lt;/strong> with write access on your GitHub repository (Settings &amp;gt; Deploy keys &amp;gt; Add deploy key &amp;gt; check Allow write access &amp;gt; paste the Flux public key &amp;gt; click Add key)&lt;/p>
+&lt;p>You are all set. If everything runs smooth you&amp;rsquo;ll find a new deployment in your cluster with the &lt;strong>dni-function&lt;/strong> name.&lt;/p>
+&lt;p>To learn more about GitOps check: &lt;a href="https://www.weave.works/technologies/gitops/">Weaveworks&lt;/a>&lt;/p>
+&lt;p>Click here to learn more about &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Backup your Team Services Git Repositories with VSTS Vault</title><link>https://carlos.mendible.com/2016/06/01/backup-team-services-git-repositories-vsts-vault/</link><pubDate>Wed, 01 Jun 2016 13:17:22 +0000</pubDate><guid>https://carlos.mendible.com/2016/06/01/backup-team-services-git-repositories-vsts-vault/</guid><description>&lt;p>&lt;strong>Backup your Team Services Git Repositories with VSTS Vault&lt;/strong>: A simple windows service or console application designed to keep a local copy of all your code.&lt;/p>
+&lt;p>Since January 2016 we&amp;rsquo;ve moved the source code of more than 30 projects to Git repositories hosted by &lt;!-- raw HTML omitted -->Visual Studio Team Services&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Moving to the cloud has some downsides and one thing that kept us thinking was the need to be sure that in the event of an internet connection failure or a Team Services outage we would be able to access our code and deploy hot fixes for our applications as part of our data protection plan.&lt;/p>
+&lt;p>Surfing on the web I found this post: &lt;!-- raw HTML omitted -->Free Visual studio online backup tool&lt;!-- raw HTML omitted --> that talks about &lt;!-- raw HTML omitted -->VSOBackup&lt;!-- raw HTML omitted --> a free tool to create backups of your code by dates.&lt;/p>
+&lt;p>We needed a solution capable of minimizing the RPO (Recovery Point Objetive) and where the backups could be connected to an on-premises Git Server such as &lt;!-- raw HTML omitted -->GitBlit&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Those are the main reason we could not use &lt;!-- raw HTML omitted -->VSOBackup&lt;!-- raw HTML omitted --> and why, inspired by such a great code base, I created a Windows service: &lt;!-- raw HTML omitted -->VSTS.Vault&lt;!-- raw HTML omitted --> with the capability of cloning your Git repositories and then pulling for changes every 5 minutes which is the default setting.&lt;/p>
+&lt;p>Vsts.Vault is a Windows Service and to use it you&amp;rsquo;ll need to follow these steps:&lt;/p>
+&lt;h2 id="1-create-alternate-credentials-for-your-visual-studio-team-services-account">1. Create Alternate Credentials for your Visual Studio Team Services Account&lt;/h2>
+&lt;hr>
+&lt;p>If you haven&amp;rsquo;t setup alternate credentials for your &lt;!-- raw HTML omitted -->Visual Studio Team Services&lt;!-- raw HTML omitted --> Account follow the instructions of the Alternate Access Credentials section of the following doc: &lt;!-- raw HTML omitted -->Client Authentication Options&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="2-configure-vstsvault-settings">2. Configure VSTS.Vault Settings&lt;/h2>
+&lt;hr>
+&lt;p>Modify as needed the following parameters in the Vsts.Vault.exe.config file&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml"> &lt;span style="color:#f92672">&amp;lt;applicationSettings&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Vsts.Vault.WindowsService.Properties.Settings&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;setting&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;BackupInterval&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">serializeAs=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;String&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;value&amp;gt;&lt;/span>300000&lt;span style="color:#f92672">&amp;lt;/value&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/setting&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;setting&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;ServiceName&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">serializeAs=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;String&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;value&amp;gt;&lt;/span>Vsts.Vault&lt;span style="color:#f92672">&amp;lt;/value&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/setting&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Vsts.Vault.WindowsService.Properties.Settings&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/applicationSettings&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;VaultConfiguration&lt;/span>
+&lt;span style="color:#a6e22e">Username=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[User name as specified in your Team Services Alternate Authentication Credentials]&amp;#34;&lt;/span>
+&lt;span style="color:#a6e22e">UserEmail=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[An email required just required by Git pull through LibGit2Sharp]&amp;#34;&lt;/span>
+&lt;span style="color:#a6e22e">Password=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[Password as specified in your Team Services Alternate Authentication Credentials]&amp;#34;&lt;/span>
+&lt;span style="color:#a6e22e">Account=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[The name of your Team Services account (Not the full Url)]&amp;#34;&lt;/span>
+&lt;span style="color:#a6e22e">TargetFolder=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[Full path of the folder where the copy of your repositories will live]&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-install-the-vstsvault-service">3. Install the VSTS.Vault service&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command&lt;/p>
+&lt;pre>&lt;code class="language-powershellinstallutil" data-lang="powershellinstallutil">&lt;/code>&lt;/pre>&lt;p>If you look through the &lt;a href="https://github.com/cmendible/Vsts.Vault">VSTS.Vault&lt;/a> code base you&amp;rsquo;ll see some interesting features:&lt;/p>
+&lt;ol>
+&lt;li>Use of MEF as to implement dependency injection&lt;/li>
+&lt;li>Use of &lt;a href="https://github.com/libgit2/libgit2sharp">LibGit2Sharp&lt;/a>&lt;/li>
+&lt;li>Use of &lt;!-- raw HTML omitted -->Visual Studio Team Services&lt;!-- raw HTML omitted --> REST API&lt;/li>
+&lt;li>And the use of the Retry Pattern&lt;/li>
+&lt;/ol>
+&lt;p>To finish this post I have to say that We&amp;rsquo;ve been running the service now for more than a month and connected the resulting repository backups to &lt;!-- raw HTML omitted -->GitBlit&lt;!-- raw HTML omitted --> without issues.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>VSTS Git Credential Manager</title><link>https://carlos.mendible.com/2016/02/28/vsts-git-credential-manager/</link><pubDate>Sun, 28 Feb 2016 22:12:41 +0000</pubDate><guid>https://carlos.mendible.com/2016/02/28/vsts-git-credential-manager/</guid><description>&lt;p>Since the year started I&amp;rsquo;ve been working hard with &lt;strong>Visual Studio Team Services (VSTS)&lt;/strong> with &lt;strong>Git&lt;/strong> as source control. I was getting tired of entering my git credentials on each clone, pull or push, on Windows or Mac OS X, so this weekend I decided to surf the web and look for a multi-platform solution.&lt;/p>
+&lt;p>I found exactly what I needed: &lt;strong>Git Credential Manager (GCM)&lt;/strong> a Git credential helper that assists with multi-factor authentication and the best thing is that it works for &lt;a href="https://github.com/Microsoft/Git-Credential-Manager-for-Windows">windows&lt;/a>, &lt;a href="https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/blob/master/Install.md">mac or linux&lt;/a>.&lt;/p>
+&lt;p>To try it on my mac I performed the following steps:&lt;/p>
+&lt;ol>
+&lt;li>brew update&lt;/li>
+&lt;li>brew install git-credential-manager&lt;/li>
+&lt;li>git-credential-manager install&lt;/li>
+&lt;/ol>
+&lt;p>Then I tried to clone a repo hosted in VSTS and the GCM opened a web browser to let me authenticate to my account using OAuth 2.0 as shown in the following picture:&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/wp-content/uploads/2016/02/gcm.jpg" alt="git credential manager">&lt;/p>
+&lt;p>Once authenticated, the clone command completed without issues and could pull or push without Git asking for credentials.&lt;/p>
+&lt;p>Tomorrow I&amp;rsquo;ll try it on Windows!&lt;/p>
+&lt;p>Hope it helps!&lt;/p>
+&lt;p>&lt;strong>UPDATE:&lt;/strong>&lt;/p>
+&lt;p>I did try it on Windows and everything worked like a charm!&lt;/p></description></item></channel></rss>

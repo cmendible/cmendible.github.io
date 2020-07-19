@@ -1,0 +1,365 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>EntityFrameworkCore on Code it Yourself...</title><link>https://carlos.mendible.com/tags/entityframeworkcore/</link><description>Recent content in EntityFrameworkCore on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Mon, 25 Jul 2016 16:07:49 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/entityframeworkcore/feed.xml" rel="self" type="application/rss+xml"/><item><title>Step by step: Entity Framework Core and Shadow Properties</title><link>https://carlos.mendible.com/2016/07/25/step-by-step-entity-framework-core-and-shadow-properties/</link><pubDate>Mon, 25 Jul 2016 16:07:49 +0000</pubDate><guid>https://carlos.mendible.com/2016/07/25/step-by-step-entity-framework-core-and-shadow-properties/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to create a small console application with a &lt;strong>Step by step: Entity Framework Core and Shadow Properties&lt;/strong> example.&lt;/p>
+&lt;p>We&amp;rsquo;ll be modifying the code from my previous post: Step by step: &lt;!-- raw HTML omitted -->.NET Core and Entity Framework Core&lt;!-- raw HTML omitted --> to make the Student entity auditable without creating public/protected properties or private fields to hold the typical audit info (CreatedBy, CreatedAt, UpdatedBy and UpdatedAt) database fields.&lt;/p>
+&lt;p>This means that your domain entities won&amp;rsquo;t expose the audit information which almost in every case is not part of the business behavior you&amp;rsquo;ll be trying to model.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir efcore.shadowproperties.console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd efcore.shadowproperties.console
+dotnet new
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-a-settings-file">3. Create a settings file&lt;/h2>
+&lt;hr>
+&lt;p>Create an &lt;strong>appsettings.json&lt;/strong> file to hold your connection string information. We&amp;rsquo;ll be using **SQLite **for this example, so add these lines:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;ConnectionStrings&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Sample&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Data Source=sample.db&amp;#34;&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-modify-the-project-file">4. Modify the project file&lt;/h2>
+&lt;hr>
+&lt;p>Modify the &lt;strong>project.json&lt;/strong> to add the &lt;strong>EntityFrameworkCore&lt;/strong> dependencies and also specify that the &lt;strong>appsettings.json&lt;/strong> file must be copied to the output (&lt;strong>buildOptions&lt;/strong>section) so it becomes available to the application once you build it.&lt;/p>
+&lt;p>Note that you&amp;rsquo;ll also have to add &lt;strong>System.Security.Claims&lt;/strong> to simulate an authenticated user:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0-*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;buildOptions&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;debugType&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;portable&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;emitEntryPoint&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;copyToOutput&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;include&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Extensions.Configuration&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Extensions.Configuration.Json&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.EntityFrameworkCore&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.EntityFrameworkCore.Sqlite&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;System.Security.Claims&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;4.0.1&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;frameworks&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;netcoreapp1.0&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.NETCore.App&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;platform&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;imports&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dnxcore50&amp;#34;&lt;/span>
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-restore-packages">5. Restore packages&lt;/h2>
+&lt;hr>
+&lt;p>You just modified the &lt;strong>project.json&lt;/strong> file with new dependencies so please restore the packages with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-create-a-marker-interface-in-order-to-make-your-entities-auditable">6. Create a marker interface in order to make your entities auditable&lt;/h2>
+&lt;hr>
+&lt;p>Every entity you mark with this interface will save audit info to the database.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> ConsoleApplication
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> IAuditable
+{
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-create-the-entity-framework-context">7. Create the Entity Framework context&lt;/h2>
+&lt;hr>
+&lt;p>Create a &lt;strong>SampleContext.cs&lt;/strong> file and copy the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> ConsoleApplication
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Reflection;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.EntityFrameworkCore;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.EntityFrameworkCore.ChangeTracking;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Security.Claims;
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// The entity framework context with a Students DbSet
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">StudentsContext&lt;/span> : DbContext
+{
+&lt;span style="color:#66d9ef">public&lt;/span> StudentsContext(DbContextOptions&amp;lt;StudentsContext&amp;gt; options)
+: &lt;span style="color:#66d9ef">base&lt;/span>(options)
+{ }
+&lt;span style="color:#66d9ef">public&lt;/span> DbSet&amp;lt;Student&amp;gt; Students { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// We overrride OnModelCreating to map the audit properties for every entity marked with the
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// IAuditable interface.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">protected&lt;/span> &lt;span style="color:#66d9ef">override&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> OnModelCreating(ModelBuilder modelBuilder)
+{
+&lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> entityType &lt;span style="color:#66d9ef">in&lt;/span> modelBuilder.Model.GetEntityTypes()
+.Where(e =&amp;gt; &lt;span style="color:#66d9ef">typeof&lt;/span>(IAuditable).IsAssignableFrom(e.ClrType)))
+{
+modelBuilder.Entity(entityType.ClrType)
+.Property&amp;lt;DateTime&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;CreatedAt&amp;#34;&lt;/span>);
+modelBuilder.Entity(entityType.ClrType)
+.Property&amp;lt;DateTime&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;UpdatedAt&amp;#34;&lt;/span>);
+modelBuilder.Entity(entityType.ClrType)
+.Property&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;CreatedBy&amp;#34;&lt;/span>);
+modelBuilder.Entity(entityType.ClrType)
+.Property&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;UpdatedBy&amp;#34;&lt;/span>);
+}
+&lt;span style="color:#66d9ef">base&lt;/span>.OnModelCreating(modelBuilder);
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Override SaveChanges so we can call the new AuditEntities method.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">override&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> SaveChanges()
+{
+&lt;span style="color:#66d9ef">this&lt;/span>.AuditEntities();
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">base&lt;/span>.SaveChanges();
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Method that will set the Audit properties for every added or modified Entity marked with the
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// IAuditable interface.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> AuditEntities()
+{
+&lt;span style="color:#75715e">// Get the authenticated user name
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> userName = &lt;span style="color:#66d9ef">string&lt;/span>.Empty;
+&lt;span style="color:#66d9ef">var&lt;/span> user = ClaimsPrincipal.Current;
+&lt;span style="color:#66d9ef">if&lt;/span> (user != &lt;span style="color:#66d9ef">null&lt;/span>)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> identity = user.Identity;
+&lt;span style="color:#66d9ef">if&lt;/span> (identity != &lt;span style="color:#66d9ef">null&lt;/span>)
+{
+userName = identity.Name;
+}
+}
+&lt;span style="color:#75715e">// Get current date &amp;amp; time
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> DateTime now = DateTime.Now;
+&lt;span style="color:#75715e">// For every changed entity marked as IAditable set the values for the audit properties
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">foreach&lt;/span> (EntityEntry&amp;lt;IAuditable&amp;gt; entry &lt;span style="color:#66d9ef">in&lt;/span> ChangeTracker.Entries&amp;lt;IAuditable&amp;gt;())
+{
+&lt;span style="color:#75715e">// If the entity was added.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (entry.State == EntityState.Added)
+{
+entry.Property(&lt;span style="color:#e6db74">&amp;#34;CreatedBy&amp;#34;&lt;/span>).CurrentValue = userName;
+entry.Property(&lt;span style="color:#e6db74">&amp;#34;CreatedAt&amp;#34;&lt;/span>).CurrentValue = now;
+}
+&lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (entry.State == EntityState.Modified) &lt;span style="color:#75715e">// If the entity was updated
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> {
+entry.Property(&lt;span style="color:#e6db74">&amp;#34;UpdatedBy&amp;#34;&lt;/span>).CurrentValue = userName;
+entry.Property(&lt;span style="color:#e6db74">&amp;#34;UpdatedAt&amp;#34;&lt;/span>).CurrentValue = now;
+}
+}
+}
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// A factory to create an instance of the StudentsContext
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">StudentsContextFactory&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> StudentsContext Create(&lt;span style="color:#66d9ef">string&lt;/span> connectionString)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> optionsBuilder = &lt;span style="color:#66d9ef">new&lt;/span> DbContextOptionsBuilder&amp;lt;StudentsContext&amp;gt;();
+optionsBuilder.UseSqlite(connectionString);
+&lt;span style="color:#66d9ef">var&lt;/span> context = &lt;span style="color:#66d9ef">new&lt;/span> StudentsContext(optionsBuilder.Options);
+context.Database.EnsureCreated();
+&lt;span style="color:#66d9ef">return&lt;/span> context;
+}
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// A simple class representing a Student.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// We&amp;#39;ve marked this entity as IAditable so we can save audit info for the entity.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Student&lt;/span> : IAuditable
+{
+&lt;span style="color:#66d9ef">public&lt;/span> Student()
+{
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> Id { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Name { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> LastName { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that the beauty of shadow properties is that both the IAuditable interface and the Student entity don&amp;rsquo;t expose Audit info. We are mapping properties that are not represented in our domain model!&lt;/p>
+&lt;h2 id="8-modify-programcs">8. Modify Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> ConsoleApplication
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// Enable to app to read json setting files
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> builder = &lt;span style="color:#66d9ef">new&lt;/span> ConfigurationBuilder()
+.AddJsonFile(&lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">false&lt;/span>, reloadOnChange: &lt;span style="color:#66d9ef">true&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> configuration = builder.Build();
+&lt;span style="color:#75715e">// Get the connection string
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> connectionString = configuration.GetConnectionString(&lt;span style="color:#e6db74">&amp;#34;Sample&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// With this code we are going to simulate an authenticated user.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> ClaimsPrincipal.ClaimsPrincipalSelector = () =&amp;gt;
+{
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> ClaimsPrincipal(&lt;span style="color:#66d9ef">new&lt;/span> ClaimsIdentity(&lt;span style="color:#66d9ef">new&lt;/span> GenericIdentity(&lt;span style="color:#e6db74">&amp;#34;cmendibl3&amp;#34;&lt;/span>)));
+};
+&lt;span style="color:#75715e">// Create a Student instance
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> user = &lt;span style="color:#66d9ef">new&lt;/span> Student() { Name = &lt;span style="color:#e6db74">&amp;#34;Carlos&amp;#34;&lt;/span>, LastName = &lt;span style="color:#e6db74">&amp;#34;Mendible&amp;#34;&lt;/span> };
+&lt;span style="color:#75715e">// Add and Save the student in the database
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> context = StudentsContextFactory.Create(connectionString))
+{
+context.Add(user);
+context.SaveChanges();
+}
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Student was saved in the database with id: {user.Id}&amp;#34;&lt;/span>);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Line 22 is the one were we simulate an authenticated user.&lt;/p>
+&lt;h2 id="9-build">9. Build&lt;/h2>
+&lt;hr>
+&lt;p>Build the application with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="10-run">10. Run&lt;/h2>
+&lt;hr>
+&lt;p>You are good to go so run the application&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you check your SQlite database with a tool such as &lt;!-- raw HTML omitted -->DB Browser for SQlite&lt;!-- raw HTML omitted --> you&amp;rsquo;ll see the four Audit properties in the Students table as shown in the following picture:&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>You can get the code here: &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/efcore.shadowproperties.console">https://github.com/cmendible/dotnetcore.samples/tree/main/efcore.shadowproperties.console&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Step by step: .NET Core and Entity Framework Core</title><link>https://carlos.mendible.com/2016/07/11/step-by-step-dotnet-core-and-entity-framework-core/</link><pubDate>Mon, 11 Jul 2016 15:14:26 +0000</pubDate><guid>https://carlos.mendible.com/2016/07/11/step-by-step-dotnet-core-and-entity-framework-core/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to create a small console application with a &lt;strong>Step by step: .NET Core and Entity Framework Core&lt;/strong> example.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir efcore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd efcore
+dotnet new
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-a-settings-file">3. Create a settings file&lt;/h2>
+&lt;hr>
+&lt;p>Create an &lt;strong>appsettings.json&lt;/strong> file to hold your connection string information. We&amp;rsquo;ll be using **SQLite **for this example, so add these lines:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;ConnectionStrings&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Sample&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Data Source=sample.db&amp;#34;&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-modify-the-project-file">4. Modify the project file&lt;/h2>
+&lt;hr>
+&lt;p>Modify the &lt;strong>project.json&lt;/strong> to add the &lt;strong>EntityFrameworkCore&lt;/strong> dependencies and also specify that the &lt;strong>appsettings.json&lt;/strong> file must be copied to the output (**buildOptions **section) so it becomes available to the application once you build it.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0-*&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;buildOptions&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;debugType&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;portable&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;emitEntryPoint&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;copyToOutput&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;include&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Extensions.Configuration&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Extensions.Configuration.Json&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.EntityFrameworkCore&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.EntityFrameworkCore.Sqlite&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>
+},
+&lt;span style="color:#f92672">&amp;#34;frameworks&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;netcoreapp1.0&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;dependencies&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Microsoft.NETCore.App&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;platform&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;1.0.0&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;imports&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dnxcore50&amp;#34;&lt;/span>
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-restore-packages">5. Restore packages&lt;/h2>
+&lt;hr>
+&lt;p>You just modified the &lt;strong>project.json&lt;/strong> file with new dependencies so please restore the packages with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-create-the-entity-framework-context">6. Create the Entity Framework context&lt;/h2>
+&lt;hr>
+&lt;p>Create a &lt;strong>SampleContext.cs&lt;/strong> file and copy the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> ConsoleApplication
+{
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.EntityFrameworkCore;
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// The entity framework context with a Students DbSet
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">StudentsContext&lt;/span> : DbContext
+{
+&lt;span style="color:#66d9ef">public&lt;/span> StudentsContext(DbContextOptions&amp;lt;StudentsContext&amp;gt; options)
+: &lt;span style="color:#66d9ef">base&lt;/span>(options)
+{ }
+&lt;span style="color:#66d9ef">public&lt;/span> DbSet&amp;lt;Student&amp;gt; Students { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// A factory to create an instance of the StudentsContext
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">StudentsContextFactory&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> StudentsContext Create(&lt;span style="color:#66d9ef">string&lt;/span> connectionString)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> optionsBuilder = &lt;span style="color:#66d9ef">new&lt;/span> DbContextOptionsBuilder&amp;lt;StudentsContext&amp;gt;();
+optionsBuilder.UseSqlite(connectionString);
+&lt;span style="color:#75715e">// Ensure that the SQLite database and sechema is created!
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> context = &lt;span style="color:#66d9ef">new&lt;/span> StudentsContext(optionsBuilder.Options);
+context.Database.EnsureCreated();
+&lt;span style="color:#66d9ef">return&lt;/span> context;
+}
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// A simple class representing a Student
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Student&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> Student()
+{
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> Id { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Name { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> LastName { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-modify-programcs">7. Modify Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> ConsoleApplication
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Extensions.Configuration;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// Enable to app to read json setting files
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> builder = &lt;span style="color:#66d9ef">new&lt;/span> ConfigurationBuilder()
+.AddJsonFile(&lt;span style="color:#e6db74">&amp;#34;appsettings.json&amp;#34;&lt;/span>, optional: &lt;span style="color:#66d9ef">false&lt;/span>, reloadOnChange: &lt;span style="color:#66d9ef">true&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> configuration = builder.Build();
+&lt;span style="color:#75715e">// Get the connection string
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> connectionString = configuration.GetConnectionString(&lt;span style="color:#e6db74">&amp;#34;Sample&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Create a Student instance
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> user = &lt;span style="color:#66d9ef">new&lt;/span> Student() { Name = &lt;span style="color:#e6db74">&amp;#34;Carlos&amp;#34;&lt;/span>, LastName = &lt;span style="color:#e6db74">&amp;#34;Mendible&amp;#34;&lt;/span> };
+&lt;span style="color:#75715e">// Add and Save the student in the database
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> context = StudentsContextFactory.Create(connectionString))
+{
+context.Add(user);
+context.SaveChanges();
+}
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Student was saved in the database with id: {user.Id}&amp;#34;&lt;/span>);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-build">8. Build&lt;/h2>
+&lt;hr>
+&lt;p>Build the application with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="9-run">9. Run&lt;/h2>
+&lt;hr>
+&lt;p>You are good to go so run the application&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can get the code here: &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/efcore.sqlite.console">https://github.com/cmendible/dotnetcore.samples/tree/main/efcore.sqlite.console&lt;/a>&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

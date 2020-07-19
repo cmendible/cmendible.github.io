@@ -1,0 +1,92 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CheatSheet on Code it Yourself...</title><link>https://carlos.mendible.com/tags/cheatsheet/</link><description>Recent content in CheatSheet on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 17 Mar 2018 17:23:14 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/cheatsheet/feed.xml" rel="self" type="application/rss+xml"/><item><title>My kubectl Cheat Sheet</title><link>https://carlos.mendible.com/2018/03/17/my-kubectl-cheat-sheet/</link><pubDate>Sat, 17 Mar 2018 17:23:14 +0000</pubDate><guid>https://carlos.mendible.com/2018/03/17/my-kubectl-cheat-sheet/</guid><description>&lt;p>This is a small &lt;strong>&lt;a href="https://kubernetes.io/docs/reference/kubectl/overview/">kubectl&lt;/a> Cheat Sheet&lt;/strong> with the list of commands and settings I use, almost on a daily basis, when working with kubernetes.&lt;/p>
+&lt;h2 id="get-version-and-cluster-information">Get version and cluster information&lt;/h2>
+&lt;h3 id="get-kubectl-version">Get kubectl version&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl --version
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="get-cluster-information">Get cluster information&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl cluster-info
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="check-cluster-nodes">Check cluster nodes&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl get nodes
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="get-running-services">Get running services&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl get services -w --all-namespaces
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="context">Context&lt;/h2>
+&lt;h3 id="list-all-available-contexts">List all available contexts&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl config get-contexts
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="get-current-context">Get current context&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl config current-context
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="change-the-context">Change the context&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl config use-context &lt;span style="color:#f92672">[&lt;/span>context name&lt;span style="color:#f92672">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="deployment">Deployment&lt;/h2>
+&lt;h3 id="deploy">Deploy&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl apply -f &lt;span style="color:#f92672">[&lt;/span>yaml definition file&lt;span style="color:#f92672">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="get-deployment-definition">Get deployment definition&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl get deployment &lt;span style="color:#f92672">[&lt;/span>deployment name&lt;span style="color:#f92672">]&lt;/span> -o yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="update-the-image-of-a-deployment">Update the image of a deployment&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl set image deployment/&lt;span style="color:#f92672">[&lt;/span>deployment name&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#f92672">[&lt;/span>container name&lt;span style="color:#f92672">]=[&lt;/span>image tag&lt;span style="color:#f92672">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="set-autoscale-for-a-deployment">Set autoscale for a deployment&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl autoscale deployment &lt;span style="color:#f92672">[&lt;/span>deployment name&lt;span style="color:#f92672">]&lt;/span> --min&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">2&lt;/span> --max&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">5&lt;/span> --cpu-percent&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">80&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="delete-a-deployment">Delete a deployment&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl delete -f &lt;span style="color:#f92672">[&lt;/span>yaml definition file&lt;span style="color:#f92672">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="get-secret-definition">Get secret definition&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl get secret &lt;span style="color:#f92672">[&lt;/span>secret name&lt;span style="color:#f92672">]&lt;/span> -o yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="force-delete-a-pod">Force delete a pod&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl delete pod &lt;span style="color:#f92672">[&lt;/span>pod name&lt;span style="color:#f92672">]&lt;/span> --grace-period&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span> --force
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="logs">Logs&lt;/h2>
+&lt;h3 id="read-a-pods-log">Read a pod&amp;rsquo;s log&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl logs &lt;span style="color:#f92672">[&lt;/span>pod name&lt;span style="color:#f92672">]&lt;/span> -n &lt;span style="color:#f92672">[&lt;/span>namespace name&lt;span style="color:#f92672">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="misc">Misc&lt;/h2>
+&lt;h3 id="install-kubernetes-dashboard">Install kubernetes dashboard&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item><item><title>.NET Core CLI and MSBUILD Cheat Sheet</title><link>https://carlos.mendible.com/2017/09/21/dotnet-core-cli-and-msbuild-cheat-sheet/</link><pubDate>Thu, 21 Sep 2017 17:23:14 +0000</pubDate><guid>https://carlos.mendible.com/2017/09/21/dotnet-core-cli-and-msbuild-cheat-sheet/</guid><description>&lt;p>This is a small &lt;strong>.NET Core CLI and MSBUILD Cheat Sheet&lt;/strong> with the list of commands and settings I use almost on daily basis when working with .NET Core, the command line and Visual Studio Code.&lt;/p>
+&lt;h2 id="checks">Checks&lt;/h2>
+&lt;h3 id="check-installed-cli-version">Check installed CLI version:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet --version
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="show-available-templates">Show available templates:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="solutions">Solutions&lt;/h2>
+&lt;h3 id="create-a-solution-with-the-name-of-current-the-folder">Create a solution with the name of current the folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new sln
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="create-a-solution-with-a-specific-name">Create a solution with a specific name:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new sln --name &lt;span style="color:#66d9ef">[solution name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="add-a-project-to-a-solution">Add a project to a solution:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add sln &lt;span style="color:#66d9ef">[relative path to csproj file]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="packages">Packages&lt;/h2>
+&lt;h3 id="add-package-reference-to-the-project-in-the-current-folder">Add package reference to the project in the current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package &lt;span style="color:#66d9ef">[package name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="remove-a-package-reference-from-the-project-in-the-current-folder">Remove a package reference from the project in the current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet remove package &lt;span style="color:#66d9ef">[package name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="add-a-specific-package-version-reference-to-the-project-in-the-current-folder">Add a specific package version reference to the project in the current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package &lt;span style="color:#66d9ef">[package name]&lt;/span>-v &lt;span style="color:#66d9ef">[version]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="restore-packages">Restore packages:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="create-a-nuget-package-for-the-project-in-current-folder">Create a nuget package for the project in current folder:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet pack
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="project-templates">Project Templates&lt;/h2>
+&lt;h3 id="install-a-new-project-template">Install a new project template:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new --install &lt;span style="color:#66d9ef">[dotnet template name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="remove-a-project-template">Remove a project template:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new --uninstall &lt;span style="color:#66d9ef">[dotnet template name]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="run-test-defined-in-current-folder-project">Run test defined in current folder project&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet test
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="builds">Builds&lt;/h2>
+&lt;h3 id="build-currents-folder-solution-or-project">Build current&amp;rsquo;s folder solution or project&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="build-currents-folder-solution-or-project-with-release-configuration">Build current&amp;rsquo;s folder solution or project with release configuration&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build -c Release
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="publish-artifacts-for-currents-folder-solution-or-project">Publish artifacts for current&amp;rsquo;s folder solution or project.&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet publish
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="msbuild">MSBUILD&lt;/h2>
+&lt;h3 id="to-add-a-reference-to-a-local-assembly-without-nuget-package-edit-your-csproj-and-add-a-reference-as-shown-in-the-following-sample">To add a reference to a local assembly without nuget package, edit your csproj and add a Reference as shown in the following sample:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;code&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Reference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[Relative path to the Assembly dll file]&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/code&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="force-a-file-to-be-copied-to-the-output-folder-edit-your-csproj-and-add-a-content-section-as-shown-in-the-following-sample">Force a file to be copied to the output folder, edit your csproj and add a Content section as shown in the following sample:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;code&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;Content&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;[name of the file]&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;CopyToOutputDirectory&amp;gt;&lt;/span>PreserveNewest&lt;span style="color:#f92672">&amp;lt;/CopyToOutputDirectory&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Content&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/code&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

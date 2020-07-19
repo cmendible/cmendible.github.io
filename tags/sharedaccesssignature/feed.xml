@@ -1,0 +1,79 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>SharedAccessSignature on Code it Yourself...</title><link>https://carlos.mendible.com/tags/sharedaccesssignature/</link><description>Recent content in SharedAccessSignature on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Mon, 24 Oct 2016 10:11:58 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/sharedaccesssignature/feed.xml" rel="self" type="application/rss+xml"/><item><title>Use .NET Core to Create Azure Blob Storage SAS Keys</title><link>https://carlos.mendible.com/2016/10/24/use-net-core-create-azure-blob-storage-sas-keys/</link><pubDate>Mon, 24 Oct 2016 10:11:58 +0000</pubDate><guid>https://carlos.mendible.com/2016/10/24/use-net-core-create-azure-blob-storage-sas-keys/</guid><description>&lt;p>If you intend to use the &lt;!-- raw HTML omitted -->WindowsAzure.Storage&lt;!-- raw HTML omitted --> library with .Net Core you&amp;rsquo;ll hit a&amp;quot;compatibility wall&amp;rdquo; trying to make it work.&lt;/p>
+&lt;p>So how can we use .Net Core to Create Azure Blob Storage SAS Keys?&lt;/p>
+&lt;h2 id="1-add-the-systemsecuritycryptographyalgorithms-dependency">1. Add the System.Security.Cryptography.Algorithms dependency&lt;/h2>
+&lt;hr>
+&lt;p>Add the following dependency in your project.json file&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json"> &lt;span style="color:#e6db74">&amp;#34;System.Security.Cryptography.Algorithms&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;4.2.0&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-storageentitysas-class-to-hold-the-sas-key">2. Create a StorageEntitySas class to hold the SAS key&lt;/h2>
+&lt;hr>
+&lt;p>The following class will hold de blob Uri and the SAS credentials.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">StorageEntitySas&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Credentials;
+&lt;span style="color:#66d9ef">public&lt;/span> Uri BlobUri;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Name;
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-the-following-methods">3. Create the following methods&lt;/h2>
+&lt;hr>
+&lt;p>I&amp;rsquo;ve created the GetSharedAccessSignature to return a write only SAS key for the blob. But you can easily change it to add more permissions.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// Creates a write only access SAS key for the given blob.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">///
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;returns&amp;gt;SAS credentials for ther blob.&amp;lt;/returns&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> StorageEntitySas GetSharedAccessSignature(
+&lt;span style="color:#66d9ef">string&lt;/span> accountName,
+&lt;span style="color:#66d9ef">string&lt;/span> blobContainer,
+&lt;span style="color:#66d9ef">string&lt;/span> blobName,
+&lt;span style="color:#66d9ef">string&lt;/span> key,
+DateTimeOffset sharedAccessStartTime,
+DateTimeOffset sharedAccessExpiryTime)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> canonicalNameFormat = &lt;span style="color:#e6db74">$&amp;#34;/blob/{accountName}/{blobContainer}/{blobName}&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> st = sharedAccessStartTime.UtcDateTime.ToString(&lt;span style="color:#e6db74">&amp;#34;yyyy-MM-ddTHH:mm:ssZ&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> se = sharedAccessExpiryTime.UtcDateTime.ToString(&lt;span style="color:#e6db74">&amp;#34;yyyy-MM-ddTHH:mm:ssZ&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> sasVersion = &lt;span style="color:#e6db74">&amp;#34;2015-07-08&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">string&lt;/span> stringToSign = &lt;span style="color:#66d9ef">string&lt;/span>.Format(&lt;span style="color:#e6db74">&amp;#34;{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n{6}\n{7}\n{8}\n{9}\n{10}\n{11}\n{12}&amp;#34;&lt;/span>, &lt;span style="color:#66d9ef">new&lt;/span> &lt;span style="color:#66d9ef">object&lt;/span>[]
+{
+&lt;span style="color:#e6db74">&amp;#34;w&amp;#34;&lt;/span>, &lt;span style="color:#75715e">// Write only permission.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> st,
+se,
+canonicalNameFormat,
+&lt;span style="color:#66d9ef">string&lt;/span>.Empty,
+&lt;span style="color:#66d9ef">string&lt;/span>.Empty,
+&lt;span style="color:#66d9ef">string&lt;/span>.Empty,
+sasVersion,
+&lt;span style="color:#66d9ef">string&lt;/span>.Empty,
+&lt;span style="color:#66d9ef">string&lt;/span>.Empty,
+&lt;span style="color:#66d9ef">string&lt;/span>.Empty,
+&lt;span style="color:#66d9ef">string&lt;/span>.Empty,
+&lt;span style="color:#66d9ef">string&lt;/span>.Empty
+});
+&lt;span style="color:#66d9ef">var&lt;/span> sas = GetHash(stringToSign, key);
+&lt;span style="color:#66d9ef">var&lt;/span> credentials =
+&lt;span style="color:#e6db74">$&amp;#34;?sv={sasVersion}&amp;amp;sr=b&amp;amp;sig={UrlEncoder.Default.Encode(sas)}&amp;amp;st={UrlEncoder.Default.Encode(st)}&amp;amp;se={UrlEncoder.Default.Encode(se)}&amp;amp;sp=w&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> StorageEntitySas
+{
+BlobUri = &lt;span style="color:#66d9ef">new&lt;/span> Uri(&lt;span style="color:#e6db74">$&amp;#34;https://{accountName}.blob.core.windows.net/{blobContainer}/{blobName}&amp;#34;&lt;/span>),
+Credentials = credentials,
+Name = blobName
+};
+}
+&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> GetHash(&lt;span style="color:#66d9ef">string&lt;/span> stringToSign, &lt;span style="color:#66d9ef">string&lt;/span> key)
+{
+&lt;span style="color:#66d9ef">byte&lt;/span>[] keyValue = Convert.FromBase64String(key);
+&lt;span style="color:#66d9ef">using&lt;/span> (HMACSHA256 hmac = &lt;span style="color:#66d9ef">new&lt;/span> HMACSHA256(keyValue))
+{
+&lt;span style="color:#66d9ef">return&lt;/span> Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(stringToSign)));
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-call-the-getsharedaccesssignature-method">4. Call the GetSharedAccessSignature method.&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#66d9ef">var&lt;/span> blobSas = GetSharedAccessSignature(accountName, blobContainer, blobName, storageKey, sharedAccessStartTime, sharedAccessExpiryTime);
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Find a full working sample here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/cloud.design.patterns/valet.key/valet.key.server">https://github.com/cmendible/dotnetcore.samples/tree/main/cloud.design.patterns/valet.key/valet.key.server&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!!!&lt;/p></description></item></channel></rss>

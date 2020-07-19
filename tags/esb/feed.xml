@@ -1,0 +1,22 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ESB on Code it Yourself...</title><link>https://carlos.mendible.com/tags/esb/</link><description>Recent content in ESB on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 13 Mar 2016 14:39:25 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/esb/feed.xml" rel="self" type="application/rss+xml"/><item><title>EasyAzureServiceBus: easy Service Bus 1.1 for Windows Server</title><link>https://carlos.mendible.com/2016/03/13/easyazureservicebus-easy-service-bus-1-1-windows-server/</link><pubDate>Sun, 13 Mar 2016 14:39:25 +0000</pubDate><guid>https://carlos.mendible.com/2016/03/13/easyazureservicebus-easy-service-bus-1-1-windows-server/</guid><description>&lt;p>A couple of years ago I started to work with one of my clients to implement an on-premises &lt;!-- raw HTML omitted -->Service Bus&lt;!-- raw HTML omitted --> solution.&lt;/p>
+&lt;p>While investigating the options I discovered a nice library, &lt;!-- raw HTML omitted -->EasyNetQ&lt;!-- raw HTML omitted -->: an easy .NET API for RabbitMQ, which inspired me to create a very similar project to simplify the use of &lt;!-- raw HTML omitted -->pub/sub&lt;!-- raw HTML omitted --> messaging with &lt;!-- raw HTML omitted -->Service Bus 1.1 for Windows Server&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>I named the project &lt;!-- raw HTML omitted -->EasyAzureServiceBus&lt;!-- raw HTML omitted --> and just as &lt;!-- raw HTML omitted -->EasyNetQ&lt;!-- raw HTML omitted -->, it&amp;rsquo;s very simple to use and available to all of you as an open source project:&lt;/p>
+&lt;p>To connect:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#75715e">// Create a bus instance
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>IBus bus = AzureCloud.CreateBus();
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To publish:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#75715e">// Publish a message
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>bus.Publish(message);
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To suscribe:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#75715e">// Subscribe to a message of type Message
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>bus.Subscribe(&lt;span style="color:#e6db74">&amp;#34;subscriptionId&amp;#34;&lt;/span>, msg =&amp;gt; Console.WriteLine(msg.Text));
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To install:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">PM&amp;gt; Install-Package EasyAzureServiceBus
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>While the project already supports queues and the nice auto-subscribe feature, it is far from being perfect, and therefor I&amp;rsquo;m planning for the following features in the near future:&lt;/p>
+&lt;ul>
+&lt;li>Add logging capabilities&lt;/li>
+&lt;li>Proper error handling&lt;/li>
+&lt;li>Improve configuration options, such as: ReceivedMode, Autocomplete, Max Concurrent Calls and Duplicate detection.&lt;/li>
+&lt;li>Extend compatibility to &lt;!-- raw HTML omitted -->Microsoft Azure Service Bus&lt;!-- raw HTML omitted --> –&amp;gt; the real deal isn&amp;rsquo;t it?&lt;/li>
+&lt;/ul>
+&lt;p>Hope it helps.&lt;/p></description></item></channel></rss>

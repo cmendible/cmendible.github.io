@@ -1,0 +1,153 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>keyvault on Code it Yourself...</title><link>https://carlos.mendible.com/tags/keyvault/</link><description>Recent content in keyvault on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 23 Apr 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/keyvault/feed.xml" rel="self" type="application/rss+xml"/><item><title>Global Azure Virtual - Shhhhh: Secrets Should Stay Secret</title><link>https://carlos.mendible.com/events/2020/04/23/globalazure-virtaul-secrets-should-stay-secret/</link><pubDate>Thu, 23 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/23/globalazure-virtaul-secrets-should-stay-secret/</guid><description>&lt;p>A common challenge when building cloud applications is how to manage the credentials in your code for authenticating to cloud services. In this session we&amp;rsquo;ll explore how to keep your credentials safe and how you can work without saving those credentials in the developers machines and therefore avoid an accidental upload to source control.&lt;/p>
+&lt;p>Discover Managed Identities, a feature that let&amp;rsquo;s you authenticate to any service that supports Azure AD authentication, including Azure Key Vault, without any credentials in your .NET, Java or Golang code or configuration!!!&lt;/p>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/ygM8xRcWSZY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>Azure Kubernetes Service: Lessons Learned</title><link>https://carlos.mendible.com/events/2020/02/29/aks-lessons-learned/</link><pubDate>Sat, 29 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/02/29/aks-lessons-learned/</guid><description>&lt;p>This is the perfect session if you want to understand the tools, features and best practices we&amp;rsquo;ve learned from customer engagements, that will allow your enterprise to deploy, use and operate Azure Kubernetes Service (AKS) with confidence.&lt;/p>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/fTay9HEJTdA" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div>
+&lt;p>And here a picture taken during the session:&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020-02-netcoreconf-valencia.jfif" alt="">&lt;/p></description></item><item><title>Introduction to Dapr: a runtime for building microservices</title><link>https://carlos.mendible.com/events/2020/02/28/indrouction-to-dapr/</link><pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/02/28/indrouction-to-dapr/</guid><description>&lt;p>An introduction to Dapr.&lt;/p>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/tOEVHpp1JtQ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div>
+&lt;p>And we took a picture of the group:&lt;/p>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020_02_Dapr.jpg" alt="">&lt;/p></description></item><item><title>.NET Core and Azure without credentials? Impossible is nothing!</title><link>https://carlos.mendible.com/events/2020/02/01/crossdvlup-dotnetcore-and-azure-without-credentials/</link><pubDate>Tue, 11 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/02/01/crossdvlup-dotnetcore-and-azure-without-credentials/</guid><description>&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020-02-crossdvlup-secrets.jfif" alt="">&lt;/p></description></item><item><title>DOSConf - Azure Kuberentes Service: Lessons Learned</title><link>https://carlos.mendible.com/events/2020/02/01/dosconf-azure-kubernetes-service-lessons-learned/</link><pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/02/01/dosconf-azure-kubernetes-service-lessons-learned/</guid><description>&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020-02-dosconf-secrets.jfif" alt="">&lt;/p></description></item><item><title>DOSConf - Shhhhh: Secrets Should Stay Secret</title><link>https://carlos.mendible.com/events/2020/02/01/dosconf-secrets-should-stay-secret/</link><pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/02/01/dosconf-secrets-should-stay-secret/</guid><description>&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020-02-dosconf-secrets.jfif" alt="">&lt;/p></description></item><item><title>Netcoreconf Barcelona - Shhhhh: Secrets Should Stay Secret</title><link>https://carlos.mendible.com/events/2020/01/18/netcoreconf-barcelona-secrets-should-stay-secret/</link><pubDate>Sat, 18 Jan 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/01/18/netcoreconf-barcelona-secrets-should-stay-secret/</guid><description>&lt;p>A common challenge when building cloud applications is how to manage the credentials in your code for authenticating to cloud services. In this session we&amp;rsquo;ll explore how to keep your credentials safe and how you can work without saving those credentials in the developers machines and therefore avoid an accidental upload to source control.&lt;/p>
+&lt;p>Discover Managed Identities, a feature that let&amp;rsquo;s you authenticate to any service that supports Azure AD authentication, including Azure Key Vault, without any credentials in your .NET, Java or Golang code or configuration!!!&lt;/p>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/YBVOdyicH2Q" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>AKS: Read Azure Key Vault secrets using AAD Pod Identity</title><link>https://carlos.mendible.com/2019/11/30/aks-read-azure-key-vault-secrets-using-aad-pod-identity/</link><pubDate>Sat, 30 Nov 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/11/30/aks-read-azure-key-vault-secrets-using-aad-pod-identity/</guid><description>&lt;p>What if I tell you that it&amp;rsquo;s possible to connect you AKS pods to an &lt;strong>Azure Key Vault&lt;/strong> using identities but without having to use credentials in an explicit way?&lt;/p>
+&lt;p>Well with &lt;strong>AAD Pod Identities&lt;/strong> you can enable your Kubernetes applications to access Azure cloud resources securely using &lt;strong>Azure Active Directory&lt;/strong> (AAD) including &lt;strong>Azure Key Vault&lt;/strong>.&lt;/p>
+&lt;p>The following &lt;a href="https://gist.github.com/cmendible/4dd5c48a45480d5a0db0d6ed68e4cd01">gist&lt;/a> show a &lt;strong>PowerShell&lt;/strong> script that will help you setup everything inside your RBAC enabled AKS cluster. You will also need to have &lt;strong>Azure CLI&lt;/strong> installed on your box and an &lt;strong>Azure Key Vault&lt;/strong> deployed in the same resource group where your AKS lives.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#66d9ef">param&lt;/span>(
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$resourceGroupName,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$identityName,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$identitySelector,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$aksName,
+&lt;span style="color:#66d9ef">[string]&lt;/span>
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+$keyVaultName
+)
+&lt;span style="color:#75715e"># Get the current subscription&lt;/span>
+$subscriptionId = (az account show | ConvertFrom-Json).id
+&lt;span style="color:#75715e"># Get aks so we can extract it&amp;#39;s Service Princpal later&lt;/span>
+$aks = az aks show `
+-g $resourceGroupName `
+-n $aksName | ConvertFrom-Json
+&lt;span style="color:#75715e"># Create Managed Identity&lt;/span>
+$identity = az identity create `
+-g $resourceGroupName `
+-n $identityName `
+-o json | ConvertFrom-Json
+&lt;span style="color:#75715e"># Assign the Reader role to the Managed Identity&lt;/span>
+az role assignment create `
+--role &lt;span style="color:#e6db74">&amp;#34;Reader&amp;#34;&lt;/span> `
+--assignee $identity.principalId `
+--scope /subscriptions/$subscriptionId/resourcegroups/$resourceGroupName
+&lt;span style="color:#75715e"># Assign the Managed Identity Operator role to the AKS Service Principal&lt;/span>
+az role assignment create `
+--role &lt;span style="color:#e6db74">&amp;#34;Managed Identity Operator&amp;#34;&lt;/span> `
+--assignee $aks.servicePrincipalProfile.clientId `
+--scope $identity.id
+&lt;span style="color:#75715e"># Add policy to the Key Vault so the Managed Identity can read secrets&lt;/span>
+az keyvault set-policy `
+--name $keyVaultName `
+--spn $identity.clientId `
+--secret-permissions get list
+&lt;span style="color:#75715e"># Enable AAD Pod Identity on AKS&lt;/span>
+kubectl apply &lt;span style="color:#f92672">-f&lt;/span> https&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml
+&lt;span style="color:#75715e"># Create the Azure Identity and AzureIdentityBinding yaml on the fly&lt;/span>
+$k8sAzureIdentityandBinding = &lt;span style="color:#e6db74">@&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">apiVersion: &amp;#34;aadpodidentity.k8s.io/v1&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">kind: AzureIdentity
+&lt;/span>&lt;span style="color:#e6db74">metadata:
+&lt;/span>&lt;span style="color:#e6db74"> name: &lt;/span>$($identityName)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">spec:
+&lt;/span>&lt;span style="color:#e6db74"> type: 0
+&lt;/span>&lt;span style="color:#e6db74"> ResourceID: &lt;/span>$($identity.id)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74"> ClientID: &lt;/span>$($identity.clientId)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">---
+&lt;/span>&lt;span style="color:#e6db74">apiVersion: &amp;#34;aadpodidentity.k8s.io/v1&amp;#34;
+&lt;/span>&lt;span style="color:#e6db74">kind: AzureIdentityBinding
+&lt;/span>&lt;span style="color:#e6db74">metadata:
+&lt;/span>&lt;span style="color:#e6db74"> name: &lt;/span>$($identityName)&lt;span style="color:#e6db74">-identity-binding
+&lt;/span>&lt;span style="color:#e6db74">spec:
+&lt;/span>&lt;span style="color:#e6db74"> AzureIdentity: &lt;/span>$($identityName)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74"> Selector: &lt;/span>$($identitySelector)&lt;span style="color:#e6db74">
+&lt;/span>&lt;span style="color:#e6db74">&amp;#34;@&lt;/span>
+&lt;span style="color:#75715e"># Deploy the yamls &lt;/span>
+$k8sAzureIdentityandBinding | kubectl apply &lt;span style="color:#f92672">-f&lt;/span> -
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The script creates a Manged Identity, assigns some permissions to it and creates a policy inside the Key Vault enabling the Identity to list and get secrets.&lt;/p>
+&lt;p>Then the &lt;strong>&lt;a href="https://github.com/Azure/aad-pod-identity#components">Managed Identity Controller (MIC) deployment and the Node Managed Identity (NMI) daemon set&lt;/a>&lt;/strong> are deployed inside the cluster.&lt;/p>
+&lt;p>In the last step, two resources are deployed. The first one is an &lt;strong>AzureIdentity&lt;/strong> that will be used to identify the Managed Identity inside your cluster and the second one is an &lt;strong>AzureIdentityBinding&lt;/strong> that binds the azure Identity with a Selector.&lt;/p>
+&lt;p>Let&amp;rsquo;s run the PowerShell command with the following parameters:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Resource Group&lt;/strong>: myResourceGroup&lt;/li>
+&lt;li>&lt;strong>Managed Identity Name&lt;/strong>: myId&lt;/li>
+&lt;li>&lt;strong>Identity Selector&lt;/strong>: requires-vault&lt;/li>
+&lt;li>&lt;strong>AKS Name&lt;/strong>: myAKS&lt;/li>
+&lt;li>&lt;strong>Key Vault Name&lt;/strong>: myKeyVault&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">.\SetupPodIdentityKeyVaultIntegration.ps1 myResourceGroup myId requires-vault myAKS myKeyVault
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Once the command is done, any pod marked with the &lt;em>&lt;strong>aadpodidbinding: requires-vault&lt;/strong>&lt;/em> label will get an Identity assigned.&lt;/p>
+&lt;p>To check that everything is working as expected you can create a &lt;strong>deployment.yaml&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: az-keyvault-reader-test
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#66d9ef">template&lt;/span>:
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: az-keyvault-reader-test
+&lt;span style="color:#66d9ef">aadpodidbinding&lt;/span>: requires-vault
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: busybox
+&lt;span style="color:#66d9ef">image&lt;/span>: busybox
+&lt;span style="color:#66d9ef">command&lt;/span>:
+[
+&lt;span style="color:#e6db74">&amp;#34;sh&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;-c&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;wget --tries=70 -qO- http://127.0.0.1:8333/secrets/&amp;lt;SECRET_NAME&amp;gt;/&amp;#34;&lt;/span>,
+]
+&lt;span style="color:#66d9ef">imagePullPolicy&lt;/span>: Always
+&lt;span style="color:#66d9ef">resources&lt;/span>:
+&lt;span style="color:#66d9ef">requests&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;4Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;100m&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">limits&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;8Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;200m&amp;#34;&lt;/span>
+- &lt;span style="color:#66d9ef">name&lt;/span>: az-keyvault-reader-sidecar
+&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/az-keyvault-reader:&lt;span style="color:#ae81ff">0.2&lt;/span>
+&lt;span style="color:#66d9ef">imagePullPolicy&lt;/span>: Always
+&lt;span style="color:#66d9ef">env&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: AZURE_KEYVAULT_NAME
+&lt;span style="color:#66d9ef">value&lt;/span>: &amp;lt;AZURE_KEYVAULT_NAME&lt;span style="color:#e6db74">&amp;gt;
+&lt;/span>&lt;span style="color:#e6db74"> resources:&lt;/span>
+&lt;span style="color:#66d9ef">requests&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;8Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;100m&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">limits&lt;/span>:
+&lt;span style="color:#66d9ef">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;16Mi&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;200m&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">restartPolicy&lt;/span>: Always
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: Replace the values for &amp;lt;AZURE_KEYVAULT_NAME&amp;gt; with the name of your Key Vault and &amp;lt;SECRET_NAME&amp;gt; with the name of an existing secret stored in your Key Vault:&lt;/p>
+&lt;p>Now deploy to Kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> ./deployment.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and check the logs for the &lt;strong>busybox&lt;/strong> pod:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl logs &lt;span style="color:#f92672">-f&lt;/span> $(kubectl get po --selector=app=az-keyvault-reader-test -o jsonpath=&lt;span style="color:#e6db74">&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span>) -c busybox -w
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything is OK you should see the value of your secret dumped in the logs (Bad security practice here)!!! And yes you did all this without knowing any credentials!&lt;/p>
+&lt;p>Please find the code used to connect to the &lt;strong>Azure KeyVault&lt;/strong> here: &lt;a href="https://github.com/cmendible/az-keyvault-reader/blob/master/src/az-keyvault-reader.go">az-keyvault-reader.go&lt;/a> and check &lt;a href="https://github.com/Azure/aad-pod-identity">AAD Pod Identity&lt;/a> for more information on how this &amp;ldquo;magic&amp;rdquo; works.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

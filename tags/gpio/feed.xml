@@ -1,0 +1,70 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GPIO on Code it Yourself...</title><link>https://carlos.mendible.com/tags/gpio/</link><description>Recent content in GPIO on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 01 Sep 2017 09:39:08 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/gpio/feed.xml" rel="self" type="application/rss+xml"/><item><title>Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0</title><link>https://carlos.mendible.com/2017/09/01/toggle-raspberry-pi-gpio-pins-with-asp-net-core-20/</link><pubDate>Fri, 01 Sep 2017 09:39:08 +0000</pubDate><guid>https://carlos.mendible.com/2017/09/01/toggle-raspberry-pi-gpio-pins-with-asp-net-core-20/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to &lt;strong>Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;!-- raw HTML omitted -->.NET Core 2.0 SDK&lt;!-- raw HTML omitted -->&lt;/strong>&lt;/li>
+&lt;li>&lt;strong>A Raspberry Pi 3 Running Raspbian&lt;/strong>&lt;/li>
+&lt;li>Install linux dependencies: sudo apt-get install curl libunwind8 gettext&lt;/li>
+&lt;/ul>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aspnet.webapi.rpi.gpio
+cd aspnet.webapi.rpi.gpio
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-an-aspnet-core-web-api-project">2. Create an ASP.NET Core Web API project&lt;/h2>
+&lt;hr>
+&lt;p>Create an ASP.NET Core Web API project with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new webapi
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-a-reference-to-unosquareraspberryio">3. Add a reference to Unosquare.Raspberry.IO&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Unosquare.Raspberry.IO
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now restore the packages:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-blinkycontrollercs">4. Create BlinkyController.cs&lt;/h2>
+&lt;hr>
+&lt;p>In the Controllers folder, create a BlinkyController.cs file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Mvc;
+&lt;span style="color:#66d9ef">using&lt;/span> Unosquare.RaspberryIO;
+&lt;span style="color:#66d9ef">using&lt;/span> Unosquare.RaspberryIO.Gpio;
+&lt;span style="color:#66d9ef">namespace&lt;/span> aspnet.webapi.rpi.gpio.Controllers
+{
+&lt;span style="color:#a6e22e"> [Route(&amp;#34;api/[controller]&lt;/span>&lt;span style="color:#e6db74">&amp;#34;)]
+&lt;/span>&lt;span style="color:#e6db74">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">BlinkyController&lt;/span> : Controller
+{
+&lt;span style="color:#a6e22e"> [HttpPost]&lt;/span>
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Post([FromBody]&lt;span style="color:#66d9ef">bool&lt;/span> isOn)
+{
+&lt;span style="color:#75715e">// Control GPIO pin 5
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> pin = Pi.Gpio.Pin05;
+pin.PinMode = GpioPinDriveMode.Output;
+pin.Write(!isOn);
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: The sample toggles GPIO pin 5.&lt;/p>
+&lt;h2 id="5-publish-the-application">5. Publish the application&lt;/h2>
+&lt;hr>
+&lt;p>Publish the application with the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet publish -c Release -r linux-arm
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-copy-the-files-to-your-raspberry">6. Copy the files to your Raspberry&lt;/h2>
+&lt;hr>
+&lt;p>Copy the contents of the folder &lt;strong>\aspnet.on.rpi\bin\Release\netcoreapp2.0\linux-arm\publish&lt;/strong> to the Raspberry (i.e. /home/pi/publish)&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> For this task I connect to the Raspberry via SFTP using &lt;!-- raw HTML omitted -->WinSCP&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="7-run-the-application">7. Run the application&lt;/h2>
+&lt;hr>
+&lt;p>Connect to Raspberry using ssh and then run the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">sudo -i
+cd /home/pi/publish
+chmod +x aspnet.webapi.rpi.gpio
+export ASPNETCORE_URLS=&lt;span style="color:#e6db74">&amp;#34;http://*:5000&amp;#34;&lt;/span>
+./aspnet.webapi.rpi.gpio
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: Unosquare.Raspberry.IO must be run with elevated privileges.&lt;/p>
+&lt;h2 id="8-call-the-web-api-to-toggle-the-gpio-pin">8. Call the Web API to Toggle the GPIO pin&lt;/h2>
+&lt;hr>
+&lt;p>Post data to the Web API to toggle the GPIO pin.&lt;/p>
+&lt;p>To turn it on:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">curl -H &lt;span style="color:#e6db74">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> -d &lt;span style="color:#e6db74">&amp;#39;true&amp;#39;&lt;/span> http&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//&lt;span style="color:#66d9ef">[ip of your raspberry]&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>5000/api/blinky
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To Turn it off:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">curl -H &lt;span style="color:#e6db74">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> -d &lt;span style="color:#e6db74">&amp;#39;false&amp;#39;&lt;/span> http&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//&lt;span style="color:#66d9ef">[ip of your raspberry]&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>5000/api/blinky
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get the code &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

@@ -1,0 +1,66 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>HDInsight on Code it Yourself...</title><link>https://carlos.mendible.com/tags/hdinsight/</link><description>Recent content in HDInsight on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 13 Jul 2017 11:07:13 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/hdinsight/feed.xml" rel="self" type="application/rss+xml"/><item><title>HDInsight: Scale Horizontally</title><link>https://carlos.mendible.com/2017/07/13/hdinsight-scale-horizontally/</link><pubDate>Thu, 13 Jul 2017 11:07:13 +0000</pubDate><guid>https://carlos.mendible.com/2017/07/13/hdinsight-scale-horizontally/</guid><description>&lt;p>&lt;strong>HDInsight: Scale Horizontally&lt;/strong> with &lt;a href="https://gallery.technet.microsoft.com/Scale-your-HDInsight-f57bb4d8">Scale-HDInsightClusterNodes.ps1&lt;/a> a PowerShell workflow that will help you automate the process of scaling your cluster.&lt;/p>
+&lt;p>The script receives 4 parameters:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>ResourceGroupName&lt;/strong>: The name of the resource group where the cluster resides&lt;/li>
+&lt;li>&lt;strong>ClusterName&lt;/strong>: The name of your HDInsight cluster&lt;/li>
+&lt;li>&lt;strong>Nodes&lt;/strong>: The number of nodes you want for the cluster&lt;/li>
+&lt;li>&lt;strong>ConnectionName&lt;/strong>: The name of your automation connection account&lt;/li>
+&lt;/ul>
+&lt;p>and requires the following PowerShell modules: &lt;strong>AzureRM.Profile&lt;/strong>, &lt;strong>AzureRM.HDInsight&lt;/strong>&lt;/p>
+&lt;p>Here is the code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#75715e">&amp;lt;#
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.SYNOPSIS&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Scale-HDInsightClusterNodes is a simple PowerShell workflow runbook that will help you automate the process of scaling in or out your HDInsight clusters depending on your needs.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.DESCRIPTION&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> Scale-HDInsightClusterNodes is a simple PowerShell workflow runbook that will help you automate the process of scaling in or out your HDInsight clusters depending on your needs.
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> ResourceGroupName
+&lt;/span>&lt;span style="color:#75715e"> The name of the resource group where the cluster resides
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> ClusterName
+&lt;/span>&lt;span style="color:#75715e"> The name of your HDInsight cluster
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> Nodes
+&lt;/span>&lt;span style="color:#75715e"> The number of nodes you want for the cluster
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.PARAMETER&lt;/span>&lt;span style="color:#75715e"> ConnectionName
+&lt;/span>&lt;span style="color:#75715e"> The name of your automation connection account
+&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.NOTES&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;span style="color:#75715e"> AUTHOR: Carlos Mendible
+&lt;/span>&lt;span style="color:#75715e"> LASTEDIT: June 13, 2017
+&lt;/span>&lt;span style="color:#75715e">#&amp;gt;&lt;/span>
+Workflow Scale-HDInsightClusterNodes {
+&lt;span style="color:#66d9ef">Param&lt;/span>
+(
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$ResourceGroupName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$ClusterName,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
+&lt;span style="color:#66d9ef">[Int]&lt;/span>$Nodes,
+[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $false)]
+&lt;span style="color:#66d9ef">[String]&lt;/span>$ConnectionName
+)
+&lt;span style="color:#75715e"># This Workflow requieres the following PowerShell modules: AzureRM.Profile, AzureRM.HDInsight&lt;/span>
+$automationConnectionName = $ConnectionName
+&lt;span style="color:#66d9ef">if&lt;/span> (!$ConnectionName) {
+$automationConnectionName = &lt;span style="color:#e6db74">&amp;#34;AzureRunAsConnection&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Get the connection by name (i.e. AzureRunAsConnection)&lt;/span>
+$servicePrincipalConnection = Get-AutomationConnection -Name $automationConnectionName
+Write-Output &lt;span style="color:#e6db74">&amp;#34;Logging in to Azure...&amp;#34;&lt;/span>
+Add-AzureRmAccount `
+-ServicePrincipal `
+-TenantId $servicePrincipalConnection.TenantId `
+-ApplicationId $servicePrincipalConnection.ApplicationId `
+-CertificateThumbprint $servicePrincipalConnection.CertificateThumbprint
+Write-Output &lt;span style="color:#e6db74">&amp;#34;Scaling cluster $ClusterName to $Nodes nodes...&amp;#34;&lt;/span>
+Set-AzureRmHDInsightClusterSize `
+-ResourceGroupName $ResourceGroupName `
+-ClusterName $ClusterName `
+-TargetInstanceCount $Nodes
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can download the script from the &lt;!-- raw HTML omitted -->Technet Script Gallery&lt;!-- raw HTML omitted -->, import it as a runbook for your automation account in the Azure portal or simply copy the code from this post.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

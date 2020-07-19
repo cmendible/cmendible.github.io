@@ -1,0 +1,65 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Kestrel on Code it Yourself...</title><link>https://carlos.mendible.com/tags/kestrel/</link><description>Recent content in Kestrel on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 06 Nov 2016 08:00:49 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/kestrel/feed.xml" rel="self" type="application/rss+xml"/><item><title>Step by step: Expose ASP.NET Core over HTTPS with Docker</title><link>https://carlos.mendible.com/2016/11/06/step-by-step-expose-asp-net-core-over-https-with-docker/</link><pubDate>Sun, 06 Nov 2016 08:00:49 +0000</pubDate><guid>https://carlos.mendible.com/2016/11/06/step-by-step-expose-asp-net-core-over-https-with-docker/</guid><description>&lt;p>This week I decided to modify the sample of my previous post: &lt;!-- raw HTML omitted -->Step by step: Scale ASP.NET Core with Docker Swarm&lt;!-- raw HTML omitted --> so you can add TLS to your ASP.NET Core applications and Dockerize it.&lt;/p>
+&lt;p>Let&amp;rsquo;s see how I changed the application in order to make it work:&lt;/p>
+&lt;h2 id="1-add-https-support-for-kestrel">1. Add HTTPS support for Kestrel&lt;/h2>
+&lt;hr>
+&lt;p>I added the following line to the dependencies in the &lt;!-- raw HTML omitted -->project.json&lt;!-- raw HTML omitted --> file.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json"> &lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Server.Kestrel.Https&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;1.0.1&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">,&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-configure-kestrel-to-use-https">2. Configure Kestrel to use HTTPS&lt;/h2>
+&lt;hr>
+&lt;p>In the &lt;!-- raw HTML omitted -->Main&lt;!-- raw HTML omitted --> method I configured Kestrel to use HTTPS. Don&amp;rsquo;t worry about the &lt;!-- raw HTML omitted -->cert.pfx&lt;!-- raw HTML omitted --> certificate file because it will be created inside the docker container.&lt;/p>
+&lt;p>Note that in line 8 I also configured the application to use port 443.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> host = &lt;span style="color:#66d9ef">new&lt;/span> WebHostBuilder()
+.UseKestrel((o) =&amp;gt;
+{
+o.UseHttps(&lt;span style="color:#66d9ef">new&lt;/span> X509Certificate2(&lt;span style="color:#e6db74">@&amp;#34;cert.pfx&amp;#34;&lt;/span>, Configuration[&lt;span style="color:#e6db74">&amp;#34;certPassword&amp;#34;&lt;/span>]));
+})
+.UseUrls(&lt;span style="color:#e6db74">&amp;#34;https://*:443&amp;#34;&lt;/span>)
+.UseContentRoot(Directory.GetCurrentDirectory())
+.UseStartup&amp;lt;Startup&amp;gt;()
+.Build();
+host.Run();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now It&amp;rsquo;s time to show you how to Dockerize the application:&lt;/p>
+&lt;h2 id="1-create-a-dockerfile">1. Create a dockerfile&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#75715e"># We use the microsoft/dotnet image as a starting point.&lt;/span>
+FROM microsoft/dotnet
+&lt;span style="color:#75715e"># Install git&lt;/span>
+RUN apt-get install git -y
+&lt;span style="color:#75715e"># Clone the source code&lt;/span>
+RUN git clone -b ssl https&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//github.com/cmendible/aspnet-core-helloworld.git
+&lt;span style="color:#75715e"># Set our working folder&lt;/span>
+WORKDIR aspnet-core-helloworld/src/dotnetstarter
+&lt;span style="color:#75715e"># Restore nuget packages&lt;/span>
+RUN dotnet restore
+&lt;span style="color:#75715e"># Build the application using dotnet!!!&lt;/span>
+RUN dotnet build
+&lt;span style="color:#75715e"># Set password for the certificate as 1234&lt;/span>
+&lt;span style="color:#75715e"># I&amp;#39;m using Environment Variable here to simplify the .NET Core sample.&lt;/span>
+ENV certPassword 1234
+&lt;span style="color:#75715e"># Use opnssl to generate a self signed certificate cert.pfx with password $env:certPassword&lt;/span>
+RUN openssl genrsa -des3 -passout pass&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>${certPassword} -out server.key 2048
+RUN openssl rsa -passin pass&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>${certPassword} -in server.key -out server.key
+RUN openssl req -sha256 -new -key server.key -out server.csr -subj &lt;span style="color:#e6db74">&amp;#39;/CN=localhost&amp;#39;&lt;/span>
+RUN openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out server.crt
+RUN openssl pkcs12 -export -out cert.pfx -inkey server.key -in server.crt -certfile server.crt -passout pass&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>${certPassword}
+&lt;span style="color:#75715e"># Expose port 443 for the application.&lt;/span>
+EXPOSE 443
+&lt;span style="color:#75715e"># Start the application using dotnet!!!&lt;/span>
+ENTRYPOINT dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-docker-image">2. Create a Docker image&lt;/h2>
+&lt;hr>
+&lt;p>With the dockerfile in place run the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">sudo docker build -t httpssample .
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now you have an image named &lt;!-- raw HTML omitted -->httpssample&lt;!-- raw HTML omitted --> with all the dependencies and code needed to run the application.&lt;/p>
+&lt;h2 id="3-test-the-docker-image">3. Test the Docker image&lt;/h2>
+&lt;p>To test the Docker image run the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">sudo docker run -it -p 443&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>443 httpssample
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Browse to &lt;!-- raw HTML omitted -->https://localhost&lt;!-- raw HTML omitted --> Your browser will warn about the certificate because it&amp;rsquo;s self signed.&lt;/p>
+&lt;h2 id="4-run-the-docker-image-as-a-daemon-process">4. Run the Docker image as a daemon process&lt;/h2>
+&lt;p>Now that you know that everything is working as expected use the following command to run the Docker image as a daemon process&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker run -t -d -p 443&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>443 httpssample
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can get a copy of the docker file here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld.https">https://github.com/cmendible/dotnetcore.samples/tree/main/docker.helloworld.https&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

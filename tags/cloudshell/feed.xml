@@ -1,0 +1,24 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>cloudshell on Code it Yourself...</title><link>https://carlos.mendible.com/tags/cloudshell/</link><description>Recent content in cloudshell on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 05 May 2018 07:21:39 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/cloudshell/feed.xml" rel="self" type="application/rss+xml"/><item><title>Running Ansible Azure playbook in Azure Cloud Shell</title><link>https://carlos.mendible.com/2018/05/05/running-ansible-azure-module-in-azure-cloud-shell/</link><pubDate>Sat, 05 May 2018 07:21:39 +0000</pubDate><guid>https://carlos.mendible.com/2018/05/05/running-ansible-azure-module-in-azure-cloud-shell/</guid><description>&lt;h2 id="note-the-issue-described-in-this-post-was-fixed-ansible-252-and-azure-cli-2034">&lt;strong>NOTE: The issue described in this post was fixed!!! (ansible 2.5.2 and Azure CLI 2.0.34)&lt;/strong>&lt;/h2>
+&lt;p>Last week I tried to run this simple Ansible playbook in Azure Cloud Shell:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># resource_group.yml&lt;/span>
+&lt;span style="color:#75715e"># Create test resource group in west europe&lt;/span>
+- &lt;span style="color:#66d9ef">name&lt;/span>: Create a Resource Group
+&lt;span style="color:#66d9ef">hosts&lt;/span>: localhost
+&lt;span style="color:#66d9ef">connection&lt;/span>: local
+&lt;span style="color:#66d9ef">gather_facts&lt;/span>: no
+&lt;span style="color:#66d9ef">tasks&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: Create Resource Group
+&lt;span style="color:#66d9ef">azure_rm_resourcegroup&lt;/span>:
+&lt;span style="color:#66d9ef">location&lt;/span>: westeurope
+&lt;span style="color:#66d9ef">name&lt;/span>: test
+&lt;span style="color:#66d9ef">state&lt;/span>: present
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The first attempt to run the playbook with:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">ansible-playbook resource_group.yml -vvv
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>failed with the following message: &lt;strong>No module named &amp;lsquo;packaging&amp;rsquo;&lt;/strong>&lt;/p>
+&lt;p>So I ran:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">pip install --user packaging
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>But this time when I tried to run the playbook I got a message telling me to upgrade the Azure module for Ansible. Again the first attempt didn&amp;rsquo;t go well so I &lt;strong>forced&lt;/strong> the upgrade:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">pip install ansible&lt;span style="color:#f92672">[&lt;/span>azure&lt;span style="color:#f92672">]&lt;/span> --upgrade --force --user
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Problem solved!!! Runing the following command did create the resource group:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">ansible-playbook resource_group.yml -vvv
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

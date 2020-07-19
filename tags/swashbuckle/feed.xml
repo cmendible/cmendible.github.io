@@ -1,0 +1,66 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Swashbuckle on Code it Yourself...</title><link>https://carlos.mendible.com/tags/swashbuckle/</link><description>Recent content in Swashbuckle on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Mon, 04 Jul 2016 08:20:15 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/swashbuckle/feed.xml" rel="self" type="application/rss+xml"/><item><title>Add Swagger to your .NET Core Web API</title><link>https://carlos.mendible.com/2016/07/04/add-swagger-to-your-.net-core-web-api/</link><pubDate>Mon, 04 Jul 2016 08:20:15 +0000</pubDate><guid>https://carlos.mendible.com/2016/07/04/add-swagger-to-your-.net-core-web-api/</guid><description>&lt;p>Last week &lt;!-- raw HTML omitted -->.NET Core&lt;!-- raw HTML omitted --> was released, and the first thing I tried to solve was how to &lt;strong>Add Swagger to your .NET Core Web API&lt;/strong>:&lt;/p>
+&lt;h2 id="1-dependencies">1. Dependencies&lt;/h2>
+&lt;hr>
+&lt;p>At the time of writing you should add the following dependency to your &lt;strong>project.json&lt;/strong> file&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#e6db74">&amp;#34;Swashbuckle&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;6.0.0-beta901&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-using-statement">2. Using statement&lt;/h2>
+&lt;hr>
+&lt;p>In your &lt;strong>Startup&lt;/strong> class add the following using statement&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#66d9ef">using&lt;/span> Swashbuckle.Swagger.Model;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-swagger-as-a-service">3. Add Swagger as a service&lt;/h2>
+&lt;hr>
+&lt;p>In your &lt;strong>Startup&lt;/strong> class add the following code to the &lt;strong>ConfigureServices&lt;/strong> method&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to add services to the container.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> ConfigureServices(IServiceCollection services)
+{
+...
+services.AddSwaggerGen();
+services.ConfigureSwaggerGen(options =&amp;gt;
+{
+options.SingleApiVersion(&lt;span style="color:#66d9ef">new&lt;/span> Info
+{
+Version = &lt;span style="color:#e6db74">&amp;#34;v1&amp;#34;&lt;/span>,
+Title = &lt;span style="color:#e6db74">&amp;#34;Your API title here&amp;#34;&lt;/span>,
+Description = &lt;span style="color:#e6db74">&amp;#34;Your API description here&amp;#34;&lt;/span>,
+TermsOfService = &lt;span style="color:#e6db74">&amp;#34;Your API terms of service here&amp;#34;&lt;/span>
+});
+});
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-add-swagger-to-the-http-request-pipeline">4. Add Swagger to the HTTP request pipeline&lt;/h2>
+&lt;hr>
+&lt;p>And finally add the following lines to the &lt;strong>Configure&lt;/strong> method of your &lt;strong>Startup&lt;/strong> class&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#75715e">// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+{
+...
+app.UseSwagger();
+app.UseSwaggerUi();
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And that&amp;rsquo;s it you are ready to go!&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Remove RavenDb's API from Swagger</title><link>https://carlos.mendible.com/2016/06/12/remove-ravendbs-api-from-swagger/</link><pubDate>Sun, 12 Jun 2016 20:24:54 +0000</pubDate><guid>https://carlos.mendible.com/2016/06/12/remove-ravendbs-api-from-swagger/</guid><description>&lt;p>I&amp;rsquo;ve been working on a small IoT project where we expose a simple REST API and use &lt;!-- raw HTML omitted -->RavenDB &lt;!-- raw HTML omitted -->Embedded as the database. Once we enabled &lt;!-- raw HTML omitted -->Swagger&lt;!-- raw HTML omitted --> on our project we noticed that the generated documentation was not only showing our API but those exposed by RavenDB too. So the question came up: how can we &lt;strong>Remove RavenDb&amp;rsquo;s API from &lt;!-- raw HTML omitted -->Swagger&lt;!-- raw HTML omitted -->&lt;/strong> Documentation?&lt;/p>
+&lt;p>Turns out that &lt;strong>&lt;!-- raw HTML omitted -->Swashbuckle.Swagger&lt;!-- raw HTML omitted -->&lt;/strong> let&amp;rsquo;s you create your own Document Filters implementing the &lt;strong>IDocumentFilter&lt;/strong> interface.&lt;/p>
+&lt;p>Below you&amp;rsquo;ll find the fast solution I came up with, and it&amp;rsquo;s easy to modify if you need to remove any other type from your Swagger documentation.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp"> &lt;span style="color:#66d9ef">using&lt;/span> Swashbuckle.Swagger;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Web.Http.Description;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">HideRavenDocumentFilter&lt;/span> : IDocumentFilter
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
+{
+&lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> apiDescription &lt;span style="color:#66d9ef">in&lt;/span> apiExplorer.ApiDescriptions)
+{
+&lt;span style="color:#66d9ef">if&lt;/span> (!apiDescription.ActionDescriptor.ControllerDescriptor.ControllerType.Namespace.StartsWith(&lt;span style="color:#e6db74">&amp;#34;Raven&amp;#34;&lt;/span>))
+{
+&lt;span style="color:#66d9ef">continue&lt;/span>;
+}
+&lt;span style="color:#66d9ef">var&lt;/span> routeToRemove = swaggerDoc.paths.Where(r =&amp;gt; r.Key.Contains(apiDescription.ActionDescriptor.ControllerDescriptor.ControllerName))
+.FirstOrDefault();
+&lt;span style="color:#66d9ef">if&lt;/span> (!routeToRemove.Equals(&lt;span style="color:#66d9ef">default&lt;/span>(KeyValuePair&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>, PathItem&amp;gt;)))
+{
+swaggerDoc.paths.Remove(routeToRemove);
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

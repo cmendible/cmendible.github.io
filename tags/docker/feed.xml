@@ -1,0 +1,856 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Docker on Code it Yourself...</title><link>https://carlos.mendible.com/tags/docker/</link><description>Recent content in Docker on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 10 Jan 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/docker/feed.xml" rel="self" type="application/rss+xml"/><item><title>Visual Studio Code Remote Containers: Jekyll</title><link>https://carlos.mendible.com/2020/01/10/vs-code-remote-containers-jekyll/</link><pubDate>Fri, 10 Jan 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/01/10/vs-code-remote-containers-jekyll/</guid><description>&lt;p>For the last 3 years this blog was written using &lt;a href="https://jekyllrb.com/docs/installation/">Jekyll&lt;/a> which has a series of requirements such as Ruby that I don&amp;rsquo;t want to keep installing or maintaining on my PC. So I created this Developer Container for those who want to use Jekyll from an isolated container.&lt;/p>
+&lt;p>Let&amp;rsquo;s check the container definition:&lt;/p>
+&lt;h2 id="1-devcontainerjson-file">1. devcontainer.json file&lt;/h2>
+&lt;hr>
+&lt;p>This file configures the remote container with the specified extensions&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Jekyll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;dockerFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Dockerfile&amp;#34;&lt;/span>,
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;settings&amp;#39;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">set&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">*default*&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">specific&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">settings.json&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">values&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">on&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">create.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">You&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">can&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">edit&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">these&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">settings&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">after&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">using&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">File&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Preferences&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Settings&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;gt;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Remote.&lt;/span>
+&lt;span style="color:#f92672">&amp;#34;settings&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;terminal.integrated.shell.linux&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;/bin/bash&amp;#34;&lt;/span>
+},
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;appPort&amp;#39;&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">with&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">published&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">ports.&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">If&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">port&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">isn&amp;#39;t&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">working,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">be&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">sure&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">your&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">server&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">accepts&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">connections&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">from&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">all&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">interfaces&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">(0.0.0.0&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">or&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;*&amp;#39;),&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">not&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">just&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">localhost.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;appPort&amp;#34;&lt;/span>: [&lt;span style="color:#e6db74">&amp;#34;3000:3000&amp;#34;&lt;/span>],
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">run&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">commands&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">after&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">is&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">created.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;postCreateCommand&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;cd ${input:projectName} &amp;amp;&amp;amp; bundle install&amp;#34;&lt;/span>,
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">non-root&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">user.&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">On&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Linux,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">this&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">will&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">prevent&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">new&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">files&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">getting&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">created&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">as&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">root,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">but&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">you&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">may&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">need&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">update&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">USER_UID&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">and&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">USER_GID&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">in&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">.devcontainer/Dockerfile&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">match&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">your&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">user&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">if&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">not&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">1000.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;runArgs&amp;#34;&lt;/span>: [ &lt;span style="color:#e6db74">&amp;#34;-u&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;vscode&amp;#34;&lt;/span> ],
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Add&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">IDs&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">of&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">extensions&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">you&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">want&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">installed&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">when&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">is&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">created&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">in&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">array&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">below.&lt;/span>
+&lt;span style="color:#f92672">&amp;#34;extensions&amp;#34;&lt;/span>: []
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-dockerfile">2. Dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>This is the Dockerfile with all the tooling for the Jekyll environment.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-Dockerfile" data-lang="Dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> debian:latest&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Avoid warnings by switching to noninteractive&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>noninteractive
+&lt;span style="color:#75715e"># This Dockerfile adds a non-root &amp;#39;vscode&amp;#39; user with sudo access. However, for Linux,&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># this user&amp;#39;s GID/UID must match your local user UID/GID to avoid permission issues&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># with bind mounts. Update USER_UID / USER_GID if yours is not 1000. See&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># https://aka.ms/vscode-remote/containers/non-root-user for details.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ARG&lt;/span> USERNAME&lt;span style="color:#f92672">=&lt;/span>vscode
+&lt;span style="color:#66d9ef">ARG&lt;/span> USER_UID&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">1000&lt;/span>
+&lt;span style="color:#66d9ef">ARG&lt;/span> USER_GID&lt;span style="color:#f92672">=&lt;/span>$USER_UID&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils dialog 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install vim, git, process tools, lsb-release&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> git &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install ruby&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> make &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> build-essential &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ruby &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ruby-dev &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install jekyll&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> gem install &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> bundler &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> jekyll &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Create a non-root user to use if preferred - see https://aka.ms/vscode-remote/containers/non-root-user.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> groupadd --gid $USER_GID $USERNAME &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e"># [Optional] Add sudo support for the non-root user&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y sudo &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo $USERNAME ALL&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">\(&lt;/span>root&lt;span style="color:#ae81ff">\)&lt;/span> NOPASSWD:ALL &amp;gt; /etc/sudoers.d/$USERNAME&lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> chmod &lt;span style="color:#ae81ff">0440&lt;/span> /etc/sudoers.d/$USERNAME &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf /var/lib/apt/lists/*&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about this Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-blockchainhttps://github.com/microsoft/vscode-dev-containers/tree/master/containers/jekyll">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Visual Studio Code Remote Containers: Azure Blockchain</title><link>https://carlos.mendible.com/2019/07/06/vs-code-remote-containers-azure-blockchain/</link><pubDate>Sat, 06 Jul 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/07/06/vs-code-remote-containers-azure-blockchain/</guid><description>&lt;p>After collaborating with the &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-ansible">Azure Ansible&lt;/a> container I decided to also develop a Developer Container for those who want or need to use the &lt;a href="https://marketplace.visualstudio.com/items?itemName=AzBlockchain.azure-blockchain">Azure Blockchain Development Kit for Ethereum&lt;/a> to create smart contracts, taking away the burden of installing Python, Truffle, Ganache and NodeJS on your machine.&lt;/p>
+&lt;p>Once again I collaborated with &lt;a href="http://chuxel.github.io/">Chuck Lantz&lt;/a> and the container definition resulted in the following two files:&lt;/p>
+&lt;h2 id="1-devcontainerjson-file">1. devcontainer.json file&lt;/h2>
+&lt;hr>
+&lt;p>This file configures the remote container with the specified extensions&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Azure Blockchain&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;dockerFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Dockerfile&amp;#34;&lt;/span>,
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">if&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">you&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">will&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">ptrace-based&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">debugger&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">like&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">C++,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Go,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">and&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Rust.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;runArgs&amp;#34;&lt;/span>: [ &lt;span style="color:#e6db74">&amp;#34;--cap-add=SYS_PTRACE&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;--security-opt&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;seccomp=unconfined&amp;#34;&lt;/span> ],
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">if&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">you&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">want&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">publish&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">any&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">ports.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;appPort&amp;#34;&lt;/span>: [],
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">if&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">you&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">want&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">add&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">in&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">default&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">specific&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">settings.json&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">values&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;settings&amp;#34;&lt;/span>: { &lt;span style="color:#f92672">&amp;#34;workbench.colorTheme&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Quiet Light&amp;#34;&lt;/span> },
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">run&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">commands&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">after&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">is&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">created.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;postCreateCommand&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;az --version&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;extensions&amp;#34;&lt;/span>: [
+&lt;span style="color:#e6db74">&amp;#34;ms-vscode.azurecli&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;azblockchain.azure-blockchain&amp;#34;&lt;/span>
+]
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-dockerfile">2. Dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>This is the Dockerfile with all the tooling for the Development environment.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-Dockerfile" data-lang="Dockerfile">&lt;span style="color:#75715e">#-------------------------------------------------------------------------------------------------------------&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Copyright (c) Microsoft Corporation. All rights reserved.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e">#-------------------------------------------------------------------------------------------------------------&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> python:2.7&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Avoid warnings by switching to noninteractive&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>noninteractive
+&lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Verify git, process tools installed&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install git procps &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install nodejs&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -sL https://deb.nodesource.com/setup_10.x | bash - &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y nodejs &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Truffle Suite&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> npm i --unsafe-perm -g truffle &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Ganache CLI&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> npm install -g ganache-cli &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> # &lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install the Azure CLI&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y apt-transport-https curl gnupg2 lsb-release &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -cs&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> main&amp;#34;&lt;/span> &amp;gt; /etc/apt/sources.list.d/azure-cli.list &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - 2&amp;gt;/dev/null &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y azure-cli &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf /var/lib/apt/lists/*&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about this Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-blockchain">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Visual Studio Code Remote Containers: Azure Ansible</title><link>https://carlos.mendible.com/2019/07/05/vs-code-remote-containers-azure-ansible/</link><pubDate>Fri, 05 Jul 2019 23:30:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/07/05/vs-code-remote-containers-azure-ansible/</guid><description>&lt;p>Last year I was working on a project for deploying Azure services using Ansible, and let me tell you something: Back then a feature like &lt;a href="https://github.com/microsoft/vscode-dev-containers">Visual Studio Remote Containers&lt;/a> would have helped us so much!&lt;/p>
+&lt;p>Why? Because just installing &lt;a href="https://code.visualstudio.com/">Visual Studio Code&lt;/a>, the &lt;a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack">Remote Development Extension Pack&lt;/a>, and &lt;a href="https://www.docker.com/products/docker-desktop">Docker&lt;/a> you have a killer combo that makes it possible to create a Development environment in a snap and share it with your source code.&lt;/p>
+&lt;p>When I learned about this feature I tought I should create a Developer Container for those who need to work with Azure and Ansible so I went hands on and after collaborating with &lt;a href="http://chuxel.github.io/">Chuck Lantz&lt;/a> the container definition resulted in the following two files:&lt;/p>
+&lt;h2 id="1-devcontainerjson">1. devcontainer.json&lt;/h2>
+&lt;hr>
+&lt;p>This file configures the remote container with the specified extensions&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Azure Ansible&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;dockerFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Dockerfile&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;runArgs&amp;#34;&lt;/span>: [
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">if&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">you&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">will&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">ptrace-based&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">debugger&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">like&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">C++&lt;/span>, &lt;span style="color:#960050;background-color:#1e0010">Go&lt;/span>, &lt;span style="color:#960050;background-color:#1e0010">and&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Rust.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#e6db74">&amp;#34;--cap-add=SYS_PTRACE&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;--security-opt&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;seccomp=unconfined&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;-v&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;/var/run/docker.sock:/var/run/docker.sock&amp;#34;&lt;/span>
+],
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">if&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">you&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">want&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">publish&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">any&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">ports.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;appPort&amp;#34;&lt;/span>: [],
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">if&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">you&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">want&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">add&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">in&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">default&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">specific&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">settings.json&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">values&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;settings&amp;#34;&lt;/span>: { &lt;span style="color:#f92672">&amp;#34;workbench.colorTheme&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Quiet Light&amp;#34;&lt;/span> },
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Uncomment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">next&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">line&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">run&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">commands&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">after&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">is&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">created.&lt;/span>
+&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#f92672">&amp;#34;postCreateCommand&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;ansible --version&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;extensions&amp;#34;&lt;/span>: [
+&lt;span style="color:#e6db74">&amp;#34;vscoss.vscode-ansible&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;redhat.vscode-yaml&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;ms-vscode.azurecli&amp;#34;&lt;/span>
+]
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-dockerfile">2. Dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>This is the Dockerfile with all the tooling for the Development environment.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-Dockerfile" data-lang="Dockerfile">&lt;span style="color:#75715e">#-------------------------------------------------------------------------------------------------------------&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Copyright (c) Microsoft Corporation. All rights reserved.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e">#-------------------------------------------------------------------------------------------------------------&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Pick any base image, but if you select node, skip installing node. 😊&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> debian:9&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Avoid warnings by switching to noninteractive&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>noninteractive
+&lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Verify git, required tools installed&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> git &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> curl &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> procps &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> unzip &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> apt-transport-https &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ca-certificates &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> gnupg-agent &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> software-properties-common &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> lsb-release 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] Install Node.js for Azure Cloud Shell support&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Change the &amp;#34;lts/*&amp;#34; in the two lines below to pick a different version&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -so- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> /bin/bash -c &lt;span style="color:#e6db74">&amp;#34;source &lt;/span>$HOME&lt;span style="color:#e6db74">/.nvm/nvm.sh \
+&lt;/span>&lt;span style="color:#e6db74"> &amp;amp;&amp;amp; nvm install lts/* \
+&lt;/span>&lt;span style="color:#e6db74"> &amp;amp;&amp;amp; nvm alias default lts/*&amp;#34;&lt;/span> 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] For local testing instead of cloud shell&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Docker CE CLI.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -fsSL https://download.docker.com/linux/&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -is | tr &lt;span style="color:#e6db74">&amp;#39;[:upper:]&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;[:lower:]&amp;#39;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>/gpg | apt-key add - 2&amp;gt;/dev/null &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> add-apt-repository &lt;span style="color:#e6db74">&amp;#34;deb [arch=amd64] https://download.docker.com/linux/&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -is | tr &lt;span style="color:#e6db74">&amp;#39;[:upper:]&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;[:lower:]&amp;#39;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -cs&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> stable&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y docker-ce-cli &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] For local testing instead of cloud shell&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install the Azure CLI&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -cs&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> main&amp;#34;&lt;/span> &amp;gt; /etc/apt/sources.list.d/azure-cli.list &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - 2&amp;gt;/dev/null &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y azure-cli &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Ansible&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y libssl-dev libffi-dev python-dev python-pip &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> pip install ansible&lt;span style="color:#f92672">[&lt;/span>azure&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> rm -rf /var/lib/apt/lists/*&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about the Azure Ansible Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-ansible">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Revisiting Docker Multi Stage Builds to build an ASP.NET Core Echo Server</title><link>https://carlos.mendible.com/2018/09/25/revisiting-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</link><pubDate>Tue, 25 Sep 2018 20:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/09/25/revisiting-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</guid><description>&lt;p>On April I wrote a post about &lt;a href="https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server">Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server&lt;/a> and these days while preparing a talk, on CI/CD and kubernetes, I started to play with the &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver">simple sample&lt;/a> I wrote back then.&lt;/p>
+&lt;p>Soon enough I noticed that with each &lt;code>docker build&lt;/code> command I issued the dependencies for the echoserver were always restored, even if no changes were made to the project file (csproj).&lt;/p>
+&lt;p>Let see what was going on:&lt;/p>
+&lt;p>This was the original dockerfile:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-docker" data-lang="docker">&lt;span style="color:#75715e"># This stage builds the application&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-sdk-2.1.101-jessie AS builder&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> . src&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> src&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet restore&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet publish -c release&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># This stages uses the output from the build&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-runtime-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder src/bin/release/netcoreapp2.0/publish app&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> app&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ASPNETCORE_URLS http://*:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">EXPOSE&lt;/span>&lt;span style="color:#e6db74"> 80&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;dotnet&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;echoserver.dll&amp;#34;&lt;/span>]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see the culprit was between the lines 3 and 5. I was restoring the dependencies after copying all the code! And I fixed it with the following new dockerfile:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-docker" data-lang="docker">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-sdk-2.1.101-jessie AS builder&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> ./*.csproj ./src/&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> /src&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet restore&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> . /src&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet publish -c release&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-runtime-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder src/bin/release/netcoreapp2.0/publish app&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> app&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ASPNETCORE_URLS http://*:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">EXPOSE&lt;/span>&lt;span style="color:#e6db74"> 80&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;dotnet&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;echoserver.dll&amp;#34;&lt;/span>]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now the dependencies are restored after copying just the project files (*.csproj) then we copy the rest of the files and build as usual, and yes! with this dockerfile in place the image build times are faster if no dependencies are changed!&lt;/p>
+&lt;p>Hope it helps!&lt;/p>
+&lt;p>Feel free to get the code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver.improved">here&lt;/a>.&lt;/p></description></item><item><title>Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server</title><link>https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</link><pubDate>Wed, 04 Apr 2018 15:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to create a simple Echo Server with ASP.NET Core and then a Docker Image using &lt;a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build&lt;/a>:&lt;/p>
+&lt;h2 id="1-create-the-application">1. Create the Application&lt;/h2>
+&lt;hr>
+&lt;p>Open a PowerShell promt and run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir echoserver
+cd echoserver
+dotnet new console
+dotnet add package Microsoft.AspNetCore -v 2.0.2
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-replace-the-contents-of-programcs">2. Replace the contents of Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> EchoServer
+{
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Hosting;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Builder;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore;
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+WebHost.CreateDefaultBuilder()
+.UseKestrel()
+.Configure(app =&amp;gt;
+{
+app.Run(httpContext =&amp;gt;
+{
+&lt;span style="color:#66d9ef">var&lt;/span> request = httpContext.Request;
+&lt;span style="color:#66d9ef">var&lt;/span> response = httpContext.Response;
+&lt;span style="color:#75715e">// Echo the Headers
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">foreach&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> header &lt;span style="color:#66d9ef">in&lt;/span> request.Headers)
+{
+response.Headers.Add(header);
+}
+&lt;span style="color:#75715e">// Echo the body
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> request.Body.CopyToAsync(response.Body);
+});
+})
+.Build()
+.Run();
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-build-and-test">3. Build and Test&lt;/h2>
+&lt;hr>
+&lt;p>Run the folowing commands to build the application:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The Echo Server will be running on: &lt;a href="http://localhost:5000">http://localhost:5000&lt;/a> and to test it just send any request and the server should return it back to you.&lt;/p>
+&lt;p>Let&amp;rsquo;s try sending a GET request with a custom header:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -H &lt;span style="color:#e6db74">&amp;#34;Custom-Header: echo&amp;#34;&lt;/span> http://localhost:5000/ -i
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>the response should read:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">HTTP/1.1 &lt;span style="color:#ae81ff">200&lt;/span> OK
+Date: Wed, &lt;span style="color:#ae81ff">04&lt;/span> Apr &lt;span style="color:#ae81ff">2018&lt;/span> 10:10:55 GMT
+Server: Kestrel
+Content-Length: &lt;span style="color:#ae81ff">0&lt;/span>
+Accept: */*
+Host: localhost:5000
+User-Agent: curl/7.35.0
+Custom-Header: echo
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-a-dockerfile">4. Create a Dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>In order to run the Echo Server in a container create a Dockerfile with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-docker" data-lang="docker">&lt;span style="color:#75715e"># This stage builds the application&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-sdk-2.1.101-jessie AS builder&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> . src&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> src&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet restore&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> dotnet publish -c release&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># This stages uses the output from the build&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/dotnet:2.0.6-runtime-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">COPY&lt;/span> --from&lt;span style="color:#f92672">=&lt;/span>builder src/bin/release/netcoreapp2.0/publish app&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">WORKDIR&lt;/span>&lt;span style="color:#e6db74"> app&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> ASPNETCORE_URLS http://*:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">EXPOSE&lt;/span>&lt;span style="color:#e6db74"> 80&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENTRYPOINT&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;dotnet&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;echoserver.dll&amp;#34;&lt;/span>]&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: The previous Dockerfile defines a &lt;a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build&lt;/a>:&lt;/p>
+&lt;ul>
+&lt;li>The first stage copies the source code to the image and builds the application.&lt;/li>
+&lt;li>The second stage uses the output of the first stage (builder) to create the final and optimized image (i.e. No need to remove the sdk or the source code).&lt;/li>
+&lt;li>Docker 17.05 or higher is needed in order to build and image based on a multi-stage Dockerfile.&lt;/li>
+&lt;/ul>
+&lt;h2 id="5-build-and-test-the-image">5. Build and test the image&lt;/h2>
+&lt;hr>
+&lt;p>Run the folowing commands to build and run the docker image:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker build -t echoserver .
+docker run -p 5000&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>80 echoserver
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To test the image just repeat the tests from step 3.&lt;/p>
+&lt;p>Hope it helps!&lt;/p>
+&lt;p>Feel free to get the code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver">here&lt;/a>.&lt;/p></description></item><item><title>Run a Durable Azure Function in a Container</title><link>https://carlos.mendible.com/2018/01/14/run-a-durable-azure-function-in-a-container/</link><pubDate>Sun, 14 Jan 2018 15:19:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/01/14/run-a-durable-azure-function-in-a-container/</guid><description>&lt;p>Greetings readers! Hope you all a Happy New Year!&lt;/p>
+&lt;p>Last post I was about &lt;a href="https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container">running a Precompiled .NET Core Azure Function in a Container&lt;/a>. This time let&amp;rsquo;s go one step further and &lt;strong>Run a Durable Azure Function in a Container&lt;/strong>&lt;/p>
+&lt;p>&lt;strong>Prerequisites&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.docker.com">Docker&lt;/a> installed and basic knowledge.&lt;/li>
+&lt;li>&lt;a href="https://www.microsoft.com/net/download/">.NET Core&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account">Azure Storage Account&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-overview">Azure Durable Functions Knowledge&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-create-a-net-core-lib-project">1. Create a .NET Core lib project&lt;/h2>
+&lt;p>Create a .NET Core lib project.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new lib --name durable
+cd dni
+rm .\Class1.cs
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-add-the-required-references-to-be-able-to-use-azure-functions-api-and-the-durable-task-extensions">2. Add the required references to be able to use Azure Functions API and the Durable Task Extensions&lt;/h2>
+&lt;p>Be sure to add the following packages to the project. Sample code will not work with the latest versions of some of the Microsoft.AspNetCore.* packages, so pay special attention to the version parameter.&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Microsoft.AspNetCore.Mvc.WebApiCompatShim&lt;/strong> is needed to use the &lt;strong>ReadAsAsync&lt;/strong> extension (Assembly: System.Net.Http.Formatting) in one of the functions.&lt;/li>
+&lt;li>&lt;strong>Microsoft.Azure.WebJobs.Script.ExtensionsMetadataGenerator&lt;/strong> is need to generate, during build time, the extension file needed to run durable fucntions.&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.AspNetCore.Http -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc.WebApiCompatShim -v 2.0.0
+dotnet add package Microsoft.Azure.WebJobs -v 3.0.0-beta4
+dotnet add package Microsoft.Azure.WebJobs.Extensions.DurableTask -v 1.0.0-beta
+dotnet add package Microsoft.Azure.WebJobs.Script.ExtensionsMetadataGenerator -v 1.0.0-beta2
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-the-wwwroot-and-the-folders-needed-to-hold-the-functions">3. Create the wwwroot and the folders needed to hold the functions&lt;/h2>
+&lt;p>Create some foders. The first one &lt;strong>wwwroot&lt;/strong> will hold all the functions and global configuration. The others will hold the specific files for each of the 3 azure functions you&amp;rsquo;ll deploy:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">md wwwroot
+md wwwroot/httpstart
+md wwwroot/activity
+md wwwroot/orchestrator
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-hostjson-file-in-the-wwwroot-folder">4. Create host.json file in the wwwroot folder&lt;/h2>
+&lt;p>Create a &lt;strong>host.json&lt;/strong> file in the &lt;strong>wwwroot&lt;/strong> folder with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{ }
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-the-activity-function">5. Create the activity function&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/activity&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;name&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;activityTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//durable.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;DurableFunctions.Activity.Run&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create a &lt;strong>Activity.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">namespace&lt;/span> DurableFunctions
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Activity&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Run(&lt;span style="color:#66d9ef">string&lt;/span> name)
+{
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#e6db74">$&amp;#34;Hello {name}!&amp;#34;&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: this function uses an &lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Activity Trigger&lt;/a>.&lt;/p>
+&lt;h2 id="6-create-an-orchestrator-function">6. Create an orchestrator function&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/orchestrator&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;context&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;orchestrationTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//durable.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;DurableFunctions.Orchestrator.Run&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create a &lt;strong>Orchestrator.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">namespace&lt;/span> DurableFunctions
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Orchestrator&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;&amp;gt; Run(
+DurableOrchestrationContext context)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> outputs = &lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;();
+outputs.Add(&lt;span style="color:#66d9ef">await&lt;/span> context.CallActivityAsync&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;activity&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Tokyo&amp;#34;&lt;/span>));
+outputs.Add(&lt;span style="color:#66d9ef">await&lt;/span> context.CallActivityAsync&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;activity&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;Seattle&amp;#34;&lt;/span>));
+outputs.Add(&lt;span style="color:#66d9ef">await&lt;/span> context.CallActivityAsync&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;(&lt;span style="color:#e6db74">&amp;#34;activity&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;London&amp;#34;&lt;/span>));
+&lt;span style="color:#75715e">// returns [&amp;#34;Hello Tokyo!&amp;#34;, &amp;#34;Hello Seattle!&amp;#34;, &amp;#34;Hello London!&amp;#34;]
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> outputs;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: this function uses an &lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Orchestration Trigger&lt;/a>.&lt;/p>
+&lt;h2 id="7-create-the-orchestrator-client">7. Create the Orchestrator Client&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/httpstart&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;authLevel&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;anonymous&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;req&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;httpTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;route&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;orchestrators/{functionName}&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;methods&amp;#34;&lt;/span>: [
+&lt;span style="color:#e6db74">&amp;#34;post&amp;#34;&lt;/span>
+]
+},
+{
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;starter&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;orchestrationClient&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//durable.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;DurableFunctions.HttpStart.Run&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create a &lt;strong>HttpStart.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http.Headers;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs.Host;
+&lt;span style="color:#66d9ef">namespace&lt;/span> DurableFunctions
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">HttpStart&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task&amp;lt;HttpResponseMessage&amp;gt; Run(
+HttpRequestMessage req,
+DurableOrchestrationClient starter,
+&lt;span style="color:#66d9ef">string&lt;/span> functionName,
+TraceWriter log)
+{
+&lt;span style="color:#75715e">// Function input comes from the request content.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">dynamic&lt;/span> eventData = &lt;span style="color:#66d9ef">await&lt;/span> req.Content.ReadAsAsync&amp;lt;&lt;span style="color:#66d9ef">object&lt;/span>&amp;gt;();
+&lt;span style="color:#66d9ef">string&lt;/span> instanceId = &lt;span style="color:#66d9ef">await&lt;/span> starter.StartNewAsync(functionName, eventData);
+log.Info(&lt;span style="color:#e6db74">$&amp;#34;Started orchestration with ID = &amp;#39;{instanceId}&amp;#39;.&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> res = starter.CreateCheckStatusResponse(req, instanceId);
+res.Headers.RetryAfter = &lt;span style="color:#66d9ef">new&lt;/span> RetryConditionHeaderValue(TimeSpan.FromSeconds(&lt;span style="color:#ae81ff">10&lt;/span>));
+&lt;span style="color:#66d9ef">return&lt;/span> res;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: this function uses an http trigger and an &lt;a href="https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings">Orchestration client&lt;/a>.&lt;/p>
+&lt;h2 id="8-create-a-dockerfile">8. Create a dockerfile&lt;/h2>
+&lt;p>Create a &lt;strong>dockerfile&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/azure-functions-runtime:2.0.0-jessie&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># If we don&amp;#39;t set WEBSITE_HOSTNAME Azure Function triggers other than HttpTrigger won&amp;#39;t run. (FunctionInvocationException: Webhooks are not configured)&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># I&amp;#39;ve created a pull request to add this variable to the original dockerfile: https://github.com/Azure/azure-webjobs-sdk-script/pull/2285&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> WEBSITE_HOSTNAME&lt;span style="color:#f92672">=&lt;/span>localhost:80&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Copy all Function files and binaries to /home/site/wwwroot&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ADD&lt;/span> wwwroot /home/site/wwwroot&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Functions must live in: /home/site/wwwroot&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># We expect to receive the Storage Account Connection String from the command line.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ARG&lt;/span> STORAGE_ACCOUNT&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Set the AzureWebJobsStorage Environment Variable. Otherwise Durable Functions Extensions won&amp;#39;t work.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> AzureWebJobsStorage&lt;span style="color:#f92672">=&lt;/span>$STORAGE_ACCOUNT&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that once you execute a docker build on the file all the contents of the &lt;strong>wwwroot&lt;/strong> folder will be copied to the &lt;strong>/home/site/wwwroot&lt;/strong> inside the image.&lt;/p>
+&lt;h2 id="9-build-the-project-and-the-docker-image">9. Build the project and the docker image&lt;/h2>
+&lt;p>Build the .NET Core project so you get the precompiled funtions and then build the docker image:&lt;/p>
+&lt;p>Note: you&amp;rsquo;ll need a valid Azure Storage Account connection string.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build -o .\wwwroot\bin\
+docker build --build-arg STORAGE_ACCOUNT=&lt;span style="color:#e6db74">&amp;#34;[Valid Azure Storage Account Connection String]&amp;#34;&lt;/span> -t durable .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="10-create-a-container-and-test-the-function">10. Create a container and test the function&lt;/h2>
+&lt;p>Run the following to run the Azure Function in a container:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker run -p 5000&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>80 durable
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now POST to the orchestrator client to start the durable functions:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -X POST http://localhost:5000/api/orchestrators/orchestrator -i -H &lt;span style="color:#e6db74">&amp;#34;Content-Length: 0&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can download all code and files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/azure.durable.function.docker">here&lt;/a>.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: The function code is based on the original &lt;a href="https://github.com/Azure/azure-functions-durable-extension">Azure Functions Samples&lt;/a>.&lt;/p>
+&lt;p>Happy coding!&lt;/p></description></item><item><title>Run a Precompiled .NET Core Azure Function in a Container</title><link>https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/</link><pubDate>Thu, 28 Dec 2017 15:13:00 +0000</pubDate><guid>https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/</guid><description>&lt;p>So this morning I found my self browsing through the images Microsoft has published in the &lt;a href="https://hub.docker.com/u/microsoft/">Docker Hub&lt;/a> and then I saw this one: &lt;a href="https://hub.docker.com/r/microsoft/azure-functions-runtime/">microsoft/azure-functions-runtime&lt;/a> and decided to &lt;strong>Run a Precompiled .NET Core Azure Function in a Container&lt;/strong>.&lt;/p>
+&lt;p>&lt;strong>Prerequisites&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.docker.com">Docker&lt;/a> installed and basic knowledge.&lt;/li>
+&lt;li>&lt;a href="https://www.microsoft.com/net/download/">.NET Core&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-create-a-net-core-lib-project">1. Create a .NET Core lib project&lt;/h2>
+&lt;p>Create a .NET Core lib project.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet new lib --name dni
+cd dni
+rm .\Class1.cs
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-add-the-required-references-to-be-able-to-use-azure-functions-api">2. Add the required references to be able to use Azure Functions API&lt;/h2>
+&lt;p>Be sure to add the following packages to the project. I couldn&amp;rsquo;t make the sample work with the latest versions of some of the Microsoft.AspNetCore.* packages, so pay special attention to the version parameter.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.AspNetCore.Http -v 2.0.0
+dotnet add package Microsoft.AspNetCore.Mvc -v 2.0.0
+dotnet add package Microsoft.Azure.WebJobs -v 3.0.0-beta4
+dotnet add package Microsoft.Extensions.Primitives -v 2.0.0
+dotnet add package Newtonsoft.Json -v 10.0.3
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-modify-the-output-path-of-the-project">3. Modify the Output Path of the project&lt;/h2>
+&lt;p>Edit dni.csproj and the OutputPath property with the following value: &lt;strong>wwwroot\bin&lt;/strong>. The project contents should now look like the following text:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#f92672">&amp;lt;Project&lt;/span> &lt;span style="color:#a6e22e">Sdk=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.NET.Sdk&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;TargetFramework&amp;gt;&lt;/span>netstandard2.0&lt;span style="color:#f92672">&amp;lt;/TargetFramework&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;OutputPath&amp;gt;&lt;/span>wwwroot\bin&lt;span style="color:#f92672">&amp;lt;/OutputPath&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/PropertyGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Http&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.AspNetCore.Mvc&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Azure.WebJobs&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;3.0.0-beta4&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Microsoft.Extensions.Primitives&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;PackageReference&lt;/span> &lt;span style="color:#a6e22e">Include=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Newtonsoft.Json&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Version=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;10.0.3&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/ItemGroup&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">&amp;lt;/Project&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-the-wwwroot-and-validate-folders">4. Create the wwwroot and validate folders&lt;/h2>
+&lt;p>Create two folders. The first one &lt;strong>wwwroot&lt;/strong> will hold all the functions and global configuration. The second one: &lt;strong>validate&lt;/strong> will hold the configuration of the &lt;strong>validate&lt;/strong> function we&amp;rsquo;ll be deploying.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">md wwwroot
+md wwwroot/validate
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-hostjson-file-in-the-wwwroot-folder">5. Create host.json file in the wwwroot folder&lt;/h2>
+&lt;p>Create a &lt;strong>host.json&lt;/strong> file in the &lt;strong>wwwroot&lt;/strong> folder with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{ }
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-create-functionjson-and-runcsx-files">6. Create function.json and run.csx files&lt;/h2>
+&lt;p>In the &lt;strong>wwwroot/validate&lt;/strong> folder create a &lt;strong>functions.json&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;bindings&amp;#34;&lt;/span>: [
+{
+&lt;span style="color:#f92672">&amp;#34;authLevel&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;anonymous&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;req&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;httpTrigger&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;direction&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>
+}
+],
+&lt;span style="color:#f92672">&amp;#34;scriptFile&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;..//bin//netstandard2.0//dni.dll&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;entryPoint&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Dni.HttpTrigger.Run&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;disabled&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that in &lt;strong>functions.json&lt;/strong> we are specifying the function trigger &lt;strong>type&lt;/strong> as &lt;strong>httpTrigger&lt;/strong> and also specifying the &lt;strong>scriptFile&lt;/strong> and &lt;strong>entryPoint&lt;/strong>.&lt;/p>
+&lt;p>Now create a &lt;strong>run.csx&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#75715e">//leave this file empty - all the logic is placed within our precompiled function
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-create-an-httptriggercs-file-to-hold-your-function">7. Create an HttpTrigger.cs file to hold your function&lt;/h2>
+&lt;p>Create a &lt;strong>HttpTrigger.cs&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> Dni
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System.Collections.Generic;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.AspNetCore.Mvc;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.WebJobs.Host;
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">HttpTrigger&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> IActionResult Run(HttpRequest req, TraceWriter log)
+{
+log.Info(&lt;span style="color:#e6db74">&amp;#34;DNI Validation function is processing a request.&amp;#34;&lt;/span>);
+&lt;span style="color:#66d9ef">string&lt;/span> dni = req.Query[&lt;span style="color:#e6db74">&amp;#34;dni&amp;#34;&lt;/span>];
+&lt;span style="color:#66d9ef">return&lt;/span> dni != &lt;span style="color:#66d9ef">null&lt;/span>
+? (ActionResult)&lt;span style="color:#66d9ef">new&lt;/span> OkObjectResult(ValidateDNI(dni))
+: &lt;span style="color:#66d9ef">new&lt;/span> BadRequestObjectResult(&lt;span style="color:#e6db74">&amp;#34;Please pass a dni on the query string&amp;#34;&lt;/span>);
+}
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">bool&lt;/span> ValidateDNI(&lt;span style="color:#66d9ef">string&lt;/span> dni)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> table = &lt;span style="color:#e6db74">&amp;#34;TRWAGMYFPDXBNJZSQVHLCKE&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> foreignerDigits = &lt;span style="color:#66d9ef">new&lt;/span> Dictionary&amp;lt;&lt;span style="color:#66d9ef">char&lt;/span>, &lt;span style="color:#66d9ef">char&lt;/span>&amp;gt;()
+{
+{ &lt;span style="color:#e6db74">&amp;#39;X&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;0&amp;#39;&lt;/span>},
+{ &lt;span style="color:#e6db74">&amp;#39;Y&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;1&amp;#39;&lt;/span>},
+{ &lt;span style="color:#e6db74">&amp;#39;Z&amp;#39;&lt;/span>, &lt;span style="color:#e6db74">&amp;#39;2&amp;#39;&lt;/span>}
+};
+&lt;span style="color:#66d9ef">var&lt;/span> numbers = &lt;span style="color:#e6db74">&amp;#34;1234567890&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> parsedDNI = dni.ToUpper();
+&lt;span style="color:#66d9ef">if&lt;/span> (parsedDNI.Length == &lt;span style="color:#ae81ff">9&lt;/span>)
+{
+&lt;span style="color:#66d9ef">var&lt;/span> checkDigit = parsedDNI[&lt;span style="color:#ae81ff">8&lt;/span>];
+parsedDNI = parsedDNI.Remove(&lt;span style="color:#ae81ff">8&lt;/span>);
+&lt;span style="color:#66d9ef">if&lt;/span> (foreignerDigits.ContainsKey(parsedDNI[&lt;span style="color:#ae81ff">0&lt;/span>]))
+{
+parsedDNI = parsedDNI.Replace(parsedDNI[&lt;span style="color:#ae81ff">0&lt;/span>], foreignerDigits[parsedDNI[&lt;span style="color:#ae81ff">0&lt;/span>]]);
+}
+&lt;span style="color:#66d9ef">return&lt;/span> parsedDNI.Length == parsedDNI.Where(n =&amp;gt; numbers.Contains(n)).Count() &amp;amp;&amp;amp;
+table[&lt;span style="color:#66d9ef">int&lt;/span>.Parse(parsedDNI) % &lt;span style="color:#ae81ff">23&lt;/span>] == checkDigit;
+}
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>;
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Cause I didn&amp;rsquo;t want to create a simple Hello World sample, this Azure Function Code takes the &lt;strong>dni&lt;/strong> parameter from the query string and validates if the given value is a valid &lt;strong>Spanish National Identity Document&lt;/strong> number.&lt;/p>
+&lt;h2 id="8-create-a-dockerfile">8. Create a dockerfile&lt;/h2>
+&lt;p>Create a &lt;strong>dockerfile&lt;/strong> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="color:#66d9ef">FROM&lt;/span>&lt;span style="color:#e6db74"> microsoft/azure-functions-runtime:v2.0.0-beta1&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> AzureWebJobsScriptRoot&lt;span style="color:#f92672">=&lt;/span>/home/site/wwwroot&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ADD&lt;/span> wwwroot /home/site/wwwroot&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that once you execute a docker build on the file all the contents of the &lt;strong>wwwroot&lt;/strong> folder will be copied to the &lt;strong>/home/site/wwwroot&lt;/strong> inside the image.&lt;/p>
+&lt;h2 id="9-build-the-project-and-the-docker-image">9. Build the project and the docker image&lt;/h2>
+&lt;p>Build the .NET Core project so you get a precompiled funtion and then build the docker image:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+docker build -t dni .
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="10-create-a-container-and-test-the-function">10. Create a container and test the function&lt;/h2>
+&lt;p>Run the following to run the Azure Function in a container:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker run -p 5000&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>80 dni
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now navigate to: &lt;a href="http://localhost:5000/api/validate?dni=54495436H">http://localhost:5000/api/validate?dni=54495436H&lt;/a> and the page should return &lt;strong>true&lt;/strong>.&lt;/p>
+&lt;p>You can download all code and files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/azure.function.docker">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Deploy your first Service to Azure Container Services (AKS)</title><link>https://carlos.mendible.com/2017/12/01/deploy-your-first-service-to-azure-container-services-aks/</link><pubDate>Fri, 01 Dec 2017 15:13:00 +0000</pubDate><guid>https://carlos.mendible.com/2017/12/01/deploy-your-first-service-to-azure-container-services-aks/</guid><description>&lt;p>In this post I&amp;rsquo;ll show you how to &lt;strong>Deploy your first Service to &lt;a href="https://docs.microsoft.com/en-us/azure/aks/">Azure Container Services (AKS)&lt;/a>&lt;/strong>.&lt;/p>
+&lt;p>&lt;strong>Prerequisites&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">Azure CLI&lt;/a> installed and basic knowledge experience.&lt;/li>
+&lt;li>&lt;a href="https://www.docker.com">Docker&lt;/a> installed and basic knowledge.&lt;/li>
+&lt;li>&lt;a href="https://azure.microsoft.com/en-us/pricing/purchase-options/">Azure Subscription&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/">Kubernetes&lt;/a> experience.&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-create-a-resource-group">1. Create a resource group:&lt;/h2>
+&lt;p>Firt create a Resource Group. Be aware that at the time of writing AKS is not available in all Azure regions.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">az group create -l westeurope -n aks
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-an-azure-container-registry">2. Create an Azure Container Registry:&lt;/h2>
+&lt;p>Probably you&amp;rsquo;ll want a private registry to upload your docker images, so let&amp;rsquo;s create an &lt;a href="https://azure.microsoft.com/en-us/services/container-registry/">Azure Container Registry&lt;/a> instance.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">az acr create -g aks -n myregistry --sku Basic --admin-enabled
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-login-to-the-azure-container-registry">3. Login to the Azure Container Registry:&lt;/h2>
+&lt;p>You can login to the Container Registry using the following Azure CLI command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">az acr login -n myregistry
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Or you can get the Key and login with docker:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">az acr credential show -n myregistry
+docker login myregistry.azurecr.io -u myregistry -p &lt;span style="color:#66d9ef">[PASSWORD FROM PREVIOUS COMMAND]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-push-an-image-to-the-azure-container-registry">4. Push an image to the Azure Container Registry:&lt;/h2>
+&lt;p>In this step we are going to pull an image from docker hub, and then upload it to the Container Registry created in step 2. Feel free to use your own docker image with a working web application.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker pull yaros1av/hello-core
+docker tag yaros1av/hello-core myregistry.azurecr.io/hello-core&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>1.0
+docker push myregistry.azurecr.io/hello-core&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>1.0
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-aks-cluster">5. Create AKS cluster&lt;/h2>
+&lt;p>Now create the AKS cluster:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">az aks create -g aks --name myAKSCluster --generate-ssh-keys
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-install-kubectlhttpskubernetesiodocsreferencekubectloverview">6. Install &lt;a href="https://kubernetes.io/docs/reference/kubectl/overview/">kubectl&lt;/a>&lt;/h2>
+&lt;p>To manage the cluster you&amp;rsquo;ll need to install &lt;a href="https://kubernetes.io/docs/reference/kubectl/overview/">kubectl&lt;/a> so run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">az aks install-cli
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-get-cluster-credentials">7. Get cluster credentials&lt;/h2>
+&lt;p>Get the cluster credentials and check the connectivity so you can start working with the AKS cluster.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">az aks get-credentials -g aks -n myAKSCluster
+kubectl get nodes
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-create-a-secret-to-hold-the-registry-credentials">8. Create a Secret to hold the registry credentials.&lt;/h2>
+&lt;p>You have to add the Azure Container Registry credentials to your AKS service in order to be able to pull the images. This is acomplished by creating a secret:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl create secret docker-registry &lt;span style="color:#66d9ef">[SECRET NAME]&lt;/span> --docker-server=myregistry.azurecr.io --docker-username=myregistry --docker-password=&lt;span style="color:#66d9ef">[THE REGISTRY PASWORD FROM STEP 3]&lt;/span> --docker-email=&lt;span style="color:#66d9ef">[EMAIL ADDRESS]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Check for the secret:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl describe secret
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="9-create-a-kubernetes-deploymenthttpskubernetesiodocsconceptsworkloadscontrollersdeployment-definition">9. Create a kubernetes &lt;a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">deployment&lt;/a> definition.&lt;/h2>
+&lt;p>Create a file &lt;strong>[your deployment].yml&lt;/strong> with the following contents (replace the secret name):&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: my-api
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#66d9ef">template&lt;/span>:
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: my-api
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: my-api
+&lt;span style="color:#66d9ef">image&lt;/span>: myregistry.azurecr.io/hello-core:&lt;span style="color:#ae81ff">1.0&lt;/span>
+&lt;span style="color:#66d9ef">ports&lt;/span>:
+- &lt;span style="color:#66d9ef">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#66d9ef">imagePullSecrets&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: [SECRET NAME]
+---
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Service
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: my-api
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">type&lt;/span>: LoadBalancer
+&lt;span style="color:#66d9ef">ports&lt;/span>:
+- &lt;span style="color:#66d9ef">port&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#66d9ef">selector&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: my-api
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see the file references the image pushed to the Container Service with the secret created in previous steps.&lt;/p>
+&lt;h2 id="10-deploy-your-service">10. Deploy your service.&lt;/h2>
+&lt;p>Run the following comnmand to deploy your service to AKS:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl create &lt;span style="color:#f92672">-f&lt;/span> &lt;span style="color:#66d9ef">[your deployment]&lt;/span>.yml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="11-get-the-puplic-ip-for-your-service">11. Get the puplic IP for your service&lt;/h2>
+&lt;p>To try your service you&amp;rsquo;ll need to get the public IP (It can take a while).&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl.exe get service/my-api -w
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Once you get the IP go ahead and test the service.&lt;/p>
+&lt;h2 id="12-update-your-deployment-to-different-version-of-the-image">12. Update your deployment to different version of the image&lt;/h2>
+&lt;p>If you need to update your service to use another version of the dokcer image run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl set image deployment/my-api &lt;span style="color:#66d9ef">[image name]&lt;/span>=myregistry.azurecr.io/&lt;span style="color:#66d9ef">[image name]&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>&lt;span style="color:#66d9ef">[new version]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="13-add-an-autoscale-rule">13. Add an autoscale rule&lt;/h2>
+&lt;p>To add an autoscale rule to your service, run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl autoscale deployment my-api --min=2 --max=5 --cpu-percent=80
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item><item><title>Prepare a .Net Core Console App for Docker</title><link>https://carlos.mendible.com/2017/10/15/prepare-a-net-core-console-app-for-docker/</link><pubDate>Sun, 15 Oct 2017 12:16:08 +0000</pubDate><guid>https://carlos.mendible.com/2017/10/15/prepare-a-net-core-console-app-for-docker/</guid><description>&lt;p>Last week I had the luck to attend the &lt;!-- raw HTML omitted -->Microsoft Azure OpenHack in Amsterdam&lt;!-- raw HTML omitted -->. We spent two and a half days learning a lot about kubernetes, Azure Container Services, Azure Container Registry, Azure OMS and Minecraft!&lt;/p>
+&lt;p>In one of the challenges we decided to implement a &lt;!-- raw HTML omitted -->sidecar container&lt;!-- raw HTML omitted --> for logging purposes. So using .NET Core we created a console application with proper handling of the&amp;quot;Control+C&amp;rdquo; and&amp;quot;Control+Break&amp;rdquo; key shortcuts.&lt;/p>
+&lt;p>The following code shows you the structure of the console app we created and will help you &lt;strong>Prepare a .Net Core Console App for Docker&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">namespace&lt;/span> docker.controlc
+{
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#75715e">// AutoResetEvent to signal when to exit the application.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">readonly&lt;/span> AutoResetEvent waitHandle = &lt;span style="color:#66d9ef">new&lt;/span> AutoResetEvent(&lt;span style="color:#66d9ef">false&lt;/span>);
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// Fire and forget
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Task.Run(() =&amp;gt;
+{
+&lt;span style="color:#66d9ef">var&lt;/span> random = &lt;span style="color:#66d9ef">new&lt;/span> Random(&lt;span style="color:#ae81ff">10&lt;/span>);
+&lt;span style="color:#66d9ef">while&lt;/span> (&lt;span style="color:#66d9ef">true&lt;/span>)
+{
+&lt;span style="color:#75715e">// Write here whatever your side car applications needs to do.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// In this sample we are just writing a random number to the Console (stdout)
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Loop = {random.Next()}&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Sleep as long as you need.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Thread.Sleep(&lt;span style="color:#ae81ff">1000&lt;/span>);
+}
+});
+&lt;span style="color:#75715e">// Handle Control+C or Control+Break
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> Console.CancelKeyPress += (o, e) =&amp;gt;
+{
+Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;Exit&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Allow the manin thread to continue and exit...
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> waitHandle.Set();
+};
+&lt;span style="color:#75715e">// Wait
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> waitHandle.WaitOne();
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that we are handling the Console.CancelKeyPress because Docker does not behave as expected if you use the typical Console.ReadKey method to make the application run until a key is pressed.&lt;/p>
+&lt;p>Get the code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/docker.controlc">here&lt;/a>.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Run ASP.NET Core on OpenShift</title><link>https://carlos.mendible.com/2017/07/26/run-asp.net-core-on-openshift/</link><pubDate>Wed, 26 Jul 2017 09:55:19 +0000</pubDate><guid>https://carlos.mendible.com/2017/07/26/run-asp.net-core-on-openshift/</guid><description>&lt;p>Today I&amp;rsquo;ll show you how to &lt;strong>Run ASP.NET Core on OpenShift&lt;/strong>.&lt;/p>
+&lt;p>First be aware of the following prerequisites:&lt;/p>
+&lt;ul>
+&lt;li>You&amp;rsquo;ll need a working Docker installation. If you are using Windows 10 you can get Docker for Windows &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/li>
+&lt;li>Be sure to &lt;strong>Disable TLS for 127.0.0.1:2375&lt;/strong> for your Docker installation&lt;/li>
+&lt;li>Be sure to set &lt;strong>172.30.0.0/16 as an Insecure Registry&lt;/strong> in your Docker installation&lt;/li>
+&lt;li>Be sure to set &lt;strong>172.30.1.1:5000 as a Registry Mirror&lt;/strong> in your Docker installation&lt;/li>
+&lt;li>You&amp;rsquo;ll need download the &lt;!-- raw HTML omitted -->oc Client Tools&lt;!-- raw HTML omitted -->&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Note&lt;/strong>: If you want to learn about OpenShift and what can you do with it, I recommend the free book: &lt;!-- raw HTML omitted -->Openshift for Developers&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Now let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir aspnet.on.openshift
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd aspnet.on.openshift
+dotnet new web
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>No you have a working Hello World application.&lt;/p>
+&lt;h2 id="3-publish-your-application">3. Publish your application&lt;/h2>
+&lt;hr>
+&lt;p>Restore the nuget packages and publish your application with the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+dotnet publish -c release
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-a-dockerfile">4. Create a Dockerfile&lt;/h2>
+&lt;hr>
+&lt;p>Create a Dockerfile (be aware of the capital D) with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">FROM microsoft/dotnet
+&lt;span style="color:#75715e"># Set ASPNETCORE_URLS&lt;/span>
+ENV ASPNETCORE_URLS=https://&lt;span style="color:#75715e">*:8080&lt;/span>
+&lt;span style="color:#75715e"># Switch to root for changing dir ownership/permissions&lt;/span>
+USER &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;span style="color:#75715e"># Copy the binaries&lt;/span>
+COPY /bin/release/netcoreapp1&lt;span style="color:#ae81ff">.1&lt;/span>/publish app
+&lt;span style="color:#75715e"># Change to app directory&lt;/span>
+WORKDIR app
+&lt;span style="color:#75715e"># In order to drop the root user, we have to make some directories world&lt;/span>
+&lt;span style="color:#75715e"># writable as OpenShift default security model is to run the container under&lt;/span>
+&lt;span style="color:#75715e"># random UID.&lt;/span>
+RUN chown -R &lt;span style="color:#ae81ff">1001&lt;/span>:&lt;span style="color:#ae81ff">0&lt;/span> /app &lt;span style="color:#75715e">&amp;amp;&amp;amp;&lt;/span> chmod -R og+rwx /app
+&lt;span style="color:#75715e"># Expose port 8080 for the application.&lt;/span>
+EXPOSE &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;span style="color:#75715e"># Run container by default as user with id 1001 (default)&lt;/span>
+USER &lt;span style="color:#ae81ff">1001&lt;/span>
+&lt;span style="color:#75715e"># Start the application using dotnet!!!&lt;/span>
+ENTRYPOINT dotnet aspnet.on.openshift.dll
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-you-openshift-cluster">5. Create you OpenShift Cluster&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc cluster up --host-data-dir=/mydata --version=v1.5.1
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should have a working cluster. To get the url of your cluster run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc status
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Browse to your cluster (i.e &lt;!-- raw HTML omitted -->https://10.0.75.2:8443&lt;!-- raw HTML omitted -->) and login with username: &lt;strong>developer&lt;/strong> and password &lt;strong>developer&lt;/strong>&lt;/p>
+&lt;h2 id="6-create-an-app-in-openshift">6. Create an app in OpenShift&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc new-app . --name=aspnetoc
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-build-your-openshift-image">7. Build your OpenShift image&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc start-build aspnetoc --from-dir=.
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-create-a-route-so-you-can-access-the-application">8. Create a route so you can access the application&lt;/h2>
+&lt;hr>
+&lt;p>Run the following commands&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc create route edge --service=aspnetoc
+oc get route aspnetoc
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Copy the host/port output of the previous command (i.e. aspnetoc-myproject.10.0.75.2.nip.io)&lt;/p>
+&lt;h2 id="9-check-the-status-and-browse-to-you-application">9. Check the status and browse to you application&lt;/h2>
+&lt;hr>
+&lt;p>Check the status with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">oc status
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>When your pod has been deployed browse to your application using the host you copied in step 8 (i.e. &lt;!-- raw HTML omitted -->&lt;a href="https://aspnetoc-myproject.10.0.75.2.nip.io">https://aspnetoc-myproject.10.0.75.2.nip.io&lt;/a>&lt;!-- raw HTML omitted -->).&lt;/p>
+&lt;p>Enjoy! you just deployed your ASP.NET Core application to OpenShift.&lt;/p>
+&lt;p>You can get the code &lt;!-- raw HTML omitted -->here&lt;!-- raw HTML omitted -->.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

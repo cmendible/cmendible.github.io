@@ -1,0 +1,92 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CosmosDB on Code it Yourself...</title><link>https://carlos.mendible.com/tags/cosmosdb/</link><description>Recent content in CosmosDB on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 25 Jun 2017 18:52:22 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/cosmosdb/feed.xml" rel="self" type="application/rss+xml"/><item><title>Step by step: .NET Core and Azure Cosmos DB</title><link>https://carlos.mendible.com/2017/06/25/step-by-step-net-core-and-azure-cosmos-db/</link><pubDate>Sun, 25 Jun 2017 18:52:22 +0000</pubDate><guid>https://carlos.mendible.com/2017/06/25/step-by-step-net-core-and-azure-cosmos-db/</guid><description>&lt;p>&lt;strong>Step by step: .NET Core and Azure Cosmos DB&lt;/strong> is a short post on how to connect to Cosmos DB, save a document and then query to find it.&lt;/p>
+&lt;p>Let&amp;rsquo;s start:&lt;/p>
+&lt;h2 id="1-create-a-cosmos-db-account">1. Create a Cosmos DB account&lt;/h2>
+&lt;hr>
+&lt;p>Create a Cosmos DB account in your Azure subscription. Once created get the URI and the primary Read-write key from the Keys section.&lt;/p>
+&lt;p>If you need info on how to do this browse to the &lt;strong>Create a database account&lt;/strong> section here: &lt;!-- raw HTML omitted -->&lt;a href="https://docs.microsoft.com/en-us/azure/cosmos-db/create-documentdb-dotnet">https://docs.microsoft.com/en-us/azure/cosmos-db/create-documentdb-dotnet&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;h2 id="2-create-a-folder-for-your-new-project">2. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command promt an run&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">mkdir cosmosdb
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-create-the-project">3. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">cd cosmosdb
+dotnet new console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-add-a-reference-to-the-microsoftazuredocumentdbcore-library">4. Add a reference to the Microsoft.Azure.DocumentDB.Core library&lt;/h2>
+&lt;hr>
+&lt;p>Add a reference to the Microsoft.Azure.DocumentDB.Core client library so you are able to talk with Cosmos Db.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet add package Microsoft.Azure.DocumentDB.Core -v 1.3.2
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-restore-packages">5. Restore packages&lt;/h2>
+&lt;hr>
+&lt;p>You just modified the project dependencies so please restore the packages with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-modify-programcs">6. Modify Program.cs&lt;/h2>
+&lt;hr>
+&lt;p>Replace the contents of the &lt;strong>Program.cs&lt;/strong> file with the following code and remember to change lines 13 and 16 with your account URI and Key&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Linq;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.Documents;
+&lt;span style="color:#66d9ef">using&lt;/span> Microsoft.Azure.Documents.Client;
+&lt;span style="color:#66d9ef">namespace&lt;/span> cosmosdb
+{
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">void&lt;/span> Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// The endpoint to your cosmosdb instance
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> endpointUrl = &lt;span style="color:#e6db74">&amp;#34;[THE ENPOINT OF YOUR COSMOSDB SERVICE HERE]&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// The key to you cosmosdb
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> key = &lt;span style="color:#e6db74">&amp;#34;[THE KEY OF YOUR COSMOSDB SERVICE HERE]&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// The name of the database
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> databaseName = &lt;span style="color:#e6db74">&amp;#34;Students&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// The name of the collection of json documents
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> databaseCollection = &lt;span style="color:#e6db74">&amp;#34;StudentsCollection&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Create a cosmosdb client
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">using&lt;/span> (&lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> DocumentClient(&lt;span style="color:#66d9ef">new&lt;/span> Uri(endpointUrl), key))
+{
+&lt;span style="color:#75715e">// Create the database
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> client.CreateDatabaseIfNotExistsAsync(&lt;span style="color:#66d9ef">new&lt;/span> Database() { Id = databaseName }).GetAwaiter().GetResult();
+&lt;span style="color:#75715e">// Create the collection
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> client.CreateDocumentCollectionIfNotExistsAsync(
+UriFactory.CreateDatabaseUri(databaseName),
+&lt;span style="color:#66d9ef">new&lt;/span> DocumentCollection { Id = databaseCollection }).
+GetAwaiter()
+.GetResult();
+&lt;span style="color:#75715e">// Create a Student instance
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> student = &lt;span style="color:#66d9ef">new&lt;/span> Student() { Id = &lt;span style="color:#e6db74">&amp;#34;Student.1&amp;#34;&lt;/span>, Name = &lt;span style="color:#e6db74">&amp;#34;Carlos&amp;#34;&lt;/span>, LastName = &lt;span style="color:#e6db74">&amp;#34;Mendible&amp;#34;&lt;/span> };
+&lt;span style="color:#75715e">// Sava the document to cosmosdb
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(databaseName, databaseCollection), student)
+.GetAwaiter().GetResult();
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Student was saved in the database with id: {student.Id}&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// Query for the student by last name
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> query = client.CreateDocumentQuery&amp;lt;Student&amp;gt;(
+UriFactory.CreateDocumentCollectionUri(databaseName, databaseCollection))
+.Where(f =&amp;gt; f.LastName == &lt;span style="color:#e6db74">&amp;#34;Mendible&amp;#34;&lt;/span>)
+.ToList();
+&lt;span style="color:#66d9ef">if&lt;/span> (query.Any())
+{
+Console.WriteLine(&lt;span style="color:#e6db74">&amp;#34;Student was found in the cosmosdb database&amp;#34;&lt;/span>);
+}
+}
+}
+}
+&lt;span style="color:#75715e">/// &amp;lt;summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// A simple class representing a Student
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">/// &amp;lt;/summary&amp;gt;
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Student&lt;/span>
+{
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Id { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> Name { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span> LastName { &lt;span style="color:#66d9ef">get&lt;/span>; &lt;span style="color:#66d9ef">set&lt;/span>; }
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="7-build">7. Build&lt;/h2>
+&lt;hr>
+&lt;p>Build the application with the following command&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet build
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="8-run">8. Run&lt;/h2>
+&lt;hr>
+&lt;p>You are good to go so run the application&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can get the code here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/cosmosdb">https://github.com/cmendible/dotnetcore.samples/tree/main/cosmosdb&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

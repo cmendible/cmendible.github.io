@@ -1,0 +1,49 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>acr on Code it Yourself...</title><link>https://carlos.mendible.com/tags/acr/</link><description>Recent content in acr on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 18 Nov 2018 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/acr/feed.xml" rel="self" type="application/rss+xml"/><item><title>Develop and build ASP.NET Core applications to run on Kubernetes with Draft</title><link>https://carlos.mendible.com/2018/11/18/develop-and-build-aspnetcore-applications-to-run-on-kubernetes-with-draft/</link><pubDate>Sun, 18 Nov 2018 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/11/18/develop-and-build-aspnetcore-applications-to-run-on-kubernetes-with-draft/</guid><description>&lt;p>You start developing an ASP.NET Core application to run it in Kubernetes and suddenly you find yourself creating a docker file, building an image, pushing the image to a registry, creating both a deployment and a service definition for Kubernetes and you wonder if there is a tool out there to help you streamline the whole process.&lt;/p>
+&lt;p>Meet &lt;a href="https://github.com/Azure/draft">Draft&lt;/a> a tool that will not only help you create the artifacts needed to build and run applications in Kubernetes but to also build the container image and deploy it.&lt;/p>
+&lt;h2 id="prerequisites">Prerequisites:&lt;/h2>
+&lt;ol>
+&lt;li>A Kubernetes cluster and the &lt;a href="https://kubernetes.io/docs/reference/kubectl/kubectl/">kubectl&lt;/a> CLI tool&lt;/li>
+&lt;li>Installation of &lt;a href="https://github.com/Kubernetes/helm">Helm&lt;/a> on your Kubernetes cluster&lt;/li>
+&lt;li>A Container Registry&lt;/li>
+&lt;/ol>
+&lt;h2 id="install-and-configure-draft">Install and Configure Draft&lt;/h2>
+&lt;p>To install Draft I run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">cinst -y draft
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then configure it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">draft config set registry &amp;lt;registry full name&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Be sure to log on to the Container Registry:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">docker login &amp;lt;registry full name&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>or if working with Azure Container Registry:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">az acr login --name &amp;lt;acrName&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-and-prepare-the-application">Create and prepare the application&lt;/h2>
+&lt;p>Creat an ASP.NET Core MVC application and create the artifacts with Draft:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet new mvc
+draft create --pack&lt;span style="color:#f92672">=&lt;/span>csharp -a mvcdraft
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that I&amp;rsquo;ve specified two parameters:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>pack&lt;/strong> to tell draft that we are using C# as the language.&lt;/li>
+&lt;li>&lt;strong>a&lt;/strong> to specify the name of the Helm release we will run on Kubernetes&lt;/li>
+&lt;/ul>
+&lt;h2 id="deploy-and-test-your-application">Deploy and test your application&lt;/h2>
+&lt;p>Run the following command to build the container image and then deploy the application to Kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">draft up
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The first time you run the command it will take a while. The output should look similar to this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">Draft Up Started: &lt;span style="color:#e6db74">&amp;#39;netcoredraft&amp;#39;&lt;/span>: 01CWKAZ79WR6W66PHHR2AFRSGC
+netcoredraft: Building Docker Image: SUCCESS ⚓ &lt;span style="color:#f92672">(&lt;/span>1.0008s&lt;span style="color:#f92672">)&lt;/span>
+netcoredraft: Pushing Docker Image: SUCCESS ⚓ &lt;span style="color:#f92672">(&lt;/span>3.2891s&lt;span style="color:#f92672">)&lt;/span>
+netcoredraft: Releasing Application: SUCCESS ⚓ &lt;span style="color:#f92672">(&lt;/span>2.7629s&lt;span style="color:#f92672">)&lt;/span>
+Inspect the logs with &lt;span style="color:#e6db74">`&lt;/span>draft logs 01CWKAZ79WR6W66PHHR2AFRSGC&lt;span style="color:#e6db74">`&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To test the application run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">draft connect
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The output should look similar to:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">Connect to netcoredraft:80 on localhost:50998
+&lt;span style="color:#f92672">[&lt;/span>netcoredraft&lt;span style="color:#f92672">]&lt;/span>: No XML encryptor configured. Key &lt;span style="color:#f92672">{&lt;/span>ea9dac08-e7af-468c-9e00-cbe38ab40fa8&lt;span style="color:#f92672">}&lt;/span> may be persisted to storage in unencrypted form.
+&lt;span style="color:#f92672">[&lt;/span>netcoredraft&lt;span style="color:#f92672">]&lt;/span>: Hosting environment: Production
+&lt;span style="color:#f92672">[&lt;/span>netcoredraft&lt;span style="color:#f92672">]&lt;/span>: Content root path: /app
+&lt;span style="color:#f92672">[&lt;/span>netcoredraft&lt;span style="color:#f92672">]&lt;/span>: Now listening on: http://&lt;span style="color:#f92672">[&lt;/span>::&lt;span style="color:#f92672">]&lt;/span>:80
+&lt;span style="color:#f92672">[&lt;/span>netcoredraft&lt;span style="color:#f92672">]&lt;/span>: Application started. Press Ctrl+C to shut down.
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Browse to the url shown in the output (i.e. http://localhost:50998) and you should be good to go!!!&lt;/p>
+&lt;h2 id="cleaning-up">Cleaning up&lt;/h2>
+&lt;p>Once you finish your tests you can cleanup with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">draft delete
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!!!&lt;/p></description></item></channel></rss>

@@ -1,0 +1,55 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>GlobalAzure on Code it Yourself...</title><link>https://carlos.mendible.com/tags/globalazure/</link><description>Recent content in GlobalAzure on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Mon, 22 Apr 2019 05:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/globalazure/feed.xml" rel="self" type="application/rss+xml"/><item><title>Running the Global Azure Bootcamp Science Lab in Kubernetes</title><link>https://carlos.mendible.com/2019/04/22/running-the-global-azure-bootcamp-science-lab-in-kubernetes/</link><pubDate>Mon, 22 Apr 2019 05:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/04/22/running-the-global-azure-bootcamp-science-lab-in-kubernetes/</guid><description>&lt;p>Next Saturday the &lt;a href="https://global.azurebootcamp.net">Global Azure Bootcamp&lt;/a> will be celebrated all over the world and as in previous years their will be a &lt;a href="https://global.azurebootcamp.net/global-azure-science-lab-2019/">Science Lab&lt;/a> where we&amp;rsquo;ll try to discover a planet!!!. Isn&amp;rsquo;t that cool?&lt;/p>
+&lt;p>Well to make this fast you can run the Science Lab using Azure Container Instances following the instructions found &lt;a href="https://github.com/intelequia/GAB2019ScienceLab">here&lt;/a> or you can use the following &lt;a href="https://gist.github.com/cmendible/8ce226b5996c92a020fe1761ff7325aa">gist&lt;/a> to run the workload in an existing kubernetes cluster:&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Cloud Design Patterns: Prepara tu aplicación para Azure</title><link>https://carlos.mendible.com/2016/04/13/cloud-design-patterns-prepara-tu-aplicacion-para-azure/</link><pubDate>Wed, 13 Apr 2016 15:34:11 +0000</pubDate><guid>https://carlos.mendible.com/2016/04/13/cloud-design-patterns-prepara-tu-aplicacion-para-azure/</guid><description>&lt;p>En esta sesión: &lt;!-- raw HTML omitted -->Cloud Design Patterns: Prepara tu aplicación para Azure&lt;!-- raw HTML omitted --> discutiremos los beneficios de aplicar patrones en el desarrollo de aplicaciones para la nube y los problemas que estos intentan resolver: disponibilidad, escalabilidad, resiliencia, seguridad, etc..&lt;/p>
+&lt;p>Esta es la agenda:&lt;/p>
+&lt;ul>
+&lt;li>Design for the Cloud&lt;/li>
+&lt;li>Problem Areas in the Cloud
+&lt;ul>
+&lt;li>
+&lt;p>Availability&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Data Management&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Design and Implementation&lt;/p>
+&lt;p>Messaging&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Management and Monitoring&lt;/p>
+&lt;p>Performance and Scalability&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Resiliency&lt;/p>
+&lt;p>Security&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Cloud Design Patterns
+&lt;ul>
+&lt;li>
+&lt;p>Cache-aside&lt;/p>
+&lt;p>Circuit Breaker&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Competing Consumers&lt;/p>
+&lt;p>CQRS&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Event Sourcing&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Valet Key&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Health Endpoint Monitoring&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Static Content Hosting&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>El código de la sesión lo podéis descargar en: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/CloudDesignPatterns">https://github.com/cmendible/CloudDesignPatterns&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p></description></item></channel></rss>

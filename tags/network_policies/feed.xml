@@ -1,0 +1,111 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>network_policies on Code it Yourself...</title><link>https://carlos.mendible.com/tags/network_policies/</link><description>Recent content in network_policies on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 19 Jul 2018 00:21:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/network_policies/feed.xml" rel="self" type="application/rss+xml"/><item><title>At last: Network Policies in AKS with kube-router</title><link>https://carlos.mendible.com/2018/07/19/at-last-network-policies-in-aks-with-kube-router/</link><pubDate>Thu, 19 Jul 2018 00:21:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/07/19/at-last-network-policies-in-aks-with-kube-router/</guid><description>&lt;p>For ages I&amp;rsquo;ve been waiting for a way to enforce netwok policies on AKS, so last weekend while I was googling around, I found this hidden gem posted by &lt;a href="https://www.techdiction.com/bio/">Marcus Robinson&lt;/a>: &lt;a href="https://www.techdiction.com/2018/06/02/enforcing-network-policies-using-kube-router-on-aks/">Enforcing Network Policies using kube-router on AKS&lt;/a> and had to test the proposed solution.&lt;/p>
+&lt;p>&lt;strong>Prerequisites&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/aks/">Azure Kubernetes Service (AKS)&lt;/a> deployed with &lt;a href="https://docs.microsoft.com/en-us/azure/aks/http-application-routing">HTTP application routing&lt;/a> enabled.&lt;/li>
+&lt;li>&lt;a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/">kubectl&lt;/a> installed&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-create-a-service-exposed-throuh-your-aks-dns-zone">1. Create a service exposed throuh your AKS DNS Zone&lt;/h2>
+&lt;hr>
+&lt;p>Let&amp;rsquo;s start by deploying the following service to your Kubernetes cluster, by saving the following content to a file named &lt;strong>dni-function.yaml&lt;/strong> and replacing &lt;strong>[YOUR_DNS__ZONE_NAME]&lt;/strong> with the corresponding value of your service:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#66d9ef">template&lt;/span>:
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">labels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">containers&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/dni:&lt;span style="color:#ae81ff">1.0.0&lt;/span>
+&lt;span style="color:#66d9ef">ports&lt;/span>:
+- &lt;span style="color:#66d9ef">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+---
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Service
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">type&lt;/span>: ClusterIP
+&lt;span style="color:#66d9ef">ports&lt;/span>:
+- &lt;span style="color:#66d9ef">name&lt;/span>:
+&lt;span style="color:#66d9ef">port&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#66d9ef">selector&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
+---
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: extensions/v1beta1
+&lt;span style="color:#66d9ef">kind&lt;/span>: Ingress
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">annotations&lt;/span>:
+&lt;span style="color:#66d9ef">kubernetes.io/ingress.class&lt;/span>: addon-http-application-routing
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">rules&lt;/span>:
+- &lt;span style="color:#66d9ef">host&lt;/span>: dni-function.[YOUR_DNS__ZONE_NAME]
+&lt;span style="color:#66d9ef">http&lt;/span>:
+&lt;span style="color:#66d9ef">paths&lt;/span>:
+- &lt;span style="color:#66d9ef">backend&lt;/span>:
+&lt;span style="color:#66d9ef">serviceName&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">servicePort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#66d9ef">path&lt;/span>: /
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now deploy it to Kubernetes:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> ./dni-function.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>In a few seconds you&amp;rsquo;ll have a working Web API (Validates Spanish National Identification Numbers).&lt;/p>
+&lt;p>Now test the service with the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -k http://dni-function.&lt;span style="color:#f92672">[&lt;/span>YOUR_DNS__ZONE_NAME&lt;span style="color:#f92672">]&lt;/span>/api/validate?dni&lt;span style="color:#f92672">=&lt;/span>88410248L
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>which should return &lt;strong>true&lt;/strong>.&lt;/p>
+&lt;h2 id="2-deploy-kube-router">2. Deploy kube-router&lt;/h2>
+&lt;hr>
+&lt;p>Thanks to &lt;a href="https://www.techdiction.com/bio/">Marcus Robinson&lt;/a> we can deploy &lt;a href="https://github.com/cloudnativelabs/kube-router">kube-router&lt;/a> to AKS:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl apply -f https://raw.githubusercontent.com/marrobi/kube-router/marrobi/aks-yaml/daemonset/kube-router-firewall-daemonset-aks.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-deny-all-traffic-to-the-service">3. Deny all traffic to the service&lt;/h2>
+&lt;hr>
+&lt;p>Now let&amp;rsquo;s try to deny all the traffic to the service, creating a &lt;strong>dni-function-deny-all.yaml&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">kind&lt;/span>: NetworkPolicy
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: networking.k8s.io/v1
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dni-function-deny-all
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">podSelector&lt;/span>:
+&lt;span style="color:#66d9ef">matchLabels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">ingress&lt;/span>: []
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the policy:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl apply -f ./dni-function-deny-all.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Try calling the service again:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -k http://dni-function.&lt;span style="color:#f92672">[&lt;/span>YOUR_DNS__ZONE_NAME&lt;span style="color:#f92672">]&lt;/span>/api/validate?dni&lt;span style="color:#f92672">=&lt;/span>88410248L
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This time you should get:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-html" data-lang="html">&amp;lt;&lt;span style="color:#f92672">html&lt;/span>&amp;gt;
+&amp;lt;&lt;span style="color:#f92672">head&lt;/span>&amp;gt;&amp;lt;&lt;span style="color:#f92672">title&lt;/span>&amp;gt;502 Bad Gateway&amp;lt;/&lt;span style="color:#f92672">title&lt;/span>&amp;gt;&amp;lt;/&lt;span style="color:#f92672">head&lt;/span>&amp;gt;
+&amp;lt;&lt;span style="color:#f92672">body&lt;/span> &lt;span style="color:#a6e22e">bgcolor&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;white&amp;#34;&lt;/span>&amp;gt;
+&amp;lt;&lt;span style="color:#f92672">center&lt;/span>&amp;gt;&amp;lt;&lt;span style="color:#f92672">h1&lt;/span>&amp;gt;502 Bad Gateway&amp;lt;/&lt;span style="color:#f92672">h1&lt;/span>&amp;gt;&amp;lt;/&lt;span style="color:#f92672">center&lt;/span>&amp;gt;
+&amp;lt;&lt;span style="color:#f92672">hr&lt;/span>&amp;gt;&amp;lt;&lt;span style="color:#f92672">center&lt;/span>&amp;gt;nginx/1.13.12&amp;lt;/&lt;span style="color:#f92672">center&lt;/span>&amp;gt;
+&amp;lt;/&lt;span style="color:#f92672">body&lt;/span>&amp;gt;
+&amp;lt;/&lt;span style="color:#f92672">html&lt;/span>&amp;gt;
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>That&amp;rsquo;s it! Your service is no longer available!!!&lt;/p>
+&lt;h2 id="4-allow-only-traffic-from-a-specific-pod">4. Allow only traffic from a specific pod&lt;/h2>
+&lt;p>Create a &lt;strong>dni-function-allow-internal.yaml&lt;/strong> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">kind&lt;/span>: NetworkPolicy
+&lt;span style="color:#66d9ef">apiVersion&lt;/span>: networking.k8s.io/v1
+&lt;span style="color:#66d9ef">metadata&lt;/span>:
+&lt;span style="color:#66d9ef">name&lt;/span>: dni-function-allow-internal
+&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#66d9ef">podSelector&lt;/span>:
+&lt;span style="color:#66d9ef">matchLabels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
+&lt;span style="color:#66d9ef">ingress&lt;/span>:
+- &lt;span style="color:#66d9ef">from&lt;/span>:
+- &lt;span style="color:#66d9ef">podSelector&lt;/span>:
+&lt;span style="color:#66d9ef">matchLabels&lt;/span>:
+&lt;span style="color:#66d9ef">app&lt;/span>: internal
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the policy, which restricts the traffic to pods with the label: &lt;strong>app=internal&lt;/strong>, and check that you still can&amp;rsquo;t connect:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl apply -f ./dni-function-allow-internal.yaml
+curl -k http://dni-function.&lt;span style="color:#f92672">[&lt;/span>YOUR_DNS__ZONE_NAME&lt;span style="color:#f92672">]&lt;/span>/api/validate?dni&lt;span style="color:#f92672">=&lt;/span>88410248L
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now let&amp;rsquo;s create a pod with the expected label and try calling the &lt;strong>dni-function&lt;/strong> service from it:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl run internal-function-tester --rm -i -t --image&lt;span style="color:#f92672">=&lt;/span>alpine --labels app&lt;span style="color:#f92672">=&lt;/span>internal -- sh
+wget -qO- --timeout&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">2&lt;/span> http://dni-function/api/validate?dni&lt;span style="color:#f92672">=&lt;/span>88410248L
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>This time you should get &lt;strong>true&lt;/strong> as the result!!!&lt;/p>
+&lt;p>To learn more about Network Policies check the &lt;a href="https://github.com/ahmetb/kubernetes-network-policy-recipes">kubernetes-network-policy-recipes&lt;/a> repo and feel free to download the code and files for this post &lt;a href="https://github.com/cmendible/kubernetes.samples/11.kube-router">here&lt;/a>&lt;/p></description></item></channel></rss>
