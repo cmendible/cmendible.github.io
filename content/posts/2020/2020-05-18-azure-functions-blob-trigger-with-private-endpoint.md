@@ -49,7 +49,7 @@ The following sketch shows how this works:
 1. The Azure Function is integrated with a VNet using Regional VNet Integration (blue line).
 1. The Storage Account (shown on the right) has a Private Endpoint which assigns a private IP to the Storage Account.
 1. Traffic (red line) from the Azure Function flows through the VNet, the Private Endpoint and reaches the Storage Account.
-1. The Storage Account, shown on the left, is used for the core services of the Azure Function and, at the time ow writing, can't be protected using private enpoints.
+1. The Storage Account, shown on the left, is used for the core services of the Azure Function and, ~~at the time of writing, can't be protected using private enpoints~~. [Check Update 2020-08-25](#Update-2020-08-25).
 
 But wait there is one more thing, you will need to add an Azure Private DNS Zone to enable the Azure Function to resolve the name of the Storage Account so it uses the private ip for communication.)
 
@@ -83,7 +83,7 @@ variable resource_group {
   default = "private-endpoint"
 }
 
-# Name of the Storage Account you´ll expose through the private endpoint
+# Name of the Storage Account you'll expose through the private endpoint
 variable sa_name {
   default = "privatecfm"
 }
@@ -143,7 +143,7 @@ resource "azurerm_subnet" "endpoint" {
   enforce_private_link_endpoint_network_policies = true
 }
 
-# Get current public IP. We´ll need this so we can access the Storage Account from our PC.
+# Get current public IP. We'll need this so we can access the Storage Account from our PC.
 data "http" "current_public_ip" {
   url = "http://ipinfo.io/json"
   request_headers = {
@@ -247,7 +247,7 @@ resource "azurerm_storage_blob" "function" {
   source                 = "./securecopy.zip"
 }
 
-# Create a SAS token so the Fucntion can access the blob and deploy the zip
+# Create a SAS token so the Function can access the blob and deploy the zip
 data "azurerm_storage_account_sas" "sas" {
   connection_string = azurerm_storage_account.function_required_sa.primary_connection_string
   https_only        = false
@@ -352,6 +352,19 @@ nameresolver <name of the storage account>.blob.core.windows.net
 The output of the command should show **10.0.2.4** as the IP address. If that's not the case you probably misconfigured something. [[3]](#references)
 
 Hope it helps and please find a copy of all the code [here](https://github.com/cmendible/azure.samples/tree/main/function_sa_private_endpoint)
+
+## Update 2020-08-25
+
+I've added a new sample [here](https://github.com/cmendible/azure.samples/tree/main/function_sa_private_endpoint.v2) using the same Storage Account for both: backing the Azure Function and the Blobs needed for the sample application.
+
+With that script you must run Terraform apply twice: the first time with the Storage Account Firewall disabled so the Azure Function deployment runs without any issues and the second one enabling the Firewall so the Storage Account is protected.
+
+> This setup requires 4 Private Enpoints: one for each of the Storage Account Services required by the Azure Function runtime (blob. table, queue, files).
+
+```shell
+terraform apply -var="sa_firewall_enabled=false"
+terraform apply -var="sa_firewall_enabled=true"
+```
 
 ## References
 
