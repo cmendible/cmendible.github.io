@@ -26,7 +26,7 @@ myBlob.CopyTo(copy);
 &lt;li>The Azure Function is integrated with a VNet using Regional VNet Integration (blue line).&lt;/li>
 &lt;li>The Storage Account (shown on the right) has a Private Endpoint which assigns a private IP to the Storage Account.&lt;/li>
 &lt;li>Traffic (red line) from the Azure Function flows through the VNet, the Private Endpoint and reaches the Storage Account.&lt;/li>
-&lt;li>The Storage Account, shown on the left, is used for the core services of the Azure Function and, at the time ow writing, can&amp;rsquo;t be protected using private enpoints.&lt;/li>
+&lt;li>The Storage Account, shown on the left, is used for the core services of the Azure Function and, &lt;del>at the time of writing, can&amp;rsquo;t be protected using private enpoints&lt;/del>. &lt;a href="#Update-2020-08-25">Check Update 2020-08-25&lt;/a>.&lt;/li>
 &lt;/ol>
 &lt;p>But wait there is one more thing, you will need to add an Azure Private DNS Zone to enable the Azure Function to resolve the name of the Storage Account so it uses the private ip for communication.)&lt;/p>
 &lt;p>&lt;strong>Note:&lt;/strong> The solution will require use of the PremiumV2, or Elastic Premium pricing plan for the Azure Function.&lt;/p>
@@ -48,7 +48,7 @@ default = &lt;span style="color:#e6db74">&amp;#34;west europe&amp;#34;&lt;/span>
 variable resource_group {
 default = &lt;span style="color:#e6db74">&amp;#34;private-endpoint&amp;#34;&lt;/span>
 }
-&lt;span style="color:#75715e"># Name of the Storage Account you´ll expose through the private endpoint&lt;/span>
+&lt;span style="color:#75715e"># Name of the Storage Account you&amp;#39;ll expose through the private endpoint&lt;/span>
 variable sa_name {
 default = &lt;span style="color:#e6db74">&amp;#34;privatecfm&amp;#34;&lt;/span>
 }
@@ -95,7 +95,7 @@ virtual_network_name = azurerm_virtual_network.vnet.name
 address_prefixes = [&lt;span style="color:#e6db74">&amp;#34;10.0.2.0/24&amp;#34;&lt;/span>]
 enforce_private_link_endpoint_network_policies = &lt;span style="color:#66d9ef">true&lt;/span>
 }
-&lt;span style="color:#75715e"># Get current public IP. We´ll need this so we can access the Storage Account from our PC.&lt;/span>
+&lt;span style="color:#75715e"># Get current public IP. We&amp;#39;ll need this so we can access the Storage Account from our PC.&lt;/span>
 data &lt;span style="color:#e6db74">&amp;#34;http&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;current_public_ip&amp;#34;&lt;/span> {
 url = &lt;span style="color:#e6db74">&amp;#34;http://ipinfo.io/json&amp;#34;&lt;/span>
 request_headers = {
@@ -187,7 +187,7 @@ storage_container_name = azurerm_storage_container.functions.name
 type = &lt;span style="color:#e6db74">&amp;#34;Block&amp;#34;&lt;/span>
 source = &lt;span style="color:#e6db74">&amp;#34;./securecopy.zip&amp;#34;&lt;/span>
 }
-&lt;span style="color:#75715e"># Create a SAS token so the Fucntion can access the blob and deploy the zip&lt;/span>
+&lt;span style="color:#75715e"># Create a SAS token so the Function can access the blob and deploy the zip&lt;/span>
 data &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_account_sas&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sas&amp;#34;&lt;/span> {
 connection_string = azurerm_storage_account.function_required_sa.primary_connection_string
 https_only = &lt;span style="color:#66d9ef">false&lt;/span>
@@ -271,7 +271,15 @@ terraform apply
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">nameresolver &amp;lt;name of the storage account&amp;gt;.blob.core.windows.net
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The output of the command should show &lt;strong>10.0.2.4&lt;/strong> as the IP address. If that&amp;rsquo;s not the case you probably misconfigured something. &lt;a href="#references">[3]&lt;/a>&lt;/p>
 &lt;p>Hope it helps and please find a copy of all the code &lt;a href="https://github.com/cmendible/azure.samples/tree/main/function_sa_private_endpoint">here&lt;/a>&lt;/p>
-&lt;h2 id="references">References&lt;/h2>
+&lt;h2 id="update-2020-08-25">Update 2020-08-25&lt;/h2>
+&lt;p>I&amp;rsquo;ve added a new sample &lt;a href="https://github.com/cmendible/azure.samples/tree/main/function_sa_private_endpoint.v2">here&lt;/a> using the same Storage Account for both: backing the Azure Function and the Blobs needed for the sample application.&lt;/p>
+&lt;p>With that script you must run Terraform apply twice: the first time with the Storage Account Firewall disabled so the Azure Function deployment runs without any issues and the second one enabling the Firewall so the Storage Account is protected.&lt;/p>
+&lt;blockquote>
+&lt;p>This setup requires 4 Private Enpoints: one for each of the Storage Account Services required by the Azure Function runtime (blob. table, queue, files).&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">terraform apply -var&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;sa_firewall_enabled=false&amp;#34;&lt;/span>
+terraform apply -var&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;sa_firewall_enabled=true&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="references">References&lt;/h2>
 &lt;ul>
 &lt;li>[1] &lt;a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints">Use private endpoints for Azure Storage&lt;/a>&lt;/li>
 &lt;li>[2] Integrate your app with an Azure virtual network: &lt;a href="https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#regional-vnet-integration">Regional VNET Integration&lt;/a>&lt;/li>
