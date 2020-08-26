@@ -49,7 +49,7 @@ The following sketch shows how this works:
 1. The Azure Function is integrated with a VNet using Regional VNet Integration (blue line).
 1. The Storage Account (shown on the right) has a Private Endpoint which assigns a private IP to the Storage Account.
 1. Traffic (red line) from the Azure Function flows through the VNet, the Private Endpoint and reaches the Storage Account.
-1. The Storage Account, shown on the left, is used for the core services of the Azure Function and, ~~at the time of writing, can't be protected using private enpoints~~. [Check Update 2020-08-25](#Update-2020-08-25).
+1. The Storage Account, shown on the left, is used for the core services of the Azure Function and, ~~at the time of writing, can't be protected using private enpoints~~. [Check Update 2020-08-25](#update-2020-08-25).
 
 But wait there is one more thing, you will need to add an Azure Private DNS Zone to enable the Azure Function to resolve the name of the Storage Account so it uses the private ip for communication.)
 
