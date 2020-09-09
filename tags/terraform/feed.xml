@@ -1,0 +1,150 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>terraform on Code it Yourself...</title><link>https://carlos.mendible.com/tags/terraform/</link><description>Recent content in terraform on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Wed, 09 Sep 2020 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/terraform/feed.xml" rel="self" type="application/rss+xml"/><item><title>Managing Terraform Cloud with .NET Core</title><link>https://carlos.mendible.com/2020/09/09/managing-terraform-cloud-with-.net-core/</link><pubDate>Wed, 09 Sep 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/09/09/managing-terraform-cloud-with-.net-core/</guid><description>&lt;p>Today I&amp;rsquo;m going to show you how to mange &lt;a href="https://app.terraform.io/">Terraform Cloud&lt;/a> with .NET Core using the &lt;a href="https://github.com/everis-technology/Tfe.NetClient">Tfe.NetClient&lt;/a> library.&lt;/p>
+&lt;p>The idea is to create a simple console application that will:&lt;/p>
+&lt;ul>
+&lt;li>Add GitHub as a &lt;a href="https://www.terraform.io/docs/cloud/vcs/index.html">VCS Provider&lt;/a>.&lt;/li>
+&lt;li>Create a &lt;a href="https://www.terraform.io/docs/cloud/workspaces/index.html">Workspace&lt;/a> conected to a GitHub repo where your Terraform files live.&lt;/li>
+&lt;li>Create a &lt;a href="https://www.terraform.io/docs/cloud/workspaces/variables.html">variable&lt;/a> in the workspace.&lt;/li>
+&lt;li>Create a Run (Plan) based on the Terraform files&lt;/li>
+&lt;li>Apply the Run.&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>&lt;a href="https://github.com/everis-technology/Tfe.NetClient">Tfe.NetClient&lt;/a> is still in alpha and not every Terraform Cloud API or feature is present. Please feel free to submit any issues, bugs or pull requests.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;ul>
+&lt;li>A &lt;a href="https://app.terraform.io/">Terraform Cloud&lt;/a> Account (You can create a &lt;a href="https://www.terraform.io/docs/cloud/paid.html#free-organizations">Free Organization&lt;/a>)&lt;/li>
+&lt;li>A &lt;a href="https://app.terraform.io/">Terraform Cloud&lt;/a> Organization&lt;/li>
+&lt;li>A &lt;a href="https://app.terraform.io/">Terraform Cloud&lt;/a> &lt;a href="https://www.terraform.io/docs/cloud/users-teams-organizations/api-tokens.html#organization-api-tokens">Organization Token&lt;/a>&lt;/li>
+&lt;li>A &lt;a href="https://app.terraform.io/">Terraform Cloud&lt;/a> &lt;a href="https://www.terraform.io/docs/cloud/users-teams-organizations/api-tokens.html#team-api-tokens">Team Token&lt;/a>&lt;/li>
+&lt;li>A &lt;a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">GitHub Personal Access Token&lt;/a> with the following permissions:
+&lt;ul>
+&lt;li>repo: repo:status Access commit status&lt;/li>
+&lt;li>repo: repo_deployment Access deployment status&lt;/li>
+&lt;li>repo: public_repo Access public repositories&lt;/li>
+&lt;li>repo: repo:invite Access repository invitations&lt;/li>
+&lt;li>repo: security_events Read and write security events&lt;/li>
+&lt;li>workflow&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>A GitHub Repo with the Terraform script you want to run.&lt;/li>
+&lt;/ul>
+&lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
+&lt;hr>
+&lt;p>Open a command prompt an run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">mkdir TerraformCloud
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-the-project">2. Create the project&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">cd TerraformCloud
+dotnet new console
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-add-a-reference-to-tfenetclient">3. Add a reference to Tfe.NetClient&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet add package Tfe.NetClient -v 0.1.0
+dotnet restore
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-replace-the-contents-of-programcs-with-the-following-code">4. Replace the contents of Program.cs with the following code&lt;/h2>
+&lt;hr>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">namespace&lt;/span> TerraformCloud
+{
+&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Net.Http;
+&lt;span style="color:#66d9ef">using&lt;/span> System.Threading.Tasks;
+&lt;span style="color:#66d9ef">using&lt;/span> Tfe.NetClient;
+&lt;span style="color:#66d9ef">using&lt;/span> Tfe.NetClient.OAuthClients;
+&lt;span style="color:#66d9ef">using&lt;/span> Tfe.NetClient.Runs;
+&lt;span style="color:#66d9ef">using&lt;/span> Tfe.NetClient.Workspaces;
+&lt;span style="color:#66d9ef">using&lt;/span> Tfe.NetClient.WorkspaceVariables;
+&lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">Program&lt;/span>
+{
+&lt;span style="color:#66d9ef">static&lt;/span> &lt;span style="color:#66d9ef">async&lt;/span> Task Main(&lt;span style="color:#66d9ef">string&lt;/span>[] args)
+{
+&lt;span style="color:#75715e">// The values of this variables are hardcoded here just for simplicity and should be retrieved from configuration.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> organizationName = &lt;span style="color:#e6db74">&amp;#34;&amp;lt;organizationName&amp;gt;&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> organizationToken = &lt;span style="color:#e6db74">&amp;#34;&amp;lt;organizationToken&amp;gt;&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> teamToken = &lt;span style="color:#e6db74">&amp;#34;&amp;lt;teamToken&amp;gt;&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> gitHubToken = &lt;span style="color:#e6db74">&amp;#34;&amp;lt;GitHub Personal Access Token&amp;gt;&amp;#34;&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> gitHubRepo = &lt;span style="color:#e6db74">&amp;#34;&amp;lt;github user or organization name&amp;gt;/&amp;lt;repo name&amp;gt;&amp;#34;&lt;/span>; &lt;span style="color:#75715e">// i.e. cmendible/terraform-hello-world
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// Create an HttpClient
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> httpClient = &lt;span style="color:#66d9ef">new&lt;/span> HttpClient();
+&lt;span style="color:#75715e">// Create the Configiration used by the TFE client.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// For management tasks you&amp;#39;ll need to connect to Terraform Cloud using an Organization Token.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> config = &lt;span style="color:#66d9ef">new&lt;/span> TfeConfig(organizationToken, httpClient);
+&lt;span style="color:#75715e">// Create the TFE client.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> TfeClient(config);
+&lt;span style="color:#75715e">// Connect Terraform Cloud and GitHub adding GitHub as a VCS Provider.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> oauthClientsRequest = &lt;span style="color:#66d9ef">new&lt;/span> OAuthClientsRequest();
+oauthClientsRequest.Data.Attributes.ServiceProvider = &lt;span style="color:#e6db74">&amp;#34;github&amp;#34;&lt;/span>;
+oauthClientsRequest.Data.Attributes.HttpUrl = &lt;span style="color:#66d9ef">new&lt;/span> Uri(&lt;span style="color:#e6db74">&amp;#34;https://github.com&amp;#34;&lt;/span>);
+oauthClientsRequest.Data.Attributes.ApiUrl = &lt;span style="color:#66d9ef">new&lt;/span> Uri(&lt;span style="color:#e6db74">&amp;#34;https://api.github.com&amp;#34;&lt;/span>);
+oauthClientsRequest.Data.Attributes.OAuthTokenString = gitHubToken; &lt;span style="color:#75715e">// Use the GitHub Personal Access Token
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> oauthResult = &lt;span style="color:#66d9ef">await&lt;/span> client.OAuthClient.CreateAsync(organizationName, oauthClientsRequest);
+&lt;span style="color:#75715e">// Get the OAuthToken.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> oauthTokenId = oauthResult.Data.Relationships.OAuthTokens.Data[&lt;span style="color:#ae81ff">0&lt;/span>].Id;
+&lt;span style="color:#75715e">// Create a Workspace connected to a GitHub repo.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> workspacesRequest = &lt;span style="color:#66d9ef">new&lt;/span> WorkspacesRequest();
+workspacesRequest.Data.Attributes.Name = &lt;span style="color:#e6db74">&amp;#34;my-workspace&amp;#34;&lt;/span>;
+workspacesRequest.Data.Attributes.VcsRepo = &lt;span style="color:#66d9ef">new&lt;/span> RequestVcsRepo();
+workspacesRequest.Data.Attributes.VcsRepo.Identifier = gitHubRepo; &lt;span style="color:#75715e">// Use the GitHub Repo
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> workspacesRequest.Data.Attributes.VcsRepo.OauthTokenId = oauthTokenId;
+workspacesRequest.Data.Attributes.VcsRepo.Branch = &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span>;
+workspacesRequest.Data.Attributes.VcsRepo.DefaultBranch = &lt;span style="color:#66d9ef">true&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> workspaceResult = &lt;span style="color:#66d9ef">await&lt;/span> client.Workspace.CreateAsync(organizationName, workspacesRequest);
+&lt;span style="color:#75715e">// Get the Workspace Id so we can add variales or request a plan or apply.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> workspaceId = workspaceResult.Data.Id;
+&lt;span style="color:#75715e">// Create a variable in the workspace.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// You can make the values invible setting the Sensitive attribute to true.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// If you want to se an environement variable change the Category attribute to &amp;#34;env&amp;#34;.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// You&amp;#39;ll have to create as any variables your script needs.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> workspaceVariablesRequest = &lt;span style="color:#66d9ef">new&lt;/span> WorkspaceVariablesRequest();
+workspaceVariablesRequest.Data.Attributes.Key = &lt;span style="color:#e6db74">&amp;#34;variable_1&amp;#34;&lt;/span>;
+workspaceVariablesRequest.Data.Attributes.Value = &lt;span style="color:#e6db74">&amp;#34;variable_1_value&amp;#34;&lt;/span>;
+workspaceVariablesRequest.Data.Attributes.Description = &lt;span style="color:#e6db74">&amp;#34;variable_1 description&amp;#34;&lt;/span>;
+workspaceVariablesRequest.Data.Attributes.Category = &lt;span style="color:#e6db74">&amp;#34;terraform&amp;#34;&lt;/span>;
+workspaceVariablesRequest.Data.Attributes.Hcl = &lt;span style="color:#66d9ef">false&lt;/span>;
+workspaceVariablesRequest.Data.Attributes.Sensitive = &lt;span style="color:#66d9ef">false&lt;/span>;
+&lt;span style="color:#66d9ef">var&lt;/span> variableResult = &lt;span style="color:#66d9ef">await&lt;/span> client.WorkspaceVariable.CreateAsync(workspaceId, workspaceVariablesRequest);
+&lt;span style="color:#75715e">// Get the workspace by name.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> workspace = client.Workspace.ShowAsync(organizationName, &lt;span style="color:#e6db74">&amp;#34;my-workspace&amp;#34;&lt;/span>);
+&lt;span style="color:#75715e">// To create Runs and Apply thme you need to use a Team Token.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// So create a new TfeClient.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> runsClient = &lt;span style="color:#66d9ef">new&lt;/span> TfeClient(&lt;span style="color:#66d9ef">new&lt;/span> TfeConfig(teamToken, &lt;span style="color:#66d9ef">new&lt;/span> HttpClient()));
+&lt;span style="color:#75715e">// Create the Run.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// This is th equivalent to running: terraform plan.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> runsRequest = &lt;span style="color:#66d9ef">new&lt;/span> RunsRequest();
+runsRequest.Data.Attributes.IsDestroy = &lt;span style="color:#66d9ef">false&lt;/span>;
+runsRequest.Data.Attributes.Message = &lt;span style="color:#e6db74">&amp;#34;Triggered by .NET Core&amp;#34;&lt;/span>;
+runsRequest.Data.Relationships.Workspace.Data.Type = &lt;span style="color:#e6db74">&amp;#34;workspaces&amp;#34;&lt;/span>;
+runsRequest.Data.Relationships.Workspace.Data.Id = workspace.Result.Data.Id;
+&lt;span style="color:#66d9ef">var&lt;/span> runsResult = &lt;span style="color:#66d9ef">await&lt;/span> runsClient.Run.CreateAsync(runsRequest);
+&lt;span style="color:#75715e">// Get the Run Id. You&amp;#39;ll need it to check teh state of the run and Apply it if possible.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> runId = runsResult.Data.Id;
+&lt;span style="color:#66d9ef">var&lt;/span> ready = &lt;span style="color:#66d9ef">false&lt;/span>;
+&lt;span style="color:#66d9ef">while&lt;/span> (!ready)
+{
+&lt;span style="color:#75715e">// Wait for the Run to be planned .
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">await&lt;/span> Task.Delay(&lt;span style="color:#ae81ff">5000&lt;/span>);
+&lt;span style="color:#66d9ef">var&lt;/span> run = &lt;span style="color:#66d9ef">await&lt;/span> client.Run.ShowAsync(runId);
+ready = run.Data.Attributes.Status == &lt;span style="color:#e6db74">&amp;#34;planned&amp;#34;&lt;/span>;
+&lt;span style="color:#75715e">// Throw an exception if the Run status is: errored.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (run.Data.Attributes.Status == &lt;span style="color:#e6db74">&amp;#34;errored&amp;#34;&lt;/span>) {
+&lt;span style="color:#66d9ef">throw&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Exception(&lt;span style="color:#e6db74">&amp;#34;Plan failed...&amp;#34;&lt;/span>);
+}
+}
+&lt;span style="color:#75715e">// If the Run is planned then Apply your configuration.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> (ready)
+{
+&lt;span style="color:#66d9ef">await&lt;/span> runsClient.Run.ApplyAsync(runId, &lt;span style="color:#66d9ef">null&lt;/span>);
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>&lt;a href="https://github.com/everis-technology/Tfe.NetClient">Tfe.NetClient&lt;/a> is still in early stages of development and the resulting code is very verbose and prone to errors. We will address this in a future relases introducing the use of enums and perhaps a fluent API.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="5-run-the-program">5. Run the program&lt;/h2>
+&lt;hr>
+&lt;p>Run the following command:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-check-the-results">6. Check the results&lt;/h2>
+&lt;hr>
+&lt;p>Log In to &lt;a href="https://app.terraform.io/">Terraform Cloud&lt;/a> and check the status of the new workspace.&lt;/p>
+&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>
