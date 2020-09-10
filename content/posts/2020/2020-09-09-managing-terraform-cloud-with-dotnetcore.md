@@ -194,4 +194,4 @@ dotnet run
 
 Log In to [Terraform Cloud](https://app.terraform.io/) and check the status of the new workspace.
 
-Hope it helps!
+Hope it helps! and please find the complete code [here](https://github.com/cmendible/dotnetcore.samples/tree/main/terraform.cloud)
