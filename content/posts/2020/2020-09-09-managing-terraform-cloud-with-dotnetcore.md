@@ -11,7 +11,7 @@ tags: ["terraform"]
 title: 'Managing Terraform Cloud with .NET Core'
 ---
 
-Today I'm going to show you how to mange [Terraform Cloud](https://app.terraform.io/) with .NET Core using the [Tfe.NetClient](https://github.com/everis-technology/Tfe.NetClient) library.
+Today I'm going to show you how to manage [Terraform Cloud](https://app.terraform.io/) with .NET Core using the [Tfe.NetClient](https://github.com/everis-technology/Tfe.NetClient) library.
 
 The idea is to create a simple console application that will:
 
