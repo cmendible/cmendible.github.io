@@ -12,6 +12,7 @@ tags: ["aks", "keyvault"]
 title: 'AKS: Read Azure Key Vault secrets using AAD Pod Identity'
 alias:
   - 2019/11/30/aks_read_azure_key_vault_secrets_using_aad_pod_identity/
+url: 2019/11/30/aks_read_azure_key_vault_secrets_using_aad_pod_identity/
 ---
 
 What if I tell you that it's possible to connect you AKS pods to an **Azure Key Vault** using identities but without having to use credentials in an explicit way?

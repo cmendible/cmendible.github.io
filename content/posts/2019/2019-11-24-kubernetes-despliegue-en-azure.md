@@ -11,7 +11,8 @@ published: true
 tags: ["aks"]
 title: 'Kubernetes: Despliegue en Azure'
 alias: 
-    - /2019/11/24/kubernetes_despliegue_en_azure/
+    - 2019/11/24/kubernetes_despliegue_en_azure/
+url: 2019/11/24/kubernetes_despliegue_en_azure/
 ---
 
 Durante el mes de Octubre tuve la suerte de grabar en LinkedIn Learning mi primer curso online sobre Kubernetes. 
