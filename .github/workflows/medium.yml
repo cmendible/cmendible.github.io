@@ -1,0 +1,22 @@
+on:
+  push:
+    branches:
+      - hugo
+
+jobs:
+  hugo_to_medium_job:
+    runs-on: ubuntu-latest
+    name: hugo-to-medium
+    steps:
+      # To use this repository's private action, you must check out the repository
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+      - name: Hugo To medium Action step 
+        uses: pr4k/Hugo-to-Medium@master # Uses an action in the root directory
+        id: hugo-to-medium
+        env:
+          APP_ID: ${{secrets.MEDIUM_APP_ID}}
+          ACCESS_TOKEN: ${{secrets.MEDIUM_ACCESS_TOKEN}}
+          APP_SECRET: ${{secrets.MEDIUM_APP_SECRET}}
+          BLOG_DIR: ${{secrets.BLOG_DIR}}
