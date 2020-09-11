@@ -1,3 +1,5 @@
+name: hugo-to-medium
+
 on:
   push:
     branches:
@@ -11,8 +13,8 @@ jobs:
       # To use this repository's private action, you must check out the repository
       - uses: actions/checkout@v2
         with:
-          ref: master
-      - name: Hugo To medium Action step 
+          ref: hugo
+      - name: Hugo To medium Action step
         uses: pr4k/Hugo-to-Medium@master # Uses an action in the root directory
         id: hugo-to-medium
         env:
