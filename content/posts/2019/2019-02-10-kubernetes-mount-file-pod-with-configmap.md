@@ -90,3 +90,7 @@ spec:
 **Note**: the volume references the **ConfigMap** (sherlock-config), the volume mount specifies the **mountPath** as the file you want to replace (/app/config.yaml) and the **subPath** property is used to reference the file by key (config.yaml)
 
 Hope it helps.
+
+# Learn More
+
+[Storage options for applications in Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/concepts-storage?WT.mc_id=AZ-MVP-5002618)

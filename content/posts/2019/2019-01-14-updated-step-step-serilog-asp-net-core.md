@@ -130,3 +130,7 @@ namespace aspnet.serilog.sample.Controllers
 Download the complete code [here](https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.serilog.sample2.2)
 
 Hope it helps!
+
+# Learn More
+
+[Fundamentals: Logging in .NET Core and ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1?WT.mc_id=DOP-MVP-5002618)

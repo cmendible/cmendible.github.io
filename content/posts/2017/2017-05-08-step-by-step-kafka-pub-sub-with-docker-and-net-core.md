@@ -161,7 +161,11 @@ Run the program and enjoy!
 ``` powershell
 dotnet run
 ```
-      
+     
 Get the code and related files here: <a href="https://github.com/cmendible/dotnetcore.samples/tree/main/kafka.pubsub.console"  target="_blank">https://github.com/cmendible/dotnetcore.samples/tree/main/kafka.pubsub.console</a>
 
-Hope it helps!  
+Hope it helps! 
+
+## Learn More
+
+* [Apache Kafka developer guide for Azure Event Hubs](https://docs.microsoft.com/en-us/azure/event-hubs/apache-kafka-developer-guide?WT.mc_id=AZ-MVP-5002618)

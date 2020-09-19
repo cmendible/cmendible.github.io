@@ -19,6 +19,8 @@ What if I tell you that it's possible to connect you AKS pods to an **Azure Key 
 
 Well with **AAD Pod Identities** you can enable your Kubernetes applications to access Azure cloud resources securely using **Azure Active Directory** (AAD) including **Azure Key Vault**.
 
+> Did you knoe that using POd Idenities is a best practice? Check the docs [here](https://docs.microsoft.com/en-us/azure/aks/operator-best-practices-identity#use-pod-identities?WT.mc_id=AZ-MVP-5002618)
+
 The following [gist](https://gist.github.com/cmendible/4dd5c48a45480d5a0db0d6ed68e4cd01) show a **PowerShell** script that will help you setup everything inside your RBAC enabled AKS cluster. You will also need to have **Azure CLI** installed on your box and an **Azure Key Vault** deployed in the same resource group where your AKS lives.
 
 ``` powershell

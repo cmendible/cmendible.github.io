@@ -10,6 +10,7 @@ tags: ["Roslyn"]
 title: Create a class with .NET Core and Roslyn
 url: /2017/03/02/create-a-class-with-net-core-and-roslyn/
 ---
+
 After my post first post on: **<a href="https://carlos.mendible.com/2017/01/29/net-core-roslyn-and-code-generation/" target="_blank">Code Generation</a>** I decided to go a bit further, so today we'll **Create a class with .NET Core and Roslyn** and write the output to the console.
 
 Let's see:
@@ -175,3 +176,7 @@ namespace CodeGenerationSample
 Get a copy of the code here: <https://github.com/cmendible/dotnetcore.samples/tree/main/roslyn.create.class>
 
 Hope it helps!
+
+# Learn More
+
+[Cross-Platform Code Generation with Roslyn and .NET Core](https://docs.microsoft.com/en-us/archive/msdn-magazine/2017/may/net-core-cross-platform-code-generation-with-roslyn-and-net-core?WT.mc_id=DOP-MVP-5002618)
