@@ -113,22 +113,22 @@ consumer.Poll();
 &lt;hr>
 &lt;p>You&amp;rsquo;ll need to add the following address range to your &lt;strong>docker unsafe registry&lt;/strong>: &lt;strong>172.18.0.0/16&lt;/strong>
 Create a &lt;strong>docker-compose.yml&lt;/strong> file with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;2&amp;#39;&lt;/span>
-&lt;span style="color:#66d9ef">services&lt;/span>:
-&lt;span style="color:#66d9ef">zookeeper&lt;/span>:
-&lt;span style="color:#66d9ef">image&lt;/span>: wurstmeister/zookeeper
-&lt;span style="color:#66d9ef">ports&lt;/span>:
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#e6db74">&amp;#39;2&amp;#39;&lt;/span>
+&lt;span style="color:#f92672">services&lt;/span>:
+&lt;span style="color:#f92672">zookeeper&lt;/span>:
+&lt;span style="color:#f92672">image&lt;/span>: &lt;span style="color:#ae81ff">wurstmeister/zookeeper&lt;/span>
+&lt;span style="color:#f92672">ports&lt;/span>:
 - &lt;span style="color:#e6db74">&amp;#34;2181:2181&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">kafka&lt;/span>:
-&lt;span style="color:#66d9ef">image&lt;/span>: wurstmeister/kafka:&lt;span style="color:#ae81ff">0.10.2.0&lt;/span>
-&lt;span style="color:#66d9ef">ports&lt;/span>:
+&lt;span style="color:#f92672">kafka&lt;/span>:
+&lt;span style="color:#f92672">image&lt;/span>: &lt;span style="color:#ae81ff">wurstmeister/kafka:0.10.2.0&lt;/span>
+&lt;span style="color:#f92672">ports&lt;/span>:
 - &lt;span style="color:#e6db74">&amp;#34;9092:9092&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">environment&lt;/span>:
-&lt;span style="color:#66d9ef">KAFKA_ADVERTISED_HOST_NAME&lt;/span>: &lt;span style="color:#ae81ff">127.0.0.1&lt;/span>
-&lt;span style="color:#66d9ef">KAFKA_CREATE_TOPICS&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;testtopic:1:1&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">KAFKA_ZOOKEEPER_CONNECT&lt;/span>: zookeeper:&lt;span style="color:#ae81ff">2181&lt;/span>
-&lt;span style="color:#66d9ef">volumes&lt;/span>:
-- /var/run/docker.sock:/var/run/docker.sock
+&lt;span style="color:#f92672">environment&lt;/span>:
+&lt;span style="color:#f92672">KAFKA_ADVERTISED_HOST_NAME&lt;/span>: &lt;span style="color:#ae81ff">127.0.0.1&lt;/span>
+&lt;span style="color:#f92672">KAFKA_CREATE_TOPICS&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;testtopic:1:1&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">KAFKA_ZOOKEEPER_CONNECT&lt;/span>: &lt;span style="color:#ae81ff">zookeeper:2181&lt;/span>
+&lt;span style="color:#f92672">volumes&lt;/span>:
+- &lt;span style="color:#ae81ff">/var/run/docker.sock:/var/run/docker.sock&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>And run the following command:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">docker-compose up
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>It will take a while but you&amp;rsquo;ll get a working Kafka installation.&lt;/p>
@@ -137,4 +137,8 @@ Create a &lt;strong>docker-compose.yml&lt;/strong> file with the following conte
 &lt;p>Run the program and enjoy!&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">dotnet run
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Get the code and related files here: &lt;!-- raw HTML omitted -->&lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/kafka.pubsub.console">https://github.com/cmendible/dotnetcore.samples/tree/main/kafka.pubsub.console&lt;/a>&lt;!-- raw HTML omitted -->&lt;/p>
-&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>
+&lt;p>Hope it helps!&lt;/p>
+&lt;h2 id="learn-more">Learn More&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/event-hubs/apache-kafka-developer-guide?WT.mc_id=AZ-MVP-5002618">Apache Kafka developer guide for Azure Event Hubs&lt;/a>&lt;/li>
+&lt;/ul></description></item></channel></rss>

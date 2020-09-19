@@ -9,13 +9,13 @@
 test.Expect(t =&amp;amp;gt; t.Freak()).IgnoreArguments()
 .WhenCalled(x =&amp;amp;gt; x.ReturnValue = &lt;span style="color:#e6db74">&amp;#34;THIS IS A RETURN VALUE&amp;#34;&lt;/span>)
 .Repeat.Any();
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Calling &lt;strong>test.Freak();&lt;/strong> will result in a return value of &lt;strong>“THIS IS A RETURN VALUE&amp;rdquo;&lt;/strong>&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Calling &lt;strong>test.Freak();&lt;/strong> will result in a return value of &lt;strong>“THIS IS A RETURN VALUE&amp;quot;&lt;/strong>&lt;/p>
 &lt;p>Now change the interface to be:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> ITest
 {
 &lt;span style="color:#66d9ef">string&lt;/span> Freak();
 }
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Calling &lt;strong>test.Freak();&lt;/strong> results in the following exception: &lt;strong>&lt;em>Method ‘ITest.Freak();&amp;rsquo; requires a return value or an exception to throw.&lt;/em>&lt;/strong>&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Calling &lt;strong>test.Freak();&lt;/strong> results in the following exception: &lt;strong>&lt;em>Method ‘ITest.Freak();' requires a return value or an exception to throw.&lt;/em>&lt;/strong>&lt;/p>
 &lt;p>The solution is easy just change the Expect call to look like this one:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">test.Expect(t =&amp;gt;; t.Freak()).IgnoreArguments()
 .WhenCalled(x =&amp;gt;; x.ReturnValue = &lt;span style="color:#e6db74">&amp;#34;THIS IS A RETURN VALUE&amp;#34;&lt;/span>)

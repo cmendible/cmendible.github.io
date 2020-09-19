@@ -41,23 +41,23 @@
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils dialog 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install vim, git, process tools, lsb-release&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> git &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install ruby&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> make &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> build-essential &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ruby &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ruby-dev &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install jekyll&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> gem install &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> bundler &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> jekyll &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Create a non-root user to use if preferred - see https://aka.ms/vscode-remote/containers/non-root-user.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> groupadd --gid $USER_GID $USERNAME &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME &lt;span style="color:#ae81ff">\
@@ -65,7 +65,7 @@
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y sudo &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo $USERNAME ALL&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">\(&lt;/span>root&lt;span style="color:#ae81ff">\)&lt;/span> NOPASSWD:ALL &amp;gt; /etc/sudoers.d/$USERNAME&lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> chmod &lt;span style="color:#ae81ff">0440&lt;/span> /etc/sudoers.d/$USERNAME &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
@@ -74,4 +74,5 @@
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about this Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-blockchainhttps://github.com/microsoft/vscode-dev-containers/tree/master/containers/jekyll">here&lt;/a>.&lt;/p>
+&lt;p>If you want to use Developer Conatianers with WSL 2 start &lt;a href="https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers?WT.mc_id=DOP-MVP-5002618">here&lt;/a>&lt;/p>
 &lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

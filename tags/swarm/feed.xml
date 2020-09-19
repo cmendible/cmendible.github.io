@@ -5,23 +5,23 @@
 &lt;hr>
 &lt;p>On your Docker box create a dockerfile with the following contents&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml"> &lt;span style="color:#75715e"># We use the microsoft/dotnet image as a starting point.&lt;/span>
-FROM microsoft/dotnet
+&lt;span style="color:#ae81ff">FROM microsoft/dotnet&lt;/span>
 &lt;span style="color:#75715e"># Install git&lt;/span>
-RUN apt-get install git -y
+&lt;span style="color:#ae81ff">RUN apt-get install git -y&lt;/span>
 &lt;span style="color:#75715e"># Create a folder to clone our source code &lt;/span>
-RUN mkdir repositories
+&lt;span style="color:#ae81ff">RUN mkdir repositories&lt;/span>
 &lt;span style="color:#75715e"># Set our working folder&lt;/span>
-WORKDIR repositories
+&lt;span style="color:#ae81ff">WORKDIR repositories&lt;/span>
 &lt;span style="color:#75715e"># Clone the source code&lt;/span>
-RUN git clone https://github.com/cmendible/aspnet-core-helloworld.git
+&lt;span style="color:#ae81ff">RUN git clone https://github.com/cmendible/aspnet-core-helloworld.git&lt;/span>
 &lt;span style="color:#75715e"># Set our working folder&lt;/span>
-WORKDIR aspnet-core-helloworld/src/dotnetstarter
+&lt;span style="color:#ae81ff">WORKDIR aspnet-core-helloworld/src/dotnetstarter&lt;/span>
 &lt;span style="color:#75715e"># Expose port 5000 for the application. &lt;/span>
-EXPOSE &lt;span style="color:#ae81ff">5000&lt;/span>
+&lt;span style="color:#ae81ff">EXPOSE 5000&lt;/span>
 &lt;span style="color:#75715e"># Restore nuget packages&lt;/span>
-RUN dotnet restore
+&lt;span style="color:#ae81ff">RUN dotnet restore&lt;/span>
 &lt;span style="color:#75715e"># Start the application using dotnet!!!&lt;/span>
-ENTRYPOINT dotnet run
+&lt;span style="color:#ae81ff">ENTRYPOINT dotnet run&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-create-a-docker-image">2. Create a Docker image&lt;/h2>
 &lt;hr>
 &lt;p>With the dockerfile in place run the following command&lt;/p>

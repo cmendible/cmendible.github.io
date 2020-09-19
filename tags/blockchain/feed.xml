@@ -34,27 +34,27 @@
 &lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Verify git, process tools installed&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install git procps &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install nodejs&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -sL https://deb.nodesource.com/setup_10.x | bash - &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y nodejs &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Truffle Suite&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> npm i --unsafe-perm -g truffle &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Ganache CLI&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> npm install -g ganache-cli &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> # &lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e"># &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install the Azure CLI&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y apt-transport-https curl gnupg2 lsb-release &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -cs&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> main&amp;#34;&lt;/span> &amp;gt; /etc/apt/sources.list.d/azure-cli.list &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - 2&amp;gt;/dev/null &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y azure-cli &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
@@ -63,4 +63,5 @@
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about this Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-blockchain">here&lt;/a>.&lt;/p>
+&lt;p>If you want to use Developer Conatianers with WSL 2 start &lt;a href="https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers?WT.mc_id=DOP-MVP-5002618">here&lt;/a>.&lt;/p>
 &lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

@@ -116,7 +116,7 @@ dotnet restore
 &lt;span style="color:#f92672">&amp;lt;Rule&lt;/span> &lt;span style="color:#a6e22e">Id=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;SA1609&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">Action=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Warning&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
 &lt;span style="color:#f92672">&amp;lt;/Rules&amp;gt;&lt;/span>
 &lt;span style="color:#f92672">&amp;lt;/RuleSet&amp;gt;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Of course you can choose to ignore rules (Action=&amp;quot;None&amp;rdquo;) and get warnings (Action=&amp;quot;Warning&amp;rdquo;) or errors (Action=&amp;quot;Error&amp;rdquo;) in the case your code is not compliant.&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Of course you can choose to ignore rules (Action=&amp;ldquo;None&amp;rdquo;) and get warnings (Action=&amp;ldquo;Warning&amp;rdquo;) or errors (Action=&amp;ldquo;Error&amp;rdquo;) in the case your code is not compliant.&lt;/p>
 &lt;h2 id="6-build-the-application-and-check-the-warnings">6. Build the application and check the warnings&lt;/h2>
 &lt;hr>
 &lt;p>Run the following command:&lt;/p>

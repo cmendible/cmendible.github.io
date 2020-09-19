@@ -40,35 +40,35 @@ kubectl get nodes
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl describe secret
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="9-create-a-kubernetes-deploymenthttpskubernetesiodocsconceptsworkloadscontrollersdeployment-definition">9. Create a kubernetes &lt;a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">deployment&lt;/a> definition.&lt;/h2>
 &lt;p>Create a file &lt;strong>[your deployment].yml&lt;/strong> with the following contents (replace the secret name):&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: my-api
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#66d9ef">template&lt;/span>:
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">labels&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: my-api
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">containers&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: my-api
-&lt;span style="color:#66d9ef">image&lt;/span>: myregistry.azurecr.io/hello-core:&lt;span style="color:#ae81ff">1.0&lt;/span>
-&lt;span style="color:#66d9ef">ports&lt;/span>:
-- &lt;span style="color:#66d9ef">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
-&lt;span style="color:#66d9ef">imagePullSecrets&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: [SECRET NAME]
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">apps/v1beta1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Deployment&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-api&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#f92672">template&lt;/span>:
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">labels&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">my-api&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">containers&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-api&lt;/span>
+&lt;span style="color:#f92672">image&lt;/span>: &lt;span style="color:#ae81ff">myregistry.azurecr.io/hello-core:1.0&lt;/span>
+&lt;span style="color:#f92672">ports&lt;/span>:
+- &lt;span style="color:#f92672">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#f92672">imagePullSecrets&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: [&lt;span style="color:#ae81ff">SECRET NAME]&lt;/span>
 ---
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Service
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: my-api
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">type&lt;/span>: LoadBalancer
-&lt;span style="color:#66d9ef">ports&lt;/span>:
-- &lt;span style="color:#66d9ef">port&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
-&lt;span style="color:#66d9ef">selector&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: my-api
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Service&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-api&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">LoadBalancer&lt;/span>
+&lt;span style="color:#f92672">ports&lt;/span>:
+- &lt;span style="color:#f92672">port&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#f92672">selector&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">my-api&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see the file references the image pushed to the Container Service with the secret created in previous steps.&lt;/p>
 &lt;h2 id="10-deploy-your-service">10. Deploy your service.&lt;/h2>
 &lt;p>Run the following comnmand to deploy your service to AKS:&lt;/p>

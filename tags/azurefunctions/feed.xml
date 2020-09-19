@@ -307,7 +307,7 @@ docker build -t dni .
 &lt;/blockquote>
 &lt;p>And what does serverless means? I really like the definition given by Scot Hanselman in his post &lt;!-- raw HTML omitted -->What is Serverless Computing? Exploring Azure Functions&lt;!-- raw HTML omitted -->:&lt;/p>
 &lt;blockquote>
-&lt;p>&lt;strong>Serverless Computing is like this – Your code, a slider bar, and your credit card&lt;/strong>. You just have your function out there and it will scale as long as you can pay for it. It&amp;rsquo;s as close to&amp;quot;cloudy&amp;rdquo; as The Cloud can get.&lt;/p>
+&lt;p>&lt;strong>Serverless Computing is like this – Your code, a slider bar, and your credit card&lt;/strong>. You just have your function out there and it will scale as long as you can pay for it. It&amp;rsquo;s as close to&amp;quot;cloudy&amp;quot; as The Cloud can get.&lt;/p>
 &lt;/blockquote>
 &lt;p>Now let&amp;rsquo;s start:&lt;/p>
 &lt;h2 id="1-create-a-function-app">1. Create a Function App&lt;/h2>
@@ -375,7 +375,7 @@ response.Content.Headers.ContentType = &lt;span style="color:#66d9ef">new&lt;/sp
 &lt;h2 id="7-test-the-web-api">7. Test the Web API&lt;/h2>
 &lt;hr>
 &lt;p>Head to the Develop tab and copy the Function Url:&lt;/p>
-&lt;p>&lt;!-- raw HTML omitted -->&amp;lt;img src=&amp;rdquo;/wp-content/uploads/2016/08/functionUrl.png&amp;rdquo; alt=&amp;quot;functionUrl&amp;rdquo; class=&amp;quot;aligncenter&amp;rdquo; size-medium wp-image-5662&amp;rdquo; srcset=&amp;rdquo;/wp-content/uploads/2016/08/functionUrl.png 1800w, /wp-content/uploads/2016/08/functionUrl-300x28.png 300w, /wp-content/uploads/2016/08/functionUrl-768x70.png 768w, /wp-content/uploads/2016/08/functionUrl-1024x94.png 1024w, /wp-content/uploads/2016/08/functionUrl-250x23.png 250w&amp;rdquo; sizes=&amp;rdquo;(max-width: 1800px) 100vw, 1800px&amp;rdquo; /&amp;gt;&lt;!-- raw HTML omitted -->&lt;/p>
+&lt;p>&lt;!-- raw HTML omitted -->&amp;lt;img src=&amp;quot;/wp-content/uploads/2016/08/functionUrl.png&amp;quot; alt=&amp;ldquo;functionUrl&amp;rdquo; class=&amp;ldquo;aligncenter&amp;rdquo; size-medium wp-image-5662&amp;quot; srcset=&amp;quot;/wp-content/uploads/2016/08/functionUrl.png 1800w, /wp-content/uploads/2016/08/functionUrl-300x28.png 300w, /wp-content/uploads/2016/08/functionUrl-768x70.png 768w, /wp-content/uploads/2016/08/functionUrl-1024x94.png 1024w, /wp-content/uploads/2016/08/functionUrl-250x23.png 250w&amp;quot; sizes=&amp;quot;(max-width: 1800px) 100vw, 1800px&amp;quot; /&amp;gt;&lt;!-- raw HTML omitted -->&lt;/p>
 &lt;p>Now use &lt;!-- raw HTML omitted -->postman &lt;!-- raw HTML omitted -->to send payload to the Web API and get a QR Code&lt;/p>
 &lt;p>&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/p>
 &lt;p>The response should show a working QR code like the following:&lt;/p>

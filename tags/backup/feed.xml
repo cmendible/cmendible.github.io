@@ -67,7 +67,7 @@ Set-AzureRmResource `
 &lt;li>AutomationCredentialName: The Automation credential holding username and password for Analysis Services&lt;/li>
 &lt;li>AnalysisServiceDatabase: The Analysis Service Database&lt;/li>
 &lt;li>AnalysisServiceServer: The Analysis Service Server (i.e. asazure://northeurope.asazure.windows.net/myanalysisservice)&lt;/li>
-&lt;li>ConnectionName: The name of your automation connection account. Defaults to ‘AzureRunAsConnection&amp;rsquo;&lt;/li>
+&lt;li>ConnectionName: The name of your automation connection account. Defaults to ‘AzureRunAsConnection'&lt;/li>
 &lt;/ul>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#75715e">&amp;lt;#
 &lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.SYNOPSIS&lt;/span>&lt;span style="color:#75715e">

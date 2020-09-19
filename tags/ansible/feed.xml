@@ -40,7 +40,7 @@
 &lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Verify git, required tools installed&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> git &lt;span style="color:#ae81ff">\
@@ -52,32 +52,32 @@
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> gnupg-agent &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> software-properties-common &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> lsb-release 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
-&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] Install Node.js for Azure Cloud Shell support&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] Install Node.js for Azure Cloud Shell support &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Change the &amp;#34;lts/*&amp;#34; in the two lines below to pick a different version&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -so- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> /bin/bash -c &lt;span style="color:#e6db74">&amp;#34;source &lt;/span>$HOME&lt;span style="color:#e6db74">/.nvm/nvm.sh \
 &lt;/span>&lt;span style="color:#e6db74"> &amp;amp;&amp;amp; nvm install lts/* \
 &lt;/span>&lt;span style="color:#e6db74"> &amp;amp;&amp;amp; nvm alias default lts/*&amp;#34;&lt;/span> 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] For local testing instead of cloud shell&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Docker CE CLI.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -fsSL https://download.docker.com/linux/&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -is | tr &lt;span style="color:#e6db74">&amp;#39;[:upper:]&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;[:lower:]&amp;#39;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>/gpg | apt-key add - 2&amp;gt;/dev/null &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> add-apt-repository &lt;span style="color:#e6db74">&amp;#34;deb [arch=amd64] https://download.docker.com/linux/&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -is | tr &lt;span style="color:#e6db74">&amp;#39;[:upper:]&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;[:lower:]&amp;#39;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -cs&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> stable&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y docker-ce-cli &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] For local testing instead of cloud shell&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install the Azure CLI&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -cs&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> main&amp;#34;&lt;/span> &amp;gt; /etc/apt/sources.list.d/azure-cli.list &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - 2&amp;gt;/dev/null &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y azure-cli &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Ansible&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y libssl-dev libffi-dev python-dev python-pip &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> pip install ansible&lt;span style="color:#f92672">[&lt;/span>azure&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
@@ -86,58 +86,59 @@
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about the Azure Ansible Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-ansible">here&lt;/a>.&lt;/p>
+&lt;p>If you want to use Developer Conatianers with WSL 2 start &lt;a href="https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers?WT.mc_id=DOP-MVP-5002618">here&lt;/a>&lt;/p>
 &lt;p>Hope it helps!&lt;/p></description></item><item><title>Accepting Azure Marketplace Terms with Ansible</title><link>https://carlos.mendible.com/2018/08/14/accepting-azure-marketplace-terms-with-ansible/</link><pubDate>Tue, 14 Aug 2018 11:27:39 +0000</pubDate><guid>https://carlos.mendible.com/2018/08/14/accepting-azure-marketplace-terms-with-ansible/</guid><description>&lt;p>Last May I wrote: &lt;a href="https://carlos.mendible.com/2018/05/21/accepting-azure-marketplace-terms-with-azure-cli">Accepting Azure Marketplace Terms with Azure CLI&lt;/a> and this time we&amp;rsquo;ll accomplish the same task with Ansible.&lt;/p>
 &lt;p>Turns out that Ansible 2.6 comes with a handy new module: &lt;a href="https://docs.ansible.com/ansible/latest/modules/azure_rm_resource_module.html?highlight=azure_rm_resource">azure_rm_resource&lt;/a> which lets you create, update or delete any Azure resource using Azure REST API. So I decided to take it for a test drive with the &amp;ldquo;Accepting Terms&amp;rdquo; sample.&lt;/p>
 &lt;p>I&amp;rsquo;ve hard coded Palo Alto Networks offer for the following playbook but feel free to use another offer:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
-- &lt;span style="color:#66d9ef">hosts&lt;/span>: localhost
-&lt;span style="color:#66d9ef">gather_facts&lt;/span>: no
-&lt;span style="color:#66d9ef">vars&lt;/span>:
-&lt;span style="color:#66d9ef">subscriptionId&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[REPLACE WITH YOUR OWN VALUES]&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">az_client_id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[REPLACE WITH YOUR OWN VALUES]&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">az_tenant&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[REPLACE WITH YOUR OWN VALUES]&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">az_secret&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[REPLACE WITH YOUR OWN VALUES]&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">region&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;westeurope&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">publisher&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;paloaltonetworks&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">offer&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;vmseries1&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">sku&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;bundle1&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">tasks&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: Get Agreements for given Image parameters
-&lt;span style="color:#66d9ef">azure_rm_resource&lt;/span>:
-&lt;span style="color:#66d9ef">subscription_id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ subscriptionId }}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">client_id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_client_id }}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">tenant&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_tenant }}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">secret&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_secret }}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">url&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;https://management.azure.com/subscriptions/{{ subscriptionId }}/providers/Microsoft.MarketplaceOrdering/offerTypes/virtualmachine/publishers/{{ publisher }}/offers/{{ offer }}/plans/{{ sku }}/agreements/current?api-version=2015-06-01&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">method&lt;/span>: GET
-&lt;span style="color:#66d9ef">api_version&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2015-06-01&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">register&lt;/span>: agreement_result
-- &lt;span style="color:#66d9ef">name&lt;/span>: Register Agreement properties as fact
-&lt;span style="color:#66d9ef">set_fact&lt;/span>:
-&lt;span style="color:#66d9ef">agreement&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ agreement_result.response.properties }}&amp;#34;&lt;/span>
-- &lt;span style="color:#66d9ef">name&lt;/span>: Accept Terms for given Image parameters
-&lt;span style="color:#66d9ef">azure_rm_resource&lt;/span>:
-&lt;span style="color:#66d9ef">subscription_id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ subscriptionId }}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">client_id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_client_id }}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">tenant&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_tenant }}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">secret&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_secret }}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">url&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;https://management.azure.com/subscriptions/{{ subscriptionId }}/providers/Microsoft.MarketplaceOrdering/offerTypes/virtualmachine/publishers/{{ publisher }}/offers/{{ offer }}/plans/{{ sku }}/agreements/current?api-version=2015-06-01&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">method&lt;/span>: PUT
-&lt;span style="color:#66d9ef">api_version&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2015-06-01&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">body&lt;/span>:
-&lt;span style="color:#66d9ef">properties&lt;/span>:
-&lt;span style="color:#66d9ef">publisher&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.publisher}}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">product&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.product}}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">plan&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.plan}}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">licenseTextLink&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.licenseTextLink}}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">privacyPolicyLink&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.privacyPolicyLink}}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">retrieveDatetime&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.retrieveDatetime}}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">signature&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.signature}}&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">accepted&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">register&lt;/span>: result
-- &lt;span style="color:#66d9ef">name&lt;/span>: Accept Terms output
-&lt;span style="color:#66d9ef">debug&lt;/span>:
-&lt;span style="color:#66d9ef">msg&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{result}}&amp;#34;&lt;/span>
+- &lt;span style="color:#f92672">hosts&lt;/span>: &lt;span style="color:#ae81ff">localhost&lt;/span>
+&lt;span style="color:#f92672">gather_facts&lt;/span>: &lt;span style="color:#66d9ef">no&lt;/span>
+&lt;span style="color:#f92672">vars&lt;/span>:
+&lt;span style="color:#f92672">subscriptionId&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[REPLACE WITH YOUR OWN VALUES]&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">az_client_id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[REPLACE WITH YOUR OWN VALUES]&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">az_tenant&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[REPLACE WITH YOUR OWN VALUES]&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">az_secret&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;[REPLACE WITH YOUR OWN VALUES]&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">region&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;westeurope&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">publisher&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;paloaltonetworks&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">offer&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;vmseries1&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">sku&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;bundle1&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">tasks&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Get Agreements for given Image parameters&lt;/span>
+&lt;span style="color:#f92672">azure_rm_resource&lt;/span>:
+&lt;span style="color:#f92672">subscription_id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ subscriptionId }}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">client_id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_client_id }}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">tenant&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_tenant }}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">secret&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_secret }}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">url&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;https://management.azure.com/subscriptions/{{ subscriptionId }}/providers/Microsoft.MarketplaceOrdering/offerTypes/virtualmachine/publishers/{{ publisher }}/offers/{{ offer }}/plans/{{ sku }}/agreements/current?api-version=2015-06-01&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">method&lt;/span>: &lt;span style="color:#ae81ff">GET&lt;/span>
+&lt;span style="color:#f92672">api_version&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2015-06-01&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">register&lt;/span>: &lt;span style="color:#ae81ff">agreement_result&lt;/span>
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Register Agreement properties as fact&lt;/span>
+&lt;span style="color:#f92672">set_fact&lt;/span>:
+&lt;span style="color:#f92672">agreement&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ agreement_result.response.properties }}&amp;#34;&lt;/span>
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Accept Terms for given Image parameters&lt;/span>
+&lt;span style="color:#f92672">azure_rm_resource&lt;/span>:
+&lt;span style="color:#f92672">subscription_id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ subscriptionId }}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">client_id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_client_id }}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">tenant&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_tenant }}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">secret&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{ az_secret }}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">url&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;https://management.azure.com/subscriptions/{{ subscriptionId }}/providers/Microsoft.MarketplaceOrdering/offerTypes/virtualmachine/publishers/{{ publisher }}/offers/{{ offer }}/plans/{{ sku }}/agreements/current?api-version=2015-06-01&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">method&lt;/span>: &lt;span style="color:#ae81ff">PUT&lt;/span>
+&lt;span style="color:#f92672">api_version&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2015-06-01&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">body&lt;/span>:
+&lt;span style="color:#f92672">properties&lt;/span>:
+&lt;span style="color:#f92672">publisher&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.publisher}}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">product&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.product}}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">plan&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.plan}}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">licenseTextLink&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.licenseTextLink}}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">privacyPolicyLink&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.privacyPolicyLink}}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">retrieveDatetime&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.retrieveDatetime}}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">signature&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{agreement.signature}}&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">accepted&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">register&lt;/span>: &lt;span style="color:#ae81ff">result&lt;/span>
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Accept Terms output&lt;/span>
+&lt;span style="color:#f92672">debug&lt;/span>:
+&lt;span style="color:#f92672">msg&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;{{result}}&amp;#34;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item><item><title>Installing Azure CLI and Ansible on Ubuntu</title><link>https://carlos.mendible.com/2018/08/10/installing-azure-cli-and-ansible-on-ubuntu/</link><pubDate>Fri, 10 Aug 2018 00:18:30 +0000</pubDate><guid>https://carlos.mendible.com/2018/08/10/installing-azure-cli-and-ansible-on-ubuntu/</guid><description>&lt;p>I&amp;rsquo;ve been using &lt;a href="https://www.ansible.com/">Ansible&lt;/a> and the &lt;a href="https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest">Azure CLI&lt;/a> every single day for the last 3 months. Non stop work editing playbooks and scripts with &lt;a href="https://code.visualstudio.com/">Visual Studio Code&lt;/a> and running them on &lt;a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">Ubuntu (WSL)&lt;/a> on my Windows 10 machine.&lt;/p>
 &lt;p>Turns out that because &lt;a href="https://www.ansible.com/">Ansible&lt;/a> uses python version &lt;strong>2.7.12&lt;/strong> and the &lt;a href="https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest">Azure CLI&lt;/a> uses python &lt;strong>3.6.5&lt;/strong> you can make a mess if you get &amp;ldquo;creative&amp;rdquo; trying to install the tools instead of using the recommended commands:&lt;/p>
 &lt;h2 id="1-azure-cli">1. Azure CLI&lt;/h2>
@@ -168,16 +169,16 @@ ansible --verison
 &lt;p>Last week I tried to run this simple Ansible playbook in Azure Cloud Shell:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># resource_group.yml&lt;/span>
 &lt;span style="color:#75715e"># Create test resource group in west europe&lt;/span>
-- &lt;span style="color:#66d9ef">name&lt;/span>: Create a Resource Group
-&lt;span style="color:#66d9ef">hosts&lt;/span>: localhost
-&lt;span style="color:#66d9ef">connection&lt;/span>: local
-&lt;span style="color:#66d9ef">gather_facts&lt;/span>: no
-&lt;span style="color:#66d9ef">tasks&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: Create Resource Group
-&lt;span style="color:#66d9ef">azure_rm_resourcegroup&lt;/span>:
-&lt;span style="color:#66d9ef">location&lt;/span>: westeurope
-&lt;span style="color:#66d9ef">name&lt;/span>: test
-&lt;span style="color:#66d9ef">state&lt;/span>: present
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Create a Resource Group&lt;/span>
+&lt;span style="color:#f92672">hosts&lt;/span>: &lt;span style="color:#ae81ff">localhost&lt;/span>
+&lt;span style="color:#f92672">connection&lt;/span>: &lt;span style="color:#ae81ff">local&lt;/span>
+&lt;span style="color:#f92672">gather_facts&lt;/span>: &lt;span style="color:#66d9ef">no&lt;/span>
+&lt;span style="color:#f92672">tasks&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Create Resource Group&lt;/span>
+&lt;span style="color:#f92672">azure_rm_resourcegroup&lt;/span>:
+&lt;span style="color:#f92672">location&lt;/span>: &lt;span style="color:#ae81ff">westeurope&lt;/span>
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">test&lt;/span>
+&lt;span style="color:#f92672">state&lt;/span>: &lt;span style="color:#ae81ff">present&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The first attempt to run the playbook with:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">ansible-playbook resource_group.yml -vvv
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>failed with the following message: &lt;strong>No module named &amp;lsquo;packaging&amp;rsquo;&lt;/strong>&lt;/p>

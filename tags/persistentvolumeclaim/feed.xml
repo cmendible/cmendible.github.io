@@ -9,65 +9,65 @@
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
 &lt;span style="color:#75715e"># Create a StorageClass object pointing to the existing Storage Account&lt;/span>
 &lt;span style="color:#75715e"># Remember: that the Storage account must be in the same Resource Group where the AKS cluster is deployed&lt;/span>
-&lt;span style="color:#66d9ef">kind&lt;/span>: StorageClass
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: storage.k8s.io/v1
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: azurefile
-&lt;span style="color:#66d9ef">provisioner&lt;/span>: kubernetes.io/azure-file
-&lt;span style="color:#66d9ef">mountOptions&lt;/span>:
-- dir_mode=&lt;span style="color:#ae81ff">0777&lt;/span>
-- file_mode=&lt;span style="color:#ae81ff">0777&lt;/span>
-&lt;span style="color:#66d9ef">parameters&lt;/span>:
-&lt;span style="color:#66d9ef">storageAccount&lt;/span>: &amp;lt;storage account name&lt;span style="color:#e6db74">&amp;gt;
-&lt;/span>&lt;span style="color:#e6db74"> location: &amp;lt;storage account location&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">StorageClass&lt;/span>
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">storage.k8s.io/v1&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">azurefile&lt;/span>
+&lt;span style="color:#f92672">provisioner&lt;/span>: &lt;span style="color:#ae81ff">kubernetes.io/azure-file&lt;/span>
+&lt;span style="color:#f92672">mountOptions&lt;/span>:
+- &lt;span style="color:#ae81ff">dir_mode=0777&lt;/span>
+- &lt;span style="color:#ae81ff">file_mode=0777&lt;/span>
+&lt;span style="color:#f92672">parameters&lt;/span>:
+&lt;span style="color:#f92672">storageAccount&lt;/span>: &lt;span style="color:#ae81ff">&amp;lt;storage account name&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">location&lt;/span>: &lt;span style="color:#ae81ff">&amp;lt;storage account location&amp;gt;&lt;/span>
 ---
 &lt;span style="color:#75715e"># Create a Secret to hold the name and key of the Storage Account&lt;/span>
 &lt;span style="color:#75715e"># Remember: values are base64 encoded&lt;/span>
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Secret
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: azurefile-secret
-&lt;span style="color:#66d9ef">type&lt;/span>: Opaque
-&lt;span style="color:#66d9ef">data&lt;/span>:
-&lt;span style="color:#66d9ef">azurestorageaccountname&lt;/span>: &amp;lt;base64 encoded storage account name&lt;span style="color:#e6db74">&amp;gt;
-&lt;/span>&lt;span style="color:#e6db74"> azurestorageaccountkey: &amp;lt;base64 encoded storage account key&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Secret&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">azurefile-secret&lt;/span>
+&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">Opaque&lt;/span>
+&lt;span style="color:#f92672">data&lt;/span>:
+&lt;span style="color:#f92672">azurestorageaccountname&lt;/span>: &lt;span style="color:#ae81ff">&amp;lt;base64 encoded storage account name&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">azurestorageaccountkey&lt;/span>: &lt;span style="color:#ae81ff">&amp;lt;base64 encoded storage account key&amp;gt;&lt;/span>
 ---
 &lt;span style="color:#75715e"># Create a persistent volume, with the corresponding StorageClass and the reference to the Azure File secret.&lt;/span>
 &lt;span style="color:#75715e"># Remember: Create the share in the storage account otherwise the pods will fail with a &amp;#34;No such file or directory&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: PersistentVolume
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: nginx-pv
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">capacity&lt;/span>:
-&lt;span style="color:#66d9ef">storage&lt;/span>: 5Gi
-&lt;span style="color:#66d9ef">accessModes&lt;/span>:
-- ReadWriteOnce
-&lt;span style="color:#66d9ef">storageClassName&lt;/span>: azurefile
-&lt;span style="color:#66d9ef">azureFile&lt;/span>:
-&lt;span style="color:#66d9ef">secretName&lt;/span>: azurefile-secret
-&lt;span style="color:#66d9ef">shareName&lt;/span>: &amp;lt;Share Name (must already exist in the storage account)&lt;span style="color:#e6db74">&amp;gt;
-&lt;/span>&lt;span style="color:#e6db74"> readOnly: false&lt;/span>
-&lt;span style="color:#66d9ef">mountOptions&lt;/span>:
-- dir_mode=&lt;span style="color:#ae81ff">0777&lt;/span>
-- file_mode=&lt;span style="color:#ae81ff">0777&lt;/span>
-- uid=&lt;span style="color:#ae81ff">1000&lt;/span>
-- gid=&lt;span style="color:#ae81ff">1000&lt;/span>
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">PersistentVolume&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">nginx-pv&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">capacity&lt;/span>:
+&lt;span style="color:#f92672">storage&lt;/span>: &lt;span style="color:#ae81ff">5Gi&lt;/span>
+&lt;span style="color:#f92672">accessModes&lt;/span>:
+- &lt;span style="color:#ae81ff">ReadWriteOnce&lt;/span>
+&lt;span style="color:#f92672">storageClassName&lt;/span>: &lt;span style="color:#ae81ff">azurefile&lt;/span>
+&lt;span style="color:#f92672">azureFile&lt;/span>:
+&lt;span style="color:#f92672">secretName&lt;/span>: &lt;span style="color:#ae81ff">azurefile-secret&lt;/span>
+&lt;span style="color:#f92672">shareName&lt;/span>: &lt;span style="color:#ae81ff">&amp;lt;Share Name (must already exist in the storage account)&amp;gt;&lt;/span>
+&lt;span style="color:#f92672">readOnly&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+&lt;span style="color:#f92672">mountOptions&lt;/span>:
+- &lt;span style="color:#ae81ff">dir_mode=0777&lt;/span>
+- &lt;span style="color:#ae81ff">file_mode=0777&lt;/span>
+- &lt;span style="color:#ae81ff">uid=1000&lt;/span>
+- &lt;span style="color:#ae81ff">gid=1000&lt;/span>
 ---
 &lt;span style="color:#75715e"># Create a PersistentVolumeClaim referencing the StorageClass and the volume&lt;/span>
 &lt;span style="color:#75715e"># Remember: this is a static scenario. The volume was created in the previous step.&lt;/span>
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: PersistentVolumeClaim
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: nginx-pvc
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">accessModes&lt;/span>:
-- ReadWriteOnce
-&lt;span style="color:#66d9ef">resources&lt;/span>:
-&lt;span style="color:#66d9ef">requests&lt;/span>:
-&lt;span style="color:#66d9ef">storage&lt;/span>: 5Gi
-&lt;span style="color:#66d9ef">storageClassName&lt;/span>: azurefile
-&lt;span style="color:#66d9ef">volumeName&lt;/span>: nginx-pv
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">PersistentVolumeClaim&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">nginx-pvc&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">accessModes&lt;/span>:
+- &lt;span style="color:#ae81ff">ReadWriteOnce &lt;/span>
+&lt;span style="color:#f92672">resources&lt;/span>:
+&lt;span style="color:#f92672">requests&lt;/span>:
+&lt;span style="color:#f92672">storage&lt;/span>: &lt;span style="color:#ae81ff">5Gi&lt;/span>
+&lt;span style="color:#f92672">storageClassName&lt;/span>: &lt;span style="color:#ae81ff">azurefile&lt;/span>
+&lt;span style="color:#f92672">volumeName&lt;/span>: &lt;span style="color:#ae81ff">nginx-pv&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy to your cluster and verify that the Private Volume Claim status is &lt;strong>Bound&lt;/strong>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f aks-existing-storage-account-pv.yaml
 kubectl get pvc
@@ -78,32 +78,32 @@ nginx-pvc Bound nginx-pv 5Gi RWO azurefile ...
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
 &lt;span style="color:#75715e"># Deploy an nginx mounting a volume and referencing the persisten volume claim&lt;/span>
 &lt;span style="color:#75715e"># Remember: using pvc decouples your deployment from the volume implementations&lt;/span>
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: extensions/v1beta1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: nginx
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">template&lt;/span>:
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">labels&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: nginx-storage
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">containers&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: nginx-pod
-&lt;span style="color:#66d9ef">image&lt;/span>: nginx:&lt;span style="color:#ae81ff">1.15.5&lt;/span>
-&lt;span style="color:#66d9ef">resources&lt;/span>:
-&lt;span style="color:#66d9ef">requests&lt;/span>:
-&lt;span style="color:#66d9ef">cpu&lt;/span>: 100m
-&lt;span style="color:#66d9ef">memory&lt;/span>: 128Mi
-&lt;span style="color:#66d9ef">limits&lt;/span>:
-&lt;span style="color:#66d9ef">cpu&lt;/span>: 250m
-&lt;span style="color:#66d9ef">memory&lt;/span>: 256Mi
-&lt;span style="color:#66d9ef">volumeMounts&lt;/span>:
-- &lt;span style="color:#66d9ef">mountPath&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;/mnt/azure&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">name&lt;/span>: volume
-&lt;span style="color:#66d9ef">volumes&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: volume
-&lt;span style="color:#66d9ef">persistentVolumeClaim&lt;/span>:
-&lt;span style="color:#66d9ef">claimName&lt;/span>: nginx-pvc
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">extensions/v1beta1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Deployment&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">nginx&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">template&lt;/span>:
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">labels&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">nginx-storage&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">containers&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">nginx-pod&lt;/span>
+&lt;span style="color:#f92672">image&lt;/span>: &lt;span style="color:#ae81ff">nginx:1.15.5&lt;/span>
+&lt;span style="color:#f92672">resources&lt;/span>:
+&lt;span style="color:#f92672">requests&lt;/span>:
+&lt;span style="color:#f92672">cpu&lt;/span>: &lt;span style="color:#ae81ff">100m&lt;/span>
+&lt;span style="color:#f92672">memory&lt;/span>: &lt;span style="color:#ae81ff">128Mi&lt;/span>
+&lt;span style="color:#f92672">limits&lt;/span>:
+&lt;span style="color:#f92672">cpu&lt;/span>: &lt;span style="color:#ae81ff">250m&lt;/span>
+&lt;span style="color:#f92672">memory&lt;/span>: &lt;span style="color:#ae81ff">256Mi&lt;/span>
+&lt;span style="color:#f92672">volumeMounts&lt;/span>:
+- &lt;span style="color:#f92672">mountPath&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;/mnt/azure&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">volume&lt;/span>
+&lt;span style="color:#f92672">volumes&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">volume&lt;/span>
+&lt;span style="color:#f92672">persistentVolumeClaim&lt;/span>:
+&lt;span style="color:#f92672">claimName&lt;/span>: &lt;span style="color:#ae81ff">nginx-pvc&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps.&lt;/p>
 &lt;p>Please download all code and files &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/16.aks-pv-with-existing-storage-account">here&lt;/a>.&lt;/p></description></item></channel></rss>

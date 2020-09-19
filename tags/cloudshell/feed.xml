@@ -2,16 +2,16 @@
 &lt;p>Last week I tried to run this simple Ansible playbook in Azure Cloud Shell:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># resource_group.yml&lt;/span>
 &lt;span style="color:#75715e"># Create test resource group in west europe&lt;/span>
-- &lt;span style="color:#66d9ef">name&lt;/span>: Create a Resource Group
-&lt;span style="color:#66d9ef">hosts&lt;/span>: localhost
-&lt;span style="color:#66d9ef">connection&lt;/span>: local
-&lt;span style="color:#66d9ef">gather_facts&lt;/span>: no
-&lt;span style="color:#66d9ef">tasks&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: Create Resource Group
-&lt;span style="color:#66d9ef">azure_rm_resourcegroup&lt;/span>:
-&lt;span style="color:#66d9ef">location&lt;/span>: westeurope
-&lt;span style="color:#66d9ef">name&lt;/span>: test
-&lt;span style="color:#66d9ef">state&lt;/span>: present
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Create a Resource Group&lt;/span>
+&lt;span style="color:#f92672">hosts&lt;/span>: &lt;span style="color:#ae81ff">localhost&lt;/span>
+&lt;span style="color:#f92672">connection&lt;/span>: &lt;span style="color:#ae81ff">local&lt;/span>
+&lt;span style="color:#f92672">gather_facts&lt;/span>: &lt;span style="color:#66d9ef">no&lt;/span>
+&lt;span style="color:#f92672">tasks&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">Create Resource Group&lt;/span>
+&lt;span style="color:#f92672">azure_rm_resourcegroup&lt;/span>:
+&lt;span style="color:#f92672">location&lt;/span>: &lt;span style="color:#ae81ff">westeurope&lt;/span>
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">test&lt;/span>
+&lt;span style="color:#f92672">state&lt;/span>: &lt;span style="color:#ae81ff">present&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>The first attempt to run the playbook with:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">ansible-playbook resource_group.yml -vvv
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>failed with the following message: &lt;strong>No module named &amp;lsquo;packaging&amp;rsquo;&lt;/strong>&lt;/p>

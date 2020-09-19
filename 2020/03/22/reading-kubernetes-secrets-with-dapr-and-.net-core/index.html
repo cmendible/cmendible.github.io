@@ -1,4 +1,4 @@
-<!doctype html><html lang=en-us><head><title>Reading Kubernetes Secrets with Dapr and .NET Core - Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/><link rel=canonical href=https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/ itemprop=url><meta name=url content="https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content="Reading Kubernetes Secrets with Dapr and .NET Core,kubernetes,dotnet"><meta name=news_keywords content="kubernetes, dotnet"><meta property="article:tag" content="dapr"><meta property="og:title" content="Reading Kubernetes Secrets with Dapr and .NET Core"><meta property="og:description" content="Reading Kubernetes Secrets with Dapr and .NET Core"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/"><meta property="og:image" content="https://carlos.mendible.com/assets/img/posts/aks.png"><meta property="article:published_time" content="2020-03-22T00:00:00+00:00"><meta property="article:modified_time" content="2020-03-22T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/assets/img/posts/aks.png"><meta name=twitter:title content="Reading Kubernetes Secrets with Dapr and .NET Core"><meta name=twitter:description content="Reading Kubernetes Secrets with Dapr and .NET Core"><meta name=robots content="index,follow"><meta name=googlebot content="index,follow"><meta name=twitter:site content="cmendibl3"><meta name=twitter:creator content="cmendibl3"><meta name=generator content="Hugo 0.74.3"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>Reading Kubernetes Secrets with Dapr and .NET Core</h1><aside><ul><li><time class=post-date datetime=2020-03-22T00:00:00Z>Mar 22, 2020</time></li><li>Categories:
+<!doctype html><html lang=en-us><head><title>Reading Kubernetes Secrets with Dapr and .NET Core - Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/><link rel=canonical href=https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/ itemprop=url><meta name=url content="https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content="Reading Kubernetes Secrets with Dapr and .NET Core,kubernetes,dotnet"><meta name=news_keywords content="kubernetes, dotnet"><meta property="article:tag" content="dapr"><meta property="og:title" content="Reading Kubernetes Secrets with Dapr and .NET Core"><meta property="og:description" content="Reading Kubernetes Secrets with Dapr and .NET Core"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/"><meta property="og:image" content="https://carlos.mendible.com/assets/img/posts/aks.png"><meta property="article:published_time" content="2020-03-22T00:00:00+00:00"><meta property="article:modified_time" content="2020-03-22T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/assets/img/posts/aks.png"><meta name=twitter:title content="Reading Kubernetes Secrets with Dapr and .NET Core"><meta name=twitter:description content="Reading Kubernetes Secrets with Dapr and .NET Core"><meta name=robots content="index,follow"><meta name=googlebot content="index,follow"><meta name=twitter:site content="cmendibl3"><meta name=twitter:creator content="cmendibl3"><meta name=generator content="Hugo 0.75.1"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>Reading Kubernetes Secrets with Dapr and .NET Core</h1><aside><ul><li><time class=post-date datetime=2020-03-22T00:00:00Z>Mar 22, 2020</time></li><li>Categories:
 <em><a href=https://carlos.mendible.com/categories/kubernetes>kubernetes</a>
 ,
 <a href=https://carlos.mendible.com/categories/dotnet>dotnet</a></em></li><li><em><a href=https://carlos.mendible.com/tags/dapr>#dapr</a></em></li><li>3 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2020/03/22/reading-kubernetes-secrets-with-dapr-and-.net-core/ title="Reading Kubernetes Secrets with Dapr and .NET Core"><img src=https://carlos.mendible.com/assets/img/posts/aks.png></a></div><p><a href=https://dapr.io>Dapr</a> is an event-driven, portable runtime for building microservices on cloud and edge.</p><p><a href=https://dapr.io>Dapr</a> supports the fundamental features you&rsquo;ll need such as: service invocation, state management, publish/subscribe messaging and since version <a href=https://github.com/dapr/dapr/releases/tag/v0.5.0>0.5.0</a> the ability to read from secret stores!</p><p>This post will show you to read kubernetes secrets using <a href=https://dapr.io>Dapr</a> and .NET Core:</p><h2 id=prerequistes>Prerequistes</h2><ul><li><a href=https://dotnet.microsoft.com/download>.Net Core SDK 3.1</a></li><li><a href=https://github.com/dapr/cli>Dapr CLI</a></li><li><a href=https://github.com/dapr/dotnet-sdk>Dapr DotNet SDK</a></li><li><a href=https://www.docker.com/>Docker</a></li><li>A working <a href=https://kubernetes.io/>kubernetes</a> cluster</li></ul><h2 id=create-an-net-core-project-and-add-dependencies>Create an .NET Core project and add dependencies</h2><p>Open the command line and type:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>dotnet new web -o dapr.k8s.secrets
@@ -103,54 +103,54 @@ ENTRYPOINT dotnet <span style=color:#960050;background-color:#1e0010>$</span>(ca
  docker push cmendibl3/dapr-k8s-secrets:1.0.0
 </code></pre></div><h2 id=create-manifest-and-deploy-the-application-to-kubernetes>Create manifest and deploy the application to kubernetes</h2><p>Create a <em>deployment.yaml</em> with the following contents (remember to replace the image with your own values):</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml>---
 <span style=color:#75715e># ASP.NET Core Application</span>
-<span style=color:#66d9ef>apiVersion</span>: apps/v1beta1
-<span style=color:#66d9ef>kind</span>: Deployment
-<span style=color:#66d9ef>metadata</span>:
-  <span style=color:#66d9ef>name</span>: dapr-k8s-secrets
-  <span style=color:#66d9ef>namespace</span>: default
-<span style=color:#66d9ef>spec</span>:
-  <span style=color:#66d9ef>replicas</span>: <span style=color:#ae81ff>1</span>
-  <span style=color:#66d9ef>template</span>:
-    <span style=color:#66d9ef>metadata</span>:
-      <span style=color:#66d9ef>labels</span>:
-        <span style=color:#66d9ef>app</span>: dapr-k8s-secrets
-        <span style=color:#66d9ef>aadpodidbinding</span>: requires-vault
-      <span style=color:#66d9ef>annotations</span>:
-        <span style=color:#66d9ef>dapr.io/enabled</span>: <span style=color:#e6db74>&#34;true&#34;</span>
-        <span style=color:#66d9ef>dapr.io/id</span>: <span style=color:#e6db74>&#34;dapr-k8s-secrets&#34;</span>
-        <span style=color:#66d9ef>dapr.io/port</span>: <span style=color:#e6db74>&#34;80&#34;</span>
-    <span style=color:#66d9ef>spec</span>:
-      <span style=color:#66d9ef>containers</span>:
-        - <span style=color:#66d9ef>name</span>: dapr-k8s-secrets
-          <span style=color:#66d9ef>image</span>: cmendibl3/dapr-k8s-secrets:<span style=color:#ae81ff>1.0.0</span>
-          <span style=color:#66d9ef>ports</span>:
-            - <span style=color:#66d9ef>containerPort</span>: <span style=color:#ae81ff>80</span>
-          <span style=color:#66d9ef>imagePullPolicy</span>: Always
+<span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>apps/v1beta1</span>
+<span style=color:#f92672>kind</span>: <span style=color:#ae81ff>Deployment</span>
+<span style=color:#f92672>metadata</span>:
+  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>dapr-k8s-secrets</span>
+  <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>default</span>
+<span style=color:#f92672>spec</span>:
+  <span style=color:#f92672>replicas</span>: <span style=color:#ae81ff>1</span>
+  <span style=color:#f92672>template</span>:
+    <span style=color:#f92672>metadata</span>:
+      <span style=color:#f92672>labels</span>:
+        <span style=color:#f92672>app</span>: <span style=color:#ae81ff>dapr-k8s-secrets</span>
+        <span style=color:#f92672>aadpodidbinding</span>: <span style=color:#ae81ff>requires-vault</span>
+      <span style=color:#f92672>annotations</span>:
+        <span style=color:#f92672>dapr.io/enabled</span>: <span style=color:#e6db74>&#34;true&#34;</span>
+        <span style=color:#f92672>dapr.io/id</span>: <span style=color:#e6db74>&#34;dapr-k8s-secrets&#34;</span>
+        <span style=color:#f92672>dapr.io/port</span>: <span style=color:#e6db74>&#34;80&#34;</span>
+    <span style=color:#f92672>spec</span>:
+      <span style=color:#f92672>containers</span>:
+        - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>dapr-k8s-secrets</span>
+          <span style=color:#f92672>image</span>: <span style=color:#ae81ff>cmendibl3/dapr-k8s-secrets:1.0.0</span>
+          <span style=color:#f92672>ports</span>:
+            - <span style=color:#f92672>containerPort</span>: <span style=color:#ae81ff>80</span>
+          <span style=color:#f92672>imagePullPolicy</span>: <span style=color:#ae81ff>Always</span>
 ---
 <span style=color:#75715e># Create a Kubernetes Secret</span>
-<span style=color:#66d9ef>apiVersion</span>: v1
-<span style=color:#66d9ef>kind</span>: Secret
-<span style=color:#66d9ef>metadata</span>:
-  <span style=color:#66d9ef>name</span>: super-secret
-  <span style=color:#66d9ef>namespace</span>: default
-<span style=color:#66d9ef>type</span>: Opaque
-<span style=color:#66d9ef>data</span>:
-  <span style=color:#66d9ef>super-secret</span>: eW91ciBzdXBlciBzZWNyZXQK
+<span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>v1</span>
+<span style=color:#f92672>kind</span>: <span style=color:#ae81ff>Secret</span>
+<span style=color:#f92672>metadata</span>:
+  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>super-secret</span>
+  <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>default</span>
+<span style=color:#f92672>type</span>: <span style=color:#ae81ff>Opaque</span>
+<span style=color:#f92672>data</span>:
+  <span style=color:#f92672>super-secret</span>: <span style=color:#ae81ff>eW91ciBzdXBlciBzZWNyZXQK</span>
 
 ---
 <span style=color:#75715e># If RBAC is enabled in K8s, give the default service account access to read secrets in the default namespace</span>
-<span style=color:#66d9ef>apiVersion</span>: rbac.authorization.k8s.io/v1
-<span style=color:#66d9ef>kind</span>: ClusterRoleBinding
-<span style=color:#66d9ef>metadata</span>:
-  <span style=color:#66d9ef>name</span>: dapr-secret-reader
-<span style=color:#66d9ef>roleRef</span>:
-  <span style=color:#66d9ef>apiGroup</span>: rbac.authorization.k8s.io
-  <span style=color:#66d9ef>kind</span>: ClusterRole
-  <span style=color:#66d9ef>name</span>: secret-reader
-<span style=color:#66d9ef>subjects</span>:
-  - <span style=color:#66d9ef>kind</span>: ServiceAccount
-    <span style=color:#66d9ef>name</span>: default
-    <span style=color:#66d9ef>namespace</span>: default
+<span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>rbac.authorization.k8s.io/v1</span>
+<span style=color:#f92672>kind</span>: <span style=color:#ae81ff>ClusterRoleBinding</span>
+<span style=color:#f92672>metadata</span>:
+  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>dapr-secret-reader</span>
+<span style=color:#f92672>roleRef</span>:
+  <span style=color:#f92672>apiGroup</span>: <span style=color:#ae81ff>rbac.authorization.k8s.io</span>
+  <span style=color:#f92672>kind</span>: <span style=color:#ae81ff>ClusterRole</span>
+  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>secret-reader</span>
+<span style=color:#f92672>subjects</span>:
+  - <span style=color:#f92672>kind</span>: <span style=color:#ae81ff>ServiceAccount</span>
+    <span style=color:#f92672>name</span>: <span style=color:#ae81ff>default</span>
+    <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>default</span>
 </code></pre></div><p>If you haven&rsquo;t installed Dapr in your kuberntes cluster run:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>dapr init --kubernetes
 </code></pre></div><p>Now deploy the application to kubernetes:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>kubectl apply -f ./deployment.yaml
 </code></pre></div><h2 id=test-the-application>Test the application</h2><p>Get the pod name and execute a port forward to test the API</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>$pod <span style=color:#f92672>=</span> kubectl get po --selector<span style=color:#f92672>=</span>app<span style=color:#f92672>=</span>dapr-k8s-secrets -n default -o jsonpath<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;{.items[*].metadata.name}&#39;</span>

@@ -7,50 +7,50 @@
 &lt;h2 id="1-create-a-service-exposed-throuh-your-aks-dns-zone">1. Create a service exposed throuh your AKS DNS Zone&lt;/h2>
 &lt;hr>
 &lt;p>Let&amp;rsquo;s start by deploying the following service to your Kubernetes cluster, by saving the following content to a file named &lt;strong>dni-function.yaml&lt;/strong> and replacing &lt;strong>[YOUR_DNS__ZONE_NAME]&lt;/strong> with the corresponding value of your service:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#66d9ef">template&lt;/span>:
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">labels&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">containers&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/dni:&lt;span style="color:#ae81ff">1.0.0&lt;/span>
-&lt;span style="color:#66d9ef">ports&lt;/span>:
-- &lt;span style="color:#66d9ef">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">apps/v1beta1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Deployment&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#f92672">template&lt;/span>:
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">labels&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">containers&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">image&lt;/span>: &lt;span style="color:#ae81ff">cmendibl3/dni:1.0.0&lt;/span>
+&lt;span style="color:#f92672">ports&lt;/span>:
+- &lt;span style="color:#f92672">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
 ---
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Service
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">type&lt;/span>: ClusterIP
-&lt;span style="color:#66d9ef">ports&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>:
-&lt;span style="color:#66d9ef">port&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
-&lt;span style="color:#66d9ef">selector&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Service&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">ClusterIP&lt;/span>
+&lt;span style="color:#f92672">ports&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>:
+&lt;span style="color:#f92672">port&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#f92672">selector&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
 ---
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: extensions/v1beta1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Ingress
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">annotations&lt;/span>:
-&lt;span style="color:#66d9ef">kubernetes.io/ingress.class&lt;/span>: addon-http-application-routing
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">rules&lt;/span>:
-- &lt;span style="color:#66d9ef">host&lt;/span>: dni-function.[YOUR_DNS__ZONE_NAME]
-&lt;span style="color:#66d9ef">http&lt;/span>:
-&lt;span style="color:#66d9ef">paths&lt;/span>:
-- &lt;span style="color:#66d9ef">backend&lt;/span>:
-&lt;span style="color:#66d9ef">serviceName&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">servicePort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
-&lt;span style="color:#66d9ef">path&lt;/span>: /
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">extensions/v1beta1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Ingress&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">annotations&lt;/span>:
+&lt;span style="color:#f92672">kubernetes.io/ingress.class&lt;/span>: &lt;span style="color:#ae81ff">addon-http-application-routing&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">rules&lt;/span>:
+- &lt;span style="color:#f92672">host&lt;/span>: &lt;span style="color:#ae81ff">dni-function.[YOUR_DNS__ZONE_NAME]&lt;/span>
+&lt;span style="color:#f92672">http&lt;/span>:
+&lt;span style="color:#f92672">paths&lt;/span>:
+- &lt;span style="color:#f92672">backend&lt;/span>:
+&lt;span style="color:#f92672">serviceName&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">servicePort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#f92672">path&lt;/span>: &lt;span style="color:#ae81ff">/&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now deploy it to Kubernetes:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> ./dni-function.yaml
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>In a few seconds you&amp;rsquo;ll have a working Web API (Validates Spanish National Identification Numbers).&lt;/p>
@@ -64,15 +64,15 @@
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-deny-all-traffic-to-the-service">3. Deny all traffic to the service&lt;/h2>
 &lt;hr>
 &lt;p>Now let&amp;rsquo;s try to deny all the traffic to the service, creating a &lt;strong>dni-function-deny-all.yaml&lt;/strong> file with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">kind&lt;/span>: NetworkPolicy
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: networking.k8s.io/v1
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: dni-function-deny-all
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">podSelector&lt;/span>:
-&lt;span style="color:#66d9ef">matchLabels&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">ingress&lt;/span>: []
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">NetworkPolicy&lt;/span>
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">networking.k8s.io/v1&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">dni-function-deny-all&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">podSelector&lt;/span>:
+&lt;span style="color:#f92672">matchLabels&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">ingress&lt;/span>: []
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the policy:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl apply -f ./dni-function-deny-all.yaml
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Try calling the service again:&lt;/p>
@@ -88,19 +88,19 @@
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>That&amp;rsquo;s it! Your service is no longer available!!!&lt;/p>
 &lt;h2 id="4-allow-only-traffic-from-a-specific-pod">4. Allow only traffic from a specific pod&lt;/h2>
 &lt;p>Create a &lt;strong>dni-function-allow-internal.yaml&lt;/strong> file with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">kind&lt;/span>: NetworkPolicy
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: networking.k8s.io/v1
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: dni-function-allow-internal
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">podSelector&lt;/span>:
-&lt;span style="color:#66d9ef">matchLabels&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">ingress&lt;/span>:
-- &lt;span style="color:#66d9ef">from&lt;/span>:
-- &lt;span style="color:#66d9ef">podSelector&lt;/span>:
-&lt;span style="color:#66d9ef">matchLabels&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: internal
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">NetworkPolicy&lt;/span>
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">networking.k8s.io/v1&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">dni-function-allow-internal&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">podSelector&lt;/span>:
+&lt;span style="color:#f92672">matchLabels&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">ingress&lt;/span>:
+- &lt;span style="color:#f92672">from&lt;/span>:
+- &lt;span style="color:#f92672">podSelector&lt;/span>:
+&lt;span style="color:#f92672">matchLabels&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">internal&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the policy, which restricts the traffic to pods with the label: &lt;strong>app=internal&lt;/strong>, and check that you still can&amp;rsquo;t connect:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl apply -f ./dni-function-allow-internal.yaml
 curl -k http://dni-function.&lt;span style="color:#f92672">[&lt;/span>YOUR_DNS__ZONE_NAME&lt;span style="color:#f92672">]&lt;/span>/api/validate?dni&lt;span style="color:#f92672">=&lt;/span>88410248L

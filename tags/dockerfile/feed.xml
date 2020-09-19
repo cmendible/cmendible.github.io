@@ -451,25 +451,25 @@ dotnet publish -c release
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-a-dockerfile">4. Create a Dockerfile&lt;/h2>
 &lt;hr>
 &lt;p>Create a Dockerfile (be aware of the capital D) with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">FROM microsoft/dotnet
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#ae81ff">FROM microsoft/dotnet &lt;/span>
 &lt;span style="color:#75715e"># Set ASPNETCORE_URLS&lt;/span>
-ENV ASPNETCORE_URLS=https://&lt;span style="color:#75715e">*:8080&lt;/span>
+&lt;span style="color:#ae81ff">ENV ASPNETCORE_URLS=https://*:8080&lt;/span>
 &lt;span style="color:#75715e"># Switch to root for changing dir ownership/permissions&lt;/span>
-USER &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;span style="color:#ae81ff">USER 0&lt;/span>
 &lt;span style="color:#75715e"># Copy the binaries&lt;/span>
-COPY /bin/release/netcoreapp1&lt;span style="color:#ae81ff">.1&lt;/span>/publish app
+&lt;span style="color:#ae81ff">COPY /bin/release/netcoreapp1.1/publish app&lt;/span>
 &lt;span style="color:#75715e"># Change to app directory&lt;/span>
-WORKDIR app
+&lt;span style="color:#ae81ff">WORKDIR app&lt;/span>
 &lt;span style="color:#75715e"># In order to drop the root user, we have to make some directories world&lt;/span>
 &lt;span style="color:#75715e"># writable as OpenShift default security model is to run the container under&lt;/span>
 &lt;span style="color:#75715e"># random UID.&lt;/span>
-RUN chown -R &lt;span style="color:#ae81ff">1001&lt;/span>:&lt;span style="color:#ae81ff">0&lt;/span> /app &lt;span style="color:#75715e">&amp;amp;&amp;amp;&lt;/span> chmod -R og+rwx /app
+&lt;span style="color:#ae81ff">RUN chown -R 1001:0 /app &amp;amp;&amp;amp; chmod -R og+rwx /app&lt;/span>
 &lt;span style="color:#75715e"># Expose port 8080 for the application.&lt;/span>
-EXPOSE &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;span style="color:#ae81ff">EXPOSE 8080&lt;/span>
 &lt;span style="color:#75715e"># Run container by default as user with id 1001 (default)&lt;/span>
-USER &lt;span style="color:#ae81ff">1001&lt;/span>
+&lt;span style="color:#ae81ff">USER 1001&lt;/span>
 &lt;span style="color:#75715e"># Start the application using dotnet!!!&lt;/span>
-ENTRYPOINT dotnet aspnet.on.openshift.dll
+&lt;span style="color:#ae81ff">ENTRYPOINT dotnet aspnet.on.openshift.dll&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-you-openshift-cluster">5. Create you OpenShift Cluster&lt;/h2>
 &lt;hr>
 &lt;p>Run the following command:&lt;/p>

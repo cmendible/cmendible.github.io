@@ -147,4 +147,10 @@ ready = run.Data.Attributes.Status == &lt;span style="color:#e6db74">&amp;#34;pl
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="6-check-the-results">6. Check the results&lt;/h2>
 &lt;hr>
 &lt;p>Log In to &lt;a href="https://app.terraform.io/">Terraform Cloud&lt;/a> and check the status of the new workspace.&lt;/p>
+&lt;p>Hope it Helps!&lt;/p>
+&lt;h2 id="learn-more">Learn More&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/developer/terraform/overview?WT.mc_id=AZ-MVP-5002618">Terraform with Azure Overview&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/developer/terraform?WT.mc_id=AZ-MVP-5002618">Terraform on Azure documentation&lt;/a>&lt;/li>
+&lt;/ul>
 &lt;p>Hope it helps! and please find the complete code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/terraform.cloud">here&lt;/a>&lt;/p></description></item></channel></rss>

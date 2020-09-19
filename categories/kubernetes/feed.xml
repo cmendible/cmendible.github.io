@@ -42,27 +42,27 @@ la solución para CI/CD de GitHub. No tardo en popularizarse entre los mejores d
 &lt;h2 id="deploy-an-application-to-your-kubernetes-cluster">Deploy an application to your Kubernetes cluster&lt;/h2>
 &lt;p>I&amp;rsquo;ll be using a simple Azure Function I created back in 2017 in the following post: &lt;strong>&lt;a href="https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/">Run a Precompiled .NET Core Azure Function in a Container&lt;/a>&lt;/strong> which exposes a simple validation function.&lt;/p>
 &lt;p>Create a &lt;em>function.yaml&lt;/em> file with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">namespace&lt;/span>: default
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#66d9ef">template&lt;/span>:
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">labels&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">annotations&lt;/span>:
-&lt;span style="color:#66d9ef">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dni&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">containers&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: dni-function
-&lt;span style="color:#66d9ef">image&lt;/span>: cmendibl3/dni:&lt;span style="color:#ae81ff">1.0.0&lt;/span>
-&lt;span style="color:#66d9ef">ports&lt;/span>:
-- &lt;span style="color:#66d9ef">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">apps/v1beta1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Deployment&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">namespace&lt;/span>: &lt;span style="color:#ae81ff">default&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#f92672">template&lt;/span>:
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">labels&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">annotations&lt;/span>:
+&lt;span style="color:#f92672">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dni&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">containers&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
+&lt;span style="color:#f92672">image&lt;/span>: &lt;span style="color:#ae81ff">cmendibl3/dni:1.0.0&lt;/span>
+&lt;span style="color:#f92672">ports&lt;/span>:
+- &lt;span style="color:#f92672">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Note the &lt;em>dapr.io&lt;/em> annotations used to instruct Dapr to inject the sidecar in your pod.&lt;/p>
 &lt;p>Now deploy the function into kubernetes:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f ./function.yaml
@@ -70,11 +70,11 @@ la solución para CI/CD de GitHub. No tardo en popularizarse entre los mejores d
 &lt;p>We are going to &amp;ldquo;Daprize&amp;rdquo; the NGINX Ingress Controller so traffic flows as shown in the following picture &lt;a href="#references">[1]&lt;/a>:&lt;/p>
 &lt;p>&lt;img src="https://carlos.mendible.com/assets/img/posts/dapr-nginx-ingress.png" alt="Daprized NGINX Ingress Controller">&lt;/p>
 &lt;p>In order to add the &lt;em>dapr.io&lt;/em> annotations to the NGINX pod, create a &lt;em>dapr-annotations.yaml&lt;/em> file with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">controller&lt;/span>:
-&lt;span style="color:#66d9ef">podAnnotations&lt;/span>:
-&lt;span style="color:#66d9ef">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;nginx-ingress&amp;#34;&lt;/span>
-&lt;span style="color:#66d9ef">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">controller&lt;/span>:
+&lt;span style="color:#f92672">podAnnotations&lt;/span>:
+&lt;span style="color:#f92672">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;nginx-ingress&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>and deploy the NGINX ingress controller:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 helm install nginx stable/nginx-ingress -f .&lt;span style="color:#ae81ff">\d&lt;/span>apr-annotations.yaml -n default
@@ -82,27 +82,27 @@ helm install nginx stable/nginx-ingress -f .&lt;span style="color:#ae81ff">\d&lt
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">openssl req -x509 -nodes -days &lt;span style="color:#ae81ff">365&lt;/span> -newkey rsa:2048 -keyout tls.key -out tls.crt -subj &lt;span style="color:#e6db74">&amp;#34;/CN=hydra/O=hydra&amp;#34;&lt;/span>
 kubectl create secret tls tls-secret --key tls.key --cert tls.cert
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create the ingress rule (&lt;em>ingress.yaml&lt;/em>* file) with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: extensions/v1beta1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Ingress
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: ingress-rules
-&lt;span style="color:#66d9ef">namespace&lt;/span>: default
-&lt;span style="color:#66d9ef">annotations&lt;/span>:
-&lt;span style="color:#66d9ef">kubernetes.io/ingress.class&lt;/span>: nginx
-&lt;span style="color:#66d9ef">nginx.ingress.kubernetes.io/rewrite-target&lt;/span>: /
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">tls&lt;/span>:
-- &lt;span style="color:#66d9ef">hosts&lt;/span>:
-- hydra
-&lt;span style="color:#66d9ef">secretName&lt;/span>: tls-secret
-&lt;span style="color:#66d9ef">rules&lt;/span>:
-- &lt;span style="color:#66d9ef">host&lt;/span>: hydra
-&lt;span style="color:#66d9ef">http&lt;/span>:
-&lt;span style="color:#66d9ef">paths&lt;/span>:
-- &lt;span style="color:#66d9ef">path&lt;/span>: /
-&lt;span style="color:#66d9ef">backend&lt;/span>:
-&lt;span style="color:#66d9ef">serviceName&lt;/span>: nginx-ingress-dapr
-&lt;span style="color:#66d9ef">servicePort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">extensions/v1beta1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Ingress&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">ingress-rules&lt;/span>
+&lt;span style="color:#f92672">namespace&lt;/span>: &lt;span style="color:#ae81ff">default&lt;/span>
+&lt;span style="color:#f92672">annotations&lt;/span>:
+&lt;span style="color:#f92672">kubernetes.io/ingress.class&lt;/span>: &lt;span style="color:#ae81ff">nginx&lt;/span>
+&lt;span style="color:#f92672">nginx.ingress.kubernetes.io/rewrite-target&lt;/span>: &lt;span style="color:#ae81ff">/&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">tls&lt;/span>:
+- &lt;span style="color:#f92672">hosts&lt;/span>:
+- &lt;span style="color:#ae81ff">hydra&lt;/span>
+&lt;span style="color:#f92672">secretName&lt;/span>: &lt;span style="color:#ae81ff">tls-secret&lt;/span>
+&lt;span style="color:#f92672">rules&lt;/span>:
+- &lt;span style="color:#f92672">host&lt;/span>: &lt;span style="color:#ae81ff">hydra&lt;/span>
+&lt;span style="color:#f92672">http&lt;/span>:
+&lt;span style="color:#f92672">paths&lt;/span>:
+- &lt;span style="color:#f92672">path&lt;/span>: &lt;span style="color:#ae81ff">/&lt;/span>
+&lt;span style="color:#f92672">backend&lt;/span>:
+&lt;span style="color:#f92672">serviceName&lt;/span>: &lt;span style="color:#ae81ff">nginx-ingress-dapr&lt;/span>
+&lt;span style="color:#f92672">servicePort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that the rule is calling the &lt;em>nginx-ingress-dapr&lt;/em> service which was created by Dapr when we deployed the Daprized version of the ingress controller. This means that all trafic with the &lt;em>hydra&lt;/em> host will be sent to the Dapr sidecar of your NGINX controller pod.&lt;/p>
 &lt;p>Deploy the ingress rule:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f ./ingress.yaml
@@ -115,6 +115,12 @@ kubectl create secret tls tls-secret --key tls.key --cert tls.cert
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">true
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p>
 &lt;p>Learn more about Dapr &lt;a href="https://github.com/dapr/docs/tree/master/">here&lt;/a> and Dapr service invocation &lt;a href="https://github.com/dapr/docs/tree/master/howto/invoke-and-discover-services">here&lt;/a>&lt;/p>
+&lt;h2 id="learn-more">Learn More&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://cloudblogs.microsoft.com/opensource/2020/04/29/distributed-application-runtime-dapr-growth-community-update?WT.mc_id=AZ-MVP-5002618">How Distributed Application Runtime (Dapr) has grown since its announcement&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://cloudblogs.microsoft.com/opensource/2020/07/01/announcing-azure-functions-extension-for-dapr?WT.mc_id=AZ-MVP-5002618">Announcing Azure Functions extension for Dapr
+&lt;/a>&lt;/li>
+&lt;/ul>
 &lt;h2 id="references">References&lt;/h2>
 &lt;p>[1] Image from the &lt;a href="https://github.com/dapr/docs/blob/master/presentations/Dapr%20Presentation%20Deck.pptx">Dapr Predentation deck&lt;/a>&lt;/p></description></item><item><title>Dapr: Run Microservices in Azure without SDKs or vendor lock-in</title><link>https://carlos.mendible.com/events/2020/04/04/netcoreconf-dapr/</link><pubDate>Sat, 04 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/04/netcoreconf-dapr/</guid><description>&lt;p>Let&amp;rsquo;s learn how to use Dapr to build resilient, stateless and stateful microservices solutions that run on the cloud and edge solving the challenges you´ll face if you try to remove your applications SDK dependencies, port your applications (without code modifications) between clouds and implement event-driven architectures.&lt;/p>
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">

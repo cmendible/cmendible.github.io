@@ -30,31 +30,31 @@ cd mongodb-enterprise-kubernetes
 &lt;h2 id="deploy-the-ops-manager">Deploy the Ops Manager&lt;/h2>
 &lt;p>Create &lt;strong>ops-manager.yaml&lt;/strong> with the following contents (Note that we are using 1 replica):&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: mongodb.com/v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: MongoDBOpsManager
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: ops-manager
-&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">mongodb.com/v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">MongoDBOpsManager&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">ops-manager&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
 &lt;span style="color:#75715e"># the number of Ops Manager instances to run. Set to value bigger&lt;/span>
 &lt;span style="color:#75715e"># than 1 to get high availability and upgrades without downtime&lt;/span>
-&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#f92672">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
 &lt;span style="color:#75715e"># the version of Ops Manager distro to use&lt;/span>
-&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.4&lt;/span>
+&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.4&lt;/span>
 &lt;span style="color:#75715e"># the name of the secret containing admin user credentials.&lt;/span>
 &lt;span style="color:#75715e"># Either remove the secret or change the password using Ops Manager UI after the Ops Manager&lt;/span>
 &lt;span style="color:#75715e"># resource is created!&lt;/span>
-&lt;span style="color:#66d9ef">adminCredentials&lt;/span>: ops-manager-admin-secret
+&lt;span style="color:#f92672">adminCredentials&lt;/span>: &lt;span style="color:#ae81ff">ops-manager-admin-secret&lt;/span>
 &lt;span style="color:#75715e"># the Ops Manager configuration. All the values must be of type string&lt;/span>
-&lt;span style="color:#66d9ef">configuration&lt;/span>:
-&lt;span style="color:#66d9ef">mms.fromEmailAddr&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;admin@thecompany.com&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">configuration&lt;/span>:
+&lt;span style="color:#f92672">mms.fromEmailAddr&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;admin@thecompany.com&amp;#34;&lt;/span>
 &lt;span style="color:#75715e"># the application database backing Ops Manager. Replica Set is the only supported type&lt;/span>
 &lt;span style="color:#75715e"># Application database has the SCRAM-SHA authentication mode always enabled&lt;/span>
-&lt;span style="color:#66d9ef">applicationDatabase&lt;/span>:
-&lt;span style="color:#66d9ef">members&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
-&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.0&lt;/span>
-&lt;span style="color:#66d9ef">persistent&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
-&lt;span style="color:#66d9ef">podSpec&lt;/span>:
-&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.25&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">applicationDatabase&lt;/span>:
+&lt;span style="color:#f92672">members&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
+&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.0&lt;/span>
+&lt;span style="color:#f92672">persistent&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#f92672">podSpec&lt;/span>:
+&lt;span style="color:#f92672">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.25&amp;#34;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the Ops Manager:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f .&lt;span style="color:#ae81ff">\o&lt;/span>ps-manager.yaml -n mongodb
 &lt;/code>&lt;/pre>&lt;/div>&lt;hr>
@@ -91,34 +91,34 @@ create secret generic my-credentials &lt;span style="color:#e6db74">`&lt;/span>
 &lt;h2 id="create-a-project">Create a project&lt;/h2>
 &lt;p>Create &lt;strong>project.yaml&lt;/strong> with the following contents and be sure to replace the &lt;strong>Organization Id&lt;/strong> you copied in previous steps:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: ConfigMap
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: mongodb-test
-&lt;span style="color:#66d9ef">data&lt;/span>:
-&lt;span style="color:#66d9ef">projectName&lt;/span>: mongodb-test
-&lt;span style="color:#66d9ef">baseUrl&lt;/span>: http://ops-manager-svc.mongodb.svc.cluster.local:&lt;span style="color:#ae81ff">8080&lt;/span>
-&lt;span style="color:#66d9ef">orgId&lt;/span>: &amp;lt;Organization Id&amp;gt;
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">ConfigMap&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">mongodb-test&lt;/span>
+&lt;span style="color:#f92672">data&lt;/span>:
+&lt;span style="color:#f92672">projectName&lt;/span>: &lt;span style="color:#ae81ff">mongodb-test&lt;/span>
+&lt;span style="color:#f92672">baseUrl&lt;/span>: &lt;span style="color:#ae81ff">http://ops-manager-svc.mongodb.svc.cluster.local:8080&lt;/span>
+&lt;span style="color:#f92672">orgId&lt;/span>: &lt;span style="color:#ae81ff">&amp;lt;Organization Id&amp;gt;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the project ConfigMap definition:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply .&lt;span style="color:#ae81ff">\p&lt;/span>roject.yaml -n mongodb
 &lt;/code>&lt;/pre>&lt;/div>&lt;hr>
 &lt;h2 id="create-a-standalone-mongodb-instance">Create a standalone MongoDB instance&lt;/h2>
 &lt;p>Create &lt;strong>standalone.yaml&lt;/strong> with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: mongodb.com/v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: MongoDB
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: my-standalone
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.1&lt;/span>
-&lt;span style="color:#66d9ef">type&lt;/span>: Standalone
-&lt;span style="color:#66d9ef">opsManager&lt;/span>:
-&lt;span style="color:#66d9ef">configMapRef&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: mongodb-test
-&lt;span style="color:#66d9ef">credentials&lt;/span>: my-credentials
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">mongodb.com/v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">MongoDB&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-standalone&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.1&lt;/span>
+&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">Standalone&lt;/span>
+&lt;span style="color:#f92672">opsManager&lt;/span>:
+&lt;span style="color:#f92672">configMapRef&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">mongodb-test&lt;/span>
+&lt;span style="color:#f92672">credentials&lt;/span>: &lt;span style="color:#ae81ff">my-credentials&lt;/span>
 &lt;span style="color:#75715e"># This flag allows the creation of pods without persistent volumes. This is for&lt;/span>
 &lt;span style="color:#75715e"># testing only, and must not be used in production. &amp;#39;false&amp;#39; will disable&lt;/span>
 &lt;span style="color:#75715e"># Persistent Volume Claims. The default is &amp;#39;true&amp;#39;&lt;/span>
-&lt;span style="color:#66d9ef">persistent&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+&lt;span style="color:#f92672">persistent&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the standalone MongoDB:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f .&lt;span style="color:#ae81ff">\s&lt;/span>tandalone.yaml -n mongodb
 &lt;/code>&lt;/pre>&lt;/div>&lt;hr>
@@ -170,23 +170,23 @@ create secret generic my-credentials &lt;span style="color:#e6db74">`&lt;/span>
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils dialog 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install vim, git, process tools, lsb-release&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> git &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install ruby&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> make &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> build-essential &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ruby &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ruby-dev &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install jekyll&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> gem install &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> bundler &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> jekyll &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Create a non-root user to use if preferred - see https://aka.ms/vscode-remote/containers/non-root-user.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> groupadd --gid $USER_GID $USERNAME &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME &lt;span style="color:#ae81ff">\
@@ -194,7 +194,7 @@ create secret generic my-credentials &lt;span style="color:#e6db74">`&lt;/span>
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y sudo &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo $USERNAME ALL&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">\(&lt;/span>root&lt;span style="color:#ae81ff">\)&lt;/span> NOPASSWD:ALL &amp;gt; /etc/sudoers.d/$USERNAME&lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> chmod &lt;span style="color:#ae81ff">0440&lt;/span> /etc/sudoers.d/$USERNAME &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
@@ -203,6 +203,7 @@ create secret generic my-credentials &lt;span style="color:#e6db74">`&lt;/span>
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about this Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-blockchainhttps://github.com/microsoft/vscode-dev-containers/tree/master/containers/jekyll">here&lt;/a>.&lt;/p>
+&lt;p>If you want to use Developer Conatianers with WSL 2 start &lt;a href="https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers?WT.mc_id=DOP-MVP-5002618">here&lt;/a>&lt;/p>
 &lt;p>Hope it helps!&lt;/p></description></item><item><title>TenerifeDev Christmas TechParty - Asistentes Virtuales</title><link>https://carlos.mendible.com/events/2019/12/26/tenerifedev-christmas-party-asistentes-virtuales/</link><pubDate>Thu, 26 Dec 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2019/12/26/tenerifedev-christmas-party-asistentes-virtuales/</guid><description>&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2019-12-tenerife-dev.jfif" alt="">&lt;/p></description></item><item><title>Interfaz Podcast Episodio 129 – En vivo desde Microsoft Ignite 2019 – Novedades en AKS y Contenedores con Carlos Mendible</title><link>https://carlos.mendible.com/events/2019/12/04/interfaz-podcast-episodio-129-en-vivo-desde-microsoft-ignite-2019-novedades-en-aks-y-contenedores-con-carlos-mendible/</link><pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2019/12/04/interfaz-podcast-episodio-129-en-vivo-desde-microsoft-ignite-2019-novedades-en-aks-y-contenedores-con-carlos-mendible/</guid><description>&lt;p>Check the podcast &lt;a href="https://rdiazconcha.com/2019/12/04/interfaz-podcast-episodio-129-en-vivo-desde-microsoft-ignite-2019-novedades-en-aks-y-contenedores-con-carlos-mendible/">here&lt;/a>&lt;/p></description></item><item><title>GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux</title><link>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</link><pubDate>Sun, 04 Aug 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</guid><description>&lt;p>Recently I learned about GitOps which is a way to manage your Kubernetes clusters and the applications you run on top using Git. The idea is that you can declaratively describe the desired state of your systems in Git and roll out changes as soon as merges occur.&lt;/p>
 &lt;p>You can immediately see the main benefits of such an approach: Your Git repositories become the single source of truth for both your infrastructure and application code, allowing the teams to increase productivity and stability (you get the Git log to audit changes).&lt;/p>
 &lt;p>To implement GitOps you can use and configure &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> following some simple steps:&lt;/p>

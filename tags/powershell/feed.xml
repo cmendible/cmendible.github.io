@@ -109,7 +109,7 @@ Set-AzureRmResource `
 &lt;li>AutomationCredentialName: The Automation credential holding username and password for Analysis Services&lt;/li>
 &lt;li>AnalysisServiceDatabase: The Analysis Service Database&lt;/li>
 &lt;li>AnalysisServiceServer: The Analysis Service Server (i.e. asazure://northeurope.asazure.windows.net/myanalysisservice)&lt;/li>
-&lt;li>ConnectionName: The name of your automation connection account. Defaults to ‘AzureRunAsConnection&amp;rsquo;&lt;/li>
+&lt;li>ConnectionName: The name of your automation connection account. Defaults to ‘AzureRunAsConnection'&lt;/li>
 &lt;/ul>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#75715e">&amp;lt;#
 &lt;/span>&lt;span style="color:#75715e"> &lt;/span>&lt;span style="color:#e6db74">.SYNOPSIS&lt;/span>&lt;span style="color:#75715e">
@@ -668,7 +668,7 @@ New-AzureRmVirtualNetwork -Name cloudNetwork -ResourceGroupName resourceGroup -L
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-add-your-local-network-gateway">4. Add your local network gateway&lt;/h2>
 &lt;hr>
 &lt;p>Here you must specify the IP address of your on-premises VPN device (i.e 95.122.110.101) which cannot be located behind a NAT.&lt;/p>
-&lt;p>You must also specify your on-premises address space that you want to reach from the cloud. In this sample we will reach anything in the following ranges: 10.2.0.0/21 and ‘192.168.106.0/24&amp;rsquo;&lt;/p>
+&lt;p>You must also specify your on-premises address space that you want to reach from the cloud. In this sample we will reach anything in the following ranges: 10.2.0.0/21 and ‘192.168.106.0/24'&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">New-AzureRmLocalNetworkGateway -Name LocalSite -ResourceGroupName resourceGroup -Location &lt;span style="color:#e6db74">&amp;#39;West Europe&amp;#39;&lt;/span> -GatewayIpAddress &lt;span style="color:#e6db74">&amp;#39;95.122.110.101&amp;#39;&lt;/span> -AddressPrefixÂ  @(&lt;span style="color:#e6db74">&amp;#39;10.2.0.0/21&amp;#39;&lt;/span>,&lt;span style="color:#e6db74">&amp;#39;192.168.106.0/24&amp;#39;&lt;/span>)
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-request-a-public-ip-address-for-the-vpn-gateway">5. Request a public IP address for the VPN gateway&lt;/h2>
 &lt;hr>

@@ -89,7 +89,9 @@ ILogger&amp;lt;HomeController&amp;gt; logger;
 }
 }
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Download the complete code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.serilog.sample2.2">here&lt;/a>&lt;/p>
-&lt;p>Hope it helps!&lt;/p></description></item><item><title>Start with Elasticssearch, Kibana and ASP.NET Core</title><link>https://carlos.mendible.com/2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/</link><pubDate>Tue, 30 May 2017 11:58:00 +0000</pubDate><guid>https://carlos.mendible.com/2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/</guid><description>&lt;p>You want to &lt;strong>Start with &lt;!-- raw HTML omitted -->Elasticssearch&lt;!-- raw HTML omitted -->, &lt;!-- raw HTML omitted -->Kibana&lt;!-- raw HTML omitted --> and ASP.NET Core&lt;/strong> and also want to do it fast? Let&amp;rsquo;s use Docker and find out how easy it can be:&lt;/p>
+&lt;p>Hope it helps!&lt;/p>
+&lt;h1 id="learn-more">Learn More&lt;/h1>
+&lt;p>&lt;a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1?WT.mc_id=DOP-MVP-5002618">Fundamentals: Logging in .NET Core and ASP.NET Core&lt;/a>&lt;/p></description></item><item><title>Start with Elasticssearch, Kibana and ASP.NET Core</title><link>https://carlos.mendible.com/2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/</link><pubDate>Tue, 30 May 2017 11:58:00 +0000</pubDate><guid>https://carlos.mendible.com/2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/</guid><description>&lt;p>You want to &lt;strong>Start with &lt;!-- raw HTML omitted -->Elasticssearch&lt;!-- raw HTML omitted -->, &lt;!-- raw HTML omitted -->Kibana&lt;!-- raw HTML omitted --> and ASP.NET Core&lt;/strong> and also want to do it fast? Let&amp;rsquo;s use Docker and find out how easy it can be:&lt;/p>
 &lt;h2 id="1-create-a-folder-for-your-new-project">1. Create a folder for your new project&lt;/h2>
 &lt;hr>
 &lt;p>Open a command prompt an run&lt;/p>

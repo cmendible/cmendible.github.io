@@ -41,23 +41,23 @@
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils dialog 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install vim, git, process tools, lsb-release&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> git &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install ruby&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> make &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> build-essential &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ruby &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> ruby-dev &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install jekyll&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> gem install &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> bundler &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> jekyll &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Create a non-root user to use if preferred - see https://aka.ms/vscode-remote/containers/non-root-user.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> groupadd --gid $USER_GID $USERNAME &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME &lt;span style="color:#ae81ff">\
@@ -65,7 +65,7 @@
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y sudo &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo $USERNAME ALL&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">\(&lt;/span>root&lt;span style="color:#ae81ff">\)&lt;/span> NOPASSWD:ALL &amp;gt; /etc/sudoers.d/$USERNAME&lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> chmod &lt;span style="color:#ae81ff">0440&lt;/span> /etc/sudoers.d/$USERNAME &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
@@ -74,6 +74,7 @@
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about this Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-blockchainhttps://github.com/microsoft/vscode-dev-containers/tree/master/containers/jekyll">here&lt;/a>.&lt;/p>
+&lt;p>If you want to use Developer Conatianers with WSL 2 start &lt;a href="https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers?WT.mc_id=DOP-MVP-5002618">here&lt;/a>&lt;/p>
 &lt;p>Hope it helps!&lt;/p></description></item><item><title>Visual Studio Code Remote Containers: Azure Blockchain</title><link>https://carlos.mendible.com/2019/07/06/vs-code-remote-containers-azure-blockchain/</link><pubDate>Sat, 06 Jul 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/07/06/vs-code-remote-containers-azure-blockchain/</guid><description>&lt;p>After collaborating with the &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-ansible">Azure Ansible&lt;/a> container I decided to also develop a Developer Container for those who want or need to use the &lt;a href="https://marketplace.visualstudio.com/items?itemName=AzBlockchain.azure-blockchain">Azure Blockchain Development Kit for Ethereum&lt;/a> to create smart contracts, taking away the burden of installing Python, Truffle, Ganache and NodeJS on your machine.&lt;/p>
 &lt;p>Once again I collaborated with &lt;a href="http://chuxel.github.io/">Chuck Lantz&lt;/a> and the container definition resulted in the following two files:&lt;/p>
 &lt;h2 id="1-devcontainerjson-file">1. devcontainer.json file&lt;/h2>
@@ -110,27 +111,27 @@
 &lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Verify git, process tools installed&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install git procps &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install nodejs&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -sL https://deb.nodesource.com/setup_10.x | bash - &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y nodejs &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Truffle Suite&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> npm i --unsafe-perm -g truffle &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Ganache CLI&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> npm install -g ganache-cli &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> # &lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e"># &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install the Azure CLI&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y apt-transport-https curl gnupg2 lsb-release &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -cs&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> main&amp;#34;&lt;/span> &amp;gt; /etc/apt/sources.list.d/azure-cli.list &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - 2&amp;gt;/dev/null &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y azure-cli &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
@@ -139,6 +140,7 @@
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about this Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-blockchain">here&lt;/a>.&lt;/p>
+&lt;p>If you want to use Developer Conatianers with WSL 2 start &lt;a href="https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers?WT.mc_id=DOP-MVP-5002618">here&lt;/a>.&lt;/p>
 &lt;p>Hope it helps!&lt;/p></description></item><item><title>Visual Studio Code Remote Containers: Azure Ansible</title><link>https://carlos.mendible.com/2019/07/05/vs-code-remote-containers-azure-ansible/</link><pubDate>Fri, 05 Jul 2019 23:30:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/07/05/vs-code-remote-containers-azure-ansible/</guid><description>&lt;p>Last year I was working on a project for deploying Azure services using Ansible, and let me tell you something: Back then a feature like &lt;a href="https://github.com/microsoft/vscode-dev-containers">Visual Studio Remote Containers&lt;/a> would have helped us so much!&lt;/p>
 &lt;p>Why? Because just installing &lt;a href="https://code.visualstudio.com/">Visual Studio Code&lt;/a>, the &lt;a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack">Remote Development Extension Pack&lt;/a>, and &lt;a href="https://www.docker.com/products/docker-desktop">Docker&lt;/a> you have a killer combo that makes it possible to create a Development environment in a snap and share it with your source code.&lt;/p>
 &lt;p>When I learned about this feature I tought I should create a Developer Container for those who need to work with Azure and Ansible so I went hands on and after collaborating with &lt;a href="http://chuxel.github.io/">Chuck Lantz&lt;/a> the container definition resulted in the following two files:&lt;/p>
@@ -181,7 +183,7 @@
 &lt;span style="color:#75715e"># Configure apt and install packages&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">RUN&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get -y install --no-install-recommends apt-utils 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Verify git, required tools installed&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> git &lt;span style="color:#ae81ff">\
@@ -193,32 +195,32 @@
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> gnupg-agent &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> software-properties-common &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> lsb-release 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
-&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] Install Node.js for Azure Cloud Shell support&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] Install Node.js for Azure Cloud Shell support &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Change the &amp;#34;lts/*&amp;#34; in the two lines below to pick a different version&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -so- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> /bin/bash -c &lt;span style="color:#e6db74">&amp;#34;source &lt;/span>$HOME&lt;span style="color:#e6db74">/.nvm/nvm.sh \
 &lt;/span>&lt;span style="color:#e6db74"> &amp;amp;&amp;amp; nvm install lts/* \
 &lt;/span>&lt;span style="color:#e6db74"> &amp;amp;&amp;amp; nvm alias default lts/*&amp;#34;&lt;/span> 2&amp;gt;&amp;amp;&lt;span style="color:#ae81ff">1&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] For local testing instead of cloud shell&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Docker CE CLI.&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -fsSL https://download.docker.com/linux/&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -is | tr &lt;span style="color:#e6db74">&amp;#39;[:upper:]&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;[:lower:]&amp;#39;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>/gpg | apt-key add - 2&amp;gt;/dev/null &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> add-apt-repository &lt;span style="color:#e6db74">&amp;#34;deb [arch=amd64] https://download.docker.com/linux/&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -is | tr &lt;span style="color:#e6db74">&amp;#39;[:upper:]&amp;#39;&lt;/span> &lt;span style="color:#e6db74">&amp;#39;[:lower:]&amp;#39;&lt;/span>&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -cs&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> stable&amp;#34;&lt;/span> &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y docker-ce-cli &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># [Optional] For local testing instead of cloud shell&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install the Azure CLI&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> echo &lt;span style="color:#e6db74">&amp;#34;deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ &lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>lsb_release -cs&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74"> main&amp;#34;&lt;/span> &amp;gt; /etc/apt/sources.list.d/azure-cli.list &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - 2&amp;gt;/dev/null &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y azure-cli &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Install Ansible&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get install -y libssl-dev libffi-dev python-dev python-pip &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> pip install ansible&lt;span style="color:#f92672">[&lt;/span>azure&lt;span style="color:#f92672">]&lt;/span> &lt;span style="color:#ae81ff">\
-&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> #&lt;span style="color:#960050;background-color:#1e0010">
+&lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#75715e">#&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#75715e"># Clean up&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get autoremove -y &lt;span style="color:#ae81ff">\
 &lt;/span>&lt;span style="color:#ae81ff">&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get clean -y &lt;span style="color:#ae81ff">\
@@ -227,6 +229,7 @@
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#75715e"># Switch back to dialog for any ad-hoc use of apt-get&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about the Azure Ansible Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-ansible">here&lt;/a>.&lt;/p>
+&lt;p>If you want to use Developer Conatianers with WSL 2 start &lt;a href="https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers?WT.mc_id=DOP-MVP-5002618">here&lt;/a>&lt;/p>
 &lt;p>Hope it helps!&lt;/p></description></item><item><title>Revisiting Docker Multi Stage Builds to build an ASP.NET Core Echo Server</title><link>https://carlos.mendible.com/2018/09/25/revisiting-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</link><pubDate>Tue, 25 Sep 2018 20:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2018/09/25/revisiting-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server/</guid><description>&lt;p>On April I wrote a post about &lt;a href="https://carlos.mendible.com/2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-server">Using Docker Multi Stage Builds to build an ASP.NET Core Echo Server&lt;/a> and these days while preparing a talk, on CI/CD and kubernetes, I started to play with the &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/echoserver">simple sample&lt;/a> I wrote back then.&lt;/p>
 &lt;p>Soon enough I noticed that with each &lt;code>docker build&lt;/code> command I issued the dependencies for the echoserver were always restored, even if no changes were made to the project file (csproj).&lt;/p>
 &lt;p>Let see what was going on:&lt;/p>
@@ -694,35 +697,35 @@ kubectl get nodes
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl describe secret
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="9-create-a-kubernetes-deploymenthttpskubernetesiodocsconceptsworkloadscontrollersdeployment-definition">9. Create a kubernetes &lt;a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">deployment&lt;/a> definition.&lt;/h2>
 &lt;p>Create a file &lt;strong>[your deployment].yml&lt;/strong> with the following contents (replace the secret name):&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: apps/v1beta1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Deployment
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: my-api
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#66d9ef">template&lt;/span>:
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">labels&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: my-api
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">containers&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: my-api
-&lt;span style="color:#66d9ef">image&lt;/span>: myregistry.azurecr.io/hello-core:&lt;span style="color:#ae81ff">1.0&lt;/span>
-&lt;span style="color:#66d9ef">ports&lt;/span>:
-- &lt;span style="color:#66d9ef">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
-&lt;span style="color:#66d9ef">imagePullSecrets&lt;/span>:
-- &lt;span style="color:#66d9ef">name&lt;/span>: [SECRET NAME]
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">apps/v1beta1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Deployment&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-api&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#f92672">template&lt;/span>:
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">labels&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">my-api&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">containers&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-api&lt;/span>
+&lt;span style="color:#f92672">image&lt;/span>: &lt;span style="color:#ae81ff">myregistry.azurecr.io/hello-core:1.0&lt;/span>
+&lt;span style="color:#f92672">ports&lt;/span>:
+- &lt;span style="color:#f92672">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#f92672">imagePullSecrets&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: [&lt;span style="color:#ae81ff">SECRET NAME]&lt;/span>
 ---
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: Service
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: my-api
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">type&lt;/span>: LoadBalancer
-&lt;span style="color:#66d9ef">ports&lt;/span>:
-- &lt;span style="color:#66d9ef">port&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
-&lt;span style="color:#66d9ef">selector&lt;/span>:
-&lt;span style="color:#66d9ef">app&lt;/span>: my-api
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Service&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-api&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">LoadBalancer&lt;/span>
+&lt;span style="color:#f92672">ports&lt;/span>:
+- &lt;span style="color:#f92672">port&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
+&lt;span style="color:#f92672">selector&lt;/span>:
+&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">my-api&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see the file references the image pushed to the Container Service with the secret created in previous steps.&lt;/p>
 &lt;h2 id="10-deploy-your-service">10. Deploy your service.&lt;/h2>
 &lt;p>Run the following comnmand to deploy your service to AKS:&lt;/p>
@@ -738,7 +741,7 @@ kubectl get nodes
 &lt;p>To add an autoscale rule to your service, run the following command:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl autoscale deployment my-api --min=2 --max=5 --cpu-percent=80
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p></description></item><item><title>Prepare a .Net Core Console App for Docker</title><link>https://carlos.mendible.com/2017/10/15/prepare-a-net-core-console-app-for-docker/</link><pubDate>Sun, 15 Oct 2017 12:16:08 +0000</pubDate><guid>https://carlos.mendible.com/2017/10/15/prepare-a-net-core-console-app-for-docker/</guid><description>&lt;p>Last week I had the luck to attend the &lt;!-- raw HTML omitted -->Microsoft Azure OpenHack in Amsterdam&lt;!-- raw HTML omitted -->. We spent two and a half days learning a lot about kubernetes, Azure Container Services, Azure Container Registry, Azure OMS and Minecraft!&lt;/p>
-&lt;p>In one of the challenges we decided to implement a &lt;!-- raw HTML omitted -->sidecar container&lt;!-- raw HTML omitted --> for logging purposes. So using .NET Core we created a console application with proper handling of the&amp;quot;Control+C&amp;rdquo; and&amp;quot;Control+Break&amp;rdquo; key shortcuts.&lt;/p>
+&lt;p>In one of the challenges we decided to implement a &lt;!-- raw HTML omitted -->sidecar container&lt;!-- raw HTML omitted --> for logging purposes. So using .NET Core we created a console application with proper handling of the&amp;quot;Control+C&amp;quot; and&amp;quot;Control+Break&amp;quot; key shortcuts.&lt;/p>
 &lt;p>The following code shows you the structure of the console app we created and will help you &lt;strong>Prepare a .Net Core Console App for Docker&lt;/strong>&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
 &lt;span style="color:#66d9ef">using&lt;/span> System.Threading;
@@ -806,25 +809,25 @@ dotnet publish -c release
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-create-a-dockerfile">4. Create a Dockerfile&lt;/h2>
 &lt;hr>
 &lt;p>Create a Dockerfile (be aware of the capital D) with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">FROM microsoft/dotnet
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yml" data-lang="yml">&lt;span style="color:#ae81ff">FROM microsoft/dotnet &lt;/span>
 &lt;span style="color:#75715e"># Set ASPNETCORE_URLS&lt;/span>
-ENV ASPNETCORE_URLS=https://&lt;span style="color:#75715e">*:8080&lt;/span>
+&lt;span style="color:#ae81ff">ENV ASPNETCORE_URLS=https://*:8080&lt;/span>
 &lt;span style="color:#75715e"># Switch to root for changing dir ownership/permissions&lt;/span>
-USER &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;span style="color:#ae81ff">USER 0&lt;/span>
 &lt;span style="color:#75715e"># Copy the binaries&lt;/span>
-COPY /bin/release/netcoreapp1&lt;span style="color:#ae81ff">.1&lt;/span>/publish app
+&lt;span style="color:#ae81ff">COPY /bin/release/netcoreapp1.1/publish app&lt;/span>
 &lt;span style="color:#75715e"># Change to app directory&lt;/span>
-WORKDIR app
+&lt;span style="color:#ae81ff">WORKDIR app&lt;/span>
 &lt;span style="color:#75715e"># In order to drop the root user, we have to make some directories world&lt;/span>
 &lt;span style="color:#75715e"># writable as OpenShift default security model is to run the container under&lt;/span>
 &lt;span style="color:#75715e"># random UID.&lt;/span>
-RUN chown -R &lt;span style="color:#ae81ff">1001&lt;/span>:&lt;span style="color:#ae81ff">0&lt;/span> /app &lt;span style="color:#75715e">&amp;amp;&amp;amp;&lt;/span> chmod -R og+rwx /app
+&lt;span style="color:#ae81ff">RUN chown -R 1001:0 /app &amp;amp;&amp;amp; chmod -R og+rwx /app&lt;/span>
 &lt;span style="color:#75715e"># Expose port 8080 for the application.&lt;/span>
-EXPOSE &lt;span style="color:#ae81ff">8080&lt;/span>
+&lt;span style="color:#ae81ff">EXPOSE 8080&lt;/span>
 &lt;span style="color:#75715e"># Run container by default as user with id 1001 (default)&lt;/span>
-USER &lt;span style="color:#ae81ff">1001&lt;/span>
+&lt;span style="color:#ae81ff">USER 1001&lt;/span>
 &lt;span style="color:#75715e"># Start the application using dotnet!!!&lt;/span>
-ENTRYPOINT dotnet aspnet.on.openshift.dll
+&lt;span style="color:#ae81ff">ENTRYPOINT dotnet aspnet.on.openshift.dll&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="5-create-you-openshift-cluster">5. Create you OpenShift Cluster&lt;/h2>
 &lt;hr>
 &lt;p>Run the following command:&lt;/p>

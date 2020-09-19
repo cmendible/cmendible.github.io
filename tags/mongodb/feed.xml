@@ -26,31 +26,31 @@ cd mongodb-enterprise-kubernetes
 &lt;h2 id="deploy-the-ops-manager">Deploy the Ops Manager&lt;/h2>
 &lt;p>Create &lt;strong>ops-manager.yaml&lt;/strong> with the following contents (Note that we are using 1 replica):&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: mongodb.com/v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: MongoDBOpsManager
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: ops-manager
-&lt;span style="color:#66d9ef">spec&lt;/span>:
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">mongodb.com/v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">MongoDBOpsManager&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">ops-manager&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
 &lt;span style="color:#75715e"># the number of Ops Manager instances to run. Set to value bigger&lt;/span>
 &lt;span style="color:#75715e"># than 1 to get high availability and upgrades without downtime&lt;/span>
-&lt;span style="color:#66d9ef">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;span style="color:#f92672">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
 &lt;span style="color:#75715e"># the version of Ops Manager distro to use&lt;/span>
-&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.4&lt;/span>
+&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.4&lt;/span>
 &lt;span style="color:#75715e"># the name of the secret containing admin user credentials.&lt;/span>
 &lt;span style="color:#75715e"># Either remove the secret or change the password using Ops Manager UI after the Ops Manager&lt;/span>
 &lt;span style="color:#75715e"># resource is created!&lt;/span>
-&lt;span style="color:#66d9ef">adminCredentials&lt;/span>: ops-manager-admin-secret
+&lt;span style="color:#f92672">adminCredentials&lt;/span>: &lt;span style="color:#ae81ff">ops-manager-admin-secret&lt;/span>
 &lt;span style="color:#75715e"># the Ops Manager configuration. All the values must be of type string&lt;/span>
-&lt;span style="color:#66d9ef">configuration&lt;/span>:
-&lt;span style="color:#66d9ef">mms.fromEmailAddr&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;admin@thecompany.com&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">configuration&lt;/span>:
+&lt;span style="color:#f92672">mms.fromEmailAddr&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;admin@thecompany.com&amp;#34;&lt;/span>
 &lt;span style="color:#75715e"># the application database backing Ops Manager. Replica Set is the only supported type&lt;/span>
 &lt;span style="color:#75715e"># Application database has the SCRAM-SHA authentication mode always enabled&lt;/span>
-&lt;span style="color:#66d9ef">applicationDatabase&lt;/span>:
-&lt;span style="color:#66d9ef">members&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
-&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.0&lt;/span>
-&lt;span style="color:#66d9ef">persistent&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
-&lt;span style="color:#66d9ef">podSpec&lt;/span>:
-&lt;span style="color:#66d9ef">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.25&amp;#34;&lt;/span>
+&lt;span style="color:#f92672">applicationDatabase&lt;/span>:
+&lt;span style="color:#f92672">members&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
+&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.0&lt;/span>
+&lt;span style="color:#f92672">persistent&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#f92672">podSpec&lt;/span>:
+&lt;span style="color:#f92672">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.25&amp;#34;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the Ops Manager:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f .&lt;span style="color:#ae81ff">\o&lt;/span>ps-manager.yaml -n mongodb
 &lt;/code>&lt;/pre>&lt;/div>&lt;hr>
@@ -87,34 +87,34 @@ create secret generic my-credentials &lt;span style="color:#e6db74">`&lt;/span>
 &lt;h2 id="create-a-project">Create a project&lt;/h2>
 &lt;p>Create &lt;strong>project.yaml&lt;/strong> with the following contents and be sure to replace the &lt;strong>Organization Id&lt;/strong> you copied in previous steps:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
-&lt;span style="color:#66d9ef">apiVersion&lt;/span>: v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: ConfigMap
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: mongodb-test
-&lt;span style="color:#66d9ef">data&lt;/span>:
-&lt;span style="color:#66d9ef">projectName&lt;/span>: mongodb-test
-&lt;span style="color:#66d9ef">baseUrl&lt;/span>: http://ops-manager-svc.mongodb.svc.cluster.local:&lt;span style="color:#ae81ff">8080&lt;/span>
-&lt;span style="color:#66d9ef">orgId&lt;/span>: &amp;lt;Organization Id&amp;gt;
+&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">ConfigMap&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">mongodb-test&lt;/span>
+&lt;span style="color:#f92672">data&lt;/span>:
+&lt;span style="color:#f92672">projectName&lt;/span>: &lt;span style="color:#ae81ff">mongodb-test&lt;/span>
+&lt;span style="color:#f92672">baseUrl&lt;/span>: &lt;span style="color:#ae81ff">http://ops-manager-svc.mongodb.svc.cluster.local:8080&lt;/span>
+&lt;span style="color:#f92672">orgId&lt;/span>: &lt;span style="color:#ae81ff">&amp;lt;Organization Id&amp;gt;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the project ConfigMap definition:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply .&lt;span style="color:#ae81ff">\p&lt;/span>roject.yaml -n mongodb
 &lt;/code>&lt;/pre>&lt;/div>&lt;hr>
 &lt;h2 id="create-a-standalone-mongodb-instance">Create a standalone MongoDB instance&lt;/h2>
 &lt;p>Create &lt;strong>standalone.yaml&lt;/strong> with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#66d9ef">apiVersion&lt;/span>: mongodb.com/v1
-&lt;span style="color:#66d9ef">kind&lt;/span>: MongoDB
-&lt;span style="color:#66d9ef">metadata&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: my-standalone
-&lt;span style="color:#66d9ef">spec&lt;/span>:
-&lt;span style="color:#66d9ef">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.1&lt;/span>
-&lt;span style="color:#66d9ef">type&lt;/span>: Standalone
-&lt;span style="color:#66d9ef">opsManager&lt;/span>:
-&lt;span style="color:#66d9ef">configMapRef&lt;/span>:
-&lt;span style="color:#66d9ef">name&lt;/span>: mongodb-test
-&lt;span style="color:#66d9ef">credentials&lt;/span>: my-credentials
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">mongodb.com/v1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">MongoDB&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-standalone&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.1&lt;/span>
+&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">Standalone&lt;/span>
+&lt;span style="color:#f92672">opsManager&lt;/span>:
+&lt;span style="color:#f92672">configMapRef&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">mongodb-test&lt;/span>
+&lt;span style="color:#f92672">credentials&lt;/span>: &lt;span style="color:#ae81ff">my-credentials&lt;/span>
 &lt;span style="color:#75715e"># This flag allows the creation of pods without persistent volumes. This is for&lt;/span>
 &lt;span style="color:#75715e"># testing only, and must not be used in production. &amp;#39;false&amp;#39; will disable&lt;/span>
 &lt;span style="color:#75715e"># Persistent Volume Claims. The default is &amp;#39;true&amp;#39;&lt;/span>
-&lt;span style="color:#66d9ef">persistent&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
+&lt;span style="color:#f92672">persistent&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the standalone MongoDB:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f .&lt;span style="color:#ae81ff">\s&lt;/span>tandalone.yaml -n mongodb
 &lt;/code>&lt;/pre>&lt;/div>&lt;hr>
