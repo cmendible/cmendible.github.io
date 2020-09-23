@@ -144,6 +144,11 @@ Hope it helps!
 
 Learn more about Dapr [here](https://github.com/dapr/docs/tree/master/) and Dapr service invocation [here](https://github.com/dapr/docs/tree/master/howto/invoke-and-discover-services)
 
+## Learn More
+
+* [How Distributed Application Runtime (Dapr) has grown since its announcement](https://cloudblogs.microsoft.com/opensource/2020/04/29/distributed-application-runtime-dapr-growth-community-update?WT.mc_id=AZ-MVP-5002618)
+* [Announcing Azure Functions extension for Dapr
+](https://cloudblogs.microsoft.com/opensource/2020/07/01/announcing-azure-functions-extension-for-dapr?WT.mc_id=AZ-MVP-5002618)
 
 ## References
 

@@ -11,7 +11,7 @@ tags: ["terraform"]
 title: 'Managing Terraform Cloud with .NET Core'
 ---
 
-Today I'm going to show you how to mange [Terraform Cloud](https://app.terraform.io/) with .NET Core using the [Tfe.NetClient](https://github.com/everis-technology/Tfe.NetClient) library.
+Today I'm going to show you how to manage [Terraform Cloud](https://app.terraform.io/) with .NET Core using the [Tfe.NetClient](https://github.com/everis-technology/Tfe.NetClient) library.
 
 The idea is to create a simple console application that will:
 
@@ -193,5 +193,12 @@ dotnet run
 ---
 
 Log In to [Terraform Cloud](https://app.terraform.io/) and check the status of the new workspace.
+
+Hope it Helps!
+
+## Learn More
+
+* [Terraform with Azure Overview](https://docs.microsoft.com/en-us/azure/developer/terraform/overview?WT.mc_id=AZ-MVP-5002618)
+* [Terraform on Azure documentation](https://docs.microsoft.com/en-us/azure/developer/terraform?WT.mc_id=AZ-MVP-5002618)
 
 Hope it helps! and please find the complete code [here](https://github.com/cmendible/dotnetcore.samples/tree/main/terraform.cloud)

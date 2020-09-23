@@ -120,4 +120,6 @@ ENV DEBIAN_FRONTEND=dialog
 
 To learn more about the Azure Ansible Remote Container please check [here](https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-ansible).
 
+If you want to use Developer Conatianers with WSL 2 start [here](https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers?WT.mc_id=DOP-MVP-5002618)
+
 Hope it helps!

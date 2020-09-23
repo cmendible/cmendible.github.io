@@ -368,6 +368,6 @@ terraform apply -var="sa_firewall_enabled=true"
 
 ## References
 
-* [1] [Use private endpoints for Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
-* [2] Integrate your app with an Azure virtual network: [Regional VNET Integration](https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#regional-vnet-integration)
-* [3] Integrate your app with an Azure virtual network: [Troubleshooting](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints)
+* [1] [Use private endpoints for Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints?WT.mc_id=AZ-MVP-5002618)
+* [2] Integrate your app with an Azure virtual network: [Regional VNET Integration](https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#regional-vnet-integration?WT.mc_id=AZ-MVP-5002618)
+* [3] Integrate your app with an Azure virtual network: [Troubleshooting](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints?WT.mc_id=AZ-MVP-5002618)

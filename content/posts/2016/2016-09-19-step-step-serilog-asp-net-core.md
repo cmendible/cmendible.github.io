@@ -73,4 +73,8 @@ This time I decided to give a chance to <a href="https://serilog.net/" target="_
     }
 ```
 
+# Learn More
+
+[Fundamentals: Logging in .NET Core and ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1?WT.mc_id=DOP-MVP-5002618)
+
 Hope it helps!
