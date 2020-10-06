@@ -1,4 +1,20 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>kubernetes on Code it Yourself...</title><link>https://carlos.mendible.com/categories/kubernetes/</link><description>Recent content in kubernetes on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 30 Jul 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/kubernetes/feed.xml" rel="self" type="application/rss+xml"/><item><title>Azure Summer Talks Community</title><link>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</link><pubDate>Thu, 30 Jul 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</guid><description>&lt;p>Como cada año &lt;a href="https://www.meetup.com/es-ES/CATzure">CATzure&lt;/a> organiza una mesa redonda con los mejores expertos de Azure de España para conversar sobre el cloud, desarrollo y todo aquello que os aptezca.&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>kubernetes on Code it Yourself...</title><link>https://carlos.mendible.com/categories/kubernetes/</link><description>Recent content in kubernetes on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 03 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/kubernetes/feed.xml" rel="self" type="application/rss+xml"/><item><title>Infrastructure as Code War</title><link>https://carlos.mendible.com/events/2020/20/03/infrastructure-as-code-war/</link><pubDate>Sat, 03 Oct 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/20/03/infrastructure-as-code-war/</guid><description>&lt;p>Let&amp;rsquo;s see how Azure ARM, Terraform, Azure Service Operator for Kubernetes and other solutions compare to each other so you can choose the right weapon to win the Infrastructure as Code War!&lt;/p>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/vF6nlrILXZ8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>Microsoft Ignite 2020. ¿Qué hay de nuevo?</title><link>https://carlos.mendible.com/events/2020/09/29/microsoft-ignite-2020-que-hay-de-nuevo/</link><pubDate>Tue, 29 Sep 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/09/29/microsoft-ignite-2020-que-hay-de-nuevo/</guid><description>&lt;p>¿habéis visto todas las novedades del Ignite? Bueno, si no es así, estamos de enhorabuena porque nos hemos liado a la manta para contaros las novedades con el siguiente equipo:&lt;/p>
+&lt;ul>
+&lt;li>Carlos Mendible&lt;/li>
+&lt;li>Josue Yeray Julián&lt;/li>
+&lt;li>Santiago Porras&lt;/li>
+&lt;li>David Vidal&lt;/li>
+&lt;li>Sergio Parra&lt;/li>
+&lt;li>Sergio Hernández&lt;/li>
+&lt;li>Alberto Diaz&lt;/li>
+&lt;li>Victor Estival&lt;/li>
+&lt;/ul>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/PjMlTNrl84c" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>Azure Summer Talks Community</title><link>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</link><pubDate>Thu, 30 Jul 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</guid><description>&lt;p>Como cada año &lt;a href="https://www.meetup.com/es-ES/CATzure">CATzure&lt;/a> organiza una mesa redonda con los mejores expertos de Azure de España para conversar sobre el cloud, desarrollo y todo aquello que os aptezca.&lt;/p>
 &lt;p>Esta mesa redonda estuvo compuesta por:&lt;/p>
 &lt;ul>
 &lt;li>&lt;a href="https://twitter.com/Carlos_Lande">Carlos Lande&lt;/a>&lt;/li>
@@ -34,95 +50,4 @@ la solución para CI/CD de GitHub. No tardo en popularizarse entre los mejores d
 &lt;p>Discover Managed Identities, a feature that let&amp;rsquo;s you authenticate to any service that supports Azure AD authentication, including Azure Key Vault, without any credentials in your .NET, Java or Golang code or configuration!!!&lt;/p>
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
 &lt;iframe src="https://www.youtube.com/embed/ygM8xRcWSZY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>Interfaz Podcast Episodio 139 – Conociendo Dapr con Carlos Mendible</title><link>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</link><pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</guid><description>&lt;p>Check the podcast &lt;a href="https://rdiazconcha.com/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/">here&lt;/a>&lt;/p></description></item><item><title>Kubernetes NGINX ingress controller with Dapr</title><link>https://carlos.mendible.com/2020/04/05/kubernetes-nginx-ingress-controller-with-dapr/</link><pubDate>Sun, 05 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/04/05/kubernetes-nginx-ingress-controller-with-dapr/</guid><description>&lt;p>In this post I&amp;rsquo;ll show you how to expose your &amp;ldquo;Daprized&amp;rdquo; applications using and NGINX ingress controller.&lt;/p>
-&lt;h2 id="prerequistes">Prerequistes&lt;/h2>
-&lt;ul>
-&lt;li>A working &lt;a href="https://kubernetes.io/">kubernetes&lt;/a> cluster with Dapr installed. If you need instructions please find them &lt;a href="https://github.com/dapr/docs/blob/master/getting-started/environment-setup.md#installing-dapr-on-a-kubernetes-cluster">here&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;h2 id="deploy-an-application-to-your-kubernetes-cluster">Deploy an application to your Kubernetes cluster&lt;/h2>
-&lt;p>I&amp;rsquo;ll be using a simple Azure Function I created back in 2017 in the following post: &lt;strong>&lt;a href="https://carlos.mendible.com/2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/">Run a Precompiled .NET Core Azure Function in a Container&lt;/a>&lt;/strong> which exposes a simple validation function.&lt;/p>
-&lt;p>Create a &lt;em>function.yaml&lt;/em> file with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">apps/v1beta1&lt;/span>
-&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Deployment&lt;/span>
-&lt;span style="color:#f92672">metadata&lt;/span>:
-&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
-&lt;span style="color:#f92672">namespace&lt;/span>: &lt;span style="color:#ae81ff">default&lt;/span>
-&lt;span style="color:#f92672">spec&lt;/span>:
-&lt;span style="color:#f92672">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#f92672">template&lt;/span>:
-&lt;span style="color:#f92672">metadata&lt;/span>:
-&lt;span style="color:#f92672">labels&lt;/span>:
-&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
-&lt;span style="color:#f92672">annotations&lt;/span>:
-&lt;span style="color:#f92672">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;dni&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">spec&lt;/span>:
-&lt;span style="color:#f92672">containers&lt;/span>:
-- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">dni-function&lt;/span>
-&lt;span style="color:#f92672">image&lt;/span>: &lt;span style="color:#ae81ff">cmendibl3/dni:1.0.0&lt;/span>
-&lt;span style="color:#f92672">ports&lt;/span>:
-- &lt;span style="color:#f92672">containerPort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note the &lt;em>dapr.io&lt;/em> annotations used to instruct Dapr to inject the sidecar in your pod.&lt;/p>
-&lt;p>Now deploy the function into kubernetes:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f ./function.yaml
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="deploy-nginx-ingress-controller-with-dapr">Deploy NGINX Ingress Controller with Dapr&lt;/h2>
-&lt;p>We are going to &amp;ldquo;Daprize&amp;rdquo; the NGINX Ingress Controller so traffic flows as shown in the following picture &lt;a href="#references">[1]&lt;/a>:&lt;/p>
-&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/posts/dapr-nginx-ingress.png" alt="Daprized NGINX Ingress Controller">&lt;/p>
-&lt;p>In order to add the &lt;em>dapr.io&lt;/em> annotations to the NGINX pod, create a &lt;em>dapr-annotations.yaml&lt;/em> file with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">controller&lt;/span>:
-&lt;span style="color:#f92672">podAnnotations&lt;/span>:
-&lt;span style="color:#f92672">dapr.io/enabled&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;true&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">dapr.io/id&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;nginx-ingress&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">dapr.io/port&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;80&amp;#34;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>and deploy the NGINX ingress controller:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-helm install nginx stable/nginx-ingress -f .&lt;span style="color:#ae81ff">\d&lt;/span>apr-annotations.yaml -n default
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Since we´ll also be adding TLS termination to the mix, run the following commands to generate the certificate and deploy the corresponding secret into kubernetes:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">openssl req -x509 -nodes -days &lt;span style="color:#ae81ff">365&lt;/span> -newkey rsa:2048 -keyout tls.key -out tls.crt -subj &lt;span style="color:#e6db74">&amp;#34;/CN=hydra/O=hydra&amp;#34;&lt;/span>
-kubectl create secret tls tls-secret --key tls.key --cert tls.cert
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now create the ingress rule (&lt;em>ingress.yaml&lt;/em>* file) with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">extensions/v1beta1&lt;/span>
-&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Ingress&lt;/span>
-&lt;span style="color:#f92672">metadata&lt;/span>:
-&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">ingress-rules&lt;/span>
-&lt;span style="color:#f92672">namespace&lt;/span>: &lt;span style="color:#ae81ff">default&lt;/span>
-&lt;span style="color:#f92672">annotations&lt;/span>:
-&lt;span style="color:#f92672">kubernetes.io/ingress.class&lt;/span>: &lt;span style="color:#ae81ff">nginx&lt;/span>
-&lt;span style="color:#f92672">nginx.ingress.kubernetes.io/rewrite-target&lt;/span>: &lt;span style="color:#ae81ff">/&lt;/span>
-&lt;span style="color:#f92672">spec&lt;/span>:
-&lt;span style="color:#f92672">tls&lt;/span>:
-- &lt;span style="color:#f92672">hosts&lt;/span>:
-- &lt;span style="color:#ae81ff">hydra&lt;/span>
-&lt;span style="color:#f92672">secretName&lt;/span>: &lt;span style="color:#ae81ff">tls-secret&lt;/span>
-&lt;span style="color:#f92672">rules&lt;/span>:
-- &lt;span style="color:#f92672">host&lt;/span>: &lt;span style="color:#ae81ff">hydra&lt;/span>
-&lt;span style="color:#f92672">http&lt;/span>:
-&lt;span style="color:#f92672">paths&lt;/span>:
-- &lt;span style="color:#f92672">path&lt;/span>: &lt;span style="color:#ae81ff">/&lt;/span>
-&lt;span style="color:#f92672">backend&lt;/span>:
-&lt;span style="color:#f92672">serviceName&lt;/span>: &lt;span style="color:#ae81ff">nginx-ingress-dapr&lt;/span>
-&lt;span style="color:#f92672">servicePort&lt;/span>: &lt;span style="color:#ae81ff">80&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that the rule is calling the &lt;em>nginx-ingress-dapr&lt;/em> service which was created by Dapr when we deployed the Daprized version of the ingress controller. This means that all trafic with the &lt;em>hydra&lt;/em> host will be sent to the Dapr sidecar of your NGINX controller pod.&lt;/p>
-&lt;p>Deploy the ingress rule:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f ./ingress.yaml
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-daprized-application">Test the &amp;ldquo;Daprized&amp;rdquo; application&lt;/h2>
-&lt;p>To test the application we&amp;rsquo;ll need the public IP of the ingress service, so run the following command and copy the resulting IP address:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get service --selector&lt;span style="color:#f92672">=&lt;/span>app&lt;span style="color:#f92672">=&lt;/span>nginx-ingress,component&lt;span style="color:#f92672">=&lt;/span>controller -o jsonpath&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;{.items[*].status.loadBalancer.ingress[0].ip}&amp;#39;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now make a simple curl request, using the &lt;a href="https://github.com/dapr/docs/blob/master/reference/api/service_invocation_api.md">Dapr invocation api specification&lt;/a>, to the application:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">curl -k -H &lt;span style="color:#e6db74">&amp;#34;Host: hydra&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;https://&amp;lt;ingress ip&amp;gt;/v1.0/invoke/dni/method/api/validate?dni=54495436H&amp;#34;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything runs as expected you should get the following result:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">true
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p>
-&lt;p>Learn more about Dapr &lt;a href="https://github.com/dapr/docs/tree/master/">here&lt;/a> and Dapr service invocation &lt;a href="https://github.com/dapr/docs/tree/master/howto/invoke-and-discover-services">here&lt;/a>&lt;/p>
-&lt;h2 id="learn-more">Learn More&lt;/h2>
-&lt;ul>
-&lt;li>&lt;a href="https://cloudblogs.microsoft.com/opensource/2020/04/29/distributed-application-runtime-dapr-growth-community-update?WT.mc_id=AZ-MVP-5002618">How Distributed Application Runtime (Dapr) has grown since its announcement&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://cloudblogs.microsoft.com/opensource/2020/07/01/announcing-azure-functions-extension-for-dapr?WT.mc_id=AZ-MVP-5002618">Announcing Azure Functions extension for Dapr
-&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;h2 id="references">References&lt;/h2>
-&lt;p>[1] Image from the &lt;a href="https://github.com/dapr/docs/blob/master/presentations/Dapr%20Presentation%20Deck.pptx">Dapr Predentation deck&lt;/a>&lt;/p></description></item><item><title>Dapr: Run Microservices in Azure without SDKs or vendor lock-in</title><link>https://carlos.mendible.com/events/2020/04/04/netcoreconf-dapr/</link><pubDate>Sat, 04 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/04/netcoreconf-dapr/</guid><description>&lt;p>Let&amp;rsquo;s learn how to use Dapr to build resilient, stateless and stateful microservices solutions that run on the cloud and edge solving the challenges you´ll face if you try to remove your applications SDK dependencies, port your applications (without code modifications) between clouds and implement event-driven architectures.&lt;/p>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/Pd24pPP44Ns" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item></channel></rss>
+&lt;/div></description></item><item><title>Interfaz Podcast Episodio 139 – Conociendo Dapr con Carlos Mendible</title><link>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</link><pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</guid><description>&lt;p>Check the podcast &lt;a href="https://rdiazconcha.com/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/">here&lt;/a>&lt;/p></description></item></channel></rss>
