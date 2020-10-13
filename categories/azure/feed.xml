@@ -1,6 +1,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>azure on Code it Yourself...</title><link>https://carlos.mendible.com/categories/azure/</link><description>Recent content in azure on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 03 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/azure/feed.xml" rel="self" type="application/rss+xml"/><item><title>Infrastructure as Code War</title><link>https://carlos.mendible.com/events/2020/20/03/infrastructure-as-code-war/</link><pubDate>Sat, 03 Oct 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/20/03/infrastructure-as-code-war/</guid><description>&lt;p>Let&amp;rsquo;s see how Azure ARM, Terraform, Azure Service Operator for Kubernetes and other solutions compare to each other so you can choose the right weapon to win the Infrastructure as Code War!&lt;/p>
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
 &lt;iframe src="https://www.youtube.com/embed/vF6nlrILXZ8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>The k8s Workshop</title><link>https://carlos.mendible.com/events/2020/20/02/the-k8s-workshop/</link><pubDate>Fri, 02 Oct 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/20/02/the-k8s-workshop/</guid><description>&lt;p>Description In this workshop you&amp;rsquo;ll learn how to deploy, monitor, scale, secure and debug workloads in AKS:&lt;/p>
+&lt;ul>
+&lt;li>Deploy an aplication.&lt;/li>
+&lt;li>Configure monitoring and health checks for your application.&lt;/li>
+&lt;li>Scale your application to meet demand.&lt;/li>
+&lt;li>Enable SSL/TLS with an ingress controller.&lt;/li>
+&lt;li>Secret Management with AKS &amp;amp; Keyvault.&lt;/li>
+&lt;li>Debugging your Kubernetes application.&lt;/li>
+&lt;/ul>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/uylfbdZX2XQ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
 &lt;/div></description></item><item><title>Microsoft Ignite 2020. ¿Qué hay de nuevo?</title><link>https://carlos.mendible.com/events/2020/09/29/microsoft-ignite-2020-que-hay-de-nuevo/</link><pubDate>Tue, 29 Sep 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/09/29/microsoft-ignite-2020-que-hay-de-nuevo/</guid><description>&lt;p>¿habéis visto todas las novedades del Ignite? Bueno, si no es así, estamos de enhorabuena porque nos hemos liado a la manta para contaros las novedades con el siguiente equipo:&lt;/p>
 &lt;ul>
 &lt;li>Carlos Mendible&lt;/li>
@@ -333,4 +344,4 @@ terraform apply -var&lt;span style="color:#f92672">=&lt;/span>&lt;span style="co
 &lt;p>Discover Managed Identities, a feature that let&amp;rsquo;s you authenticate to any service that supports Azure AD authentication, including Azure Key Vault, without any credentials in your .NET, Java or Golang code or configuration!!!&lt;/p>
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
 &lt;iframe src="https://www.youtube.com/embed/ygM8xRcWSZY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>Interfaz Podcast Episodio 139 – Conociendo Dapr con Carlos Mendible</title><link>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</link><pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</guid><description>&lt;p>Check the podcast &lt;a href="https://rdiazconcha.com/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/">here&lt;/a>&lt;/p></description></item></channel></rss>
+&lt;/div></description></item></channel></rss>
