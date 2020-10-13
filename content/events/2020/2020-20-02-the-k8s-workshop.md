@@ -12,7 +12,7 @@ title: "The k8s Workshop"
 url: /events/2020/20/02/the-k8s-workshop/
 ---
 
-Description In this workshop you'll learn how to deploy, monitor, scale, secure and debug workloads in AKS:
+In this workshop you'll learn how to deploy, monitor, scale, secure and debug workloads in AKS:
 - Deploy an aplication.
 - Configure monitoring and health checks for your application.
 - Scale your application to meet demand.
