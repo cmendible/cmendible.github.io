@@ -1,4 +1,23 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Code it Yourself...</title><link>https://carlos.mendible.com/posts/</link><description>Recent content in Posts on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Wed, 09 Sep 2020 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/posts/feed.xml" rel="self" type="application/rss+xml"/><item><title>Managing Terraform Cloud with .NET Core</title><link>https://carlos.mendible.com/2020/09/09/managing-terraform-cloud-with-.net-core/</link><pubDate>Wed, 09 Sep 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/09/09/managing-terraform-cloud-with-.net-core/</guid><description>&lt;p>Today I&amp;rsquo;m going to show you how to manage &lt;a href="https://app.terraform.io/">Terraform Cloud&lt;/a> with .NET Core using the &lt;a href="https://github.com/everis-technology/Tfe.NetClient">Tfe.NetClient&lt;/a> library.&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Code it Yourself...</title><link>https://carlos.mendible.com/posts/</link><description>Recent content in Posts on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 18 Oct 2020 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/posts/feed.xml" rel="self" type="application/rss+xml"/><item><title>What I Learned From Hacktoberfest 2020</title><link>https://carlos.mendible.com/2020/10/18/what-i-learned-from-hacktoberfest-2020/</link><pubDate>Sun, 18 Oct 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/10/18/what-i-learned-from-hacktoberfest-2020/</guid><description>&lt;p>&lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> is an open global event where people all around de globe contribute to open source projects.&lt;/p>
+&lt;p>The idea behind &lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> is great, in my opinion it encourages and motivates contributions specially from those who don&amp;rsquo;t know where to start with OSS, but saddly what we saw this year was many people, let&amp;rsquo;s call them trolls, spamming repos with useless pull requests in order to claim the nice tee. The &lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> organization reacted quickly to fix the situation and the rules of the game have been changed: &lt;a href="https://hacktoberfest.digitalocean.com/hacktoberfest-update">the event is now offically opt-in only for projects and mantainers&lt;/a>.&lt;/p>
+&lt;p>Now let me tell you a bit of what I did:&lt;/p>
+&lt;h2 id="what-i-learned-from-hacktoberfest">What I Learned From Hacktoberfest&lt;/h2>
+&lt;h3 id="azure-arc-enabled-kubernetes">Azure Arc enabled Kubernetes:&lt;/h3>
+&lt;p>I learned how to enable container monitoring on &lt;a href="https://docs.microsoft.com/en-us/azure/azure-arc/kubernetes/overview?WT.mc_id=AZ-MVP-5002618">Azure Arc enabled Kubernetes&lt;/a> and in the process I noticed that in the documentation a powershell command was using &lt;code>curl&lt;/code> instead of &lt;code>Invoke-WebRequest&lt;/code> so I sumbited the following PR: &lt;a href="https://github.com/MicrosoftDocs/azure-docs/pull/63625">Replacing wget with iwr in the powershell sample&lt;/a>&lt;/p>
+&lt;h3 id="k8spin">K8Spin&lt;/h3>
+&lt;p>I continued learning about &lt;a href="https://github.com/k8spin/k8spin-operator">K8Spin&lt;/a>: a nice OOS project which adds three new hierarchy concepts (Organizations, Tenants, and Spaces) to your kuberneets clusters in order to enable multi-tenancy.&lt;/p>
+&lt;p>Collaborating with the &lt;a href="https://github.com/k8spin/k8spin-operator">K8Spin&lt;/a> team was great and I fixed two issues:&lt;/p>
+&lt;ul>
+&lt;li>A broken link in one of their repos: &lt;a href="https://github.com/k8spin/oneinfra-worker-modules/pull/3">Fixing Issue#1: oneinfra link&lt;/a>&lt;/li>
+&lt;li>Added a Helm chart to install the &lt;a href="https://github.com/k8spin/k8spin-operator">K8Spin&lt;/a>. I had created some charts in the past but for this one I had to learn about &lt;a href="https://helm.sh/docs/chart_best_practices/">chart best practices&lt;/a> and apply them.&lt;/li>
+&lt;/ul>
+&lt;p>As a bonus also added a PR to add a developer container to their repo in other to enable &lt;a href="https://github.com/features/codespaces">Codespaces&lt;/a> and help any newcomer to start contributing avoiding python and other dependencies setup: &lt;a href="https://github.com/k8spin/k8spin-operator/pull/21">Adding dev container definition&lt;/a>&lt;/p>
+&lt;h3 id="bonus">Bonus&lt;/h3>
+&lt;ul>
+&lt;li>I continued my journey learning and collaborating with Dapr and this time I submited a PR to remove &lt;a href="https://github.com/dapr/components-contrib/pull/496">a component from Dapr&lt;/a>&lt;/li>
+&lt;li>I hade some SEO issues with my blog and it turns out the the theme I use was not adding [the post title as part of the correspoing tag(https://github.com/avianto/hugo-kiera/pull/41).&lt;/li>
+&lt;/ul>
+&lt;p>Glad to Help!&lt;/p></description></item><item><title>Managing Terraform Cloud with .NET Core</title><link>https://carlos.mendible.com/2020/09/09/managing-terraform-cloud-with-.net-core/</link><pubDate>Wed, 09 Sep 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/09/09/managing-terraform-cloud-with-.net-core/</guid><description>&lt;p>Today I&amp;rsquo;m going to show you how to manage &lt;a href="https://app.terraform.io/">Terraform Cloud&lt;/a> with .NET Core using the &lt;a href="https://github.com/everis-technology/Tfe.NetClient">Tfe.NetClient&lt;/a> library.&lt;/p>
 &lt;p>The idea is to create a simple console application that will:&lt;/p>
 &lt;ul>
 &lt;li>Add GitHub as a &lt;a href="https://www.terraform.io/docs/cloud/vcs/index.html">VCS Provider&lt;/a>.&lt;/li>
@@ -1109,32 +1128,4 @@ $k8sAzureIdentityandBinding | kubectl apply &lt;span style="color:#f92672">-f&lt
 &lt;h2 id="detalles-del-curso">Detalles del curso&lt;/h2>
 &lt;p>Domina los conceptos básicos de Azure Kubernetes Service o AKS. Introdúcete con este curso en su arquitectura, en la gestión general del servicio y en las operaciones que puede realizar. Además, despliega paso a paso tu primera aplicación en clúster. Al terminar este curso estarás preparado para trabajar con Azure Kubernetes Service y dar el salto a un nivel más avanzado.&lt;/p>
 &lt;p>Os dejo el enlace por &lt;a href="https://www.linkedin.com/learning-login/share?forceAccount=false&amp;amp;redirect=https%3A%2F%2Fwww.linkedin.com%2Flearning%2Fkubernetes-despliegue-en-azure%3Ftrk%3Dshare_ent_url">aquí&lt;/a>&lt;/p>
-&lt;p>Espero que os guste!&lt;/p></description></item><item><title>GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux</title><link>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</link><pubDate>Sun, 04 Aug 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/</guid><description>&lt;p>Recently I learned about GitOps which is a way to manage your Kubernetes clusters and the applications you run on top using Git. The idea is that you can declaratively describe the desired state of your systems in Git and roll out changes as soon as merges occur.&lt;/p>
-&lt;p>You can immediately see the main benefits of such an approach: Your Git repositories become the single source of truth for both your infrastructure and application code, allowing the teams to increase productivity and stability (you get the Git log to audit changes).&lt;/p>
-&lt;p>To implement GitOps you can use and configure &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> following some simple steps:&lt;/p>
-&lt;h2 id="1-download-the-helm-template">1. Download the helm template&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">helm fetch `
---repo https&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//fluxcd.github.io/flux `
---untar `
---untardir .\.charts `
---version 0.10.2 `
-flux
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-bake-the-template-with-your-repo-i-dont-use-tiller">2. Bake the template with your repo (I don&amp;rsquo;t use Tiller)&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">helm template flux `
---set git.url=&lt;span style="color:#e6db74">&amp;#34;git@github.com:cmendible/kubernetes.samples&amp;#34;&lt;/span> `
---set git.path=&lt;span style="color:#e6db74">&amp;#34;19.flux&amp;#34;&lt;/span> `
---set git.pollInterval=&lt;span style="color:#e6db74">&amp;#34;5s&amp;#34;&lt;/span> `
---namespace flux `
---output-dir .\.baked .\.charts\fluxcd
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>As you can see I&amp;rsquo;m configuring &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a> to use my k8s sample repo and the &lt;a href="https://github.com/cmendible/kubernetes.samples/tree/main/19.flux">19.flux&lt;/a> folder, which contains a simple deployment &lt;a href="https://github.com/cmendible/kubernetes.samples/blob/main/19.flux/dni-function.yaml">file&lt;/a>, but of course you can have more resource definitions.&lt;/p>
-&lt;h2 id="3-deploy-the-configuration-to-your-cluster">3. Deploy the configuration to your cluster&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> .\.baked\flux\templates\
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-get-the-fluxctl-cli">4. Get the fluxctl CLI&lt;/h2>
-&lt;p>Download the &lt;a href="https://github.com/fluxcd/flux/releases/tag/1.13.2">fluxctl CLI&lt;/a>&lt;/p>
-&lt;h2 id="5-use-fluxctl-to-get-the-public-key">5. Use fluxctl to get the public key&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">fluxctl identity --k8s-fwd-ns flux
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>This key is needed to sync your cluster state with the Git repository (GitHub): Copy the key you obtained and use it to create a &lt;strong>deploy key&lt;/strong> with write access on your GitHub repository (Settings &amp;gt; Deploy keys &amp;gt; Add deploy key &amp;gt; check Allow write access &amp;gt; paste the Flux public key &amp;gt; click Add key)&lt;/p>
-&lt;p>You are all set. If everything runs smooth you&amp;rsquo;ll find a new deployment in your cluster with the &lt;strong>dni-function&lt;/strong> name.&lt;/p>
-&lt;p>To learn more about GitOps check: &lt;a href="https://www.weave.works/technologies/gitops/">Weaveworks&lt;/a>&lt;/p>
-&lt;p>Click here to learn more about &lt;a href="https://docs.fluxcd.io/en/latest/">Flux&lt;/a>&lt;/p>
-&lt;p>Hope it helps!&lt;/p></description></item></channel></rss>
+&lt;p>Espero que os guste!&lt;/p></description></item></channel></rss>
