@@ -28,13 +28,13 @@ googleAnalytics = "UA-11243417-1"
     youtube = "channel/UCzLtSg6AfN7RWN3MdvRw7Dw"
     stackoverflow = "users/332127"
     instagram = "cmendibl3"
+    keybase = "cmendibl3"
 
 [params]
     tagline = "A blog on Microsoft Azure and .NET by Carlos Mendible"
     description = "A blog on Microsoft Azure and .NET by Carlos Mendible"
     ogimage = "/assets/img/about_me.jpg"
     commentAutoload = true
-
 
 [languages]
   [languages.en]
