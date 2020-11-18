@@ -77,7 +77,7 @@ dapr run --app-id secretapp --components-path .\components\ -- dotnet run
 
 ## Experiment
 
->  One of the amazing things about Dapr is that you code will be the same even if you change the underlying secret store.
+>  One of the amazing things about Dapr is that your code will be the same even if you change the underlying secret store.
 
 In your local environment you can also try reading "secrets" from environment variables. In order to do so, replace the contents of the `./componentes/secrets.yaml` file with:
 
