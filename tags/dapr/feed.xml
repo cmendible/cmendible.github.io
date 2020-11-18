@@ -1,4 +1,57 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dapr on Code it Yourself...</title><link>https://carlos.mendible.com/tags/dapr/</link><description>Recent content in dapr on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Thu, 30 Jul 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/dapr/feed.xml" rel="self" type="application/rss+xml"/><item><title>Azure Summer Talks Community</title><link>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</link><pubDate>Thu, 30 Jul 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</guid><description>&lt;p>Como cada año &lt;a href="https://www.meetup.com/es-ES/CATzure">CATzure&lt;/a> organiza una mesa redonda con los mejores expertos de Azure de España para conversar sobre el cloud, desarrollo y todo aquello que os aptezca.&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dapr on Code it Yourself...</title><link>https://carlos.mendible.com/tags/dapr/</link><description>Recent content in dapr on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Wed, 18 Nov 2020 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/dapr/feed.xml" rel="self" type="application/rss+xml"/><item><title>Dapr: Reading local secrets with .NET 5</title><link>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</link><pubDate>Wed, 18 Nov 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</guid><description>&lt;p>Now that &lt;a href="https://dapr.io/">Dapr&lt;/a> is about to hit version 1.0.0 let me show you how easy is to read secrets with a &lt;a href="https://dotnet.microsoft.com/?WT.mc_id=AZ-MVP-5002618">.NET 5&lt;/a> console application.&lt;/p>
+&lt;h2 id="create-a-console-application">Create a console application&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet new console -n DaprSecretSample
+cd DaprSecretSample
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="add-a-reference-to-the-daprclient-library">Add a reference to the Dapr.Client library&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet add package Dapr.Client --prerelease
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-a-secret-store-component">Create a Secret Store component&lt;/h2>
+&lt;p>Create a &lt;code>components&lt;/code> folder and inside place a file named &lt;code>secretstore.yaml&lt;/code> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">dapr.io/v1alpha1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Component&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">starwarssecrets&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">secretstores.local.file&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">secretsFile&lt;/span>
+&lt;span style="color:#f92672">value&lt;/span>: &lt;span style="color:#ae81ff">./secrets.json&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>This component will enable Dapr, and therefore your application, to read secrets from a &lt;code>secrets.json&lt;/code> file.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="create-a-secrets-file">Create a Secrets file&lt;/h2>
+&lt;p>Create a &lt;code>secrets.json&lt;/code> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;mandalorianSecret&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;this is the way!&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="replace-the-contents-of-programcs">Replace the contents of Program.cs&lt;/h2>
+&lt;p>Replace the contents of &lt;code>Program.cs&lt;/code> with the following code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> Dapr.Client;
+&lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> DaprClientBuilder().Build();
+&lt;span style="color:#66d9ef">var&lt;/span> secret = &lt;span style="color:#66d9ef">await&lt;/span> client.GetSecretAsync(&lt;span style="color:#e6db74">&amp;#34;starwarssecrets&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;mandalorianSecret&amp;#34;&lt;/span>);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Secret from local file: {secret[&amp;#34;&lt;/span>mandalorianSecret&lt;span style="color:#e6db74">&amp;#34;]});
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-program">Test the program&lt;/h2>
+&lt;p>Run the following command to test the application.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dapr run --app-id secretapp --components-path .&lt;span style="color:#ae81ff">\c&lt;/span>omponents&lt;span style="color:#ae81ff">\ &lt;/span>-- dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="experiment">Experiment&lt;/h2>
+&lt;blockquote>
+&lt;p>One of the amazing things about Dapr is that you code will be the same even if you change the underlying secret store.&lt;/p>
+&lt;/blockquote>
+&lt;p>In your local environment you can also try reading &amp;ldquo;secrets&amp;rdquo; from environment variables. In order to do so, replace the contents of the &lt;code>./componentes/secrets.yaml&lt;/code> file with:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">dapr.io/v1alpha1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Component&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">starwarssecrets&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">secretstores.local.env&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Be sure to set, in your system, an environment variable named &lt;code>mandalorianSecret&lt;/code>, for instance:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">export mandalorianSecret&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;May The Force be with you&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and run the application again:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dapr run --app-id secretapp --components-path .&lt;span style="color:#ae81ff">\c&lt;/span>omponents&lt;span style="color:#ae81ff">\ &lt;/span>-- dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I recommend using the secret stores shown in this post only for development or test scenarios. For a complete list of supported secret stores check the following repo: &lt;a href="https://github.com/dapr/components-contrib/tree/master/secretstores">https://github.com/dapr/components-contrib/tree/master/secretstores&lt;/a>.&lt;/p>
+&lt;/blockquote>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>Azure Summer Talks Community</title><link>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</link><pubDate>Thu, 30 Jul 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</guid><description>&lt;p>Como cada año &lt;a href="https://www.meetup.com/es-ES/CATzure">CATzure&lt;/a> organiza una mesa redonda con los mejores expertos de Azure de España para conversar sobre el cloud, desarrollo y todo aquello que os aptezca.&lt;/p>
 &lt;p>Esta mesa redonda estuvo compuesta por:&lt;/p>
 &lt;ul>
 &lt;li>&lt;a href="https://twitter.com/Carlos_Lande">Carlos Lande&lt;/a>&lt;/li>

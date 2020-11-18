@@ -1,4 +1,57 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dotnet on Code it Yourself...</title><link>https://carlos.mendible.com/categories/dotnet/</link><description>Recent content in dotnet on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 18 Oct 2020 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/dotnet/feed.xml" rel="self" type="application/rss+xml"/><item><title>What I Learned From Hacktoberfest 2020</title><link>https://carlos.mendible.com/2020/10/18/what-i-learned-from-hacktoberfest-2020/</link><pubDate>Sun, 18 Oct 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/10/18/what-i-learned-from-hacktoberfest-2020/</guid><description>&lt;p>&lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> is an open global event where people all around de globe contribute to open source projects.&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dotnet on Code it Yourself...</title><link>https://carlos.mendible.com/categories/dotnet/</link><description>Recent content in dotnet on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Wed, 18 Nov 2020 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/dotnet/feed.xml" rel="self" type="application/rss+xml"/><item><title>Dapr: Reading local secrets with .NET 5</title><link>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</link><pubDate>Wed, 18 Nov 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</guid><description>&lt;p>Now that &lt;a href="https://dapr.io/">Dapr&lt;/a> is about to hit version 1.0.0 let me show you how easy is to read secrets with a &lt;a href="https://dotnet.microsoft.com/?WT.mc_id=AZ-MVP-5002618">.NET 5&lt;/a> console application.&lt;/p>
+&lt;h2 id="create-a-console-application">Create a console application&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet new console -n DaprSecretSample
+cd DaprSecretSample
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="add-a-reference-to-the-daprclient-library">Add a reference to the Dapr.Client library&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet add package Dapr.Client --prerelease
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="create-a-secret-store-component">Create a Secret Store component&lt;/h2>
+&lt;p>Create a &lt;code>components&lt;/code> folder and inside place a file named &lt;code>secretstore.yaml&lt;/code> with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">dapr.io/v1alpha1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Component&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">starwarssecrets&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">secretstores.local.file&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">secretsFile&lt;/span>
+&lt;span style="color:#f92672">value&lt;/span>: &lt;span style="color:#ae81ff">./secrets.json&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>This component will enable Dapr, and therefore your application, to read secrets from a &lt;code>secrets.json&lt;/code> file.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="create-a-secrets-file">Create a Secrets file&lt;/h2>
+&lt;p>Create a &lt;code>secrets.json&lt;/code> file with the following contents:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;mandalorianSecret&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;this is the way!&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="replace-the-contents-of-programcs">Replace the contents of Program.cs&lt;/h2>
+&lt;p>Replace the contents of &lt;code>Program.cs&lt;/code> with the following code:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System;
+&lt;span style="color:#66d9ef">using&lt;/span> Dapr.Client;
+&lt;span style="color:#66d9ef">var&lt;/span> client = &lt;span style="color:#66d9ef">new&lt;/span> DaprClientBuilder().Build();
+&lt;span style="color:#66d9ef">var&lt;/span> secret = &lt;span style="color:#66d9ef">await&lt;/span> client.GetSecretAsync(&lt;span style="color:#e6db74">&amp;#34;starwarssecrets&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;mandalorianSecret&amp;#34;&lt;/span>);
+Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Secret from local file: {secret[&amp;#34;&lt;/span>mandalorianSecret&lt;span style="color:#e6db74">&amp;#34;]});
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-program">Test the program&lt;/h2>
+&lt;p>Run the following command to test the application.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dapr run --app-id secretapp --components-path .&lt;span style="color:#ae81ff">\c&lt;/span>omponents&lt;span style="color:#ae81ff">\ &lt;/span>-- dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="experiment">Experiment&lt;/h2>
+&lt;blockquote>
+&lt;p>One of the amazing things about Dapr is that you code will be the same even if you change the underlying secret store.&lt;/p>
+&lt;/blockquote>
+&lt;p>In your local environment you can also try reading &amp;ldquo;secrets&amp;rdquo; from environment variables. In order to do so, replace the contents of the &lt;code>./componentes/secrets.yaml&lt;/code> file with:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">dapr.io/v1alpha1&lt;/span>
+&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Component&lt;/span>
+&lt;span style="color:#f92672">metadata&lt;/span>:
+&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">starwarssecrets&lt;/span>
+&lt;span style="color:#f92672">spec&lt;/span>:
+&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">secretstores.local.env&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Be sure to set, in your system, an environment variable named &lt;code>mandalorianSecret&lt;/code>, for instance:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">export mandalorianSecret&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;May The Force be with you&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and run the application again:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dapr run --app-id secretapp --components-path .&lt;span style="color:#ae81ff">\c&lt;/span>omponents&lt;span style="color:#ae81ff">\ &lt;/span>-- dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>&lt;strong>Note:&lt;/strong> I recommend using the secret stores shown in this post only for development or test scenarios. For a complete list of supported secret stores check the following repo: &lt;a href="https://github.com/dapr/components-contrib/tree/master/secretstores">https://github.com/dapr/components-contrib/tree/master/secretstores&lt;/a>.&lt;/p>
+&lt;/blockquote>
+&lt;p>Hope it helps!&lt;/p></description></item><item><title>What I Learned From Hacktoberfest 2020</title><link>https://carlos.mendible.com/2020/10/18/what-i-learned-from-hacktoberfest-2020/</link><pubDate>Sun, 18 Oct 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/10/18/what-i-learned-from-hacktoberfest-2020/</guid><description>&lt;p>&lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> is an open global event where people all around de globe contribute to open source projects.&lt;/p>
 &lt;p>The idea behind &lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> is great, in my opinion it encourages and motivates contributions specially from those who don&amp;rsquo;t know where to start with OSS, but saddly what we saw this year was many people, let&amp;rsquo;s call them trolls, spamming repos with useless pull requests in order to claim the nice tee. The &lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> organization reacted quickly to fix the situation and the rules of the game have been changed: &lt;a href="https://hacktoberfest.digitalocean.com/hacktoberfest-update">the event is now offically opt-in only for projects and mantainers&lt;/a>.&lt;/p>
 &lt;p>Now let me tell you a bit of what I did:&lt;/p>
 &lt;h2 id="what-i-learned-from-hacktoberfest">What I Learned From Hacktoberfest&lt;/h2>
@@ -200,7 +253,4 @@ ready = run.Data.Attributes.Status == &lt;span style="color:#e6db74">&amp;#34;pl
 &lt;p>Discover Managed Identities, a feature that let&amp;rsquo;s you authenticate to any service that supports Azure AD authentication, including Azure Key Vault, without any credentials in your .NET, Java or Golang code or configuration!!!&lt;/p>
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
 &lt;iframe src="https://www.youtube.com/embed/ygM8xRcWSZY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>Interfaz Podcast Episodio 139 – Conociendo Dapr con Carlos Mendible</title><link>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</link><pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</guid><description>&lt;p>Check the podcast &lt;a href="https://rdiazconcha.com/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/">here&lt;/a>&lt;/p></description></item><item><title>Dapr: Run Microservices in Azure without SDKs or vendor lock-in</title><link>https://carlos.mendible.com/events/2020/04/04/netcoreconf-dapr/</link><pubDate>Sat, 04 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/04/netcoreconf-dapr/</guid><description>&lt;p>Let&amp;rsquo;s learn how to use Dapr to build resilient, stateless and stateful microservices solutions that run on the cloud and edge solving the challenges you´ll face if you try to remove your applications SDK dependencies, port your applications (without code modifications) between clouds and implement event-driven architectures.&lt;/p>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/Pd24pPP44Ns" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item></channel></rss>
+&lt;/div></description></item><item><title>Interfaz Podcast Episodio 139 – Conociendo Dapr con Carlos Mendible</title><link>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</link><pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/</guid><description>&lt;p>Check the podcast &lt;a href="https://rdiazconcha.com/2020/04/08/interfaz-podcast-episodio-139-conociendo-dapr-con-carlos-mendible/">here&lt;/a>&lt;/p></description></item></channel></rss>
