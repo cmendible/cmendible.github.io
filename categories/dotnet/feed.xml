@@ -35,7 +35,7 @@ Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Secret from local fil
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dapr run --app-id secretapp --components-path .&lt;span style="color:#ae81ff">\c&lt;/span>omponents&lt;span style="color:#ae81ff">\ &lt;/span>-- dotnet run
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="experiment">Experiment&lt;/h2>
 &lt;blockquote>
-&lt;p>One of the amazing things about Dapr is that you code will be the same even if you change the underlying secret store.&lt;/p>
+&lt;p>One of the amazing things about Dapr is that your code will be the same even if you change the underlying secret store.&lt;/p>
 &lt;/blockquote>
 &lt;p>In your local environment you can also try reading &amp;ldquo;secrets&amp;rdquo; from environment variables. In order to do so, replace the contents of the &lt;code>./componentes/secrets.yaml&lt;/code> file with:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">dapr.io/v1alpha1&lt;/span>
