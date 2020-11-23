@@ -1,4 +1,16 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>functions on Code it Yourself...</title><link>https://carlos.mendible.com/tags/functions/</link><description>Recent content in functions on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Mon, 18 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/functions/feed.xml" rel="self" type="application/rss+xml"/><item><title>Azure Functions: use Blob Trigger with Private Endpoint</title><link>https://carlos.mendible.com/2020/05/18/azure-functions-use-blob-trigger-with-private-endpoint/</link><pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/05/18/azure-functions-use-blob-trigger-with-private-endpoint/</guid><description>&lt;p>The intent of this post is to help you understand how to connect an Azure Function to a Storage Account privately so all traffic flows through a VNet therefore enhancing the security of your solutions and blobs.&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>functions on Code it Yourself...</title><link>https://carlos.mendible.com/tags/functions/</link><description>Recent content in functions on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 20 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/functions/feed.xml" rel="self" type="application/rss+xml"/><item><title>Dapr y Azure Functions</title><link>https://carlos.mendible.com/events/2020/11/20/dapr-y-azure-functions/</link><pubDate>Fri, 20 Nov 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/11/20/dapr-y-azure-functions/</guid><description>&lt;p>A talk (Spanish) on Dapr and Azure Functions&lt;/p>
+&lt;script src="https://player.twitch.tv/js/embed/v1.js">&lt;/script>
+&lt;div id="twitch-embed" class="shortcode shortcode--twitch" style="width: 100%; height: 100%;">&lt;/div>
+&lt;script type="text/javascript">
+var options = {
+width: "100%",
+height: "100%",
+};
+new Twitch.Player("twitch-embed", {
+video: '809436372',
+options: options
+});
+&lt;/script></description></item><item><title>Azure Functions: use Blob Trigger with Private Endpoint</title><link>https://carlos.mendible.com/2020/05/18/azure-functions-use-blob-trigger-with-private-endpoint/</link><pubDate>Mon, 18 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/05/18/azure-functions-use-blob-trigger-with-private-endpoint/</guid><description>&lt;p>The intent of this post is to help you understand how to connect an Azure Function to a Storage Account privately so all traffic flows through a VNet therefore enhancing the security of your solutions and blobs.&lt;/p>
 &lt;h2 id="the-case">The Case:&lt;/h2>
 &lt;p>Supose you have the following Azure Function written in C# which only copies a blob from one conatiner to another:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">using&lt;/span> System.IO;

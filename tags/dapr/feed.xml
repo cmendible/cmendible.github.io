@@ -1,4 +1,16 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dapr on Code it Yourself...</title><link>https://carlos.mendible.com/tags/dapr/</link><description>Recent content in dapr on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Wed, 18 Nov 2020 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/dapr/feed.xml" rel="self" type="application/rss+xml"/><item><title>Dapr: Reading local secrets with .NET 5</title><link>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</link><pubDate>Wed, 18 Nov 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</guid><description>&lt;p>Now that &lt;a href="https://dapr.io/">Dapr&lt;/a> is about to hit version 1.0.0 let me show you how easy is to read secrets with a &lt;a href="https://dotnet.microsoft.com/?WT.mc_id=AZ-MVP-5002618">.NET 5&lt;/a> console application.&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dapr on Code it Yourself...</title><link>https://carlos.mendible.com/tags/dapr/</link><description>Recent content in dapr on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 20 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/dapr/feed.xml" rel="self" type="application/rss+xml"/><item><title>Dapr y Azure Functions</title><link>https://carlos.mendible.com/events/2020/11/20/dapr-y-azure-functions/</link><pubDate>Fri, 20 Nov 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/11/20/dapr-y-azure-functions/</guid><description>&lt;p>A talk (Spanish) on Dapr and Azure Functions&lt;/p>
+&lt;script src="https://player.twitch.tv/js/embed/v1.js">&lt;/script>
+&lt;div id="twitch-embed" class="shortcode shortcode--twitch" style="width: 100%; height: 100%;">&lt;/div>
+&lt;script type="text/javascript">
+var options = {
+width: "100%",
+height: "100%",
+};
+new Twitch.Player("twitch-embed", {
+video: '809436372',
+options: options
+});
+&lt;/script></description></item><item><title>Dapr: Reading local secrets with .NET 5</title><link>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</link><pubDate>Wed, 18 Nov 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</guid><description>&lt;p>Now that &lt;a href="https://dapr.io/">Dapr&lt;/a> is about to hit version 1.0.0 let me show you how easy is to read secrets with a &lt;a href="https://dotnet.microsoft.com/?WT.mc_id=AZ-MVP-5002618">.NET 5&lt;/a> console application.&lt;/p>
 &lt;h2 id="create-a-console-application">Create a console application&lt;/h2>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet new console -n DaprSecretSample
 cd DaprSecretSample
@@ -335,82 +347,4 @@ kubectl port-forward $pod 80:80
 &lt;iframe src="https://www.youtube.com/embed/tOEVHpp1JtQ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
 &lt;/div>
 &lt;p>And we took a picture of the group:&lt;/p>
-&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020_02_Dapr.jpg" alt="">&lt;/p></description></item><item><title>Dapr: Debugging .NET Core with Visual Studio Code</title><link>https://carlos.mendible.com/2020/02/09/dapr-debugging-dotnetcore-with-visual-studio-code/</link><pubDate>Sun, 09 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/02/09/dapr-debugging-dotnetcore-with-visual-studio-code/</guid><description>&lt;p>So you are new to &lt;a href="https://dapr.io">Dapr&lt;/a> and you are trying to understand how it works with you .NET Core application. You already tried launching your app with the Dapr CLI and then you find yourself wondering on how to debug the mix with Visual Studio Code.&lt;/p>
-&lt;p>Well, follow this simple steps and you&amp;rsquo;ll be ready:&lt;/p>
-&lt;h2 id="modify-launchjson">Modify launch.json&lt;/h2>
-&lt;p>Change the &lt;strong>preLaunchTask&lt;/strong> so instead it calls a task named &lt;strong>daprd-debug&lt;/strong> instead of &lt;strong>build&lt;/strong>&lt;/p>
-&lt;p>Your &lt;strong>launch.json&lt;/strong> file should look like this:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
-&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">IntelliSense&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">learn&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">about&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">possible&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">attributes.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Hover&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">view&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">descriptions&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">of&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">existing&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">attributes.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">For&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">more&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">information,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">visit:&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">https://go.microsoft.com/fwlink/?linkid=830387&lt;/span>
-&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.2.0&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;configurations&amp;#34;&lt;/span>: [
-{
-&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.NET Core Launch (web)&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;coreclr&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;request&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;launch&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;preLaunchTask&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd-debug&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;program&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}/bin/Debug/netcoreapp3.1/&amp;lt;your assembly name&amp;gt;.dll&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [],
-&lt;span style="color:#f92672">&amp;#34;cwd&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;stopAtEntry&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;serverReadyAction&amp;#34;&lt;/span>: {
-&lt;span style="color:#f92672">&amp;#34;action&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;openExternally&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;pattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^\\s*Now listening on:\\s+(https?://\\S+)&amp;#34;&lt;/span>
-},
-&lt;span style="color:#f92672">&amp;#34;env&amp;#34;&lt;/span>: {
-&lt;span style="color:#f92672">&amp;#34;ASPNETCORE_ENVIRONMENT&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Development&amp;#34;&lt;/span>
-},
-&lt;span style="color:#f92672">&amp;#34;sourceFileMap&amp;#34;&lt;/span>: {
-&lt;span style="color:#f92672">&amp;#34;/Views&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}/Views&amp;#34;&lt;/span>
-}
-},
-{
-&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.NET Core Attach&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;coreclr&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;request&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;attach&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;processId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${command:pickProcess}&amp;#34;&lt;/span>
-}
-]
-}
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="modify-tasksjson">Modify tasks.json&lt;/h2>
-&lt;p>A new task to &lt;strong>tasks.json&lt;/strong> and name it &lt;strong>daprd-debug&lt;/strong> or whatever name you choosed in te previous step.&lt;/p>
-&lt;p>Your &lt;strong>tasks.json&lt;/strong> should look like this:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
-&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;tasks&amp;#34;&lt;/span>: [
-&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Ommited&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">tasks.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">...&lt;/span>
-{
-&lt;span style="color:#f92672">&amp;#34;label&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd-debug&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [
-&lt;span style="color:#e6db74">&amp;#34;-dapr-id&amp;#34;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#34;routing&amp;#34;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#34;-app-port&amp;#34;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#34;5000&amp;#34;&lt;/span>
-],
-&lt;span style="color:#f92672">&amp;#34;isBackground&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;problemMatcher&amp;#34;&lt;/span>: {
-&lt;span style="color:#f92672">&amp;#34;pattern&amp;#34;&lt;/span>: [
-{
-&lt;span style="color:#f92672">&amp;#34;regexp&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;file&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;location&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">2&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;message&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
-}
-],
-&lt;span style="color:#f92672">&amp;#34;background&amp;#34;&lt;/span>: {
-&lt;span style="color:#f92672">&amp;#34;beginsPattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^.*starting Dapr Runtime.*&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;endsPattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^.*waiting on port.*&amp;#34;&lt;/span>
-}
-},
-&lt;span style="color:#f92672">&amp;#34;dependsOn&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;build&amp;#34;&lt;/span>
-}
-]
-}
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note:&lt;/strong> the new task depends on the &lt;strong>build&lt;/strong> task.&lt;/p>
-&lt;h2 id="hit-f5-and-enjoy">Hit F5 and enjoy&lt;/h2>
-&lt;p>Hit F5 and enjoy debugging your &amp;ldquo;Daprized&amp;rdquo; .NET Core application.&lt;/p>
-&lt;p>You can download a working sample from this &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.debug.vscode/">repo&lt;/a>.&lt;/p></description></item></channel></rss>
+&lt;p>&lt;img src="https://carlos.mendible.com/assets/img/events/2020_02_Dapr.jpg" alt="">&lt;/p></description></item></channel></rss>
