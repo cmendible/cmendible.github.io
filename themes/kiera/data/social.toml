@@ -161,3 +161,21 @@ id = "weibo"
 url = "https://weibo.com/%s"
 title = "Weibo"
 icon = "fab fa-weibo"
+
+[[social_icons]]
+id = "strava"
+url = "https://www.strava.com/athletes/%s"
+title = "Strava"
+icon = "fab fa-strava"
+
+[[social_icons]]
+id = "orcid"
+url = "https://orcid.org/%s"
+title = "ORCiD"
+icon = "fab fa-orcid"
+
+[[social_icons]]
+id = "devto"
+url = "https://dev.to/%s"
+title = "devto"
+icon = "fab fa-dev"

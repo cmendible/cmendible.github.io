@@ -29,6 +29,7 @@ googleAnalytics = "UA-11243417-1"
     stackoverflow = "users/332127"
     instagram = "cmendibl3"
     keybase = "cmendibl3"
+    devto = "cmendibl3"
 
 [params]
     tagline = "A blog on Microsoft Azure and .NET by Carlos Mendible"
