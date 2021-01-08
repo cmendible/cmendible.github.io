@@ -54,7 +54,7 @@
 &lt;h2 id="create-an-aspnet-core-application">Create an ASP.NET Core application&lt;/h2>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet new webapi -n aspnet.opentelemetry
 cd aspnet.opentelemetry
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="add-a-reference-to-the-opentelemtry-libraries">Add a reference to the OpenTelemtry libraries&lt;/h2>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="add-a-reference-to-the-opentelemetry-libraries">Add a reference to the OpenTelemetry libraries&lt;/h2>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet add package OpenTelemetry.Extensions.Hosting --prerelease
 dotnet add package OpenTelemetry.Exporter.Console --prerelease
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="modify-the-createhostbuilder-method-in-programcs">Modify the CreateHostBuilder method in Program.cs&lt;/h2>
@@ -89,7 +89,7 @@ webBuilder.UseStartup&amp;lt;Startup&amp;gt;();
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-program">Test the program&lt;/h2>
 &lt;p>Run the following command to test the application.&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet run
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should see the logs, formatted as OpenTelemtry log records, written in the console:&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should see the logs, formatted as OpenTelemetry log records, written in the console:&lt;/p>
 &lt;table>
 &lt;thead>
 &lt;tr>
