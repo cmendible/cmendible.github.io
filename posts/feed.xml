@@ -1,4 +1,139 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Code it Yourself...</title><link>https://carlos.mendible.com/posts/</link><description>Recent content in Posts on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Wed, 18 Nov 2020 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/posts/feed.xml" rel="self" type="application/rss+xml"/><item><title>Dapr: Reading local secrets with .NET 5</title><link>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</link><pubDate>Wed, 18 Nov 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</guid><description>&lt;p>Now that &lt;a href="https://dapr.io/">Dapr&lt;/a> is about to hit version 1.0.0 let me show you how easy is to read secrets with a &lt;a href="https://dotnet.microsoft.com/?WT.mc_id=AZ-MVP-5002618">.NET 5&lt;/a> console application.&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Code it Yourself...</title><link>https://carlos.mendible.com/posts/</link><description>Recent content in Posts on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 08 Jan 2021 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/posts/feed.xml" rel="self" type="application/rss+xml"/><item><title>ASP.NET Core OpenTelemetry Logging</title><link>https://carlos.mendible.com/2021/01/08/asp.net-core-opentelemetry-logging/</link><pubDate>Fri, 08 Jan 2021 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/01/08/asp.net-core-opentelemetry-logging/</guid><description>&lt;p>As you may know I&amp;rsquo;ve been collaborating with &lt;a href="https://dapr.io/">Dapr&lt;/a> and I&amp;rsquo;ve learned that one of the things it enables you to do is to collect traces with the use of the &lt;a href="https://github.com/open-telemetry/opentelemetry-collector">OpenTelemetry Collector&lt;/a> and push the events to &lt;a href="https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview?WT.mc_id=AZ-MVP-5002618">Azure Application Insights&lt;/a>.&lt;/p>
+&lt;p>After some reading I went and check if I could also write my ASP.NET Core applications to log using the OpenTelemetry Log and Event record definition:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Field Name&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Timestamp&lt;/td>
+&lt;td>Time when the event occurred.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>TraceId&lt;/td>
+&lt;td>Request trace id.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>SpanId&lt;/td>
+&lt;td>Request span id.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>TraceFlags&lt;/td>
+&lt;td>W3C trace flag.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>SeverityText&lt;/td>
+&lt;td>The severity text (also known as log level).&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>SeverityNumber&lt;/td>
+&lt;td>Numerical value of the severity.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Name&lt;/td>
+&lt;td>Short event identifier.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Body&lt;/td>
+&lt;td>The body of the log record.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Resource&lt;/td>
+&lt;td>Describes the source of the log.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Attributes&lt;/td>
+&lt;td>Additional information about the event.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>So here is how you can do it:&lt;/p>
+&lt;h2 id="create-an-aspnet-core-application">Create an ASP.NET Core application&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet new webapi -n aspnet.opentelemetry
+cd aspnet.opentelemetry
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="add-a-reference-to-the-opentelemtry-libraries">Add a reference to the OpenTelemtry libraries&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet add package OpenTelemetry.Extensions.Hosting --prerelease
+dotnet add package OpenTelemetry.Exporter.Console --prerelease
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="modify-the-createhostbuilder-method-in-programcs">Modify the CreateHostBuilder method in Program.cs&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> IHostBuilder CreateHostBuilder(&lt;span style="color:#66d9ef">string&lt;/span>[] args) =&amp;gt;
+Host.CreateDefaultBuilder(args)
+.ConfigureLogging(logging =&amp;gt;
+{
+logging.ClearProviders();
+logging.AddOpenTelemetry(options =&amp;gt;
+{
+options.AddProcessor(&lt;span style="color:#66d9ef">new&lt;/span> SimpleExportProcessor&amp;lt;LogRecord&amp;gt;(&lt;span style="color:#66d9ef">new&lt;/span> ConsoleExporter&amp;lt;LogRecord&amp;gt;(&lt;span style="color:#66d9ef">new&lt;/span> ConsoleExporterOptions())));
+});
+})
+.ConfigureWebHostDefaults(webBuilder =&amp;gt;
+{
+webBuilder.UseStartup&amp;lt;Startup&amp;gt;();
+});
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The code first clears all logging providers and then adds OpenTelemetry using the &lt;code>SimpleExportProcessor&lt;/code> and &lt;code>ConsoleExporter&lt;/code>.&lt;/p>
+&lt;p>Please check the &lt;a href="https://github.com/open-telemetry/opentelemetry-dotnet">OpenTelemetry .NET API&lt;/a> repo to learn more.&lt;/p>
+&lt;h2 id="modify-the-log-settings">Modify the log settings&lt;/h2>
+&lt;p>Edit the &lt;code>appsettings.Development.json&lt;/code> in order to configure the default log settings using the OpenTelemetry provider:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;Logging&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;LogLevel&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Default&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Information&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Warning&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Hosting.Lifetime&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Information&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;AllowedHosts&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;*&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-program">Test the program&lt;/h2>
+&lt;p>Run the following command to test the application.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should see the logs, formatted as OpenTelemtry log records, written in the console:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;a href="">&lt;/a>&lt;/th>
+&lt;th>&lt;a href="">&lt;/a>&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>LogRecord.TraceId:&lt;/td>
+&lt;td>00000000000000000000000000000000&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.SpanId:&lt;/td>
+&lt;td>0000000000000000&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.Timestamp:&lt;/td>
+&lt;td>2021-01-08T10:36:26.1338054Z&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.EventId:&lt;/td>
+&lt;td>0&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.CategoryName:&lt;/td>
+&lt;td>Microsoft.Hosting.Lifetime&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.LogLevel:&lt;/td>
+&lt;td>Information&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.TraceFlags:&lt;/td>
+&lt;td>None&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.State:&lt;/td>
+&lt;td>Application is shutting down&amp;hellip;&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Both &lt;code>TraceId&lt;/code> and &lt;code>SpanId&lt;/code> will get filled when a request is handled by your application and if the call is made by Dapr it will respect the values sent by it so you can correlate traces and logs improving the observability of your solution.&lt;/p>
+&lt;p>Hope it helps! and please find the complete code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.opentelemetry">here&lt;/a>&lt;/p></description></item><item><title>Dapr: Reading local secrets with .NET 5</title><link>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</link><pubDate>Wed, 18 Nov 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/11/18/dapr-reading-local-secrets-with-.net-5/</guid><description>&lt;p>Now that &lt;a href="https://dapr.io/">Dapr&lt;/a> is about to hit version 1.0.0 let me show you how easy is to read secrets with a &lt;a href="https://dotnet.microsoft.com/?WT.mc_id=AZ-MVP-5002618">.NET 5&lt;/a> console application.&lt;/p>
 &lt;h2 id="create-a-console-application">Create a console application&lt;/h2>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet new console -n DaprSecretSample
 cd DaprSecretSample
@@ -1039,141 +1174,4 @@ create secret generic my-credentials &lt;span style="color:#e6db74">`&lt;/span>
 &lt;/span>&lt;span style="color:#960050;background-color:#1e0010">&lt;/span>&lt;span style="color:#66d9ef">ENV&lt;/span> DEBIAN_FRONTEND&lt;span style="color:#f92672">=&lt;/span>dialog
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>To learn more about this Remote Container please check &lt;a href="https://github.com/microsoft/vscode-dev-containers/tree/master/containers/azure-blockchainhttps://github.com/microsoft/vscode-dev-containers/tree/master/containers/jekyll">here&lt;/a>.&lt;/p>
 &lt;p>If you want to use Developer Conatianers with WSL 2 start &lt;a href="https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers?WT.mc_id=DOP-MVP-5002618">here&lt;/a>&lt;/p>
-&lt;p>Hope it helps!&lt;/p></description></item><item><title>AKS: Read Azure Key Vault secrets using AAD Pod Identity</title><link>https://carlos.mendible.com/2019/11/30/aks_read_azure_key_vault_secrets_using_aad_pod_identity/</link><pubDate>Sat, 30 Nov 2019 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2019/11/30/aks_read_azure_key_vault_secrets_using_aad_pod_identity/</guid><description>&lt;p>What if I tell you that it&amp;rsquo;s possible to connect you AKS pods to an &lt;strong>Azure Key Vault&lt;/strong> using identities but without having to use credentials in an explicit way?&lt;/p>
-&lt;p>Well with &lt;strong>AAD Pod Identities&lt;/strong> you can enable your Kubernetes applications to access Azure cloud resources securely using &lt;strong>Azure Active Directory&lt;/strong> (AAD) including &lt;strong>Azure Key Vault&lt;/strong>.&lt;/p>
-&lt;blockquote>
-&lt;p>Did you knoe that using POd Idenities is a best practice? Check the docs &lt;a href="https://docs.microsoft.com/en-us/azure/aks/operator-best-practices-identity#use-pod-identities?WT.mc_id=AZ-MVP-5002618">here&lt;/a>&lt;/p>
-&lt;/blockquote>
-&lt;p>The following &lt;a href="https://gist.github.com/cmendible/4dd5c48a45480d5a0db0d6ed68e4cd01">gist&lt;/a> show a &lt;strong>PowerShell&lt;/strong> script that will help you setup everything inside your RBAC enabled AKS cluster. You will also need to have &lt;strong>Azure CLI&lt;/strong> installed on your box and an &lt;strong>Azure Key Vault&lt;/strong> deployed in the same resource group where your AKS lives.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">&lt;span style="color:#66d9ef">param&lt;/span>(
-&lt;span style="color:#66d9ef">[string]&lt;/span>
-[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
-$resourceGroupName,
-&lt;span style="color:#66d9ef">[string]&lt;/span>
-[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
-$identityName,
-&lt;span style="color:#66d9ef">[string]&lt;/span>
-[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
-$identitySelector,
-&lt;span style="color:#66d9ef">[string]&lt;/span>
-[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
-$aksName,
-&lt;span style="color:#66d9ef">[string]&lt;/span>
-[&lt;span style="color:#66d9ef">Parameter&lt;/span>(&lt;span style="color:#66d9ef">Mandatory&lt;/span> = $true)]
-$keyVaultName
-)
-&lt;span style="color:#75715e"># Get the current subscription&lt;/span>
-$subscriptionId = (az account show | ConvertFrom-Json).id
-&lt;span style="color:#75715e"># Get aks so we can extract it&amp;#39;s Service Princpal later&lt;/span>
-$aks = az aks show `
--g $resourceGroupName `
--n $aksName | ConvertFrom-Json
-&lt;span style="color:#75715e"># Create Managed Identity&lt;/span>
-$identity = az identity create `
--g $resourceGroupName `
--n $identityName `
--o json | ConvertFrom-Json
-&lt;span style="color:#75715e"># Assign the Reader role to the Managed Identity&lt;/span>
-az role assignment create `
---role &lt;span style="color:#e6db74">&amp;#34;Reader&amp;#34;&lt;/span> `
---assignee $identity.principalId `
---scope /subscriptions/$subscriptionId/resourcegroups/$resourceGroupName
-&lt;span style="color:#75715e"># Assign the Managed Identity Operator role to the AKS Service Principal&lt;/span>
-az role assignment create `
---role &lt;span style="color:#e6db74">&amp;#34;Managed Identity Operator&amp;#34;&lt;/span> `
---assignee $aks.servicePrincipalProfile.clientId `
---scope $identity.id
-&lt;span style="color:#75715e"># Add policy to the Key Vault so the Managed Identity can read secrets&lt;/span>
-az keyvault set-policy `
---name $keyVaultName `
---spn $identity.clientId `
---secret-permissions get list
-&lt;span style="color:#75715e"># Enable AAD Pod Identity on AKS&lt;/span>
-kubectl apply &lt;span style="color:#f92672">-f&lt;/span> https&lt;span style="color:#960050;background-color:#1e0010">:&lt;/span>//raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml
-&lt;span style="color:#75715e"># Create the Azure Identity and AzureIdentityBinding yaml on the fly&lt;/span>
-$k8sAzureIdentityandBinding = &lt;span style="color:#e6db74">@&amp;#34;
-&lt;/span>&lt;span style="color:#e6db74">apiVersion: &amp;#34;aadpodidentity.k8s.io/v1&amp;#34;
-&lt;/span>&lt;span style="color:#e6db74">kind: AzureIdentity
-&lt;/span>&lt;span style="color:#e6db74">metadata:
-&lt;/span>&lt;span style="color:#e6db74"> name: &lt;/span>$($identityName)&lt;span style="color:#e6db74">
-&lt;/span>&lt;span style="color:#e6db74">spec:
-&lt;/span>&lt;span style="color:#e6db74"> type: 0
-&lt;/span>&lt;span style="color:#e6db74"> ResourceID: &lt;/span>$($identity.id)&lt;span style="color:#e6db74">
-&lt;/span>&lt;span style="color:#e6db74"> ClientID: &lt;/span>$($identity.clientId)&lt;span style="color:#e6db74">
-&lt;/span>&lt;span style="color:#e6db74">---
-&lt;/span>&lt;span style="color:#e6db74">apiVersion: &amp;#34;aadpodidentity.k8s.io/v1&amp;#34;
-&lt;/span>&lt;span style="color:#e6db74">kind: AzureIdentityBinding
-&lt;/span>&lt;span style="color:#e6db74">metadata:
-&lt;/span>&lt;span style="color:#e6db74"> name: &lt;/span>$($identityName)&lt;span style="color:#e6db74">-identity-binding
-&lt;/span>&lt;span style="color:#e6db74">spec:
-&lt;/span>&lt;span style="color:#e6db74"> AzureIdentity: &lt;/span>$($identityName)&lt;span style="color:#e6db74">
-&lt;/span>&lt;span style="color:#e6db74"> Selector: &lt;/span>$($identitySelector)&lt;span style="color:#e6db74">
-&lt;/span>&lt;span style="color:#e6db74">&amp;#34;@&lt;/span>
-&lt;span style="color:#75715e"># Deploy the yamls &lt;/span>
-$k8sAzureIdentityandBinding | kubectl apply &lt;span style="color:#f92672">-f&lt;/span> -
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>The script creates a Manged Identity, assigns some permissions to it and creates a policy inside the Key Vault enabling the Identity to list and get secrets.&lt;/p>
-&lt;p>Then the &lt;strong>&lt;a href="https://github.com/Azure/aad-pod-identity#components">Managed Identity Controller (MIC) deployment and the Node Managed Identity (NMI) daemon set&lt;/a>&lt;/strong> are deployed inside the cluster.&lt;/p>
-&lt;p>In the last step, two resources are deployed. The first one is an &lt;strong>AzureIdentity&lt;/strong> that will be used to identify the Managed Identity inside your cluster and the second one is an &lt;strong>AzureIdentityBinding&lt;/strong> that binds the azure Identity with a Selector.&lt;/p>
-&lt;p>Let&amp;rsquo;s run the PowerShell command with the following parameters:&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Resource Group&lt;/strong>: myResourceGroup&lt;/li>
-&lt;li>&lt;strong>Managed Identity Name&lt;/strong>: myId&lt;/li>
-&lt;li>&lt;strong>Identity Selector&lt;/strong>: requires-vault&lt;/li>
-&lt;li>&lt;strong>AKS Name&lt;/strong>: myAKS&lt;/li>
-&lt;li>&lt;strong>Key Vault Name&lt;/strong>: myKeyVault&lt;/li>
-&lt;/ul>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">.\SetupPodIdentityKeyVaultIntegration.ps1 myResourceGroup myId requires-vault myAKS myKeyVault
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Once the command is done, any pod marked with the &lt;em>&lt;strong>aadpodidbinding: requires-vault&lt;/strong>&lt;/em> label will get an Identity assigned.&lt;/p>
-&lt;p>To check that everything is working as expected you can create a &lt;strong>deployment.yaml&lt;/strong> with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
-&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">apps/v1beta1&lt;/span>
-&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">Deployment&lt;/span>
-&lt;span style="color:#f92672">metadata&lt;/span>:
-&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">az-keyvault-reader-test&lt;/span>
-&lt;span style="color:#f92672">spec&lt;/span>:
-&lt;span style="color:#f92672">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#f92672">template&lt;/span>:
-&lt;span style="color:#f92672">metadata&lt;/span>:
-&lt;span style="color:#f92672">labels&lt;/span>:
-&lt;span style="color:#f92672">app&lt;/span>: &lt;span style="color:#ae81ff">az-keyvault-reader-test&lt;/span>
-&lt;span style="color:#f92672">aadpodidbinding&lt;/span>: &lt;span style="color:#ae81ff">requires-vault&lt;/span>
-&lt;span style="color:#f92672">spec&lt;/span>:
-&lt;span style="color:#f92672">containers&lt;/span>:
-- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">busybox&lt;/span>
-&lt;span style="color:#f92672">image&lt;/span>: &lt;span style="color:#ae81ff">busybox&lt;/span>
-&lt;span style="color:#f92672">command&lt;/span>:
-[
-&lt;span style="color:#e6db74">&amp;#34;sh&amp;#34;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#34;-c&amp;#34;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#34;wget --tries=70 -qO- http://127.0.0.1:8333/secrets/&amp;lt;SECRET_NAME&amp;gt;/&amp;#34;&lt;/span>,
-]
-&lt;span style="color:#f92672">imagePullPolicy&lt;/span>: &lt;span style="color:#ae81ff">Always&lt;/span>
-&lt;span style="color:#f92672">resources&lt;/span>:
-&lt;span style="color:#f92672">requests&lt;/span>:
-&lt;span style="color:#f92672">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;4Mi&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;100m&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">limits&lt;/span>:
-&lt;span style="color:#f92672">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;8Mi&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;200m&amp;#34;&lt;/span>
-- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">az-keyvault-reader-sidecar&lt;/span>
-&lt;span style="color:#f92672">image&lt;/span>: &lt;span style="color:#ae81ff">cmendibl3/az-keyvault-reader:0.2&lt;/span>
-&lt;span style="color:#f92672">imagePullPolicy&lt;/span>: &lt;span style="color:#ae81ff">Always&lt;/span>
-&lt;span style="color:#f92672">env&lt;/span>:
-- &lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">AZURE_KEYVAULT_NAME&lt;/span>
-&lt;span style="color:#f92672">value&lt;/span>: &lt;span style="color:#ae81ff">&amp;lt;AZURE_KEYVAULT_NAME&amp;gt;&lt;/span>
-&lt;span style="color:#f92672">resources&lt;/span>:
-&lt;span style="color:#f92672">requests&lt;/span>:
-&lt;span style="color:#f92672">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;8Mi&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;100m&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">limits&lt;/span>:
-&lt;span style="color:#f92672">memory&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;16Mi&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;200m&amp;#34;&lt;/span>
-&lt;span style="color:#f92672">restartPolicy&lt;/span>: &lt;span style="color:#ae81ff">Always&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>: Replace the values for &amp;lt;AZURE_KEYVAULT_NAME&amp;gt; with the name of your Key Vault and &amp;lt;SECRET_NAME&amp;gt; with the name of an existing secret stored in your Key Vault:&lt;/p>
-&lt;p>Now deploy to Kubernetes:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl apply &lt;span style="color:#f92672">-f&lt;/span> ./deployment.yaml
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>and check the logs for the &lt;strong>busybox&lt;/strong> pod:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-powershell" data-lang="powershell">kubectl logs &lt;span style="color:#f92672">-f&lt;/span> $(kubectl get po --selector=app=az-keyvault-reader-test -o jsonpath=&lt;span style="color:#e6db74">&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span>) -c busybox -w
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything is OK you should see the value of your secret dumped in the logs (Bad security practice here)!!! And yes you did all this without knowing any credentials!&lt;/p>
-&lt;p>Please find the code used to connect to the &lt;strong>Azure KeyVault&lt;/strong> here: &lt;a href="https://github.com/cmendible/az-keyvault-reader/blob/master/src/az-keyvault-reader.go">az-keyvault-reader.go&lt;/a> and check &lt;a href="https://github.com/Azure/aad-pod-identity">AAD Pod Identity&lt;/a> for more information on how this &amp;ldquo;magic&amp;rdquo; works.&lt;/p>
 &lt;p>Hope it helps!&lt;/p></description></item></channel></rss>

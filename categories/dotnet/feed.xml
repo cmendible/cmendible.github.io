@@ -1,4 +1,139 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dotnet on Code it Yourself...</title><link>https://carlos.mendible.com/categories/dotnet/</link><description>Recent content in dotnet on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 20 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/dotnet/feed.xml" rel="self" type="application/rss+xml"/><item><title>Dapr y Azure Functions</title><link>https://carlos.mendible.com/events/2020/11/20/dapr-y-azure-functions/</link><pubDate>Fri, 20 Nov 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/11/20/dapr-y-azure-functions/</guid><description>&lt;p>A talk (Spanish) on Dapr and Azure Functions&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dotnet on Code it Yourself...</title><link>https://carlos.mendible.com/categories/dotnet/</link><description>Recent content in dotnet on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 08 Jan 2021 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/dotnet/feed.xml" rel="self" type="application/rss+xml"/><item><title>ASP.NET Core OpenTelemetry Logging</title><link>https://carlos.mendible.com/2021/01/08/asp.net-core-opentelemetry-logging/</link><pubDate>Fri, 08 Jan 2021 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/01/08/asp.net-core-opentelemetry-logging/</guid><description>&lt;p>As you may know I&amp;rsquo;ve been collaborating with &lt;a href="https://dapr.io/">Dapr&lt;/a> and I&amp;rsquo;ve learned that one of the things it enables you to do is to collect traces with the use of the &lt;a href="https://github.com/open-telemetry/opentelemetry-collector">OpenTelemetry Collector&lt;/a> and push the events to &lt;a href="https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview?WT.mc_id=AZ-MVP-5002618">Azure Application Insights&lt;/a>.&lt;/p>
+&lt;p>After some reading I went and check if I could also write my ASP.NET Core applications to log using the OpenTelemetry Log and Event record definition:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Field Name&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Timestamp&lt;/td>
+&lt;td>Time when the event occurred.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>TraceId&lt;/td>
+&lt;td>Request trace id.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>SpanId&lt;/td>
+&lt;td>Request span id.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>TraceFlags&lt;/td>
+&lt;td>W3C trace flag.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>SeverityText&lt;/td>
+&lt;td>The severity text (also known as log level).&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>SeverityNumber&lt;/td>
+&lt;td>Numerical value of the severity.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Name&lt;/td>
+&lt;td>Short event identifier.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Body&lt;/td>
+&lt;td>The body of the log record.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Resource&lt;/td>
+&lt;td>Describes the source of the log.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Attributes&lt;/td>
+&lt;td>Additional information about the event.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>So here is how you can do it:&lt;/p>
+&lt;h2 id="create-an-aspnet-core-application">Create an ASP.NET Core application&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet new webapi -n aspnet.opentelemetry
+cd aspnet.opentelemetry
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="add-a-reference-to-the-opentelemtry-libraries">Add a reference to the OpenTelemtry libraries&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet add package OpenTelemetry.Extensions.Hosting --prerelease
+dotnet add package OpenTelemetry.Exporter.Console --prerelease
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="modify-the-createhostbuilder-method-in-programcs">Modify the CreateHostBuilder method in Program.cs&lt;/h2>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-csharp" data-lang="csharp">&lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> IHostBuilder CreateHostBuilder(&lt;span style="color:#66d9ef">string&lt;/span>[] args) =&amp;gt;
+Host.CreateDefaultBuilder(args)
+.ConfigureLogging(logging =&amp;gt;
+{
+logging.ClearProviders();
+logging.AddOpenTelemetry(options =&amp;gt;
+{
+options.AddProcessor(&lt;span style="color:#66d9ef">new&lt;/span> SimpleExportProcessor&amp;lt;LogRecord&amp;gt;(&lt;span style="color:#66d9ef">new&lt;/span> ConsoleExporter&amp;lt;LogRecord&amp;gt;(&lt;span style="color:#66d9ef">new&lt;/span> ConsoleExporterOptions())));
+});
+})
+.ConfigureWebHostDefaults(webBuilder =&amp;gt;
+{
+webBuilder.UseStartup&amp;lt;Startup&amp;gt;();
+});
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The code first clears all logging providers and then adds OpenTelemetry using the &lt;code>SimpleExportProcessor&lt;/code> and &lt;code>ConsoleExporter&lt;/code>.&lt;/p>
+&lt;p>Please check the &lt;a href="https://github.com/open-telemetry/opentelemetry-dotnet">OpenTelemetry .NET API&lt;/a> repo to learn more.&lt;/p>
+&lt;h2 id="modify-the-log-settings">Modify the log settings&lt;/h2>
+&lt;p>Edit the &lt;code>appsettings.Development.json&lt;/code> in order to configure the default log settings using the OpenTelemetry provider:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;Logging&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;LogLevel&amp;#34;&lt;/span>: {
+&lt;span style="color:#f92672">&amp;#34;Default&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Information&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Warning&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;Microsoft.Hosting.Lifetime&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Information&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#f92672">&amp;#34;AllowedHosts&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;*&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-the-program">Test the program&lt;/h2>
+&lt;p>Run the following command to test the application.&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">dotnet run
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should see the logs, formatted as OpenTelemtry log records, written in the console:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;a href="">&lt;/a>&lt;/th>
+&lt;th>&lt;a href="">&lt;/a>&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>LogRecord.TraceId:&lt;/td>
+&lt;td>00000000000000000000000000000000&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.SpanId:&lt;/td>
+&lt;td>0000000000000000&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.Timestamp:&lt;/td>
+&lt;td>2021-01-08T10:36:26.1338054Z&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.EventId:&lt;/td>
+&lt;td>0&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.CategoryName:&lt;/td>
+&lt;td>Microsoft.Hosting.Lifetime&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.LogLevel:&lt;/td>
+&lt;td>Information&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.TraceFlags:&lt;/td>
+&lt;td>None&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>LogRecord.State:&lt;/td>
+&lt;td>Application is shutting down&amp;hellip;&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Both &lt;code>TraceId&lt;/code> and &lt;code>SpanId&lt;/code> will get filled when a request is handled by your application and if the call is made by Dapr it will respect the values sent by it so you can correlate traces and logs improving the observability of your solution.&lt;/p>
+&lt;p>Hope it helps! and please find the complete code &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/aspnet.opentelemetry">here&lt;/a>&lt;/p></description></item><item><title>Dapr y Azure Functions</title><link>https://carlos.mendible.com/events/2020/11/20/dapr-y-azure-functions/</link><pubDate>Fri, 20 Nov 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/11/20/dapr-y-azure-functions/</guid><description>&lt;p>A talk (Spanish) on Dapr and Azure Functions&lt;/p>
 &lt;script src="https://player.twitch.tv/js/embed/v1.js">&lt;/script>
 &lt;div id="twitch-embed" class="shortcode shortcode--twitch" style="width: 100%; height: 100%;">&lt;/div>
 &lt;script type="text/javascript">
@@ -261,8 +396,4 @@ ready = run.Data.Attributes.Status == &lt;span style="color:#e6db74">&amp;#34;pl
 &lt;/div></description></item><item><title>Global Azure Virtual - Dapr</title><link>https://carlos.mendible.com/events/2020/04/25/globalazure-virtual-dapr/</link><pubDate>Sat, 25 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/25/globalazure-virtual-dapr/</guid><description>&lt;p>Let&amp;rsquo;s learn how to use Dapr to build resilient, stateless and stateful microservices solutions that run on the cloud and edge solving the challenges you´ll face if you try to remove your applications SDK dependencies, port your applications (without code modifications) between clouds and implement event-driven architectures.&lt;/p>
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
 &lt;iframe src="https://www.youtube.com/embed/k6PVR9wgGx4" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>Global Azure Virtual - Shhhhh: Secrets Should Stay Secret</title><link>https://carlos.mendible.com/events/2020/04/23/globalazure-virtaul-secrets-should-stay-secret/</link><pubDate>Thu, 23 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/23/globalazure-virtaul-secrets-should-stay-secret/</guid><description>&lt;p>A common challenge when building cloud applications is how to manage the credentials in your code for authenticating to cloud services. In this session we&amp;rsquo;ll explore how to keep your credentials safe and how you can work without saving those credentials in the developers machines and therefore avoid an accidental upload to source control.&lt;/p>
-&lt;p>Discover Managed Identities, a feature that let&amp;rsquo;s you authenticate to any service that supports Azure AD authentication, including Azure Key Vault, without any credentials in your .NET, Java or Golang code or configuration!!!&lt;/p>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/ygM8xRcWSZY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
 &lt;/div></description></item></channel></rss>
