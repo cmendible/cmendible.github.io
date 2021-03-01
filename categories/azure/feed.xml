@@ -1,13 +1,33 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>azure on Code it Yourself...</title><link>https://carlos.mendible.com/categories/azure/</link><description>Recent content in azure on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 20 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/azure/feed.xml" rel="self" type="application/rss+xml"/><item><title>Dapr y Azure Functions</title><link>https://carlos.mendible.com/events/2020/11/20/dapr-y-azure-functions/</link><pubDate>Fri, 20 Nov 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/11/20/dapr-y-azure-functions/</guid><description>&lt;p>A talk (Spanish) on Dapr and Azure Functions&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>azure on Code it Yourself...</title><link>https://carlos.mendible.com/categories/azure/</link><description>Recent content in azure on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 27 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/azure/feed.xml" rel="self" type="application/rss+xml"/><item><title>Extending Azure Functions with Dapr</title><link>https://carlos.mendible.com/events/2021/02/27/extending-azure-functions-with-dapr/</link><pubDate>Sat, 27 Feb 2021 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2021/02/27/extending-azure-functions-with-dapr/</guid><description>&lt;p>A talk (Spanish) on how to extend Azure Functions with Dapr.&lt;/p>
 &lt;script src="https://player.twitch.tv/js/embed/v1.js">&lt;/script>
-&lt;div id="twitch-embed" class="shortcode shortcode--twitch" style="width: 100%; height: 100%;">&lt;/div>
+&lt;div id="twitch-embed" class="shortcode shortcode--twitch shortcode--video" style="width: 100%; height: 100%;">&lt;/div>
 &lt;script type="text/javascript">
 var options = {
 width: "100%",
 height: "100%",
 };
+var time = '1:56:46';
+if (time.length > 0) {
+options.time = time;
+};
 new Twitch.Player("twitch-embed", {
-video: '809436372',
+video: '930208353',
+options: options
+});
+&lt;/script></description></item><item><title>Dapr y Azure Functions</title><link>https://carlos.mendible.com/events/2021/02/17/dapr-y-azure-functions/</link><pubDate>Wed, 17 Feb 2021 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2021/02/17/dapr-y-azure-functions/</guid><description>&lt;p>A talk (Spanish) on Dapr and Azure Functions&lt;/p>
+&lt;script src="https://player.twitch.tv/js/embed/v1.js">&lt;/script>
+&lt;div id="twitch-embed" class="shortcode shortcode--twitch shortcode--video" style="width: 100%; height: 100%;">&lt;/div>
+&lt;script type="text/javascript">
+var options = {
+width: "100%",
+height: "100%",
+};
+var time = '';
+if (time.length > 0) {
+options.time = time;
+};
+new Twitch.Player("twitch-embed", {
+video: '917814938',
 options: options
 });
 &lt;/script></description></item><item><title>What I Learned From Hacktoberfest 2020</title><link>https://carlos.mendible.com/2020/10/18/what-i-learned-from-hacktoberfest-2020/</link><pubDate>Sun, 18 Oct 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/10/18/what-i-learned-from-hacktoberfest-2020/</guid><description>&lt;p>&lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> is an open global event where people all around de globe contribute to open source projects.&lt;/p>
@@ -364,8 +384,4 @@ terraform apply -var&lt;span style="color:#f92672">=&lt;/span>&lt;span style="co
 &lt;li>[1] &lt;a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints?WT.mc_id=AZ-MVP-5002618">Use private endpoints for Azure Storage&lt;/a>&lt;/li>
 &lt;li>[2] Integrate your app with an Azure virtual network: &lt;a href="https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#regional-vnet-integration?WT.mc_id=AZ-MVP-5002618">Regional VNET Integration&lt;/a>&lt;/li>
 &lt;li>[3] Integrate your app with an Azure virtual network: &lt;a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints?WT.mc_id=AZ-MVP-5002618">Troubleshooting&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>Code Academy - Entrevista a Carlos Mendible</title><link>https://carlos.mendible.com/events/2020/05/06/code-academy-interview/</link><pubDate>Wed, 06 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/05/06/code-academy-interview/</guid><description>&lt;p>¿Quieres conocer a un MVP desde dentro? El programa Microsoft Most Valuable Professional es un premio otorgado por Microsoft a los líderes más valiosos en las comunidades destacados como reconocimiento a su labor voluntaria en compartir sus conocimientos en la comunidad.&lt;/p>
-&lt;p>En este webinar con formato entrevista, Carlos Mendible, Microsoft MVP Azure &amp;amp; Developer Technologies, nos cuenta su trayectoria profesional, nos da sus consejos y sus puntos de vista de la situación del mercado actual.&lt;/p>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/69CGGeZjlRE" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item></channel></rss>
+&lt;/ul></description></item></channel></rss>
