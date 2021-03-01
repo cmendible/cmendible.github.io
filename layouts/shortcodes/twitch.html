@@ -1,13 +1,19 @@
 <script src="https://player.twitch.tv/js/embed/v1.js"></script>
-<div id="twitch-embed" class="shortcode shortcode--twitch" style="width: 100%; height: 100%;"></div>
+<div id="twitch-embed" class="shortcode shortcode--twitch shortcode--video" style="width: 100%; height: 100%;"></div>
 
 <script type="text/javascript">
 	var options = {
 		width: "100%",
 		height: "100%",
 	};
+
+	var time = '{{ with .Get "time"}}{{.}}{{end}}';
+	if (time.length > 0) {
+		options.time = time;
+	};
+
 	new Twitch.Player("twitch-embed", {
-		video: '{{ with .Get 0}}{{.}}{{end}}',
+		video: '{{ with .Get "video"}}{{.}}{{end}}',
 		options: options
 	});
 </script>
