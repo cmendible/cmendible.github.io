@@ -17,7 +17,7 @@
 <meta property="article:tag" content="{{ delimit .Params.tags ", " }}" />
 {{ end }}
 {{- with .OutputFormats.Get "rss" -}}
-{{ printf `<link rel="%s" type="%s+%s" href="%s" title="%s" />` .Rel .MediaType.Type .MediaType.Suffix .Permalink $.Site.Title | safeHTML }}
+{{ printf `<link rel="%s" type="%s+%s" href="%s" title="%s" />` .Rel .MediaType.Type .MediaType.Type .Permalink $.Site.Title | safeHTML }}
 {{- end -}}
 {{ template "_internal/opengraph.html" . }}
 {{ template "_internal/twitter_cards.html" . }}
