@@ -9,188 +9,188 @@
 &lt;p>If Cloud Shell has been used in the past, the existing clouddrive must be unmounted. To do this run &lt;code>clouddrive unmount&lt;/code> from an active Cloud Shell session.&lt;/p>
 &lt;/blockquote>
 &lt;h3 id="1-create-a-providertf-file-with-the-following-contents">1. Create a &lt;code>provider.tf&lt;/code> file with the following contents:&lt;/h3>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#960050;background-color:#1e0010">terraform&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">required_version&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;&amp;gt;= 0.13.5&amp;#34;&lt;/span>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#ae81ff">terraform {&lt;/span>
+&lt;span style="color:#ae81ff">required_version = &amp;#34;&amp;gt;= 0.13.5&amp;#34;&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">provider&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">version&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;= 2.46.1&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">features&lt;/span> {}
+&lt;span style="color:#ae81ff">provider &amp;#34;azurerm&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">version = &amp;#34;= 2.46.1&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">features {}&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">provider&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azuread&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">version&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;= 1.3.0&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">provider &amp;#34;azuread&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">version = &amp;#34;= 1.3.0&amp;#34;&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">provider&lt;/span> &lt;span style="color:#e6db74">&amp;#34;http&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">version&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;= 2.0.0&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">provider &amp;#34;http&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">version = &amp;#34;= 2.0.0&amp;#34;&lt;/span>
 }
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that we are using &lt;code>azurerm&lt;/code> to deploy Azure services, &lt;code>azuread&lt;/code> to get some Service Principal information and &lt;code>http&lt;/code> to get your current public ip address so that only you can reach your Cloud Shell.&lt;/p>
 &lt;h3 id="2-create-a-variablestf-file-with-the-following-contents">2. Create a variables.tf file with the following contents:&lt;/h3>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#960050;background-color:#1e0010">variable&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">default&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;west europe&amp;#34;&lt;/span>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#ae81ff">variable location {&lt;/span>
+&lt;span style="color:#ae81ff">default = &amp;#34;west europe&amp;#34;&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">variable&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">resource_group&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">default&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;&amp;lt;resource group name&amp;gt;&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">variable resource_group {&lt;/span>
+&lt;span style="color:#ae81ff">default = &amp;#34;&amp;lt;resource group name&amp;gt;&amp;#34;&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">variable&lt;/span> &lt;span style="color:#e6db74">&amp;#34;vnet_name&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">default&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;&amp;lt;vnet name&amp;gt;&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">variable &amp;#34;vnet_name&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">default = &amp;#34;&amp;lt;vnet name&amp;gt;&amp;#34;&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">variable&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">sa_name&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">default&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;&amp;lt;Backing Storage Account name&amp;gt;&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">variable sa_name {&lt;/span>
+&lt;span style="color:#ae81ff">default = &amp;#34;&amp;lt;Backing Storage Account name&amp;gt;&amp;#34;&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">variable&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">relay_name&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">default&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;&amp;lt;Azure Relay name&amp;gt;&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">variable relay_name {&lt;/span>
+&lt;span style="color:#ae81ff">default = &amp;#34;&amp;lt;Azure Relay name&amp;gt;&amp;#34;&lt;/span>
 }
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Make sure you replace the placeholders with the default values you want to use.&lt;/p>
 &lt;h3 id="3-create-a-maintf-file-with-the-following-contents">3. Create a &lt;code>main.tf&lt;/code> file with the following contents:&lt;/h3>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Get&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Azure&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Instance&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Service&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Principal.&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Amazing&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">right?&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Cloud&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Shell&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">uses&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">this&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Service&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Principal!&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">data&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azuread_service_principal&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;container&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">display_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;Azure Container Instance Service&amp;#34;&lt;/span>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># Get Azure Container Instance Service Principal. Amazing right? Cloud Shell uses this Service Principal!&lt;/span>
+&lt;span style="color:#ae81ff">data &amp;#34;azuread_service_principal&amp;#34; &amp;#34;container&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">display_name = &amp;#34;Azure Container Instance Service&amp;#34;&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Resource&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Groupto&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">hold&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">resources.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_resource_group&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;rg&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">var.resource_group&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">var.location&lt;/span>
+&lt;span style="color:#75715e"># Create Resource Groupto hold the resources.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_resource_group&amp;#34; &amp;#34;rg&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = var.resource_group&lt;/span>
+&lt;span style="color:#ae81ff">location = var.location&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">VNET.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_virtual_network&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;vnet&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">var.vnet_name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">address_space&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">[&lt;/span>&lt;span style="color:#f92672">&amp;#34;10.0.0.0/16&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">]&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.location&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#75715e"># Create a VNET.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_virtual_network&amp;#34; &amp;#34;vnet&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = var.vnet_name&lt;/span>
+&lt;span style="color:#ae81ff">address_space = [&amp;#34;10.0.0.0/16&amp;#34;]&lt;/span>
+&lt;span style="color:#ae81ff">location = azurerm_resource_group.rg.location&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Containers&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Subnet.&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Here&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">is&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">where&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Cloud&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Shell&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">will&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">run.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_subnet&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;containers&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;cloudshell-containers&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">virtual_network_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_virtual_network.vnet.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">address_prefixes&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;10.0.0.0/24&amp;#34;&lt;/span>]
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Delegate&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">subnet&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#e6db74">&amp;#34;Microsoft.ContainerInstance/containerGroups&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">delegation&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;cloudshell-delegation&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">service_delegation&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;Microsoft.ContainerInstance/containerGroups&amp;#34;&lt;/span>
-}
-}
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Add&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">service&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">enpoint&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">so&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Cloud&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Shell&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">can&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">reach&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Storage&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Accounts.&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">At&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">moment&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">solution&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">does&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">not&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">work&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">with&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Private&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Enpoints&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">for&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Storage&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Account.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">service_endpoints&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;Microsoft.Storage&amp;#34;&lt;/span>]
-}
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">subnet&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">host&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Azure&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Relay&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">service.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_subnet&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;relay&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;relay&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">virtual_network_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_virtual_network.vnet.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">address_prefixes&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;10.0.1.0/24&amp;#34;&lt;/span>]
-&lt;span style="color:#960050;background-color:#1e0010">enforce_private_link_endpoint_network_policies&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#66d9ef">true&lt;/span>
-}
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">network&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">profile&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">for&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Cloud&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Shell&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">containers.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_network_profile&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;networkprofile&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;cloudshell&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.location&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">container_network_interface&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;cloudshell-containers&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">ip_configuration&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;ipconfig&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">subnet_id&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_subnet.containers.id&lt;/span>
+&lt;span style="color:#75715e"># Create a Containers Subnet. Here is where Cloud Shell will run.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_subnet&amp;#34; &amp;#34;containers&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;cloudshell-containers&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">virtual_network_name = azurerm_virtual_network.vnet.name&lt;/span>
+&lt;span style="color:#ae81ff">address_prefixes = [&amp;#34;10.0.0.0/24&amp;#34;]&lt;/span>
+&lt;span style="color:#75715e"># Delegate the subnet to &amp;#34;Microsoft.ContainerInstance/containerGroups&amp;#34;.&lt;/span>
+&lt;span style="color:#ae81ff">delegation {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;cloudshell-delegation&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">service_delegation {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;Microsoft.ContainerInstance/containerGroups&amp;#34;&lt;/span>
 }
 }
+&lt;span style="color:#75715e"># Add service enpoint so Cloud Shell can reach Storage Accounts. At the moment the solution does not work with Private Enpoints for the Storage Account. &lt;/span>
+&lt;span style="color:#ae81ff">service_endpoints = [&amp;#34;Microsoft.Storage&amp;#34;]&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Assign&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Network&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Contributor&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Azure&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Instance&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Service&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Principal.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_role_assignment&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;network_contributor&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">scope&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_network_profile.networkprofile.id&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">role_definition_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;Network Contributor&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">principal_id&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">data.azuread_service_principal.container.object_id&lt;/span>
+&lt;span style="color:#75715e"># Create a subnet to host Azure Relay service.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_subnet&amp;#34; &amp;#34;relay&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;relay&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">virtual_network_name = azurerm_virtual_network.vnet.name&lt;/span>
+&lt;span style="color:#ae81ff">address_prefixes = [&amp;#34;10.0.1.0/24&amp;#34;]&lt;/span>
+&lt;span style="color:#ae81ff">enforce_private_link_endpoint_network_policies = true&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">an&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Azure&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Relay&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">namespace.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_relay_namespace&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;relay&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">var.relay_name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.location&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">sku_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;Standard&amp;#34;&lt;/span>
-}
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Add&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">private&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">enpoint&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Azure&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Relay&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">namespace.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_private_endpoint&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;endpoint&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;cloudshell-privateendpoint&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.location&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">subnet_id&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_subnet.relay.id&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">private_service_connection&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;privateendpoint&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">private_connection_resource_id&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_relay_namespace.relay.id&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">is_manual_connection&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">subresource_names&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;namespace&amp;#34;&lt;/span>]
+&lt;span style="color:#75715e"># Create a network profile for the Cloud Shell containers.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_network_profile&amp;#34; &amp;#34;networkprofile&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;cloudshell&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">location = azurerm_resource_group.rg.location&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">container_network_interface {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;cloudshell-containers&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">ip_configuration {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;ipconfig&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">subnet_id = azurerm_subnet.containers.id&lt;/span>
 }
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Assign&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Contributor&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Azure&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Container&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Instance&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Service&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Principal.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_role_assignment&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;contributor&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">scope&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_relay_namespace.relay.id&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">role_definition_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;Contributor&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">principal_id&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">data.azuread_service_principal.container.object_id&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Storage&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Account&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">hold&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Cloud&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Shell&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">profiles.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_account&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sa&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">var.sa_name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">location&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.location&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">account_tier&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;Standard&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">account_replication_type&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;GRS&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">enable_https_traffic_only&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#66d9ef">true&lt;/span>
+&lt;span style="color:#75715e"># Assign Network Contributor to the Azure Container Instance Service Principal.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_role_assignment&amp;#34; &amp;#34;network_contributor&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">scope = azurerm_network_profile.networkprofile.id&lt;/span>
+&lt;span style="color:#ae81ff">role_definition_name = &amp;#34;Network Contributor&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">principal_id = data.azuread_service_principal.container.object_id&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">a&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">file&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">share&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">hold&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">user&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">profiles.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_share&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;share&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;profile&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">storage_account_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_storage_account.sa.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">quota&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#ae81ff">6&lt;/span>
+&lt;span style="color:#75715e"># Create an Azure Relay namespace.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_relay_namespace&amp;#34; &amp;#34;relay&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = var.relay_name&lt;/span>
+&lt;span style="color:#ae81ff">location = azurerm_resource_group.rg.location&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">sku_name = &amp;#34;Standard&amp;#34;&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Get&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">your&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">current&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">public&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">IP.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">data&lt;/span> &lt;span style="color:#e6db74">&amp;#34;http&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;current_public_ip&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">url&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;http://ipinfo.io/json&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">request_headers&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">Accept&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;application/json&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Add a private enpoint to the Azure Relay namespace.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_private_endpoint&amp;#34; &amp;#34;endpoint&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;cloudshell-privateendpoint&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">location = azurerm_resource_group.rg.location&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">subnet_id = azurerm_subnet.relay.id&lt;/span>
+&lt;span style="color:#ae81ff">private_service_connection {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;privateendpoint&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">private_connection_resource_id = azurerm_relay_namespace.relay.id&lt;/span>
+&lt;span style="color:#ae81ff">is_manual_connection = false&lt;/span>
+&lt;span style="color:#ae81ff">subresource_names = [&amp;#34;namespace&amp;#34;]&lt;/span>
 }
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Protect&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Storage&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Account&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">setting&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">firewall.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">This&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">is&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">done&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">only&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">after&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">file&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">share&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">is&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">created.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_storage_account_network_rules&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;sa_rules&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">storage_account_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_storage_account.sa.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">default_action&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;Deny&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">virtual_network_subnet_ids&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> [&lt;span style="color:#960050;background-color:#1e0010">azurerm_subnet.containers.id&lt;/span>]
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">ip_rules&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> [
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">jsondecode(data.http.current_public_ip.body).ip&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> ]
-&lt;span style="color:#960050;background-color:#1e0010">depends_on&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> [
-&lt;span style="color:#960050;background-color:#1e0010">azurerm_storage_share.share&lt;/span>
+&lt;span style="color:#75715e"># Assign Contributor to the Azure Container Instance Service Principal.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_role_assignment&amp;#34; &amp;#34;contributor&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">scope = azurerm_relay_namespace.relay.id&lt;/span>
+&lt;span style="color:#ae81ff">role_definition_name = &amp;#34;Contributor&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">principal_id = data.azuread_service_principal.container.object_id&lt;/span>
+}
+&lt;span style="color:#75715e"># Create the Storage Account to hold the Cloud Shell profiles.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_storage_account&amp;#34; &amp;#34;sa&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = var.sa_name&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">location = azurerm_resource_group.rg.location&lt;/span>
+&lt;span style="color:#ae81ff">account_tier = &amp;#34;Standard&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">account_replication_type = &amp;#34;GRS&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">enable_https_traffic_only = true&lt;/span>
+}
+&lt;span style="color:#75715e"># Create a file share to hold the user profiles.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_storage_share&amp;#34; &amp;#34;share&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;profile&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">storage_account_name = azurerm_storage_account.sa.name&lt;/span>
+&lt;span style="color:#ae81ff">quota = 6&lt;/span>
+}
+&lt;span style="color:#75715e"># Get your current public IP.&lt;/span>
+&lt;span style="color:#ae81ff">data &amp;#34;http&amp;#34; &amp;#34;current_public_ip&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">url = &amp;#34;http://ipinfo.io/json&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">request_headers = {&lt;/span>
+&lt;span style="color:#ae81ff">Accept = &amp;#34;application/json&amp;#34;&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Protect the Storage Account setting the firewall.&lt;/span>
+&lt;span style="color:#75715e"># This is done only after the file share is created.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_storage_account_network_rules&amp;#34; &amp;#34;sa_rules&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">storage_account_name = azurerm_storage_account.sa.name&lt;/span>
+&lt;span style="color:#ae81ff">default_action = &amp;#34;Deny&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">virtual_network_subnet_ids = [azurerm_subnet.containers.id]&lt;/span>
+&lt;span style="color:#75715e"># ip_rules = [&lt;/span>
+&lt;span style="color:#75715e"># jsondecode(data.http.current_public_ip.body).ip&lt;/span>
+&lt;span style="color:#75715e"># ]&lt;/span>
+&lt;span style="color:#ae81ff">depends_on = [&lt;/span>
+&lt;span style="color:#ae81ff">azurerm_storage_share.share&lt;/span>
 ]
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">DNS&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Zone&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">for&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Relay&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_private_dns_zone&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;private&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;privatelink.servicebus.windows.net&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#75715e"># Create DNS Zone for Relay&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_private_dns_zone&amp;#34; &amp;#34;private&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;privatelink.servicebus.windows.net&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Create&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">A&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">record&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">for&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Relay&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_private_dns_a_record&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;relay&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">var.relay_name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">zone_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_private_dns_zone.private.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">ttl&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">3600&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">records&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">[azurerm_private_endpoint.endpoint.private_service_connection[0].private_ip_address]&lt;/span>
+&lt;span style="color:#75715e"># Create A record for the Relay&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_private_dns_a_record&amp;#34; &amp;#34;relay&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = var.relay_name&lt;/span>
+&lt;span style="color:#ae81ff">zone_name = azurerm_private_dns_zone.private.name&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">ttl = 3600&lt;/span>
+&lt;span style="color:#ae81ff">records = [azurerm_private_endpoint.endpoint.private_service_connection[0].private_ip_address]&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Link&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Private&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Zone&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">with&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">VNet&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;azurerm_private_dns_zone_virtual_network_link&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;relay&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#f92672">&amp;#34;relay&amp;#34;&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource_group_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_resource_group.rg.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">private_dns_zone_name&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_private_dns_zone.private.name&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">virtual_network_id&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">azurerm_virtual_network.vnet.id&lt;/span>
+&lt;span style="color:#75715e"># Link the Private Zone with the VNet&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_private_dns_zone_virtual_network_link&amp;#34; &amp;#34;relay&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;relay&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">private_dns_zone_name = azurerm_private_dns_zone.private.name&lt;/span>
+&lt;span style="color:#ae81ff">virtual_network_id = azurerm_virtual_network.vnet.id&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Open&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">the&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">relay&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">firewall&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">local&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">IP&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;null_resource&amp;#34;&lt;/span> &lt;span style="color:#e6db74">&amp;#34;open_relay_firewall&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">provisioner&lt;/span> &lt;span style="color:#f92672">&amp;#34;local-exec&amp;#34;&lt;/span> {
-&lt;span style="color:#960050;background-color:#1e0010">interpreter&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">[&lt;/span>&lt;span style="color:#f92672">&amp;#34;powershell&amp;#34;&lt;/span>&lt;span style="color:#960050;background-color:#1e0010">]&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">command&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;az rest --method put --uri &amp;#39;${azurerm_relay_namespace.relay.id}/networkrulesets/default?api-version=2017-04-01&amp;#39; --body &amp;#39;{\&amp;#34;properties\&amp;#34;:{\&amp;#34;defaultAction\&amp;#34;:\\\&amp;#34;Deny\\\&amp;#34;,\&amp;#34;ipRules\&amp;#34;:[{\&amp;#34;ipMask\&amp;#34;:\\\&amp;#34;${jsondecode(data.http.current_public_ip.body).ip}\\\&amp;#34;}],\&amp;#34;virtualNetworkRules\&amp;#34;:[],\&amp;#34;trustedServiceAccessEnabled\&amp;#34;:false}}&amp;#39;&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Open the relay firewall to local IP&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;null_resource&amp;#34; &amp;#34;open_relay_firewall&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">provisioner &amp;#34;local-exec&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">interpreter = [&amp;#34;powershell&amp;#34;]&lt;/span>
+&lt;span style="color:#ae81ff">command = &amp;#34;az rest --method put --uri &amp;#39;${azurerm_relay_namespace.relay.id}/networkrulesets/default?api-version=2017-04-01&amp;#39; --body &amp;#39;{\&amp;#34;properties\&amp;#34;:{\&amp;#34;defaultAction\&amp;#34;:\\\&amp;#34;Deny\\\&amp;#34;,\&amp;#34;ipRules\&amp;#34;:[{\&amp;#34;ipMask\&amp;#34;:\\\&amp;#34;${jsondecode(data.http.current_public_ip.body).ip}\\\&amp;#34;}],\&amp;#34;virtualNetworkRules\&amp;#34;:[],\&amp;#34;trustedServiceAccessEnabled\&amp;#34;:false}}&amp;#39;&amp;#34;&lt;/span>
 }
-&lt;span style="color:#960050;background-color:#1e0010">depends_on&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">=&lt;/span> [
-&lt;span style="color:#960050;background-color:#1e0010">data.http.current_public_ip&lt;/span>,
-&lt;span style="color:#960050;background-color:#1e0010">azurerm_relay_namespace.relay&lt;/span>
+&lt;span style="color:#ae81ff">depends_on = [&lt;/span>
+&lt;span style="color:#ae81ff">data.http.current_public_ip,&lt;/span>
+&lt;span style="color:#ae81ff">azurerm_relay_namespace.relay&lt;/span>
 ]
 }
 &lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-deploy-the-solution">4. Deploy the solution:&lt;/h3>
