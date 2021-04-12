@@ -29,7 +29,7 @@ Now let's se how can we use terraform to make your Cloud Shell private!
 
 ### 1. Create a `provider.tf` file with the following contents:
 
-``` json
+``` yaml
 terraform {
   required_version = ">= 0.13.5"
 }
@@ -52,7 +52,7 @@ Note that we are using `azurerm` to deploy Azure services, `azuread` to get some
 
 ### 2. Create a variables.tf file with the following contents:
 
-``` json
+``` yaml
 variable location {
   default = "west europe"
 }
@@ -78,7 +78,7 @@ Make sure you replace the placeholders with the default values you want to use.
 
 ### 3. Create a `main.tf` file with the following contents:
 
-``` json
+``` yaml
 # Get Azure Container Instance Service Principal. Amazing right? Cloud Shell uses this Service Principal!
 data "azuread_service_principal" "container" {
   display_name = "Azure Container Instance Service"
