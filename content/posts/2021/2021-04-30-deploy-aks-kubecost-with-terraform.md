@@ -12,13 +12,13 @@ tags: ["terraform", "kubecost"]
 title: 'Deploy AKS + Kubecost with Terraform'
 ---
 
-So this morning I saw this tweet from Mr Brendan Burns:
+This morning I saw this tweet from Mr Brendan Burns:
 
 {{< tweet 1387933511433154564 >}}
 
-Once you read the blog you'll learn that you have to take several steps in order to achieve [AKS Cost Monitoring and Governance With Kubecost](http://blog.kubecost.com/blog/aks-cost/).
+And I'm sure that once you also read through it, you'll learn that you have to take several steps in order to achieve [AKS Cost Monitoring and Governance With Kubecost](http://blog.kubecost.com/blog/aks-cost/).
 
-So I'm going to save you time and provide you with some basic terraform configuration files to help you get up and running in a breeze.
+I'm going to try and save you some time, providing you with a basic terraform configuration to help you get up and running in a breeze.
 
 > If you want to learn more about [Kubecost](https://www.kubecost.com/) in the context of AKS and Azure please read the [Cost Governance](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/aks/eslz-security-governance-and-compliance#cost-governance) section of the [AKS enterprise-scale platform security governance and compliance](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/aks/eslz-security-governance-and-compliance#cost-governance) guidelines.
 
