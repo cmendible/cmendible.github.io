@@ -4,7 +4,7 @@ categories:
 - azure
 - kubernetes
 crosspost_to_medium: true
-date: "2021-04-30T22:00:00Z"
+date: "2021-04-30T19:00:00Z"
 description: 'Deploy AKS + Kubecost with Terraform'
 images: ["/assets/img/posts/aks_kubecost.png"]
 draft: false
