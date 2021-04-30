@@ -1,4 +1,244 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Code it Yourself...</title><link>https://carlos.mendible.com/posts/</link><description>Recent content in Posts on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Mon, 12 Apr 2021 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/posts/feed.xml" rel="self" type="application/rss+xml"/><item><title>Deploy a Private Azure Cloud Shell with Terraform</title><link>https://carlos.mendible.com/2021/04/12/deploy-a-private-azure-cloud-shell-with-terraform/</link><pubDate>Mon, 12 Apr 2021 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/04/12/deploy-a-private-azure-cloud-shell-with-terraform/</guid><description>&lt;p>By default Cloud Shell sessions run inside a container inside a Microsoft network separate from any resources you may have deployed in Azure. So what happens when you want to access services you have deployed inside a Virtual Network such as a private AKS cluster, a Virtual Machine or Private Endpoint enabled services?&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Code it Yourself...</title><link>https://carlos.mendible.com/posts/</link><description>Recent content in Posts on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 30 Apr 2021 19:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/posts/feed.xml" rel="self" type="application/rss+xml"/><item><title>Deploy AKS + Kubecost with Terraform</title><link>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</link><pubDate>Fri, 30 Apr 2021 19:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</guid><description>&lt;p>So this morning I saw this tweet from Mr Brendan Burns:&lt;/p>
+&lt;blockquote class="twitter-tweet">&lt;p lang="en" dir="ltr">AKS Cost Monitoring and Governance With Kubecost &lt;a href="https://t.co/OStwIBsuPp">https://t.co/OStwIBsuPp&lt;/a>&lt;/p>&amp;mdash; brendandburns (@brendandburns) &lt;a href="https://twitter.com/brendandburns/status/1387933511433154564?ref_src=twsrc%5Etfw">April 30, 2021&lt;/a>&lt;/blockquote>
+&lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8">&lt;/script>
+&lt;p>Once you read the blog you&amp;rsquo;ll learn that you have to take several steps in order to achieve &lt;a href="http://blog.kubecost.com/blog/aks-cost/">AKS Cost Monitoring and Governance With Kubecost&lt;/a>.&lt;/p>
+&lt;p>So I&amp;rsquo;m going to save you time and provide you with some basic terraform configuration files to help you get up and running in a breeze.&lt;/p>
+&lt;blockquote>
+&lt;p>If you want to learn more about &lt;a href="https://www.kubecost.com/">Kubecost&lt;/a> in the context of AKS and Azure please read the &lt;a href="https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/aks/eslz-security-governance-and-compliance#cost-governance">Cost Governance&lt;/a> section of the &lt;a href="https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/aks/eslz-security-governance-and-compliance#cost-governance">AKS enterprise-scale platform security governance and compliance&lt;/a> guidelines.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="deploy-aks-and-kubecosthttpswwwkubecostcom-with-terraform">Deploy AKS and &lt;a href="https://www.kubecost.com/">Kubecost&lt;/a> with Terraform&lt;/h2>
+&lt;h3 id="1-create-a-providertf-file-with-the-following-contents">1. Create a &lt;code>provider.tf&lt;/code> file with the following contents:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#ae81ff">terraform {&lt;/span>
+&lt;span style="color:#ae81ff">required_version = &amp;#34;&amp;gt; 0.14&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">required_providers {&lt;/span>
+&lt;span style="color:#ae81ff">azurerm = {&lt;/span>
+&lt;span style="color:#ae81ff">version = &amp;#34;= 2.57.0&amp;#34;&lt;/span>
+}
+&lt;span style="color:#ae81ff">azuread = {&lt;/span>
+&lt;span style="color:#ae81ff">version = &amp;#34;= 1.4.0&amp;#34;&lt;/span>
+}
+&lt;span style="color:#ae81ff">kubernetes = {&lt;/span>
+&lt;span style="color:#ae81ff">version = &amp;#34;= 2.1.0&amp;#34;&lt;/span>
+}
+&lt;span style="color:#ae81ff">helm = {&lt;/span>
+&lt;span style="color:#ae81ff">version = &amp;#34;= 2.1.2&amp;#34;&lt;/span>
+}
+}
+}
+&lt;span style="color:#ae81ff">provider &amp;#34;azurerm&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">features {}&lt;/span>
+}
+&lt;span style="color:#75715e"># Configuring the kubernetes provider&lt;/span>
+&lt;span style="color:#75715e"># AKS resource name is aks: azurerm_kubernetes_cluster.aks&lt;/span>
+&lt;span style="color:#ae81ff">provider &amp;#34;kubernetes&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">host = azurerm_kubernetes_cluster.aks.kube_config.0.host&lt;/span>
+&lt;span style="color:#ae81ff">client_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_certificate)&lt;/span>
+&lt;span style="color:#ae81ff">client_key = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_key)&lt;/span>
+&lt;span style="color:#ae81ff">cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.cluster_ca_certificate)&lt;/span>
+}
+&lt;span style="color:#75715e"># Configuring the helm provider&lt;/span>
+&lt;span style="color:#75715e"># AKS resource name is aks: azurerm_kubernetes_cluster.aks&lt;/span>
+&lt;span style="color:#ae81ff">provider &amp;#34;helm&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">kubernetes {&lt;/span>
+&lt;span style="color:#ae81ff">host = azurerm_kubernetes_cluster.aks.kube_config.0.host&lt;/span>
+&lt;span style="color:#ae81ff">client_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_certificate)&lt;/span>
+&lt;span style="color:#ae81ff">client_key = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_key)&lt;/span>
+&lt;span style="color:#ae81ff">cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.cluster_ca_certificate)&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note that you&amp;rsquo;ll be using &lt;code>azurerm&lt;/code> to deploy Azure services, &lt;code>azuread&lt;/code> to create a Service Principal information and the &lt;code>kubernetes&lt;/code> and &lt;code>helm&lt;/code> provider to install &lt;a href="https://www.kubecost.com/">Kubecost&lt;/a>.&lt;/p>
+&lt;h3 id="2-create-a-variablestf-file-with-the-following-contents">2. Create a &lt;code>variables.tf&lt;/code> file with the following contents:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># Location of the services&lt;/span>
+&lt;span style="color:#ae81ff">variable &amp;#34;location&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">default = &amp;#34;west europe&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Resource Group Name&lt;/span>
+&lt;span style="color:#ae81ff">variable &amp;#34;resource_group&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">default = &amp;#34;aks-kubecost&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Name of the AKS cluster&lt;/span>
+&lt;span style="color:#ae81ff">variable &amp;#34;aks_name&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">default = &amp;#34;aksmsftkubecost&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Name of the Servic Principal used by Kubecost&lt;/span>
+&lt;span style="color:#ae81ff">variable &amp;#34;kubecost_sp_name&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">default = &amp;#34;kubecost&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: Replace the the default values with your desired location and names.&lt;/p>
+&lt;h3 id="3-create-a-maintf-file-with-the-following-contents">3. Create a &lt;code>main.tf&lt;/code> file with the following contents:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># Create Resource Group&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_resource_group&amp;#34; &amp;#34;rg&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = var.resource_group&lt;/span>
+&lt;span style="color:#ae81ff">location = var.location&lt;/span>
+}
+&lt;span style="color:#75715e"># Create VNET for AKS&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_virtual_network&amp;#34; &amp;#34;vnet&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;private-network&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">address_space = [&amp;#34;10.0.0.0/8&amp;#34;]&lt;/span>
+&lt;span style="color:#ae81ff">location = azurerm_resource_group.rg.location&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+}
+&lt;span style="color:#75715e"># Create the Subnet for AKS.&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_subnet&amp;#34; &amp;#34;aks&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;aks&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">virtual_network_name = azurerm_virtual_network.vnet.name&lt;/span>
+&lt;span style="color:#ae81ff">address_prefixes = [&amp;#34;10.240.0.0/16&amp;#34;]&lt;/span>
+}
+&lt;span style="color:#75715e"># Create the AKS cluster.&lt;/span>
+&lt;span style="color:#75715e"># Cause this is a test node_count is set to 1 &lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_kubernetes_cluster&amp;#34; &amp;#34;aks&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = var.aks_name&lt;/span>
+&lt;span style="color:#ae81ff">location = azurerm_resource_group.rg.location&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">dns_prefix = var.aks_name&lt;/span>
+&lt;span style="color:#ae81ff">default_node_pool {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;default&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">node_count = 1&lt;/span>
+&lt;span style="color:#ae81ff">vm_size = &amp;#34;Standard_D2s_v3&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">os_disk_size_gb = 30&lt;/span>
+&lt;span style="color:#ae81ff">os_disk_type = &amp;#34;Ephemeral&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">vnet_subnet_id = azurerm_subnet.aks.id&lt;/span>
+}
+&lt;span style="color:#75715e"># Using Managed Identity&lt;/span>
+&lt;span style="color:#ae81ff">identity {&lt;/span>
+&lt;span style="color:#ae81ff">type = &amp;#34;SystemAssigned&amp;#34;&lt;/span>
+}
+&lt;span style="color:#ae81ff">network_profile {&lt;/span>
+&lt;span style="color:#ae81ff">network_plugin = &amp;#34;kubenet&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">network_policy = &amp;#34;calico&amp;#34;&lt;/span>
+}
+&lt;span style="color:#ae81ff">role_based_access_control {&lt;/span>
+&lt;span style="color:#ae81ff">enabled = true&lt;/span>
+}
+&lt;span style="color:#ae81ff">addon_profile {&lt;/span>
+&lt;span style="color:#ae81ff">kube_dashboard {&lt;/span>
+&lt;span style="color:#ae81ff">enabled = false&lt;/span>
+}
+}
+}
+&lt;span style="color:#75715e"># Create Application registration for Kubecost&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azuread_application&amp;#34; &amp;#34;kubecost&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">display_name = var.kubecost_sp_name&lt;/span>
+&lt;span style="color:#ae81ff">identifier_uris = [&amp;#34;http://${var.kubecost_sp_name}&amp;#34;]&lt;/span>
+}
+&lt;span style="color:#75715e"># Create Service principal for kubecost&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azuread_service_principal&amp;#34; &amp;#34;kubecost&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">application_id = azuread_application.kubecost.application_id&lt;/span>
+}
+&lt;span style="color:#75715e"># Generate password for the Service Principal&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;random_password&amp;#34; &amp;#34;passwd&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">length = 32&lt;/span>
+&lt;span style="color:#ae81ff">min_upper = 4&lt;/span>
+&lt;span style="color:#ae81ff">min_lower = 2&lt;/span>
+&lt;span style="color:#ae81ff">min_numeric = 4&lt;/span>
+&lt;span style="color:#ae81ff">keepers = {&lt;/span>
+&lt;span style="color:#ae81ff">aks_app_id = azuread_application.kubecost.id&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Create kubecost&amp;#39;s Service principal password&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azuread_service_principal_password&amp;#34; &amp;#34;main&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">service_principal_id = azuread_service_principal.kubecost.id&lt;/span>
+&lt;span style="color:#ae81ff">value = random_password.passwd.result&lt;/span>
+&lt;span style="color:#ae81ff">end_date = &amp;#34;2099-01-01T00:00:00Z&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Get current Subscription&lt;/span>
+&lt;span style="color:#ae81ff">data &amp;#34;azurerm_subscription&amp;#34; &amp;#34;current&amp;#34; {&lt;/span>
+}
+&lt;span style="color:#75715e"># Create kubecost custom role&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_role_definition&amp;#34; &amp;#34;kubecost&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecost_rate_card_query&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">scope = data.azurerm_subscription.current.id&lt;/span>
+&lt;span style="color:#ae81ff">description = &amp;#34;kubecost Rate Card query role&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">permissions {&lt;/span>
+&lt;span style="color:#ae81ff">actions = [&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;Microsoft.Compute/virtualMachines/vmSizes/read&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Microsoft.Resources/subscriptions/locations/read&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Microsoft.Resources/providers/read&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Microsoft.ContainerService/containerServices/read&amp;#34;&lt;/span>,
+&lt;span style="color:#e6db74">&amp;#34;Microsoft.Commerce/RateCard/read&amp;#34;&lt;/span>,
+]
+&lt;span style="color:#ae81ff">not_actions = []&lt;/span>
+}
+&lt;span style="color:#ae81ff">assignable_scopes = [&lt;/span>
+&lt;span style="color:#ae81ff">data.azurerm_subscription.current.id&lt;/span>
+]
+}
+&lt;span style="color:#75715e"># Assign kubecost&amp;#39;s custom role at the subscription level&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_role_assignment&amp;#34; &amp;#34;kubecost&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">scope = data.azurerm_subscription.current.id&lt;/span>
+&lt;span style="color:#ae81ff">role_definition_name = azurerm_role_definition.kubecost.name&lt;/span>
+&lt;span style="color:#ae81ff">principal_id = azuread_service_principal.kubecost.object_id&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-create-a-kubecosttf-file-with-the-following-contents">4. Create a &lt;code>kubecost.tf&lt;/code> file with the following contents:&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#75715e"># Create the kubecost namespace&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;kubernetes_namespace&amp;#34; &amp;#34;kubecost&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">metadata {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecost&amp;#34;&lt;/span>
+}
+}
+&lt;span style="color:#75715e"># Install kubecost using the hem chart&lt;/span>
+&lt;span style="color:#ae81ff">resource &amp;#34;helm_release&amp;#34; &amp;#34;kubecost&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecost&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">chart = &amp;#34;cost-analyzer&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">namespace = &amp;#34;kubecost&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">version = &amp;#34;1.79.1&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">repository = &amp;#34;https://kubecost.github.io/cost-analyzer/&amp;#34;&lt;/span>
+&lt;span style="color:#75715e"># Set the cluster name&lt;/span>
+&lt;span style="color:#ae81ff">set {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecostProductConfigs.clusterName&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">value = var.aks_name&lt;/span>
+}
+&lt;span style="color:#75715e"># Set the currency&lt;/span>
+&lt;span style="color:#ae81ff">set {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecostProductConfigs.currencyCode&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">value = &amp;#34;EUR&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Set the region&lt;/span>
+&lt;span style="color:#ae81ff">set {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecostProductConfigs.azureBillingRegion&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">value = &amp;#34;NL&amp;#34;&lt;/span>
+}
+&lt;span style="color:#75715e"># Generate a secret based on the Azure configuration provided below&lt;/span>
+&lt;span style="color:#ae81ff">set {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecostProductConfigs.createServiceKeySecret&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">value = true&lt;/span>
+}
+&lt;span style="color:#75715e"># Azure Subscription ID&lt;/span>
+&lt;span style="color:#ae81ff">set {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecostProductConfigs.azureSubscriptionID&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">value = data.azurerm_subscription.current.id&lt;/span>
+}
+&lt;span style="color:#75715e"># Azure Client ID&lt;/span>
+&lt;span style="color:#ae81ff">set {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecostProductConfigs.azureClientID&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">value = azuread_application.kubecost.application_id&lt;/span>
+}
+&lt;span style="color:#75715e"># Azure Client Password&lt;/span>
+&lt;span style="color:#ae81ff">set {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecostProductConfigs.azureClientPassword&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">value = random_password.passwd.result&lt;/span>
+}
+&lt;span style="color:#75715e"># Azure Tenant ID&lt;/span>
+&lt;span style="color:#ae81ff">set {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;kubecostProductConfigs.azureTenantID&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">value = data.azurerm_subscription.current.tenant_id&lt;/span>
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The configuration in the previous file installs &lt;a href="https://www.kubecost.com/">Kubecost&lt;/a> in the AKS cluster. If you want to learn more about the available configuration options please check the following file: &lt;a href="https://github.com/kubecost/cost-analyzer-helm-chart/blob/master/cost-analyzer/values.yaml">values.yaml&lt;/a>&lt;/p>
+&lt;h3 id="5-deploy-the-solution">5. Deploy the solution:&lt;/h3>
+&lt;p>Run the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">terraform init
+terraform plan -out tf.plan
+terraform apply ./tf.plan
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="6-test-and-browse-kubecost">6. Test and browse Kubecost:&lt;/h3>
+&lt;p>To check the status of the kubecost pods run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">az aks get-credentials -g aks-kubecost -n aksmsftkubecost
+kubectl get pods -n kubecost
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl port-forward -n kubecost svc/kubecost-cost-analyzer 9090:9090
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>and browse to &lt;a href="http://localhost:9090">http://localhost:9090&lt;/a> so you can start learning!&lt;/p>
+&lt;p>Hope it helps! Please find the complete code &lt;a href="https://github.com/cmendible/azure.samples/tree/main/aks_kubecost">here&lt;/a>&lt;/p></description></item><item><title>Deploy a Private Azure Cloud Shell with Terraform</title><link>https://carlos.mendible.com/2021/04/12/deploy-a-private-azure-cloud-shell-with-terraform/</link><pubDate>Mon, 12 Apr 2021 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/04/12/deploy-a-private-azure-cloud-shell-with-terraform/</guid><description>&lt;p>By default Cloud Shell sessions run inside a container inside a Microsoft network separate from any resources you may have deployed in Azure. So what happens when you want to access services you have deployed inside a Virtual Network such as a private AKS cluster, a Virtual Machine or Private Endpoint enabled services?&lt;/p>
 &lt;p>Well as you can imagine the solution is to deploy Cloud Shell into an Azure Virtual Network in such a way that the container, it runs on, can acces your private resources. This solution also protects the backing Storage Account that Cloud Shell uses for you the user profiles and data so that you end up with a locked down environmemt.&lt;/p>
 &lt;p>The following diagram shows the solution archictecture:&lt;/p>
 &lt;p>&lt;img src="https://docs.microsoft.com/en-us/azure/cloud-shell/media/private-vnet/data-diagram.png" alt="Cloud Shell in an Azure Virtual Network Architecture Diagram">&lt;/p>
@@ -1176,125 +1416,4 @@ kubectl port-forward $pod 80:80
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note:&lt;/strong> the new task depends on the &lt;strong>build&lt;/strong> task.&lt;/p>
 &lt;h2 id="hit-f5-and-enjoy">Hit F5 and enjoy&lt;/h2>
 &lt;p>Hit F5 and enjoy debugging your &amp;ldquo;Daprized&amp;rdquo; .NET Core application.&lt;/p>
-&lt;p>You can download a working sample from this &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.debug.vscode/">repo&lt;/a>.&lt;/p></description></item><item><title>MongoDB Enterprise Operator: Deploying MongoDB in AKS</title><link>https://carlos.mendible.com/2020/02/09/mongodb-enterprise-operator-deploying-mongodb-in-aks/</link><pubDate>Sun, 09 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/02/09/mongodb-enterprise-operator-deploying-mongodb-in-aks/</guid><description>&lt;p>a couple of weeks ago I was trying to deploy MongoDB in AKS using the &lt;a href="https://docs.mongodb.com/kubernetes-operator/master/tutorial/install-k8s-operator/">MongoDB Enterprise Operator&lt;/a> and had trouble finding a simple tutorial to make the thing work. This post intends to fill that gap with a straight to the point approach.&lt;/p>
-&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
-&lt;p>Be sure to deploy AKS with a set of nodes with at least 8GB of RAM. I used &lt;strong>Standard_D3_v2&lt;/strong>&lt;/p>
-&lt;h2 id="first-clone-the-mongodb-enterprise-kubernetes-repo">First clone the MongoDB Enterprise Kubernetes repo&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">git clone https://github.com/mongodb/mongodb-enterprise-kubernetes.git
-cd mongodb-enterprise-kubernetes
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="create-the-mongodb-namespace-inside-your-cluster">Create the MongoDB namespace inside your cluster&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl create namespace mongodb
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="deploy-the-custom-resource-definitions">Deploy the Custom Resource Definitions&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f crds.yaml
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="deploy-the-mongodb-enterprise-operator">Deploy the MongoDB Enterprise Operator&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f mongodb-enterprise.yaml
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="create-a-secret-for-the-ops-manager">Create a secret for the Ops Manager&lt;/h2>
-&lt;p>As part of the installation you&amp;rsquo;ll have to deploy the Ops Manager to the cluster. Be sure to set a complex password otherwise the Ops Manager wont start.&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl create secret generic ops-manager-admin-secret &lt;span style="color:#e6db74">`&lt;/span>
---from-literal&lt;span style="color:#f92672">=&lt;/span>Username&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Username&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
---from-literal&lt;span style="color:#f92672">=&lt;/span>Password&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Password&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
---from-literal&lt;span style="color:#f92672">=&lt;/span>FirstName&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Name&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
---from-literal&lt;span style="color:#f92672">=&lt;/span>LastName&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&amp;lt;Last Name&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
--n mongodb
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="deploy-the-ops-manager">Deploy the Ops Manager&lt;/h2>
-&lt;p>Create &lt;strong>ops-manager.yaml&lt;/strong> with the following contents (Note that we are using 1 replica):&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
-&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">mongodb.com/v1&lt;/span>
-&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">MongoDBOpsManager&lt;/span>
-&lt;span style="color:#f92672">metadata&lt;/span>:
-&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">ops-manager&lt;/span>
-&lt;span style="color:#f92672">spec&lt;/span>:
-&lt;span style="color:#75715e"># the number of Ops Manager instances to run. Set to value bigger&lt;/span>
-&lt;span style="color:#75715e"># than 1 to get high availability and upgrades without downtime&lt;/span>
-&lt;span style="color:#f92672">replicas&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>
-&lt;span style="color:#75715e"># the version of Ops Manager distro to use&lt;/span>
-&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.4&lt;/span>
-&lt;span style="color:#75715e"># the name of the secret containing admin user credentials.&lt;/span>
-&lt;span style="color:#75715e"># Either remove the secret or change the password using Ops Manager UI after the Ops Manager&lt;/span>
-&lt;span style="color:#75715e"># resource is created!&lt;/span>
-&lt;span style="color:#f92672">adminCredentials&lt;/span>: &lt;span style="color:#ae81ff">ops-manager-admin-secret&lt;/span>
-&lt;span style="color:#75715e"># the Ops Manager configuration. All the values must be of type string&lt;/span>
-&lt;span style="color:#f92672">configuration&lt;/span>:
-&lt;span style="color:#f92672">mms.fromEmailAddr&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;admin@thecompany.com&amp;#34;&lt;/span>
-&lt;span style="color:#75715e"># the application database backing Ops Manager. Replica Set is the only supported type&lt;/span>
-&lt;span style="color:#75715e"># Application database has the SCRAM-SHA authentication mode always enabled&lt;/span>
-&lt;span style="color:#f92672">applicationDatabase&lt;/span>:
-&lt;span style="color:#f92672">members&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
-&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.0&lt;/span>
-&lt;span style="color:#f92672">persistent&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>
-&lt;span style="color:#f92672">podSpec&lt;/span>:
-&lt;span style="color:#f92672">cpu&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.25&amp;#34;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the Ops Manager:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f .&lt;span style="color:#ae81ff">\o&lt;/span>ps-manager.yaml -n mongodb
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="wait-until-the-ops-manager-is-ready">Wait until the Ops Manager is ready&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get om -n mongodb -o yaml -w
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="port-forward-so-you-can-access-ops-manager-from-your-pc">Port Forward so you can access Ops Manager from your PC&lt;/h2>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl port-forward pods/ops-manager-0 8080:8080 -n mongodb
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="setup-de-ops-manager">Setup de Ops Manager&lt;/h2>
-&lt;ol>
-&lt;li>
-&lt;p>Login into the Ops Manager (http://localhost:8080) using the same user and password you deployed as a secret.&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;a href="http://docs.opsmanager.mongodb.com/current/tutorial/manage-organizations/">Create an Organization&lt;/a>. Copy the &lt;strong>Organnization Id&lt;/strong> so you can use it later.&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;a href="https://docs.opsmanager.mongodb.com/rapid/tutorial/configure-public-api-access/#configure-public-api-access">Create Public &amp;amp; Private Key for the Organization&lt;/a>. Copy both keys so you can use them later.&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;a href="https://docs.opsmanager.mongodb.com/rapid/tutorial/configure-public-api-access/#create-org-app-api-key">White List the Operator IPs&lt;/a>. To get the IPs run:&lt;/p>
-&lt;/li>
-&lt;/ol>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get po --selector&lt;span style="color:#f92672">=&lt;/span>app&lt;span style="color:#f92672">=&lt;/span>mongodb-enterprise-operator -n mongodb -o jsonpath&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;{.items[*].status.podIP}&amp;#39;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="create-a-secret-that-will-be-used-by-the-operator-to-connect-with-the-ops-manager">Create a secret that will be used by the operator to connect with the ops manager&lt;/h2>
-&lt;p>Use the Public and Private keys copied in previous steps to run tyhe following command:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl -n mongodb &lt;span style="color:#e6db74">`&lt;/span>
-create secret generic my-credentials &lt;span style="color:#e6db74">`&lt;/span>
---from-literal&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;user=&amp;lt;private key&amp;gt;&amp;#34;&lt;/span> &lt;span style="color:#e6db74">`&lt;/span>
---from-literal&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;publicApiKey=&amp;lt;public key&amp;gt;&amp;#34;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="create-a-project">Create a project&lt;/h2>
-&lt;p>Create &lt;strong>project.yaml&lt;/strong> with the following contents and be sure to replace the &lt;strong>Organization Id&lt;/strong> you copied in previous steps:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">---
-&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">v1&lt;/span>
-&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">ConfigMap&lt;/span>
-&lt;span style="color:#f92672">metadata&lt;/span>:
-&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">mongodb-test&lt;/span>
-&lt;span style="color:#f92672">data&lt;/span>:
-&lt;span style="color:#f92672">projectName&lt;/span>: &lt;span style="color:#ae81ff">mongodb-test&lt;/span>
-&lt;span style="color:#f92672">baseUrl&lt;/span>: &lt;span style="color:#ae81ff">http://ops-manager-svc.mongodb.svc.cluster.local:8080&lt;/span>
-&lt;span style="color:#f92672">orgId&lt;/span>: &lt;span style="color:#ae81ff">&amp;lt;Organization Id&amp;gt;&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the project ConfigMap definition:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply .&lt;span style="color:#ae81ff">\p&lt;/span>roject.yaml -n mongodb
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;h2 id="create-a-standalone-mongodb-instance">Create a standalone MongoDB instance&lt;/h2>
-&lt;p>Create &lt;strong>standalone.yaml&lt;/strong> with the following contents:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f92672">apiVersion&lt;/span>: &lt;span style="color:#ae81ff">mongodb.com/v1&lt;/span>
-&lt;span style="color:#f92672">kind&lt;/span>: &lt;span style="color:#ae81ff">MongoDB&lt;/span>
-&lt;span style="color:#f92672">metadata&lt;/span>:
-&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">my-standalone&lt;/span>
-&lt;span style="color:#f92672">spec&lt;/span>:
-&lt;span style="color:#f92672">version&lt;/span>: &lt;span style="color:#ae81ff">4.2.1&lt;/span>
-&lt;span style="color:#f92672">type&lt;/span>: &lt;span style="color:#ae81ff">Standalone&lt;/span>
-&lt;span style="color:#f92672">opsManager&lt;/span>:
-&lt;span style="color:#f92672">configMapRef&lt;/span>:
-&lt;span style="color:#f92672">name&lt;/span>: &lt;span style="color:#ae81ff">mongodb-test&lt;/span>
-&lt;span style="color:#f92672">credentials&lt;/span>: &lt;span style="color:#ae81ff">my-credentials&lt;/span>
-&lt;span style="color:#75715e"># This flag allows the creation of pods without persistent volumes. This is for&lt;/span>
-&lt;span style="color:#75715e"># testing only, and must not be used in production. &amp;#39;false&amp;#39; will disable&lt;/span>
-&lt;span style="color:#75715e"># Persistent Volume Claims. The default is &amp;#39;true&amp;#39;&lt;/span>
-&lt;span style="color:#f92672">persistent&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>Deploy the standalone MongoDB:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl apply -f .&lt;span style="color:#ae81ff">\s&lt;/span>tandalone.yaml -n mongodb
-&lt;/code>&lt;/pre>&lt;/div>&lt;hr>
-&lt;p>Enjoy! You have MongoDB up and running!&lt;/p>
-&lt;p>To learn more about the MongoDB Enterprise Operator please check &lt;a href="https://docs.mongodb.com/kubernetes-operator/master/tutorial/install-k8s-operator/">here&lt;/a>.&lt;/p></description></item></channel></rss>
+&lt;p>You can download a working sample from this &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.debug.vscode/">repo&lt;/a>.&lt;/p></description></item></channel></rss>

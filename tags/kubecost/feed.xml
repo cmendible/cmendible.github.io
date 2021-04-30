@@ -1,4 +1,4 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>kubernetes on Code it Yourself...</title><link>https://carlos.mendible.com/categories/kubernetes/</link><description>Recent content in kubernetes on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 30 Apr 2021 19:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/kubernetes/feed.xml" rel="self" type="application/rss+xml"/><item><title>Deploy AKS + Kubecost with Terraform</title><link>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</link><pubDate>Fri, 30 Apr 2021 19:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</guid><description>&lt;p>So this morning I saw this tweet from Mr Brendan Burns:&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>kubecost on Code it Yourself...</title><link>https://carlos.mendible.com/tags/kubecost/</link><description>Recent content in kubecost on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 30 Apr 2021 19:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/kubecost/feed.xml" rel="self" type="application/rss+xml"/><item><title>Deploy AKS + Kubecost with Terraform</title><link>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</link><pubDate>Fri, 30 Apr 2021 19:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</guid><description>&lt;p>So this morning I saw this tweet from Mr Brendan Burns:&lt;/p>
 &lt;blockquote class="twitter-tweet">&lt;p lang="en" dir="ltr">AKS Cost Monitoring and Governance With Kubecost &lt;a href="https://t.co/OStwIBsuPp">https://t.co/OStwIBsuPp&lt;/a>&lt;/p>&amp;mdash; brendandburns (@brendandburns) &lt;a href="https://twitter.com/brendandburns/status/1387933511433154564?ref_src=twsrc%5Etfw">April 30, 2021&lt;/a>&lt;/blockquote>
 &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8">&lt;/script>
 &lt;p>Once you read the blog you&amp;rsquo;ll learn that you have to take several steps in order to achieve &lt;a href="http://blog.kubecost.com/blog/aks-cost/">AKS Cost Monitoring and Governance With Kubecost&lt;/a>.&lt;/p>
@@ -238,79 +238,4 @@ kubectl get pods -n kubecost
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Then run:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl port-forward -n kubecost svc/kubecost-cost-analyzer 9090:9090
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>and browse to &lt;a href="http://localhost:9090">http://localhost:9090&lt;/a> so you can start learning!&lt;/p>
-&lt;p>Hope it helps! Please find the complete code &lt;a href="https://github.com/cmendible/azure.samples/tree/main/aks_kubecost">here&lt;/a>&lt;/p></description></item><item><title>What I Learned From Hacktoberfest 2020</title><link>https://carlos.mendible.com/2020/10/18/what-i-learned-from-hacktoberfest-2020/</link><pubDate>Sun, 18 Oct 2020 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/10/18/what-i-learned-from-hacktoberfest-2020/</guid><description>&lt;p>&lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> is an open global event where people all around de globe contribute to open source projects.&lt;/p>
-&lt;p>The idea behind &lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> is great, in my opinion it encourages and motivates contributions specially from those who don&amp;rsquo;t know where to start with OSS, but saddly what we saw this year was many people, let&amp;rsquo;s call them trolls, spamming repos with useless pull requests in order to claim the nice tee. The &lt;a href="https://hacktoberfest.digitalocean.com/">Hacktoberfest®&lt;/a> organization reacted quickly to fix the situation and the rules of the game have been changed: &lt;a href="https://hacktoberfest.digitalocean.com/hacktoberfest-update">the event is now offically opt-in only for projects and mantainers&lt;/a>.&lt;/p>
-&lt;p>Now let me tell you a bit of what I did:&lt;/p>
-&lt;h2 id="what-i-learned-from-hacktoberfest">What I Learned From Hacktoberfest&lt;/h2>
-&lt;h3 id="azure-arc-enabled-kubernetes">Azure Arc enabled Kubernetes:&lt;/h3>
-&lt;p>I learned how to enable container monitoring on &lt;a href="https://docs.microsoft.com/en-us/azure/azure-arc/kubernetes/overview?WT.mc_id=AZ-MVP-5002618">Azure Arc enabled Kubernetes&lt;/a> and in the process I noticed that in the documentation a powershell command was using &lt;code>curl&lt;/code> instead of &lt;code>Invoke-WebRequest&lt;/code> so I sumbited the following PR: &lt;a href="https://github.com/MicrosoftDocs/azure-docs/pull/63625">Replacing wget with iwr in the powershell sample&lt;/a>&lt;/p>
-&lt;h3 id="k8spin">K8Spin&lt;/h3>
-&lt;p>I continued learning about &lt;a href="https://github.com/k8spin/k8spin-operator">K8Spin&lt;/a>: a nice OOS project which adds three new hierarchy concepts (Organizations, Tenants, and Spaces) to your kuberneets clusters in order to enable multi-tenancy.&lt;/p>
-&lt;p>Collaborating with the &lt;a href="https://github.com/k8spin/k8spin-operator">K8Spin&lt;/a> team was great and I fixed two issues:&lt;/p>
-&lt;ul>
-&lt;li>A broken link in one of their repos: &lt;a href="https://github.com/k8spin/oneinfra-worker-modules/pull/3">Fixing Issue#1: oneinfra link&lt;/a>&lt;/li>
-&lt;li>Added a Helm chart to install the &lt;a href="https://github.com/k8spin/k8spin-operator">K8Spin&lt;/a>. I had created some charts in the past but for this one I had to learn about &lt;a href="https://helm.sh/docs/chart_best_practices/">chart best practices&lt;/a> and apply them.&lt;/li>
-&lt;/ul>
-&lt;p>As a bonus also added a PR to add a developer container to their repo in other to enable &lt;a href="https://github.com/features/codespaces">Codespaces&lt;/a> and help any newcomer to start contributing avoiding python and other dependencies setup: &lt;a href="https://github.com/k8spin/k8spin-operator/pull/21">Adding dev container definition&lt;/a>&lt;/p>
-&lt;h3 id="bonus">Bonus&lt;/h3>
-&lt;ul>
-&lt;li>I continued my journey learning and collaborating with Dapr and this time I submited a PR to remove &lt;a href="https://github.com/dapr/components-contrib/pull/496">a component from Dapr&lt;/a>&lt;/li>
-&lt;li>I hade some SEO issues with my blog and it turns out the the theme I use was not adding [the post title as part of the correspoing tag(https://github.com/avianto/hugo-kiera/pull/41).&lt;/li>
-&lt;/ul>
-&lt;p>Glad to Help!&lt;/p></description></item><item><title>Infrastructure as Code War</title><link>https://carlos.mendible.com/events/2020/10/03/infrastructure-as-code-war/</link><pubDate>Sat, 03 Oct 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/10/03/infrastructure-as-code-war/</guid><description>&lt;p>Let&amp;rsquo;s see how Azure ARM, Terraform, Azure Service Operator for Kubernetes and other solutions compare to each other so you can choose the right weapon to win the Infrastructure as Code War!&lt;/p>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/vF6nlrILXZ8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>The k8s Workshop</title><link>https://carlos.mendible.com/events/2020/10/02/the-k8s-workshop/</link><pubDate>Fri, 02 Oct 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/10/02/the-k8s-workshop/</guid><description>&lt;p>In this workshop you&amp;rsquo;ll learn how to deploy, monitor, scale, secure and debug workloads in AKS:&lt;/p>
-&lt;ul>
-&lt;li>Deploy an aplication.&lt;/li>
-&lt;li>Configure monitoring and health checks for your application.&lt;/li>
-&lt;li>Scale your application to meet demand.&lt;/li>
-&lt;li>Enable SSL/TLS with an ingress controller.&lt;/li>
-&lt;li>Secret Management with AKS &amp;amp; Keyvault.&lt;/li>
-&lt;li>Debugging your Kubernetes application.&lt;/li>
-&lt;/ul>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/uylfbdZX2XQ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>Microsoft Ignite 2020. ¿Qué hay de nuevo?</title><link>https://carlos.mendible.com/events/2020/09/29/microsoft-ignite-2020-que-hay-de-nuevo/</link><pubDate>Tue, 29 Sep 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/09/29/microsoft-ignite-2020-que-hay-de-nuevo/</guid><description>&lt;p>¿habéis visto todas las novedades del Ignite? Bueno, si no es así, estamos de enhorabuena porque nos hemos liado a la manta para contaros las novedades con el siguiente equipo:&lt;/p>
-&lt;ul>
-&lt;li>Carlos Mendible&lt;/li>
-&lt;li>Josue Yeray Julián&lt;/li>
-&lt;li>Santiago Porras&lt;/li>
-&lt;li>David Vidal&lt;/li>
-&lt;li>Sergio Parra&lt;/li>
-&lt;li>Sergio Hernández&lt;/li>
-&lt;li>Alberto Diaz&lt;/li>
-&lt;li>Victor Estival&lt;/li>
-&lt;/ul>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/PjMlTNrl84c" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>Azure Summer Talks Community</title><link>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</link><pubDate>Thu, 30 Jul 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</guid><description>&lt;p>Como cada año &lt;a href="https://www.meetup.com/es-ES/CATzure">CATzure&lt;/a> organiza una mesa redonda con los mejores expertos de Azure de España para conversar sobre el cloud, desarrollo y todo aquello que os aptezca.&lt;/p>
-&lt;p>Esta mesa redonda estuvo compuesta por:&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://twitter.com/Carlos_Lande">Carlos Lande&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/cmendibl3">Carlos Mendible&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/ESalcedoo">Elena Salcedo&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/JavierPallo">Pallo&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/ambynet">Ana Maria Bisbe&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/nfanjul">Nacho Fanjul&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/fernandoescolar">Fernando Escolar&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/AlonsoCarles">Carles Alonso&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/tzBLmOYt8Is" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>Virtual Azure Community Day: Introducción a Dapr</title><link>https://carlos.mendible.com/events/2020/07/27/virtual-azure-community-day-introducci%C3%B3n-dapr/</link><pubDate>Mon, 27 Jul 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/07/27/virtual-azure-community-day-introducci%C3%B3n-dapr/</guid><description>&lt;p>Aprende junto a Carlos que es Dapr, y como utilizar este nuevo runtime para desarrollar soluciones basadas en microservicios, entendiendo como resuleve los retos que implican las nuevas arquitecturas, tanto en cloud como en edge: resiliencia, gestión de estado, secretos, eventos, service discovery, etc&amp;hellip;&lt;/p>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/VO34g8tdY6E" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>The GitHub Actions Team</title><link>https://carlos.mendible.com/events/2020/05/20/the-github-actions-team/</link><pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/05/20/the-github-actions-team/</guid><description>&lt;p>En noviembre de 2019, algunos de los mejores desarrolladores de GitHub lanzaron la beta de GitHub Actions,
-la solución para CI/CD de GitHub. No tardo en popularizarse entre los mejores desarrolladores de cualquier entorno&amp;hellip;&lt;/p>
-&lt;p>Si te apetece usarlo y puedes permitírtelo, mirate este video donde acompaño a Sergion Navarro Pino:&lt;/p>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/uqsG999muxk" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>Code Academy - Entrevista a Carlos Mendible</title><link>https://carlos.mendible.com/events/2020/05/06/code-academy-interview/</link><pubDate>Wed, 06 May 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/05/06/code-academy-interview/</guid><description>&lt;p>¿Quieres conocer a un MVP desde dentro? El programa Microsoft Most Valuable Professional es un premio otorgado por Microsoft a los líderes más valiosos en las comunidades destacados como reconocimiento a su labor voluntaria en compartir sus conocimientos en la comunidad.&lt;/p>
-&lt;p>En este webinar con formato entrevista, Carlos Mendible, Microsoft MVP Azure &amp;amp; Developer Technologies, nos cuenta su trayectoria profesional, nos da sus consejos y sus puntos de vista de la situación del mercado actual.&lt;/p>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/69CGGeZjlRE" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>Global Azure Live 2020 - Azure Containers</title><link>https://carlos.mendible.com/events/2020/04/25/globalazure-virtual-azure-containers/</link><pubDate>Sat, 25 Apr 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/04/25/globalazure-virtual-azure-containers/</guid><description>&lt;p>Durante esta sesión veremos cuál es el estado del arte en el mundo de los Containers y Azure, hablaremos de buenas prácticas, recomendaciones y retos a la hora de trabajar con containers, así como de qué puntos clave hay que tener en cuenta. Nuestros expertos cuentan con una amplia experiencia en el tema, y abordan también situaciones como containers vs serverless, DevOps y containers o qué hacer y qué no hacer si estás empezando.&lt;/p>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/uDXaj44ybzA" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item></channel></rss>
+&lt;p>Hope it helps! Please find the complete code &lt;a href="https://github.com/cmendible/azure.samples/tree/main/aks_kubecost">here&lt;/a>&lt;/p></description></item></channel></rss>

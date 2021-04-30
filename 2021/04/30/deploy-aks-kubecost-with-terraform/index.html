@@ -1,0 +1,258 @@
+<!doctype html><html lang=en-us><head><title>Deploy AKS + Kubecost with Terraform - Code it Yourself...</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="A blog on Microsoft Azure and .NET by Carlos Mendible"><meta name=author content="Carlos Mendible"><meta name=google-site-verification content="geNK0ycfSM7LRha5Ol8TI4Qa8KEk_ukusjX8nwrdPqE"><base href=https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/><link rel=canonical href=https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/ itemprop=url><meta name=url content="https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/"><link rel=sitemap type=application/xml title=Sitemap href=https://carlos.mendible.com/sitemap.xml><meta name=keywords content="Deploy AKS + Kubecost with Terraform,azure,kubernetes"><meta name=news_keywords content="azure, kubernetes"><meta property="article:tag" content="terraform, kubecost"><meta property="og:title" content="Deploy AKS + Kubecost with Terraform"><meta property="og:description" content="Deploy AKS + Kubecost with Terraform"><meta property="og:type" content="article"><meta property="og:url" content="https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/"><meta property="og:image" content="https://carlos.mendible.com/assets/img/posts/aks_kubecost.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-04-30T19:00:00+00:00"><meta property="article:modified_time" content="2021-04-30T19:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://carlos.mendible.com/assets/img/posts/aks_kubecost.png"><meta name=twitter:title content="Deploy AKS + Kubecost with Terraform"><meta name=twitter:description content="Deploy AKS + Kubecost with Terraform"><meta name=robots content="index,follow"><meta name=googlebot content="index,follow"><meta name=generator content="Hugo 0.82.1"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css integrity="sha256-l85OmPOjvil/SOvVt3HnSSjzF1TUMyT9eV0c2BzEGzU=" crossorigin=anonymous><link rel=stylesheet href=https://carlos.mendible.com/fontawesome/css/all.min.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Roboto+Slab|Ruda"><link rel=stylesheet type=text/css href=https://carlos.mendible.com/css/styles.css></head><body><div id=container><header><h1><a href=https://carlos.mendible.com/>Code it Yourself&mldr;</a></h1><ul id=social-media><li><a href=https://github.com/cmendible title=GitHub><i class="fab fa-github fa-lg"></i></a></li><li><a href=https://twitter.com/cmendibl3 title=Twitter><i class="fab fa-twitter fa-lg"></i></a></li><li><a href=https://reddit.com/u/cmendibl3 title=Reddit><i class="fab fa-reddit-alien fa-lg"></i></a></li><li><a href=https://linkedin.com/in/carlosmendible title=LinkedIn><i class="fab fa-linkedin fa-lg"></i></a></li><li><a href=https://stackoverflow.com/users/332127 title=StackOverflow><i class="fab fa-stack-overflow fa-lg"></i></a></li><li><a href=https://www.instagram.com/cmendibl3 title=Instagram><i class="fab fa-instagram fa-lg"></i></a></li><li><a href=https://www.youtube.com/channel/UCzLtSg6AfN7RWN3MdvRw7Dw title=Youtube><i class="fab fa-youtube fa-lg"></i></a></li><li><a href=https://keybase.io/cmendibl3 title=Keybase><i class="fab fa-keybase fa-lg"></i></a></li><li><a href=https://dev.to/cmendibl3 title=devto><i class="fab fa-dev fa-lg"></i></a></li></ul><p><em>A blog on Microsoft Azure and .NET by Carlos Mendible</em></p></header><nav><ul><li><a href=https://carlos.mendible.com/><i class="fa-li fa fa-lg"></i><span>Home</span></a></li><li><a href=https://carlos.mendible.com/posts/><i class="fa-li fa fa-lg"></i><span>Posts</span></a></li><li><a href=https://carlos.mendible.com/events/><i class="fa-li fa fa-lg"></i><span>Events</span></a></li><li><a href=https://carlos.mendible.com/categories/><i class="fa-li fa fa-lg"></i><span>Categories</span></a></li><li><a href=https://carlos.mendible.com/about><i class="fa-li fa fa-lg"></i><span>About</span></a></li></ul></nav><main><article><h1>Deploy AKS + Kubecost with Terraform</h1><aside><ul><li><time class=post-date datetime=2021-04-30T19:00:00Z>Apr 30, 2021</time></li><li>Categories:
+<em><a href=https://carlos.mendible.com/categories/azure>azure</a>
+,
+<a href=https://carlos.mendible.com/categories/kubernetes>kubernetes</a></em></li><li><em><a href=https://carlos.mendible.com/tags/terraform>#terraform</a>
+,
+<a href=https://carlos.mendible.com/tags/kubecost>#kubecost</a></em></li><li>5 minutes read</li></ul></aside><div class=featured_image><a href=https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/ title="Deploy AKS + Kubecost with Terraform"><img src=https://carlos.mendible.com/assets/img/posts/aks_kubecost.png></a></div><p>So this morning I saw this tweet from Mr Brendan Burns:</p><blockquote class=twitter-tweet><p lang=en dir=ltr>AKS Cost Monitoring and Governance With Kubecost <a href=https://t.co/OStwIBsuPp>https://t.co/OStwIBsuPp</a></p>&mdash; brendandburns (@brendandburns) <a href="https://twitter.com/brendandburns/status/1387933511433154564?ref_src=twsrc%5Etfw">April 30, 2021</a></blockquote><script async src=https://platform.twitter.com/widgets.js></script><p>Once you read the blog you&rsquo;ll learn that you have to take several steps in order to achieve <a href=http://blog.kubecost.com/blog/aks-cost/>AKS Cost Monitoring and Governance With Kubecost</a>.</p><p>So I&rsquo;m going to save you time and provide you with some basic terraform configuration files to help you get up and running in a breeze.</p><blockquote><p>If you want to learn more about <a href=https://www.kubecost.com/>Kubecost</a> in the context of AKS and Azure please read the <a href=https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/aks/eslz-security-governance-and-compliance#cost-governance>Cost Governance</a> section of the <a href=https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/aks/eslz-security-governance-and-compliance#cost-governance>AKS enterprise-scale platform security governance and compliance</a> guidelines.</p></blockquote><h2 id=deploy-aks-and-kubecosthttpswwwkubecostcom-with-terraform>Deploy AKS and <a href=https://www.kubecost.com/>Kubecost</a> with Terraform</h2><h3 id=1-create-a-providertf-file-with-the-following-contents>1. Create a <code>provider.tf</code> file with the following contents:</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#ae81ff>terraform {</span>
+  <span style=color:#ae81ff>required_version = &#34;&gt; 0.14&#34;</span>
+  <span style=color:#ae81ff>required_providers {</span>
+    <span style=color:#ae81ff>azurerm = {</span>
+      <span style=color:#ae81ff>version = &#34;= 2.57.0&#34;</span>
+    }
+    <span style=color:#ae81ff>azuread = {</span>
+      <span style=color:#ae81ff>version = &#34;= 1.4.0&#34;</span>
+    }
+    <span style=color:#ae81ff>kubernetes = {</span>
+      <span style=color:#ae81ff>version = &#34;= 2.1.0&#34;</span>
+    }
+    <span style=color:#ae81ff>helm = {</span>
+      <span style=color:#ae81ff>version = &#34;= 2.1.2&#34;</span>
+    }
+  }
+}
+
+<span style=color:#ae81ff>provider &#34;azurerm&#34; {</span>
+  <span style=color:#ae81ff>features {}</span>
+}
+
+<span style=color:#75715e># Configuring the kubernetes provider</span>
+<span style=color:#75715e># AKS resource name is aks: azurerm_kubernetes_cluster.aks</span>
+<span style=color:#ae81ff>provider &#34;kubernetes&#34; {</span>
+  <span style=color:#ae81ff>host                   = azurerm_kubernetes_cluster.aks.kube_config.0.host</span>
+  <span style=color:#ae81ff>client_certificate     = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_certificate)</span>
+  <span style=color:#ae81ff>client_key             = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_key)</span>
+  <span style=color:#ae81ff>cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.cluster_ca_certificate)</span>
+}
+
+<span style=color:#75715e># Configuring the helm provider</span>
+<span style=color:#75715e># AKS resource name is aks: azurerm_kubernetes_cluster.aks</span>
+<span style=color:#ae81ff>provider &#34;helm&#34; {</span>
+  <span style=color:#ae81ff>kubernetes {</span>
+    <span style=color:#ae81ff>host                   = azurerm_kubernetes_cluster.aks.kube_config.0.host</span>
+    <span style=color:#ae81ff>client_certificate     = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_certificate)</span>
+    <span style=color:#ae81ff>client_key             = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.client_key)</span>
+    <span style=color:#ae81ff>cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config.0.cluster_ca_certificate)</span>
+  }
+}
+</code></pre></div><p>Note that you&rsquo;ll be using <code>azurerm</code> to deploy Azure services, <code>azuread</code> to create a Service Principal information and the <code>kubernetes</code> and <code>helm</code> provider to install <a href=https://www.kubecost.com/>Kubecost</a>.</p><h3 id=2-create-a-variablestf-file-with-the-following-contents>2. Create a <code>variables.tf</code> file with the following contents:</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#75715e># Location of the services</span>
+<span style=color:#ae81ff>variable &#34;location&#34; {</span>
+  <span style=color:#ae81ff>default = &#34;west europe&#34;</span>
+}
+
+<span style=color:#75715e># Resource Group Name</span>
+<span style=color:#ae81ff>variable &#34;resource_group&#34; {</span>
+  <span style=color:#ae81ff>default = &#34;aks-kubecost&#34;</span>
+}
+
+<span style=color:#75715e># Name of the AKS cluster</span>
+<span style=color:#ae81ff>variable &#34;aks_name&#34; {</span>
+  <span style=color:#ae81ff>default = &#34;aksmsftkubecost&#34;</span>
+}
+
+<span style=color:#75715e># Name of the Servic Principal used by Kubecost</span>
+<span style=color:#ae81ff>variable &#34;kubecost_sp_name&#34; {</span>
+  <span style=color:#ae81ff>default = &#34;kubecost&#34;</span>
+}
+</code></pre></div><p>Note: Replace the the default values with your desired location and names.</p><h3 id=3-create-a-maintf-file-with-the-following-contents>3. Create a <code>main.tf</code> file with the following contents:</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#75715e># Create Resource Group</span>
+<span style=color:#ae81ff>resource &#34;azurerm_resource_group&#34; &#34;rg&#34; {</span>
+  <span style=color:#ae81ff>name     = var.resource_group</span>
+  <span style=color:#ae81ff>location = var.location</span>
+}
+
+<span style=color:#75715e># Create VNET for AKS</span>
+<span style=color:#ae81ff>resource &#34;azurerm_virtual_network&#34; &#34;vnet&#34; {</span>
+  <span style=color:#ae81ff>name                = &#34;private-network&#34;</span>
+  <span style=color:#ae81ff>address_space       = [&#34;10.0.0.0/8&#34;]</span>
+  <span style=color:#ae81ff>location            = azurerm_resource_group.rg.location</span>
+  <span style=color:#ae81ff>resource_group_name = azurerm_resource_group.rg.name</span>
+}
+
+<span style=color:#75715e># Create the Subnet for AKS.</span>
+<span style=color:#ae81ff>resource &#34;azurerm_subnet&#34; &#34;aks&#34; {</span>
+  <span style=color:#ae81ff>name                 = &#34;aks&#34;</span>
+  <span style=color:#ae81ff>resource_group_name  = azurerm_resource_group.rg.name</span>
+  <span style=color:#ae81ff>virtual_network_name = azurerm_virtual_network.vnet.name</span>
+  <span style=color:#ae81ff>address_prefixes     = [&#34;10.240.0.0/16&#34;]</span>
+}
+
+<span style=color:#75715e># Create the AKS cluster.</span>
+<span style=color:#75715e># Cause this is a test node_count is set to 1 </span>
+<span style=color:#ae81ff>resource &#34;azurerm_kubernetes_cluster&#34; &#34;aks&#34; {</span>
+  <span style=color:#ae81ff>name                = var.aks_name</span>
+  <span style=color:#ae81ff>location            = azurerm_resource_group.rg.location</span>
+  <span style=color:#ae81ff>resource_group_name = azurerm_resource_group.rg.name</span>
+  <span style=color:#ae81ff>dns_prefix          = var.aks_name</span>
+
+  <span style=color:#ae81ff>default_node_pool {</span>
+    <span style=color:#ae81ff>name            = &#34;default&#34;</span>
+    <span style=color:#ae81ff>node_count      = 1</span>
+    <span style=color:#ae81ff>vm_size         = &#34;Standard_D2s_v3&#34;</span>
+    <span style=color:#ae81ff>os_disk_size_gb = 30</span>
+    <span style=color:#ae81ff>os_disk_type    = &#34;Ephemeral&#34;</span>
+    <span style=color:#ae81ff>vnet_subnet_id  = azurerm_subnet.aks.id</span>
+  }
+
+  <span style=color:#75715e># Using Managed Identity</span>
+  <span style=color:#ae81ff>identity {</span>
+    <span style=color:#ae81ff>type = &#34;SystemAssigned&#34;</span>
+  }
+
+  <span style=color:#ae81ff>network_profile {</span>
+    <span style=color:#ae81ff>network_plugin = &#34;kubenet&#34;</span>
+    <span style=color:#ae81ff>network_policy = &#34;calico&#34;</span>
+  }
+
+  <span style=color:#ae81ff>role_based_access_control {</span>
+    <span style=color:#ae81ff>enabled = true</span>
+  }
+
+  <span style=color:#ae81ff>addon_profile {</span>
+    <span style=color:#ae81ff>kube_dashboard {</span>
+      <span style=color:#ae81ff>enabled = false</span>
+    }
+  }
+}
+
+<span style=color:#75715e># Create Application registration for Kubecost</span>
+<span style=color:#ae81ff>resource &#34;azuread_application&#34; &#34;kubecost&#34; {</span>
+  <span style=color:#ae81ff>display_name               = var.kubecost_sp_name</span>
+  <span style=color:#ae81ff>identifier_uris            = [&#34;http://${var.kubecost_sp_name}&#34;]</span>
+}
+
+<span style=color:#75715e># Create Service principal for kubecost</span>
+<span style=color:#ae81ff>resource &#34;azuread_service_principal&#34; &#34;kubecost&#34; {</span>
+  <span style=color:#ae81ff>application_id = azuread_application.kubecost.application_id</span>
+}
+
+<span style=color:#75715e># Generate password for the Service Principal</span>
+<span style=color:#ae81ff>resource &#34;random_password&#34; &#34;passwd&#34; {</span>
+  <span style=color:#ae81ff>length      = 32</span>
+  <span style=color:#ae81ff>min_upper   = 4</span>
+  <span style=color:#ae81ff>min_lower   = 2</span>
+  <span style=color:#ae81ff>min_numeric = 4</span>
+   <span style=color:#ae81ff>keepers = {</span>
+    <span style=color:#ae81ff>aks_app_id = azuread_application.kubecost.id</span>
+  }
+}
+
+<span style=color:#75715e># Create kubecost&#39;s Service principal password</span>
+<span style=color:#ae81ff>resource &#34;azuread_service_principal_password&#34; &#34;main&#34; {</span>
+  <span style=color:#ae81ff>service_principal_id = azuread_service_principal.kubecost.id</span>
+  <span style=color:#ae81ff>value                = random_password.passwd.result</span>
+  <span style=color:#ae81ff>end_date             = &#34;2099-01-01T00:00:00Z&#34;</span>
+}
+
+<span style=color:#75715e># Get current Subscription</span>
+<span style=color:#ae81ff>data &#34;azurerm_subscription&#34; &#34;current&#34; {</span>
+}
+
+<span style=color:#75715e># Create kubecost custom role</span>
+<span style=color:#ae81ff>resource &#34;azurerm_role_definition&#34; &#34;kubecost&#34; {</span>
+  <span style=color:#ae81ff>name        = &#34;kubecost_rate_card_query&#34;</span>
+  <span style=color:#ae81ff>scope       = data.azurerm_subscription.current.id</span>
+  <span style=color:#ae81ff>description = &#34;kubecost Rate Card query role&#34;</span>
+
+  <span style=color:#ae81ff>permissions {</span>
+    <span style=color:#ae81ff>actions     = [</span>
+      <span style=color:#e6db74>&#34;Microsoft.Compute/virtualMachines/vmSizes/read&#34;</span>,
+      <span style=color:#e6db74>&#34;Microsoft.Resources/subscriptions/locations/read&#34;</span>,
+      <span style=color:#e6db74>&#34;Microsoft.Resources/providers/read&#34;</span>,
+      <span style=color:#e6db74>&#34;Microsoft.ContainerService/containerServices/read&#34;</span>,
+      <span style=color:#e6db74>&#34;Microsoft.Commerce/RateCard/read&#34;</span>,
+    ]
+    <span style=color:#ae81ff>not_actions = []</span>
+  }
+
+  <span style=color:#ae81ff>assignable_scopes = [</span>
+    <span style=color:#ae81ff>data.azurerm_subscription.current.id</span>
+  ]
+}
+
+<span style=color:#75715e># Assign kubecost&#39;s custom role at the subscription level</span>
+<span style=color:#ae81ff>resource &#34;azurerm_role_assignment&#34; &#34;kubecost&#34; {</span>
+  <span style=color:#ae81ff>scope                = data.azurerm_subscription.current.id</span>
+  <span style=color:#ae81ff>role_definition_name = azurerm_role_definition.kubecost.name</span>
+  <span style=color:#ae81ff>principal_id         = azuread_service_principal.kubecost.object_id</span>
+}
+</code></pre></div><h3 id=4-create-a-kubecosttf-file-with-the-following-contents>4. Create a <code>kubecost.tf</code> file with the following contents:</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#75715e># Create the kubecost namespace</span>
+<span style=color:#ae81ff>resource &#34;kubernetes_namespace&#34; &#34;kubecost&#34; {</span>
+  <span style=color:#ae81ff>metadata {</span>
+    <span style=color:#ae81ff>name = &#34;kubecost&#34;</span>
+  }
+}
+
+<span style=color:#75715e># Install kubecost using the hem chart</span>
+<span style=color:#ae81ff>resource &#34;helm_release&#34; &#34;kubecost&#34; {</span>
+  <span style=color:#ae81ff>name       = &#34;kubecost&#34;</span>
+  <span style=color:#ae81ff>chart      = &#34;cost-analyzer&#34;</span>
+  <span style=color:#ae81ff>namespace  = &#34;kubecost&#34;</span>
+  <span style=color:#ae81ff>version    = &#34;1.79.1&#34;</span>
+  <span style=color:#ae81ff>repository = &#34;https://kubecost.github.io/cost-analyzer/&#34;</span>
+
+  <span style=color:#75715e># Set the cluster name</span>
+  <span style=color:#ae81ff>set {</span>
+    <span style=color:#ae81ff>name  = &#34;kubecostProductConfigs.clusterName&#34;</span>
+    <span style=color:#ae81ff>value = var.aks_name</span>
+  }
+
+  <span style=color:#75715e># Set the currency</span>
+  <span style=color:#ae81ff>set {</span>
+    <span style=color:#ae81ff>name  = &#34;kubecostProductConfigs.currencyCode&#34;</span>
+    <span style=color:#ae81ff>value = &#34;EUR&#34;</span>
+  }
+
+  <span style=color:#75715e># Set the region</span>
+  <span style=color:#ae81ff>set {</span>
+    <span style=color:#ae81ff>name  = &#34;kubecostProductConfigs.azureBillingRegion&#34;</span>
+    <span style=color:#ae81ff>value = &#34;NL&#34;</span>
+  }
+  
+  <span style=color:#75715e># Generate a secret based on the Azure configuration provided below</span>
+  <span style=color:#ae81ff>set {</span>
+    <span style=color:#ae81ff>name  = &#34;kubecostProductConfigs.createServiceKeySecret&#34;</span>
+    <span style=color:#ae81ff>value = true</span>
+  }
+
+  <span style=color:#75715e># Azure Subscription ID</span>
+  <span style=color:#ae81ff>set {</span>
+    <span style=color:#ae81ff>name  = &#34;kubecostProductConfigs.azureSubscriptionID&#34;</span>
+    <span style=color:#ae81ff>value = data.azurerm_subscription.current.id</span>
+  }
+
+  <span style=color:#75715e># Azure Client ID</span>
+  <span style=color:#ae81ff>set {</span>
+    <span style=color:#ae81ff>name  = &#34;kubecostProductConfigs.azureClientID&#34;</span>
+    <span style=color:#ae81ff>value = azuread_application.kubecost.application_id</span>
+  }
+
+  <span style=color:#75715e># Azure Client Password</span>
+  <span style=color:#ae81ff>set {</span>
+    <span style=color:#ae81ff>name  = &#34;kubecostProductConfigs.azureClientPassword&#34;</span>
+    <span style=color:#ae81ff>value = random_password.passwd.result</span>
+  }
+
+  <span style=color:#75715e># Azure Tenant ID</span>
+  <span style=color:#ae81ff>set {</span>
+    <span style=color:#ae81ff>name  = &#34;kubecostProductConfigs.azureTenantID&#34;</span>
+    <span style=color:#ae81ff>value = data.azurerm_subscription.current.tenant_id</span>
+  }
+}
+</code></pre></div><p>The configuration in the previous file installs <a href=https://www.kubecost.com/>Kubecost</a> in the AKS cluster. If you want to learn more about the available configuration options please check the following file: <a href=https://github.com/kubecost/cost-analyzer-helm-chart/blob/master/cost-analyzer/values.yaml>values.yaml</a></p><h3 id=5-deploy-the-solution>5. Deploy the solution:</h3><p>Run the following commands:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>terraform init
+terraform plan -out tf.plan
+terraform apply ./tf.plan
+</code></pre></div><h3 id=6-test-and-browse-kubecost>6. Test and browse Kubecost:</h3><p>To check the status of the kubecost pods run:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>az aks get-credentials -g aks-kubecost -n aksmsftkubecost
+kubectl get pods -n kubecost
+</code></pre></div><p>Then run:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>kubectl port-forward -n kubecost svc/kubecost-cost-analyzer 9090:9090
+</code></pre></div><p>and browse to <a href=http://localhost:9090>http://localhost:9090</a> so you can start learning!</p><p>Hope it helps! Please find the complete code <a href=https://github.com/cmendible/azure.samples/tree/main/aks_kubecost>here</a></p></article><section class=post-nav><ul><li><a href=https://carlos.mendible.com/2021/04/12/deploy-a-private-azure-cloud-shell-with-terraform/><i class="fa fa-chevron-circle-left"></i> Deploy a Private Azure Cloud Shell with Terraform</a></li></ul></section><section class=comments-block><button id=show-comments style=display:none><i class="fa fa-comments"></i></button></section><section id=disqus_thread></section><script>(function(){var b,e,c,g,f,d;if(window.location.hostname=="localhost")return;b=!1,e='codeityourself',c=document.getElementById("show-comments"),g='Deploy AKS \u002b Kubecost with Terraform',f=!0,c.style.display="",f?a():c.addEventListener("click",a,!1);function a(){if(!b){b=!0;var a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src="//"+e+".disqus.com/embed.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a),document.getElementById("show-comments").style.display="none"}}d=window.location.hash.substr(1),d.length>8&&d.substring(0,8)=="comment-"&&a(),/bot|google|baidu|bing|msn|duckduckgo|slurp|yandex/i.test(navigator.userAgent)&&a()})()</script></main><footer><h6>Copyright © 2020 - Carlos Mendible |
+Rendered by <a href=https://gohugo.io title=Hugo>Hugo</a> |
+<a href=https://carlos.mendible.com/feed.xml>Subscribe</a></h6></footer></div><script src=https://carlos.mendible.com/js/scripts.js></script><script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-11243417-1','auto'),ga('send','pageview'))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
