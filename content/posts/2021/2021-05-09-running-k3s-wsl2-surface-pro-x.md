@@ -73,7 +73,7 @@ export KUBECONFIG=$HOME/.kube/config:$HOME/.kube/k3s.yaml
 
 ### Use k3s context
 
-```
+``` shell
 kubectl config use-context default
 ```
 
@@ -95,6 +95,6 @@ kube-system   local-path-provisioner-7ff9579c6-nhnbj   1/1     Running     6    
 kube-system   traefik-5dd496474-94lt5                  1/1     Running     1          20d
 ```
 
-> k3s uses: `local-path-provisioner` and saves volume data in the `/var/lib/rancher/k3s/data` folder
+> Note: k3s uses: **local-path-provisioner** and saves volume data in the **/var/lib/rancher/k3s/data** folder
 
 Hope it helps!!!
