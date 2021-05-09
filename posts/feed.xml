@@ -21,8 +21,8 @@
 &lt;h3 id="add-the-k3s-config-file-to-kubeconfig-environment-variable">Add the k3s config file to KUBECONFIG environment variable&lt;/h3>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">export KUBECONFIG&lt;span style="color:#f92672">=&lt;/span>$HOME/.kube/config:$HOME/.kube/k3s.yaml
 &lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="use-k3s-context">Use k3s context&lt;/h3>
-&lt;pre>&lt;code>kubectl config use-context default
-&lt;/code>&lt;/pre>&lt;h3 id="check-all-running-pods">Check all running pods&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl config use-context default
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="check-all-running-pods">Check all running pods&lt;/h3>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get po --all-namespaces
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>you should get an output similar to this one:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">NAMESPACE NAME READY STATUS RESTARTS AGE
@@ -33,7 +33,7 @@ kube-system coredns-66c464876b-pnpgm 1/1 Running &lt;span style="color:#ae81ff">
 kube-system local-path-provisioner-7ff9579c6-nhnbj 1/1 Running &lt;span style="color:#ae81ff">6&lt;/span> 20d
 kube-system traefik-5dd496474-94lt5 1/1 Running &lt;span style="color:#ae81ff">1&lt;/span> 20d
 &lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
-&lt;p>k3s uses: &lt;code>local-path-provisioner&lt;/code> and saves volume data in the &lt;code>/var/lib/rancher/k3s/data&lt;/code> folder&lt;/p>
+&lt;p>Note: k3s uses: &lt;strong>local-path-provisioner&lt;/strong> and saves volume data in the &lt;strong>/var/lib/rancher/k3s/data&lt;/strong> folder&lt;/p>
 &lt;/blockquote>
 &lt;p>Hope it helps!!!&lt;/p></description></item><item><title>Deploy AKS + Kubecost with Terraform</title><link>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</link><pubDate>Fri, 30 Apr 2021 19:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</guid><description>&lt;p>This morning I saw this tweet from Mr Brendan Burns:&lt;/p>
 &lt;blockquote class="twitter-tweet">&lt;p lang="en" dir="ltr">AKS Cost Monitoring and Governance With Kubecost &lt;a href="https://t.co/OStwIBsuPp">https://t.co/OStwIBsuPp&lt;/a>&lt;/p>&amp;mdash; brendandburns (@brendandburns) &lt;a href="https://twitter.com/brendandburns/status/1387933511433154564?ref_src=twsrc%5Etfw">April 30, 2021&lt;/a>&lt;/blockquote>
