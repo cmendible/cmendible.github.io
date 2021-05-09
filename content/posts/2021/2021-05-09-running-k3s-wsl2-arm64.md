@@ -1,10 +1,9 @@
 ---
 author: Carlos Mendible
 categories:
-- azure
 - kubernetes
 crosspost_to_medium: true
-date: "2021-05-09T10:00:00Z"
+date: "2021-05-09T17:00:00Z"
 description: 'Running k3s inside WSL2 on my ARM64 Surface Pro X'
 images: ["/assets/img/posts/kubernetes.png"]
 draft: true
