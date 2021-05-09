@@ -4,11 +4,11 @@ categories:
 - kubernetes
 crosspost_to_medium: true
 date: "2021-05-09T17:00:00Z"
-description: 'Running k3s inside WSL2 on my ARM64 Surface Pro X'
+description: 'Running k3s inside WSL2 on a Surface Pro X'
 images: ["/assets/img/posts/kubernetes.png"]
-draft: true
+draft: false
 tags: ["k3s", "arm64"]
-title: 'Running k3s inside WSL2 on my ARM64 Surface Pro X'
+title: 'Running k3s inside WSL2 on a Surface Pro X'
 ---
 
 I'm a proud owner of a Surafe Pro X SQ2 which is an ARM64 device. If you've been reading me, you know I like to tinker with kubernetes and therefore I needed a solution for this device.
