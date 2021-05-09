@@ -1,0 +1,38 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>arm64 on Code it Yourself...</title><link>https://carlos.mendible.com/tags/arm64/</link><description>Recent content in arm64 on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 09 May 2021 17:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/arm64/feed.xml" rel="self" type="application/rss+xml"/><item><title>Running k3s inside WSL2 on a Surface Pro X</title><link>https://carlos.mendible.com/2021/05/09/running-k3s-inside-wsl2-on-a-surface-pro-x/</link><pubDate>Sun, 09 May 2021 17:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/05/09/running-k3s-inside-wsl2-on-a-surface-pro-x/</guid><description>&lt;p>I&amp;rsquo;m a proud owner of a Surafe Pro X SQ2 which is an ARM64 device. If you&amp;rsquo;ve been reading me, you know I like to tinker with kubernetes and therefore I needed a solution for this device.&lt;/p>
+&lt;p>I remembered reading about &lt;a href="https://k3s.io/">k3s&lt;/a> a lightweight kubernetes distro built for IoT &amp;amp; Edge computing, and decided to give it a try.&lt;/p>
+&lt;h2 id="installing-k3s-in-wsl2">Installing k3s in WSL2&lt;/h2>
+&lt;h3 id="download-the-binaries">Download the binaries&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">wget https://github.com/k3s-io/k3s/releases/download/v1.19.10%2Bk3s1/k3s-arm64
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="rename-the-file">Rename the file&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">mv k3s-arm64 k3s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="make-the-file-executable">Make the file executable&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">chmod +x k3s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="move-the-file-to-usrlocalbin">Move the file to &lt;code>/usr/local/bin&lt;/code>&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">sudo mv k3s /usr/local/bin
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="copy-to-k3s-config-file-to-homekube">Copy to k3s config file to &lt;code>$HOME/.kube&lt;/code>&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">sudo cp /etc/rancher/k3s/k3s.yaml $HOME/.kube
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="make-current-user-owner-of-the-k3s-config-file">Make current user owner of the k3s config file&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">sudo chown $USER $HOME/.kube/k3s.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="running-k3s">Running k3s&lt;/h2>
+&lt;h3 id="run-the-k3s-kubernetes-server">Run the k3s kubernetes server&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">sudo k3s server
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-k3s">Test k3s&lt;/h2>
+&lt;p>From another WSL2 console window:&lt;/p>
+&lt;h3 id="add-the-k3s-config-file-to-kubeconfig-environment-variable">Add the k3s config file to KUBECONFIG environment variable&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">export KUBECONFIG&lt;span style="color:#f92672">=&lt;/span>$HOME/.kube/config:$HOME/.kube/k3s.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="use-k3s-context">Use k3s context&lt;/h3>
+&lt;pre>&lt;code>kubectl config use-context default
+&lt;/code>&lt;/pre>&lt;h3 id="check-all-running-pods">Check all running pods&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get po --all-namespaces
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>you should get an output similar to this one:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">NAMESPACE NAME READY STATUS RESTARTS AGE
+kube-system helm-install-traefik-mhhfz 0/1 Completed &lt;span style="color:#ae81ff">0&lt;/span> 20d
+kube-system metrics-server-7b4f8b595-7cfsb 1/1 Running &lt;span style="color:#ae81ff">1&lt;/span> 20d
+kube-system svclb-traefik-pqn56 2/2 Running &lt;span style="color:#ae81ff">2&lt;/span> 20d
+kube-system coredns-66c464876b-pnpgm 1/1 Running &lt;span style="color:#ae81ff">1&lt;/span> 20d
+kube-system local-path-provisioner-7ff9579c6-nhnbj 1/1 Running &lt;span style="color:#ae81ff">6&lt;/span> 20d
+kube-system traefik-5dd496474-94lt5 1/1 Running &lt;span style="color:#ae81ff">1&lt;/span> 20d
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>k3s uses: &lt;code>local-path-provisioner&lt;/code> and saves volume data in the &lt;code>/var/lib/rancher/k3s/data&lt;/code> folder&lt;/p>
+&lt;/blockquote>
+&lt;p>Hope it helps!!!&lt;/p></description></item></channel></rss>

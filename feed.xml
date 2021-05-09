@@ -1,4 +1,41 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Code it Yourself...</title><link>https://carlos.mendible.com/posts/</link><description>Recent content in Posts on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 30 Apr 2021 19:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/posts/feed.xml" rel="self" type="application/rss+xml"/><item><title>Deploy AKS + Kubecost with Terraform</title><link>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</link><pubDate>Fri, 30 Apr 2021 19:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</guid><description>&lt;p>This morning I saw this tweet from Mr Brendan Burns:&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Code it Yourself...</title><link>https://carlos.mendible.com/posts/</link><description>Recent content in Posts on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sun, 09 May 2021 17:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/posts/feed.xml" rel="self" type="application/rss+xml"/><item><title>Running k3s inside WSL2 on a Surface Pro X</title><link>https://carlos.mendible.com/2021/05/09/running-k3s-inside-wsl2-on-a-surface-pro-x/</link><pubDate>Sun, 09 May 2021 17:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/05/09/running-k3s-inside-wsl2-on-a-surface-pro-x/</guid><description>&lt;p>I&amp;rsquo;m a proud owner of a Surafe Pro X SQ2 which is an ARM64 device. If you&amp;rsquo;ve been reading me, you know I like to tinker with kubernetes and therefore I needed a solution for this device.&lt;/p>
+&lt;p>I remembered reading about &lt;a href="https://k3s.io/">k3s&lt;/a> a lightweight kubernetes distro built for IoT &amp;amp; Edge computing, and decided to give it a try.&lt;/p>
+&lt;h2 id="installing-k3s-in-wsl2">Installing k3s in WSL2&lt;/h2>
+&lt;h3 id="download-the-binaries">Download the binaries&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">wget https://github.com/k3s-io/k3s/releases/download/v1.19.10%2Bk3s1/k3s-arm64
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="rename-the-file">Rename the file&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">mv k3s-arm64 k3s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="make-the-file-executable">Make the file executable&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">chmod +x k3s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="move-the-file-to-usrlocalbin">Move the file to &lt;code>/usr/local/bin&lt;/code>&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">sudo mv k3s /usr/local/bin
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="copy-to-k3s-config-file-to-homekube">Copy to k3s config file to &lt;code>$HOME/.kube&lt;/code>&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">sudo cp /etc/rancher/k3s/k3s.yaml $HOME/.kube
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="make-current-user-owner-of-the-k3s-config-file">Make current user owner of the k3s config file&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">sudo chown $USER $HOME/.kube/k3s.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="running-k3s">Running k3s&lt;/h2>
+&lt;h3 id="run-the-k3s-kubernetes-server">Run the k3s kubernetes server&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">sudo k3s server
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="test-k3s">Test k3s&lt;/h2>
+&lt;p>From another WSL2 console window:&lt;/p>
+&lt;h3 id="add-the-k3s-config-file-to-kubeconfig-environment-variable">Add the k3s config file to KUBECONFIG environment variable&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">export KUBECONFIG&lt;span style="color:#f92672">=&lt;/span>$HOME/.kube/config:$HOME/.kube/k3s.yaml
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="use-k3s-context">Use k3s context&lt;/h3>
+&lt;pre>&lt;code>kubectl config use-context default
+&lt;/code>&lt;/pre>&lt;h3 id="check-all-running-pods">Check all running pods&lt;/h3>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">kubectl get po --all-namespaces
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>you should get an output similar to this one:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">NAMESPACE NAME READY STATUS RESTARTS AGE
+kube-system helm-install-traefik-mhhfz 0/1 Completed &lt;span style="color:#ae81ff">0&lt;/span> 20d
+kube-system metrics-server-7b4f8b595-7cfsb 1/1 Running &lt;span style="color:#ae81ff">1&lt;/span> 20d
+kube-system svclb-traefik-pqn56 2/2 Running &lt;span style="color:#ae81ff">2&lt;/span> 20d
+kube-system coredns-66c464876b-pnpgm 1/1 Running &lt;span style="color:#ae81ff">1&lt;/span> 20d
+kube-system local-path-provisioner-7ff9579c6-nhnbj 1/1 Running &lt;span style="color:#ae81ff">6&lt;/span> 20d
+kube-system traefik-5dd496474-94lt5 1/1 Running &lt;span style="color:#ae81ff">1&lt;/span> 20d
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>k3s uses: &lt;code>local-path-provisioner&lt;/code> and saves volume data in the &lt;code>/var/lib/rancher/k3s/data&lt;/code> folder&lt;/p>
+&lt;/blockquote>
+&lt;p>Hope it helps!!!&lt;/p></description></item><item><title>Deploy AKS + Kubecost with Terraform</title><link>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</link><pubDate>Fri, 30 Apr 2021 19:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</guid><description>&lt;p>This morning I saw this tweet from Mr Brendan Burns:&lt;/p>
 &lt;blockquote class="twitter-tweet">&lt;p lang="en" dir="ltr">AKS Cost Monitoring and Governance With Kubecost &lt;a href="https://t.co/OStwIBsuPp">https://t.co/OStwIBsuPp&lt;/a>&lt;/p>&amp;mdash; brendandburns (@brendandburns) &lt;a href="https://twitter.com/brendandburns/status/1387933511433154564?ref_src=twsrc%5Etfw">April 30, 2021&lt;/a>&lt;/blockquote>
 &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8">&lt;/script>
 &lt;p>And I&amp;rsquo;m sure that once you also read through it, you&amp;rsquo;ll learn that you have to take several steps in order to achieve &lt;a href="http://blog.kubecost.com/blog/aks-cost/">AKS Cost Monitoring and Governance With Kubecost&lt;/a>.&lt;/p>
@@ -1338,82 +1375,4 @@ kubectl port-forward $pod 80:80
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>If everything is working you should read:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">&lt;span style="color:#e6db74">&amp;#34;your super secret&amp;#34;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!&lt;/p>
-&lt;p>Please find all code and files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.k8s.secrets">here&lt;/a>, and learn more about Dapr and the Secret API &lt;a href="https://github.com/dapr/docs/tree/master/concepts/secrets">here&lt;/a>&lt;/p></description></item><item><title>Dapr: Debugging .NET Core with Visual Studio Code</title><link>https://carlos.mendible.com/2020/02/09/dapr-debugging-dotnetcore-with-visual-studio-code/</link><pubDate>Sun, 09 Feb 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2020/02/09/dapr-debugging-dotnetcore-with-visual-studio-code/</guid><description>&lt;p>So you are new to &lt;a href="https://dapr.io">Dapr&lt;/a> and you are trying to understand how it works with you .NET Core application. You already tried launching your app with the Dapr CLI and then you find yourself wondering on how to debug the mix with Visual Studio Code.&lt;/p>
-&lt;p>Well, follow this simple steps and you&amp;rsquo;ll be ready:&lt;/p>
-&lt;h2 id="modify-launchjson">Modify launch.json&lt;/h2>
-&lt;p>Change the &lt;strong>preLaunchTask&lt;/strong> so instead it calls a task named &lt;strong>daprd-debug&lt;/strong> instead of &lt;strong>build&lt;/strong>&lt;/p>
-&lt;p>Your &lt;strong>launch.json&lt;/strong> file should look like this:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
-&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Use&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">IntelliSense&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">learn&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">about&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">possible&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">attributes.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Hover&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">to&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">view&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">descriptions&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">of&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">existing&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">attributes.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">For&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">more&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">information,&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">visit:&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">https://go.microsoft.com/fwlink/?linkid=830387&lt;/span>
-&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;0.2.0&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;configurations&amp;#34;&lt;/span>: [
-{
-&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.NET Core Launch (web)&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;coreclr&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;request&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;launch&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;preLaunchTask&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd-debug&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;program&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}/bin/Debug/netcoreapp3.1/&amp;lt;your assembly name&amp;gt;.dll&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [],
-&lt;span style="color:#f92672">&amp;#34;cwd&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;stopAtEntry&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">false&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;serverReadyAction&amp;#34;&lt;/span>: {
-&lt;span style="color:#f92672">&amp;#34;action&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;openExternally&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;pattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^\\s*Now listening on:\\s+(https?://\\S+)&amp;#34;&lt;/span>
-},
-&lt;span style="color:#f92672">&amp;#34;env&amp;#34;&lt;/span>: {
-&lt;span style="color:#f92672">&amp;#34;ASPNETCORE_ENVIRONMENT&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;Development&amp;#34;&lt;/span>
-},
-&lt;span style="color:#f92672">&amp;#34;sourceFileMap&amp;#34;&lt;/span>: {
-&lt;span style="color:#f92672">&amp;#34;/Views&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${workspaceFolder}/Views&amp;#34;&lt;/span>
-}
-},
-{
-&lt;span style="color:#f92672">&amp;#34;name&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.NET Core Attach&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;type&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;coreclr&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;request&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;attach&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;processId&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;${command:pickProcess}&amp;#34;&lt;/span>
-}
-]
-}
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="modify-tasksjson">Modify tasks.json&lt;/h2>
-&lt;p>A new task to &lt;strong>tasks.json&lt;/strong> and name it &lt;strong>daprd-debug&lt;/strong> or whatever name you choosed in te previous step.&lt;/p>
-&lt;p>Your &lt;strong>tasks.json&lt;/strong> should look like this:&lt;/p>
-&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
-&lt;span style="color:#f92672">&amp;#34;version&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;2.0.0&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;tasks&amp;#34;&lt;/span>: [
-&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">Ommited&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">tasks.&lt;/span>
-&lt;span style="color:#960050;background-color:#1e0010">//&lt;/span> &lt;span style="color:#960050;background-color:#1e0010">...&lt;/span>
-{
-&lt;span style="color:#f92672">&amp;#34;label&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd-debug&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;command&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;daprd&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;args&amp;#34;&lt;/span>: [
-&lt;span style="color:#e6db74">&amp;#34;-dapr-id&amp;#34;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#34;routing&amp;#34;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#34;-app-port&amp;#34;&lt;/span>,
-&lt;span style="color:#e6db74">&amp;#34;5000&amp;#34;&lt;/span>
-],
-&lt;span style="color:#f92672">&amp;#34;isBackground&amp;#34;&lt;/span>: &lt;span style="color:#66d9ef">true&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;problemMatcher&amp;#34;&lt;/span>: {
-&lt;span style="color:#f92672">&amp;#34;pattern&amp;#34;&lt;/span>: [
-{
-&lt;span style="color:#f92672">&amp;#34;regexp&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;.&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;file&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;location&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">2&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;message&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">3&lt;/span>
-}
-],
-&lt;span style="color:#f92672">&amp;#34;background&amp;#34;&lt;/span>: {
-&lt;span style="color:#f92672">&amp;#34;beginsPattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^.*starting Dapr Runtime.*&amp;#34;&lt;/span>,
-&lt;span style="color:#f92672">&amp;#34;endsPattern&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;^.*waiting on port.*&amp;#34;&lt;/span>
-}
-},
-&lt;span style="color:#f92672">&amp;#34;dependsOn&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;build&amp;#34;&lt;/span>
-}
-]
-}
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note:&lt;/strong> the new task depends on the &lt;strong>build&lt;/strong> task.&lt;/p>
-&lt;h2 id="hit-f5-and-enjoy">Hit F5 and enjoy&lt;/h2>
-&lt;p>Hit F5 and enjoy debugging your &amp;ldquo;Daprized&amp;rdquo; .NET Core application.&lt;/p>
-&lt;p>You can download a working sample from this &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.debug.vscode/">repo&lt;/a>.&lt;/p></description></item></channel></rss>
+&lt;p>Please find all code and files &lt;a href="https://github.com/cmendible/dotnetcore.samples/tree/main/dapr.k8s.secrets">here&lt;/a>, and learn more about Dapr and the Secret API &lt;a href="https://github.com/dapr/docs/tree/master/concepts/secrets">here&lt;/a>&lt;/p></description></item></channel></rss>
