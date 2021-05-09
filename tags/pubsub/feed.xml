@@ -63,7 +63,7 @@ Console.WriteLine(&lt;span style="color:#e6db74">$&amp;#34;Received: {msg.Value}
 &lt;/span>&lt;span style="color:#75715e">&lt;/span> consumer.Subscribe(&lt;span style="color:#66d9ef">new&lt;/span> List&amp;lt;&lt;span style="color:#66d9ef">string&lt;/span>&amp;gt;() { kafkaTopic });
 &lt;span style="color:#75715e">// Handle Cancel Keypress
 &lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> cancelled = &lt;span style="color:#66d9ef">false&lt;/span>;
-Console.CancelKeyPress += (_, e) =&amp;gt;
+Console.CancelKeyPress += (&lt;span style="color:#ae81ff">_&lt;/span>, e) =&amp;gt;
 {
 e.Cancel = &lt;span style="color:#66d9ef">true&lt;/span>; &lt;span style="color:#75715e">// prevent the process from terminating.
 &lt;/span>&lt;span style="color:#75715e">&lt;/span> cancelled = &lt;span style="color:#66d9ef">true&lt;/span>;

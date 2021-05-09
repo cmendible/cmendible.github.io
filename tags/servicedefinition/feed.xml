@@ -6,12 +6,12 @@
 {
 &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">class&lt;/span> &lt;span style="color:#a6e22e">ConfigurationManager&lt;/span>
 {
-&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> Settings _settings = &lt;span style="color:#66d9ef">new&lt;/span> Settings();
+&lt;span style="color:#66d9ef">private&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> Settings &lt;span style="color:#ae81ff">_&lt;/span>settings = &lt;span style="color:#66d9ef">new&lt;/span> Settings();
 &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> Settings Settings
 {
 &lt;span style="color:#66d9ef">get&lt;/span>
 {
-&lt;span style="color:#66d9ef">return&lt;/span> _settings;
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#ae81ff">_&lt;/span>settings;
 }
 }
 &lt;span style="color:#66d9ef">public&lt;/span> &lt;span style="color:#66d9ef">static&lt;/span> ConnectionStrings ConnectionStrings

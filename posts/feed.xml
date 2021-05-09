@@ -1261,15 +1261,15 @@ COPY *.csproj .
 RUN dotnet restore
 COPY . .
 RUN dotnet publish --output /app/ --configuration Release
-RUN sed -n &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>s:.*&amp;lt;AssemblyName&amp;gt;&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>(.*&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>)&amp;lt;/AssemblyName&amp;gt;.*:&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>:p&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span> *.csproj &amp;gt; __assemblyname
-RUN &lt;span style="color:#66d9ef">if&lt;/span> [ ! -s __assemblyname ]; then filename=&lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>(ls *.csproj); echo &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>{filename%.*} &amp;gt; __assemblyname; fi
+RUN sed -n &lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>s:.*&amp;lt;AssemblyName&amp;gt;&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>(.*&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>)&amp;lt;/AssemblyName&amp;gt;.*:&lt;span style="color:#960050;background-color:#1e0010">\&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>:p&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span> *.csproj &amp;gt; &lt;span style="color:#ae81ff">__&lt;/span>assemblyname
+RUN &lt;span style="color:#66d9ef">if&lt;/span> [ ! -s &lt;span style="color:#ae81ff">__&lt;/span>assemblyname ]; then filename=&lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>(ls *.csproj); echo &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>{filename%.*} &amp;gt; &lt;span style="color:#ae81ff">__&lt;/span>assemblyname; fi
 &lt;span style="color:#960050;background-color:#1e0010">#&lt;/span> Stage &lt;span style="color:#ae81ff">2&lt;/span>
 FROM mcr.microsoft.com/dotnet/core/aspnet:&lt;span style="color:#ae81ff">3.1&lt;/span>
 WORKDIR /app
 COPY --&lt;span style="color:#66d9ef">from&lt;/span>=builder /app .
 ENV PORT &lt;span style="color:#ae81ff">80&lt;/span>
 EXPOSE &lt;span style="color:#ae81ff">80&lt;/span>
-ENTRYPOINT dotnet &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>(cat /app/__assemblyname).dll
+ENTRYPOINT dotnet &lt;span style="color:#960050;background-color:#1e0010">$&lt;/span>(cat /app/&lt;span style="color:#ae81ff">__&lt;/span>assemblyname).dll
 &lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="build-the-docker-image-and-push-it-to-a-container-registry">Build the Docker image and push it to a container registry&lt;/h2>
 &lt;p>I&amp;rsquo;ll be pushing the container to &lt;a href="https://hub.docker.com/r/cmendibl3/dapr-k8s-secrets">Docker Hub&lt;/a>:&lt;/p>
 &lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell"> docker build -t cmendibl3/dapr-k8s-secrets:1.0.0 .
