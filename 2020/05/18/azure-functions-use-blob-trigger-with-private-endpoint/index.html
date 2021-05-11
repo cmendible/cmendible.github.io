@@ -63,7 +63,7 @@
   <span style=color:#ae81ff>location            = azurerm_resource_group.rg.location</span>
   <span style=color:#ae81ff>resource_group_name = azurerm_resource_group.rg.name</span>
   <span style=color:#75715e># Use Private DNS Zone. That&#39;s right we have to add this magical IP here.</span>
-  <span style=color:#ae81ff>dns_servers = [&#34;168.63.129.16&#34;]</span>
+  <span style=color:#75715e># dns_servers = [&#34;168.63.129.16&#34;]</span>
 }
 
 <span style=color:#75715e># Create the Subnet for the Azure Function. This is thge subnet where we&#39;ll enable Vnet Integration.</span>
@@ -153,8 +153,16 @@
 
 <span style=color:#75715e># Create the blob.core.windows.net Private DNS Zone</span>
 <span style=color:#ae81ff>resource &#34;azurerm_private_dns_zone&#34; &#34;private&#34; {</span>
-  <span style=color:#ae81ff>name                = &#34;blob.core.windows.net&#34;</span>
+  <span style=color:#ae81ff>name                = &#34;privatelink.blob.core.windows.net&#34;</span>
   <span style=color:#ae81ff>resource_group_name = azurerm_resource_group.rg.name</span>
+}
+
+<span style=color:#ae81ff>resource &#34;azurerm_private_dns_cname_record&#34; &#34;cname&#34; {</span>
+  <span style=color:#ae81ff>name                = &#34;${var.sa_name}.blob.core.windows.net&#34;</span>
+  <span style=color:#ae81ff>zone_name           = azurerm_private_dns_zone.private.name</span>
+  <span style=color:#ae81ff>resource_group_name = azurerm_resource_group.rg.name</span>
+  <span style=color:#ae81ff>ttl                 = 300</span>
+  <span style=color:#ae81ff>record              = &#34;${var.sa_name}.privatelink.blob.core.windows.net&#34;</span>
 }
 
 <span style=color:#75715e># Create an A record pointing to the Storage Account private endpoint</span>
@@ -268,6 +276,7 @@
     <span style=color:#ae81ff>privatecfm_STORAGE             = azurerm_storage_account.sa.primary_connection_string</span>
     <span style=color:#75715e># With this setting we&#39;ll force all outbound traffic through the VNet</span>
     <span style=color:#ae81ff>WEBSITE_VNET_ROUTE_ALL = &#34;1&#34;</span>
+    <span style=color:#ae81ff>WEBSITE_DNS_SERVER     = &#34;168.63.129.16&#34;</span>
     <span style=color:#75715e># Properties used to deploy the zip</span>
     <span style=color:#ae81ff>HASH            = filesha256(&#34;./securecopy.zip&#34;)</span>
     <span style=color:#ae81ff>WEBSITE_USE_ZIP = &#34;https://${azurerm_storage_account.function_required_sa.name}.blob.core.windows.net/${azurerm_storage_container.functions.name}/${azurerm_storage_blob.function.name}${data.azurerm_storage_account_sas.sas.sas}&#34;</span>

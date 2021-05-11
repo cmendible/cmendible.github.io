@@ -69,7 +69,7 @@ myBlob.CopyTo(copy);
 &lt;span style="color:#ae81ff">location = azurerm_resource_group.rg.location&lt;/span>
 &lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
 &lt;span style="color:#75715e"># Use Private DNS Zone. That&amp;#39;s right we have to add this magical IP here.&lt;/span>
-&lt;span style="color:#ae81ff">dns_servers = [&amp;#34;168.63.129.16&amp;#34;]&lt;/span>
+&lt;span style="color:#75715e"># dns_servers = [&amp;#34;168.63.129.16&amp;#34;]&lt;/span>
 }
 &lt;span style="color:#75715e"># Create the Subnet for the Azure Function. This is thge subnet where we&amp;#39;ll enable Vnet Integration.&lt;/span>
 &lt;span style="color:#ae81ff">resource &amp;#34;azurerm_subnet&amp;#34; &amp;#34;service&amp;#34; {&lt;/span>
@@ -146,8 +146,15 @@ myBlob.CopyTo(copy);
 }
 &lt;span style="color:#75715e"># Create the blob.core.windows.net Private DNS Zone&lt;/span>
 &lt;span style="color:#ae81ff">resource &amp;#34;azurerm_private_dns_zone&amp;#34; &amp;#34;private&amp;#34; {&lt;/span>
-&lt;span style="color:#ae81ff">name = &amp;#34;blob.core.windows.net&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;privatelink.blob.core.windows.net&amp;#34;&lt;/span>
 &lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+}
+&lt;span style="color:#ae81ff">resource &amp;#34;azurerm_private_dns_cname_record&amp;#34; &amp;#34;cname&amp;#34; {&lt;/span>
+&lt;span style="color:#ae81ff">name = &amp;#34;${var.sa_name}.blob.core.windows.net&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">zone_name = azurerm_private_dns_zone.private.name&lt;/span>
+&lt;span style="color:#ae81ff">resource_group_name = azurerm_resource_group.rg.name&lt;/span>
+&lt;span style="color:#ae81ff">ttl = 300&lt;/span>
+&lt;span style="color:#ae81ff">record = &amp;#34;${var.sa_name}.privatelink.blob.core.windows.net&amp;#34;&lt;/span>
 }
 &lt;span style="color:#75715e"># Create an A record pointing to the Storage Account private endpoint&lt;/span>
 &lt;span style="color:#ae81ff">resource &amp;#34;azurerm_private_dns_a_record&amp;#34; &amp;#34;sa&amp;#34; {&lt;/span>
@@ -250,6 +257,7 @@ myBlob.CopyTo(copy);
 &lt;span style="color:#ae81ff">privatecfm_STORAGE = azurerm_storage_account.sa.primary_connection_string&lt;/span>
 &lt;span style="color:#75715e"># With this setting we&amp;#39;ll force all outbound traffic through the VNet&lt;/span>
 &lt;span style="color:#ae81ff">WEBSITE_VNET_ROUTE_ALL = &amp;#34;1&amp;#34;&lt;/span>
+&lt;span style="color:#ae81ff">WEBSITE_DNS_SERVER = &amp;#34;168.63.129.16&amp;#34;&lt;/span>
 &lt;span style="color:#75715e"># Properties used to deploy the zip&lt;/span>
 &lt;span style="color:#ae81ff">HASH = filesha256(&amp;#34;./securecopy.zip&amp;#34;)&lt;/span>
 &lt;span style="color:#ae81ff">WEBSITE_USE_ZIP = &amp;#34;https://${azurerm_storage_account.function_required_sa.name}.blob.core.windows.net/${azurerm_storage_container.functions.name}/${azurerm_storage_blob.function.name}${data.azurerm_storage_account_sas.sas.sas}&amp;#34;&lt;/span>
