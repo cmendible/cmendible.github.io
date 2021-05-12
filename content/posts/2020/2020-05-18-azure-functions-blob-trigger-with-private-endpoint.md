@@ -131,6 +131,8 @@ resource "azurerm_subnet" "service" {
       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
+  
+  service_endpoints = ["Microsoft.Storage"]
 }
 
 # Create the Subnet for the private endpoints. This is where the IP of the private enpoint will live.
