@@ -86,6 +86,7 @@ myBlob.CopyTo(copy);
 &lt;span style="color:#ae81ff">actions = [&amp;#34;Microsoft.Network/virtualNetworks/subnets/action&amp;#34;]&lt;/span>
 }
 }
+&lt;span style="color:#ae81ff">service_endpoints = [&amp;#34;Microsoft.Storage&amp;#34;]&lt;/span>
 }
 &lt;span style="color:#75715e"># Create the Subnet for the private endpoints. This is where the IP of the private enpoint will live.&lt;/span>
 &lt;span style="color:#ae81ff">resource &amp;#34;azurerm_subnet&amp;#34; &amp;#34;endpoint&amp;#34; {&lt;/span>
