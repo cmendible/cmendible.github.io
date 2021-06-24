@@ -1,4 +1,9 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>azure on Code it Yourself...</title><link>https://carlos.mendible.com/categories/azure/</link><description>Recent content in azure on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 30 Apr 2021 19:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/azure/feed.xml" rel="self" type="application/rss+xml"/><item><title>Deploy AKS + Kubecost with Terraform</title><link>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</link><pubDate>Fri, 30 Apr 2021 19:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</guid><description>&lt;p>This morning I saw this tweet from Mr Brendan Burns:&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>azure on Code it Yourself...</title><link>https://carlos.mendible.com/categories/azure/</link><description>Recent content in azure on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Tue, 22 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/azure/feed.xml" rel="self" type="application/rss+xml"/><item><title>Event driven Microservices with Dapr and .NET</title><link>https://carlos.mendible.com/events/2021/06/22/azure-landing-zone/</link><pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2021/06/22/azure-landing-zone/</guid><description>&lt;p>Microservices architectures are inherently distributed and building such solutions always bring interesting challenges to the table: resilient service invocation, distributed transactions, on-demand scaling, idempotent message processing and more.&lt;/p>
+&lt;p>Deploying Microservices on Kubernetes doesn’t solve these problems and Developers need to learn and use SDK&amp;rsquo;s on top of frameworks such as .NET, while building distributed Microservices architectures.&lt;/p>
+&lt;p>This session (Spanish) will show developers how to overcome such challenges using .NET and Dapr: a portable runtime to build distributed, scalable, and event-driven microservices.&lt;/p>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/ERVLSE6Pvsw" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>Deploy AKS + Kubecost with Terraform</title><link>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</link><pubDate>Fri, 30 Apr 2021 19:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/04/30/deploy-aks-kubecost-with-terraform/</guid><description>&lt;p>This morning I saw this tweet from Mr Brendan Burns:&lt;/p>
 &lt;blockquote class="twitter-tweet">&lt;p lang="en" dir="ltr">AKS Cost Monitoring and Governance With Kubecost &lt;a href="https://t.co/OStwIBsuPp">https://t.co/OStwIBsuPp&lt;/a>&lt;/p>&amp;mdash; brendandburns (@brendandburns) &lt;a href="https://twitter.com/brendandburns/status/1387933511433154564?ref_src=twsrc%5Etfw">April 30, 2021&lt;/a>&lt;/blockquote>
 &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8">&lt;/script>
 &lt;p>And I&amp;rsquo;m sure that once you also read through it, you&amp;rsquo;ll learn that you have to take several steps in order to achieve &lt;a href="http://blog.kubecost.com/blog/aks-cost/">AKS Cost Monitoring and Governance With Kubecost&lt;/a>.&lt;/p>
@@ -519,18 +524,4 @@ options: options
 &lt;/ul>
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
 &lt;iframe src="https://www.youtube.com/embed/PjMlTNrl84c" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
-&lt;/div></description></item><item><title>Azure Summer Talks Community</title><link>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</link><pubDate>Thu, 30 Jul 2020 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2020/07/30/azure-summer-talks-community/</guid><description>&lt;p>Como cada año &lt;a href="https://www.meetup.com/es-ES/CATzure">CATzure&lt;/a> organiza una mesa redonda con los mejores expertos de Azure de España para conversar sobre el cloud, desarrollo y todo aquello que os aptezca.&lt;/p>
-&lt;p>Esta mesa redonda estuvo compuesta por:&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://twitter.com/Carlos_Lande">Carlos Lande&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/cmendibl3">Carlos Mendible&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/ESalcedoo">Elena Salcedo&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/JavierPallo">Pallo&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/ambynet">Ana Maria Bisbe&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/nfanjul">Nacho Fanjul&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/fernandoescolar">Fernando Escolar&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://twitter.com/AlonsoCarles">Carles Alonso&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-&lt;iframe src="https://www.youtube.com/embed/tzBLmOYt8Is" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
 &lt;/div></description></item></channel></rss>
