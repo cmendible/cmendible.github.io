@@ -43,27 +43,6 @@ googleAnalytics = "UA-11243417-1"
     languageCode = "en-us"
     weight = 1
 
-[[menu.main]]
-    name = "Home" #Name in the navigation bar
-    weight = 10 #The larger the weight, the more on the right this item will be
-    url = "/" #URL address
-[[menu.main]]
-    name = "Posts"
-    weight = 20
-    url = "/posts/"
-[[menu.main]]
-    name = "Events"
-    weight = 30
-    url = "/events/"
-[[menu.main]]
-    name = "Categories"
-    weight = 40
-    url = "/categories/"
-[[menu.main]]
-    name = "About"
-    weight = 50
-    url = "/about"
-
 [outputFormats]
 [outputFormats.RSS]
 mediatype = "application/rss"

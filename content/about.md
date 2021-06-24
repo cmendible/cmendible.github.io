@@ -4,6 +4,8 @@ date: 2016-03-09T15:12:34+00:00
 author: Carlos Mendible
 layout: page
 disableComments: true
+menu: "main"
+meta: "false"
 ---
 
 ![Me](/assets/img/about_me.jpg#float-right)
