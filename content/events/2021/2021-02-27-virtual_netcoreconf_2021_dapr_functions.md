@@ -5,7 +5,7 @@ categories:
 - azure
 date: "2021-02-27T00:00:00Z"
 description: "Extending Azure Functions with Dapr"
-tags: ["dapr, "functions"]
+tags: ["dapr", "functions"]
 title: "Extending Azure Functions with Dapr"
 url: /events/2021/02/27/virtual_net_core_conf/
 ---
