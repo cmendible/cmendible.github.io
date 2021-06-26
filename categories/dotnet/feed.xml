@@ -1,20 +1,9 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dotnet on Code it Yourself...</title><link>https://carlos.mendible.com/categories/dotnet/</link><description>Recent content in dotnet on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Sat, 27 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/dotnet/feed.xml" rel="self" type="application/rss+xml"/><item><title>Extending Azure Functions with Dapr</title><link>https://carlos.mendible.com/events/2021/02/27/extending-azure-functions-with-dapr/</link><pubDate>Sat, 27 Feb 2021 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2021/02/27/extending-azure-functions-with-dapr/</guid><description>&lt;p>A talk (Spanish) on how to extend Azure Functions with Dapr.&lt;/p>
-&lt;script src="https://player.twitch.tv/js/embed/v1.js">&lt;/script>
-&lt;div id="twitch-embed" class="shortcode shortcode--twitch shortcode--video" style="width: 100%; height: 100%;">&lt;/div>
-&lt;script type="text/javascript">
-var options = {
-width: "100%",
-height: "100%",
-};
-var time = '1:56:46';
-if (time.length > 0) {
-options.time = time;
-};
-new Twitch.Player("twitch-embed", {
-video: '930208353',
-options: options
-});
-&lt;/script></description></item><item><title>Dapr y Azure Functions</title><link>https://carlos.mendible.com/events/2021/02/17/dapr-y-azure-functions/</link><pubDate>Wed, 17 Feb 2021 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2021/02/17/dapr-y-azure-functions/</guid><description>&lt;p>A talk (Spanish) on Dapr and Azure Functions&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>dotnet on Code it Yourself...</title><link>https://carlos.mendible.com/categories/dotnet/</link><description>Recent content in dotnet on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Tue, 22 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/categories/dotnet/feed.xml" rel="self" type="application/rss+xml"/><item><title>Event driven Microservices with Dapr and .NET</title><link>https://carlos.mendible.com/events/2021/06/22/dotnet2021/</link><pubDate>Tue, 22 Jun 2021 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2021/06/22/dotnet2021/</guid><description>&lt;p>Microservices architectures are inherently distributed and building such solutions always bring interesting challenges to the table: resilient service invocation, distributed transactions, on-demand scaling, idempotent message processing and more.&lt;/p>
+&lt;p>Deploying Microservices on Kubernetes doesn’t solve these problems and Developers need to learn and use SDK&amp;rsquo;s on top of frameworks such as .NET, while building distributed Microservices architectures.&lt;/p>
+&lt;p>This session (Spanish) will show developers how to overcome such challenges using .NET and Dapr: a portable runtime to build distributed, scalable, and event-driven microservices.&lt;/p>
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+&lt;iframe src="https://www.youtube.com/embed/ERVLSE6Pvsw" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video">&lt;/iframe>
+&lt;/div></description></item><item><title>Dapr y Azure Functions</title><link>https://carlos.mendible.com/events/2021/02/17/dapr-y-azure-functions/</link><pubDate>Wed, 17 Feb 2021 00:00:00 +0000</pubDate><guid>https://carlos.mendible.com/events/2021/02/17/dapr-y-azure-functions/</guid><description>&lt;p>A talk (Spanish) on Dapr and Azure Functions&lt;/p>
 &lt;script src="https://player.twitch.tv/js/embed/v1.js">&lt;/script>
 &lt;div id="twitch-embed" class="shortcode shortcode--twitch shortcode--video" style="width: 100%; height: 100%;">&lt;/div>
 &lt;script type="text/javascript">
