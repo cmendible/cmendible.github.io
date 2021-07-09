@@ -1,0 +1,43 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>cni on Code it Yourself...</title><link>https://carlos.mendible.com/tags/cni/</link><description>Recent content in cni on Code it Yourself...</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>Copyright &amp;copy; 2020 - Carlos Mendible</copyright><lastBuildDate>Fri, 09 Jul 2021 10:00:00 +0000</lastBuildDate><atom:link href="https://carlos.mendible.com/tags/cni/feed.xml" rel="self" type="application/rss+xml"/><item><title>Plan IP addressing for AKS configured with Azure CNI Networking</title><link>https://carlos.mendible.com/2021/07/09/plan-ip-addressing-for-aks-configured-with-azure-cni-networking/</link><pubDate>Fri, 09 Jul 2021 10:00:00 +0000</pubDate><guid>https://carlos.mendible.com/2021/07/09/plan-ip-addressing-for-aks-configured-with-azure-cni-networking/</guid><description>&lt;p>When configuring Azure Kubernetes Service with Azure Container Network Interface (CNI), every pod gets an IP address of the subnet you&amp;rsquo;ve configured.&lt;/p>
+&lt;p>So how do you plan you address space? What factors should you consider?&lt;/p>
+&lt;ol>
+&lt;li>Each node consumes one IP.&lt;/li>
+&lt;li>Each pod consumes one IP.&lt;/li>
+&lt;li>Each internal LoadBalancer Service you anticipate consumes one IP.&lt;/li>
+&lt;li>Azure reserves 5 IP addresses within each subnet.&lt;/li>
+&lt;li>The Max pods per node is 250.&lt;/li>
+&lt;li>The Max pods per nodes lower limit is 10.&lt;/li>
+&lt;li>30 pods es the minimum per cluster.&lt;/li>
+&lt;li>Max nodes per cluster is 1000.&lt;/li>
+&lt;li>When a cluster is upgraded a new node is added as part of the process which requires a minimum of one additional block of IP addresses to be available. Your node count is then n + 1.&lt;/li>
+&lt;li>When you scale a cluster an additional node is added. Your node count is then n + number-of-additional-scaled-nodes-you-anticipate + 1.&lt;/li>
+&lt;/ol>
+&lt;p>With all that in mind the formula to calculate the number of IPs required for your cluster should look like this:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">requiredIPs &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">(&lt;/span>nodes + &lt;span style="color:#ae81ff">1&lt;/span> + scale&lt;span style="color:#f92672">)&lt;/span> + &lt;span style="color:#f92672">((&lt;/span>nodes + &lt;span style="color:#ae81ff">1&lt;/span> + scale&lt;span style="color:#f92672">)&lt;/span> * maxPods&lt;span style="color:#f92672">)&lt;/span> + isvc
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>where:&lt;/p>
+&lt;ul>
+&lt;li>nodes: Number of nodes (default 3)&lt;/li>
+&lt;li>maxPods: Max pods per node (default 30)&lt;/li>
+&lt;li>sacale: Number of expected scale nodes&lt;/li>
+&lt;li>isvc: Number of expected internal LoadBalancer services&lt;/li>
+&lt;/ul>
+&lt;p>To help you with this I&amp;rsquo;ve created a small console program written in golang: &lt;strong>&lt;a href="https://github.com/cmendible/aksip">aksip&lt;/a>&lt;/strong> which performs the necessary validations and calculations for you.&lt;/p>
+&lt;p>Let&amp;rsquo;s say you want a 50 node cluster with one internal load balancer that also includes provision to scale up an additional 10 nodes:&lt;/p>
+&lt;p>Just run:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-shell" data-lang="shell">aksip -n &lt;span style="color:#ae81ff">50&lt;/span> -s &lt;span style="color:#ae81ff">10&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The output will show that you&amp;rsquo;ll need 1892 IP addresses and therefore a /21 subnet or larger:&lt;/p>
+&lt;div class="highlight">&lt;pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;nodes&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">50&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;scale&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">10&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;maxPods&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">30&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;isvc&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;requiredIPs&amp;#34;&lt;/span>: &lt;span style="color:#ae81ff">1892&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;cidr&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;/21&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hope it helps!!!&lt;/p>
+&lt;p>References:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/aks/configure-azure-cni">Configure Azure CNI networking in Azure Kubernetes Service (AKS)&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/aks/configure-azure-cni#configure-maximum---new-clusters">Configure maximum - new clusters&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-faq#are-there-any-restrictions-on-using-ip-addresses-within-these-subnets">Are there any restrictions on using IP addresses within these subnets&lt;/a>&lt;/li>
+&lt;/ul></description></item></channel></rss>
