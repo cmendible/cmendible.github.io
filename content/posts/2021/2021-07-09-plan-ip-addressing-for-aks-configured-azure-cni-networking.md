@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: true
 date: "2021-07-09T10:00:00Z"
 description: 'Plan IP addressing for AKS configured with Azure CNI Networking'
-images: ["/assets/img/posts/kubernetes.png"]
+images: ["/assets/img/posts/aks.png"]
 draft: false
 tags: ["cni", "ip"]
 title: 'Plan IP addressing for AKS configured with Azure CNI Networking'
