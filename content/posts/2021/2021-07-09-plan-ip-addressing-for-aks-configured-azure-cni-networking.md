@@ -22,7 +22,7 @@ So how do you plan you address space? What factors should you consider?
 1. Azure reserves 5 IP addresses within each subnet.
 1. The Max pods per node is 250.
 1. The Max pods per nodes lower limit is 10.
-1. 30 pods es the minimum per cluster.
+1. 30 pods is the minimum per cluster.
 1. Max nodes per cluster is 1000.
 1. When a cluster is upgraded a new node is added as part of the process which requires a minimum of one additional block of IP addresses to be available. Your node count is then n + 1.
 1. When you scale a cluster an additional node is added. Your node count is then n + number-of-additional-scaled-nodes-you-anticipate + 1.
