@@ -311,3 +311,7 @@ Now feel free to try and mount a volume using the Private Volume Claim: *my-azur
 Hope it helps!!!
 
 Please find a **bicep** based sample [here](https://github.com/cmendible/azure.samples/tree/main/aks_csi_sa_private_enpoint/bicep) or if you prefer **terraform** [here](https://github.com/cmendible/azure.samples/tree/main/aks_csi_sa_private_enpoint/terraform)
+
+References:
+* [Use Azure Files Container Storage Interface (CSI) drivers in Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/azure-files-csi)
+* [Azure Files Container Storage Interface (CSI) driver](https://github.com/kubernetes-sigs/azurefile-csi-driver) 
