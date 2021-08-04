@@ -5,9 +5,9 @@ categories:
 - azure
 - dotnet
 date: "2021-05-18T00:00:00Z"
-description: "Event driven Microservices with Dapr and .NET"
+description: "KCD 2021: Event driven Microservices with Dapr and .NET"
 tags: ["dapr"]
-title: "Event driven Microservices with Dapr and .NET"
+title: "KCD 2021: Event driven Microservices with Dapr and .NET"
 url: /events/2021/05/18/kcd-spain-dapr/
 ---
 
