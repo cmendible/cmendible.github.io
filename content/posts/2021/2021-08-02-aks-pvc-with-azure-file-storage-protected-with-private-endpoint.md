@@ -28,7 +28,7 @@ You'll have to declare the following resources:
 
 in a *main.bicep* file with the following contents:
 
-``` json
+``` yaml
 param sa_name string = 'akscsisa'
 param aks_name string = 'akscsimsft'
 
