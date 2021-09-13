@@ -20,9 +20,9 @@ The idea was to create a cluster that could be used to run Windows batch workloa
 * A Windows node pool with Spot Virtual Machines, ephemeral disks and auto-scaling enabled.
 * Set the windows node pool minimum count and initial number of nodes set to 0.
 
-The following steps will allow you to create a cluster with the desired configuration using terraform:
+To create a cluster with the desired configuration with terraform, follow the steps below:
 
-## Define terraformn providers to use
+## Define the terraform providers to use
 
 Create a *providers.tf* file with the following contents:
 
@@ -42,7 +42,7 @@ provider "azurerm" {
 }
 ```
 
-## Define variables
+## Define the variables
 
 Create a *variables.tf* file with the following contents:
 
@@ -64,7 +64,7 @@ variable "dns_prefix" {
 }
 ```
 
-## Define resource group
+## Define the resource group
 
 Create a *main.tf* file with the following contents:
 
@@ -198,7 +198,7 @@ CLUSTER_NAME="aks-win"
 az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
 ```
 
-Verify that there are no windows VMs running. If you run:
+To verify that there are no windows VMs running, execute:
 
 ``` shell
 kubectl get nodes
@@ -264,7 +264,7 @@ kubectl apply -f windows_deployment.yaml
 Note the following:
 
 * The *kubernetes.azure.com/scalesetpriority* label is used to ensure that the workload is scheduled on a spot node.
-* The *tolerations* are used to ensure that the workload is scheduled on a spot node.
+* *tolerations* are used to ensure that the workload is scheduled on a spot node.
 * Deployment will take a while (> 5 minutes) since the windows pool must scale up to fullfill the request.
 
 Now check the nodes again:
@@ -282,7 +282,7 @@ aks-default-36675761-vmss000001   Ready    agent   91m    v1.20.9   10.0.1.20   
 akswin000000                      Ready    agent   102s   v1.20.9   10.0.1.36     <none>        Windows Server 2019 Datacenter   10.0.17763.2114    docker://20.10.6   
 ```
 
-If you check the pod events you'll find that the workload triggers a scale up:
+If you check the pod events you'll find that the workload triggered a scale up:
 
 ``` shell
 kubectl describe $(kubectl get po -l "app=servercore" -o name)   
