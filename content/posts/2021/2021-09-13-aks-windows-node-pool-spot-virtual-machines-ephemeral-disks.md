@@ -16,7 +16,7 @@ Some months ago a customer asked me if there was a way to deploy a Windows node 
 
 The idea was to create a cluster that could be used to run Windows batch workloads and minimize costs by deploying the following:
 
-* An AKS cluster with 2 linux nodes and epehemeral disks as the default node pool configuration.
+* An AKS cluster with 2 linux nodes and ephemeral disks as the default node pool configuration.
 * A Windows node pool with Spot Virtual Machines, ephemeral disks and auto-scaling enabled.
 * Set the windows node pool minimum count and initial number of nodes set to 0.
 
