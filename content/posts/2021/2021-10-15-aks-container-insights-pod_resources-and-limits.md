@@ -6,7 +6,7 @@ categories:
 crosspost_to_medium: false
 date: "2021-10-15T10:00:00Z"
 description: 'AKS: Container Insights Pod Resources and Limits'
-images: ["/assets/img/posts/azure.png"]
+images: ["/assets/img/posts/aks.png"]
 draft: false
 tags: ["pod", "resources", "limits"]
 title: 'AKS: Container Insights Pod Resources and Limits'
