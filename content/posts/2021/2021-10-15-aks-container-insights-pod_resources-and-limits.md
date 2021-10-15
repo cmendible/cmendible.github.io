@@ -5,14 +5,14 @@ categories:
 - kubernetes
 crosspost_to_medium: false
 date: "2021-10-15T10:00:00Z"
-description: 'AKS: Container Insights Pod Resources and Limits'
+description: 'AKS: Container Insights Pod Requests and Limits'
 images: ["/assets/img/posts/aks.png"]
 draft: false
-tags: ["pod", "resources", "limits"]
-title: 'AKS: Container Insights Pod Resources and Limits'
+tags: ["pod", "requests", "limits"]
+title: 'AKS: Container Insights Pod Requests and Limits'
 ---
 
-Today I'll show you how to use [Container Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-overview) and Azure Monitor to check your AKS cluster for pods without resources and limits.
+Today I'll show you how to use [Container Insights](https://docs.microsoft.com/en-us/azure/azure-monitor/containers/container-insights-overview) and Azure Monitor to check your AKS cluster for pods without requests and limits.
 
 You'll need to use the following tables and fields:
 
@@ -46,7 +46,7 @@ let podCounters = Perf
     | where ObjectName == 'K8SContainer' and  (CounterName == 'cpuLimitNanoCores' or CounterName == 'cpuRequestNanoCores' or CounterName == 'memoryLimitBytes' or CounterName == 'memoryRequestBytes') 
     | summarize d = make_bag(pack(CounterName, CounterValue)) by InstanceName
     | evaluate bag_unpack(d);
-let podResourcesAndLimits = podCounters
+let podRequestsAndLimits = podCounters
     | extend InstanceNameParts = split(InstanceName, "/")
     | extend PodUI = tostring(InstanceNameParts[(array_length(InstanceNameParts)-2)]) 
     | extend PodName = tostring(InstanceNameParts[(array_length(InstanceNameParts)-1)])
@@ -66,7 +66,7 @@ KubePodInventory
     | extend PodName = tostring(InstanceNameParts[(array_length(InstanceNameParts)-1)])
     | project ClusterName, Computer, Namespace, PodUI, PodName
     | join kind= leftouter (nodeCapacity) on Computer
-    | join kind= leftouter (podResourcesAndLimits) on PodUI, PodName
+    | join kind= leftouter (podRequestsAndLimits) on PodUI, PodName
       // Pods without CPU Requests. If container cpu resource requests are not specified, cpuRequestNanoCores metric will not be collected
     | extend CPURequests = isnotnull(cpuRequestNanoCores)
       // Pods without CPU Limits. If container resource limits are not specified, node's capacity will be rolled-up as container's limit
