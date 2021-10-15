@@ -82,7 +82,7 @@ KubePodInventory
 
 Hope it helps!!!
 
-Please find the KQL file [here](https://github.com/cmendible/azure.samples/tree/main/aks_pod_resource_and_limits)
+Please find the KQL file [here](https://github.com/cmendible/azure.samples/tree/main/aks_pod_requests_and_limits)
 
 References:
 
