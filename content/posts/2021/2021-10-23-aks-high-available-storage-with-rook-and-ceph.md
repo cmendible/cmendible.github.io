@@ -4,7 +4,7 @@ categories:
 - azure
 - kubernetes
 crosspost_to_medium: false
-date: "2023-10-15T10:00:00Z"
+date: "2021-10-23T10:00:00Z"
 description: 'AKS: High Available Storage with Rook and Ceph'
 images: ["/assets/img/posts/aks.png"]
 draft: false
