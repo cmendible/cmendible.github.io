@@ -12,9 +12,9 @@ tags: ["rook", "ceph", "storage"]
 title: 'AKS: High Available Storage with Rook and Ceph'
 ---
 
-> Disclaimer: the content of this post are just a Proof of Concept.
+> Disclaimer: this is just a Proof of Concept.
 
-If you deploy Azre Kubernetes Service clusters with availability zones, you'll probaly need a high available storage solution.
+If you deploy Azure Kubernetes Service clusters with availability zones, you'll probaly need a high available storage solution.
 
 In such situation you may use Azure Files as an external storage solution. But what if you need something that performs better? Or something running inside your cluster?
 
