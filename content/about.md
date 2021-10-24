@@ -10,7 +10,7 @@ meta: "false"
 
 ![Me](/assets/img/about_me.jpg#float-right)
 
-My name is **Carlos Mendible**. I was born in Caracas, Venezuela. I'm a Cloud Solution Architect @Microsoft.
+My name is **Carlos Mendible**. I was born in Caracas, Venezuela. I'm a Sr Cloud Solution Architect @Microsoft.
 
 I am married to Karina and we have one daughter, Victoria. We live in Madrid, Spain.
 
