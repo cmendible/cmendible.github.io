@@ -1,0 +1,52 @@
+{{- $baseURL := $.Site.BaseURL -}}
+<nav class="navbar top-app-bar top-app-bar-expand-lg{{ if (default true $.Site.Params.fixedHeader) }} fixed-top{{ end }}">
+  <div class="container{{ if default false .Site.Params.fullWidth }}-fluid{{ end }}">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="fas fa-bars"></i>
+    </button>
+    {{- $logo := (default "images/logo.webp" .Site.Params.logo) -}}
+    <a class="navbar-brand me-3{{ if .IsHome }} active{{ end }}" href="{{ "" | absLangURL }}">
+      {{- if $logo -}}
+        {{ partial "helpers/image" (dict "filename" $logo "alt" "Logo" "class" "logo" "resources" .Resources) }}
+      {{- end -}}
+      {{ with .Site.Params.brand }}{{ . }}{{ else }}{{ $.Site.Title }}{{ end }}
+    </a>
+    {{ partial "header/social-share" . }}
+    {{ partial "header/settings" . }}
+    <div class="collapse navbar-collapse" tabindex="-1" id="navbarSupportedContent" aria-labelledby="navbarSupportedContent">
+      {{ partial "header/search-bar" . }}
+      <ul class="navbar-nav ms-auto">
+        {{- $currentPage := . -}}
+        {{- range .Site.Menus.main -}}
+        {{- $url := .URL | absURL -}}
+        {{- $active := or (eq $currentPage.Permalink (absURL .URL)) ($currentPage.IsMenuCurrent "main" .) -}}
+        {{- if .HasChildren -}}
+        <li class="nav-item dropdown">
+          <a class="nav-link{{ if $currentPage.HasMenuCurrent "main" . }} active{{ end }}" id="navbarDropdown-{{ .Identifier }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ .Pre }} {{- .Name -}} {{ .Post }}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown-{{ .Identifier }}">
+            {{- range .Children -}}
+            {{- $childURL := .URL | absURL -}}
+            <li>
+              <a class="dropdown-item{{ if or (eq $currentPage.Permalink (absURL .URL)) ($currentPage.IsMenuCurrent "main" .) }} active{{ end }}"
+                href="{{ $childURL }}"{{ if not (hasPrefix $childURL $baseURL) }} target="_blank" rel="noopener noreferrer"{{ end }}>
+                {{ .Pre }} {{- .Name -}} {{ .Post }}
+              </a>
+            </li>
+            {{- end -}}
+          </ul>
+        </li>
+        {{- else -}}
+        <li class="nav-item">
+          <a class="nav-link{{ if $active }} active{{ end }}" href="{{ $url }}"{{ if not (hasPrefix $url $baseURL) }} target="_blank" rel="noopener noreferrer"{{ end }}>
+            {{ .Pre }} {{- .Name -}} {{ .Post }}
+          </a>
+        </li>
+        {{- end -}}
+        {{- end -}}
+      </ul>
+    </div>
+  </div>
+</nav>

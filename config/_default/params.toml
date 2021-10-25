@@ -1,0 +1,17 @@
+poweredBy = false
+logo = "/assets/img/about_me.jpg"
+titleCase = true
+palettes = [] 
+
+[search]
+  paginate = 5 # Pagination. Default to 10.
+  # resultContentWordCount = 240 # The maximum word count of result content for displaying.
+  # Fuse.js options. See https://fusejs.io/api/options.html.
+  [search.fuse]
+    # ignoreLocation = true
+    # location = 0
+    # isCaseSensitive = false
+    # minMatchCharLength = 1
+    threshold = 0.1
+    # distance = 100
+    # useExtendedSearch = true

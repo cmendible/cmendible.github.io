@@ -1,5 +1,5 @@
 ---
 title: "Events"
 menu: "main"
-weight: "3"
+weight: "40"
 ---

@@ -1,0 +1,26 @@
+baseURL = "https://carlos.mendible.com/"
+title = "Code it Yourself..."
+copyright = "Copyright: 2021 - Carlos Mendible"
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir = false
+disableLanguages = ["de", "fr", "pl", "ru", "uz", "zh-cn", "zh-hk" ,"zh-tw"] 
+paginate = 5
+enableRobotsTXT = true
+disqusShortname = "codeityourself"
+googleAnalytics = "UA-11243417-1"
+enableEmoji = true
+pygmentsUseClasses = true
+
+canonifyurls = true
+theme = "hugo-theme-bootstrap"
+
+[permalinks]
+  posts = "/:year/:month/:day/:title/"
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[taxonomies]
+  category = "categories"
+  series = "series"
+  tag = "tags"
