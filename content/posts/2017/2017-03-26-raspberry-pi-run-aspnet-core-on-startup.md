@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2017-03-26T12:37:16Z"
 description: 'Raspberry Pi: Run ASP.NET Core on Startup'
 images: ["/wp-content/uploads/2017/03/windows_10_iot_core_launch.jpg"]

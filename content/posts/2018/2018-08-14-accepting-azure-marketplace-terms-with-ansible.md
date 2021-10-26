@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-crosspost_to_medium: true
 date: "2018-08-14T11:27:39Z"
 description: Accepting Azure Marketplace Terms with Ansible
 images: ["/assets/img/posts/ansible.png"]

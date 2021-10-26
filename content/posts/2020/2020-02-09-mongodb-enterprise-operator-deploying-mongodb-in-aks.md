@@ -4,12 +4,11 @@ categories:
 - kubernetes
 - azure
 - devops
-crosspost_to_medium: true
 date: "2020-02-09T00:00:00Z"
 description: 'MongoDB Enterprise Operator: Deploying MongoDB in AKS'
 images: ["/assets/img/posts/aks.png"]
 published: true
-tags: ["mongodb"]
+tags: ["aks", "mongodb"]
 title: 'MongoDB Enterprise Operator: Deploying MongoDB in AKS'
 url: /2020/02/09/mongodb-enterprise-operator-deploying-mongodb-in-aks/
 ---

@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2017-09-01T09:39:08Z"
 description: Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0
 images: ["/wp-content/uploads/2017/09/IMG_20170901_111428_01.jpg"]

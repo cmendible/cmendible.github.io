@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - kubernetes
 - azure
-crosspost_to_medium: true
 date: "2018-07-19T00:21:00Z"
 description: 'At last: Network Policies in AKS with kube-router'
 images: ["/assets/img/posts/kubernetes.png"]

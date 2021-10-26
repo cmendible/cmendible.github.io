@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2018-06-10T20:39:00Z"
 description: Simple Machine Learning with .NET Core Sample
 images: ["/wp-content/uploads/2017/07/dotnetcore.png"]

@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - kubernetes
 - azure
-crosspost_to_medium: true
 date: "2018-03-20T15:13:00Z"
 description: Secure your Kubernetes services with NGINX ingress controller, tls and
   more.

@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2018-08-22T16:12:00Z"
 description: '.NET Core, BenchmarkDotNet: for vs foreach performance'
 images: ["/wp-content/uploads/2017/07/dotnetcore.png"]

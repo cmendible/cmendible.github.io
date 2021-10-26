@@ -4,12 +4,11 @@ categories:
 - azure
 - kubernetes
 - devops
-crosspost_to_medium: true
 date: "2019-08-04T00:00:00Z"
 description: 'GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux'
 images: ["/assets/img/posts/aks.png"]
 published: true
-tags: ["git", "gitops", "aks"]
+tags: ["git", "gitops", "aks", "flux"]
 title: 'GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux'
 url: /2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/
 ---

@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2017-05-30T11:58:00Z"
 description: Start with Elasticssearch, Kibana and ASP.NET Core
 images: ["/wp-content/uploads/2017/05/datalake.png"]

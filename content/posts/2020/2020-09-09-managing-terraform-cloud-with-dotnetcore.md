@@ -2,12 +2,11 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2020-09-09T10:00:00Z"
 description: 'Managing Terraform Cloud with .NET Core'
 images: ["/assets/img/posts/terraform_dotnetcore.png"]
 published: true
-tags: ["terraform"]
+tags: ["terraform", "terraform cloud"]
 title: 'Managing Terraform Cloud with .NET Core'
 ---
 

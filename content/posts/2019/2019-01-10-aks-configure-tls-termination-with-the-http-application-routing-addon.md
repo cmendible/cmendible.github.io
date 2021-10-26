@@ -3,12 +3,11 @@ author: Carlos Mendible
 categories:
 - kubernetes
 - azure
-crosspost_to_medium: true
 date: "2019-01-10T15:20:00Z"
 description: 'AKS: Configure TLS termination with the http application routing addon'
 images: ["/assets/img/posts/aks.png"]
 published: true
-tags: ["nginx", "ingress", "tls", "routing"]
+tags: ["aks", "nginx", "ingress controller"]
 title: 'AKS: Configure TLS termination with the http application routing addon'
 ---
 

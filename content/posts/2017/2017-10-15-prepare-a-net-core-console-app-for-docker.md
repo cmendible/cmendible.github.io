@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2017-10-15T12:16:08Z"
 description: The following code shows you the structure of the console app we created
   and will help you Prepare a .Net Core Console App for Docker

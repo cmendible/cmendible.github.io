@@ -3,12 +3,11 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-crosspost_to_medium: true
 date: "2019-07-05T23:30:00Z"
 description: 'Visual Studio Code Remote Containers: Azure Ansible'
 images: ["/assets/img/posts/code.png"]
 published: true
-tags: ["ansible", "Docker"]
+tags: ["ansible", "visual studio code"]
 title: 'Visual Studio Code Remote Containers: Azure Ansible'
 url: /2019/07/05/vs-code-remote-containers-azure-ansible/
 ---

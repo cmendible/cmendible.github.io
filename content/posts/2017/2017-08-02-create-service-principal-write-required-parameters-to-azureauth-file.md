@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-crosspost_to_medium: true
 date: "2017-08-02T16:57:08Z"
 description: Create a Service Principal and write required parameters to a .azureauth
   file

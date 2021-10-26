@@ -3,12 +3,11 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-crosspost_to_medium: false
 date: "2021-10-23T10:00:00Z"
 description: 'AKS: High Available Storage with Rook and Ceph'
 images: ["/assets/img/posts/aks.png"]
 draft: false
-tags: ["rook", "ceph", "storage"]
+tags: ["aks", "rook", "ceph", "storage"]
 title: 'AKS: High Available Storage with Rook and Ceph'
 ---
 

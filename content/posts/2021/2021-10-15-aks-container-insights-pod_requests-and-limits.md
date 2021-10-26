@@ -3,12 +3,11 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-crosspost_to_medium: false
 date: "2021-10-15T10:00:00Z"
 description: 'AKS: Container Insights Pod Requests and Limits'
 images: ["/assets/img/posts/aks.png"]
 draft: false
-tags: ["pod", "requests", "limits"]
+tags: ["aks", "azure monitor", "log analytics", "container insights"]
 title: 'AKS: Container Insights Pod Requests and Limits'
 ---
 

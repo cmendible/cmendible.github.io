@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2017-03-02T07:28:14Z"
 description: Create a class with .NET Core and Roslyn
 images: ["/wp-content/uploads/2017/01/roslyn.png"]

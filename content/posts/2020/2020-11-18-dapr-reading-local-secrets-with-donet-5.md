@@ -2,12 +2,11 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2020-11-18T10:00:00Z"
 description: 'Dapr: Reading local secrets with .NET 5'
 images: ["/assets/img/posts/dapr.png"]
 published: true
-tags: ["dapr"]
+tags: ["dapr", "secrets"]
 title: 'Dapr: Reading local secrets with .NET 5'
 ---
 

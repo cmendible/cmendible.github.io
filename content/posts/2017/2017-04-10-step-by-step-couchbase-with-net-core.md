@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2017-04-10T17:11:15Z"
 description: 'Step by step: Couchbase with .Net Core'
 images: ["/wp-content/uploads/2017/04/Couchbase_Inc._official_logo.png"]

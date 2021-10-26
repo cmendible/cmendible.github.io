@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2018-08-25T11:27:39Z"
 description: Adding SourceLink to your .NET Core Library
 images: ["/wp-content/uploads/2017/07/dotnetcore.png"]

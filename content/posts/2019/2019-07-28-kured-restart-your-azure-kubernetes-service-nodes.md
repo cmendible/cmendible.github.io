@@ -4,12 +4,11 @@ categories:
 - azure
 - kubernetes
 - devops
-crosspost_to_medium: true
 date: "2019-07-28T00:00:00Z"
 description: 'Kured: Restart your Azure Kubernetes Service Nodes'
 images: ["/assets/img/posts/aks.png"]
 published: true
-tags: ["aks"]
+tags: ["aks", "kured"]
 title: 'Kured: Restart your Azure Kubernetes Service Nodes'
 ---
 

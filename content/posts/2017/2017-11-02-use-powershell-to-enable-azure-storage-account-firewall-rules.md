@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-crosspost_to_medium: true
 date: "2017-11-02T20:53:16Z"
 description: Use PowerShell to enable Azure Storage Account Firewall Rules
 images: ["/wp-content/uploads/2017/06/powershell.png"]

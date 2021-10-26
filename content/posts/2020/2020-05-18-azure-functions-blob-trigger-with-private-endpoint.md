@@ -2,12 +2,11 @@
 author: Carlos Mendible
 categories:
 - azure
-crosspost_to_medium: true
 date: "2020-05-18T00:00:00Z"
 description: 'Azure Functions: use Blob Trigger with Private Endpoint'
 images: ["/assets/img/posts/azure.png"]
 published: true
-tags: ["functions", "serverless", "blob", "privateendpoint"]
+tags: ["azure functions", "blob trigger", "private endpoint"]
 title: 'Azure Functions: use Blob Trigger with Private Endpoint'
 ---
 

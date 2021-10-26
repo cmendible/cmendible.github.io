@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-crosspost_to_medium: true
 date: "2018-05-21T19:21:39Z"
 description: Accepting Azure Marketplace Terms with Azure CLI
 images: ["/assets/img/posts/azure.png"]

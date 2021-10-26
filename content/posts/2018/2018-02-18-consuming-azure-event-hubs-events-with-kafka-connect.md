@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - azure
-crosspost_to_medium: true
 date: "2018-02-18T17:00:00Z"
 description: Consuming Azure Event Hubs Events With Kafka Connect
 images: ["/assets/img/posts/azureventhubs.png"]

@@ -2,12 +2,11 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-crosspost_to_medium: true
 date: "2020-04-05T00:00:00Z"
 description: 'Kubernetes NGINX ingress controller with Dapr'
 images: ["/assets/img/posts/dapr.png"]
 published: true
-tags: ["dapr"]
+tags: ["dapr", "nginx", "ingress controller"]
 title: 'Kubernetes NGINX ingress controller with Dapr'
 ---
 

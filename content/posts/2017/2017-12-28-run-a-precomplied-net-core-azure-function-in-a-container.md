@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - azure
 - dotnet
-crosspost_to_medium: true
 date: "2017-12-28T15:13:00Z"
 description: Run a Precompiled .NET Core Azure Function in a Container
 images: ["/assets/img/posts/azurefunctions.jpg"]

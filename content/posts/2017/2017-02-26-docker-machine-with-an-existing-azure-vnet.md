@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - azure
-crosspost_to_medium: true
 date: "2017-02-26T19:39:11Z"
 description: Docker Machine with an existing Azure VNET
 images: ["/wp-content/uploads/2017/02/dm.png"]

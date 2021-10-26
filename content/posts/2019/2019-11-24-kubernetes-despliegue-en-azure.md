@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-crosspost_to_medium: true
 date: "2019-11-24T00:00:00Z"
 description: 'Kubernetes: Despliegue en Azure'
 images: ["/assets/img/posts/linkedin_learning/Kubernetes_Despliegue_en_Azure.png"]

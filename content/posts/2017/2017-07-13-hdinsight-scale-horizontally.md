@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-crosspost_to_medium: true
 date: "2017-07-13T11:07:13Z"
 description: 'HDInsight: Scale Horizontally'
 images: ["/wp-content/uploads/2016/06/automation1.png"]

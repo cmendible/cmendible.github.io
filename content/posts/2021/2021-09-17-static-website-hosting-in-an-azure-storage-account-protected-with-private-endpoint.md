@@ -2,12 +2,11 @@
 author: Carlos Mendible
 categories:
 - azure
-crosspost_to_medium: true
 date: "2021-09-17T10:00:00Z"
 description: 'Static website hosting in an Azure Storage Account protected with Private Endpoint'
 images: ["/assets/img/posts/azure.png"]
 draft: false
-tags: ["static website", "storage account", "private endpoint"]
+tags: ["static website", "storage account", "private endpoint", "storage"]
 title: 'Static website hosting in an Azure Storage Account protected with Private Endpoint'
 ---
 

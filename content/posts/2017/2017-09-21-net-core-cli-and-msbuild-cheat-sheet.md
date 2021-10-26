@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2017-09-21T17:23:14Z"
 description: A small .NET Core CLI and MSBUILD Cheat Sheet
 images: ["wp-content/uploads/2017/07/dotnetcore.png"]

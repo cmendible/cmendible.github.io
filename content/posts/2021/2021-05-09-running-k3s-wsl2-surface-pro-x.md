@@ -2,12 +2,11 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-crosspost_to_medium: true
 date: "2021-05-09T17:00:00Z"
 description: 'Running k3s inside WSL2 on a Surface Pro X'
 images: ["/assets/img/posts/kubernetes.png"]
 draft: false
-tags: ["k3s", "arm64"]
+tags: ["k3s", "arm64", "WSL2"]
 title: 'Running k3s inside WSL2 on a Surface Pro X'
 ---
 

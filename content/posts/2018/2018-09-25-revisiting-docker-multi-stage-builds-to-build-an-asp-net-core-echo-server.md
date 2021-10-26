@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2018-09-25T20:00:00Z"
 description: Revisiting Docker Multi Stage Builds to build an ASP.NET Core Echo Server
 images: ["/assets/img/posts/docker.png"]

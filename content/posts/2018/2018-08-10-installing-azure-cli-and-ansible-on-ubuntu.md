@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-crosspost_to_medium: true
 date: "2018-08-10T00:18:30Z"
 description: Installing Azure CLI and Ansible on Ubuntu
 images: ["/assets/img/posts/ansible.png"]

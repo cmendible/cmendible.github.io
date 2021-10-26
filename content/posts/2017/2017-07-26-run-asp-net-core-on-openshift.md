@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2017-07-26T09:55:19Z"
 description: Run ASP.NET Core on OpenShift
 images: ["/wp-content/uploads/2017/07/openshift.png"]

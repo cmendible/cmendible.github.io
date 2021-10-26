@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - azure
 - dotnet
-crosspost_to_medium: true
 date: "2017-06-25T18:52:22Z"
 description: 'Step by step: .NET Core and Azure Cosmos DB'
 images: ["/wp-content/uploads/2017/06/cosmos.png"]

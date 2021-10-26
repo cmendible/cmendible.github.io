@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2017-01-29T20:31:41Z"
 description: .NET Core, Roslyn and Code Generation
 images: ["/wp-content/uploads/2017/01/roslyn.png"]

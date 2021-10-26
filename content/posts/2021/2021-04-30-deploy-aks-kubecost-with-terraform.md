@@ -3,12 +3,11 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-crosspost_to_medium: true
 date: "2021-04-30T19:00:00Z"
 description: 'Deploy AKS + Kubecost with Terraform'
 images: ["/assets/img/posts/aks_kubecost.png"]
 draft: false
-tags: ["terraform", "kubecost"]
+tags: ["aks", "terraform", "kubecost"]
 title: 'Deploy AKS + Kubecost with Terraform'
 ---
 

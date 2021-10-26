@@ -2,7 +2,6 @@
 author: Carlos Mendible
 categories:
 - dotnet
-crosspost_to_medium: true
 date: "2017-05-08T10:55:32Z"
 description: 'Step by step: Kafka Pub/Sub with Docker and .Net Core'
 images: ["/wp-content/uploads/2017/05/kafka-logo-wide.png"]

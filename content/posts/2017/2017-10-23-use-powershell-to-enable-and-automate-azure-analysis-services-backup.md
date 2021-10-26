@@ -3,7 +3,6 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-crosspost_to_medium: true
 date: "2017-10-23T20:53:16Z"
 description: Enable-AzureRmAnalysisServicesBackup is a small PowerShell script that
   uses the the Set-AzureRmResource cmdlet to enable backup location to an Azure Analysis

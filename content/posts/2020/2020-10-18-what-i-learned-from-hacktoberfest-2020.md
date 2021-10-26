@@ -1,10 +1,7 @@
 ---
 author: Carlos Mendible
 categories:
-- azure
-- dotnet
 - kubernetes
-crosspost_to_medium: true
 date: "2020-10-18T10:00:00Z"
 description: 'What I Learned From Hacktoberfest 2020'
 images: ["/assets/img/posts/hacktoberfest2020.png"]
