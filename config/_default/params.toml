@@ -1,7 +1,10 @@
 poweredBy = false
 logo = "/assets/img/about_me.jpg"
 titleCase = true
-palettes = [] 
+palettes = []
+
+[codeBlock]
+  maxLines = 20
 
 [search]
   paginate = 5 # Pagination. Default to 10.
