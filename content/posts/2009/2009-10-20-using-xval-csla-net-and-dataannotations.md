@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2009-10-20T14:59:00Z"
 description: Using xVal, CSLA.NET and DataAnnotations.
-tags: ["ASP.Net", "CSLA", "WebForms", "xVal"]
+tags: ["aspnet", "xval"]
 title: Using xVal, CSLA.NET and DataAnnotations.
 url: /2009/10/20/using-xval-csla-net-and-dataannotations/
 ---

@@ -5,6 +5,7 @@ categories:
 date: "2017-01-31T20:31:41Z"
 description: Shadow IT a Digital Transformation Incubator
 images: ["/assets/img/posts/shadows.jpg"]
+tags: ["cloud"]
 title: Shadow IT a Digital Transformation Incubator
 ---
 

@@ -6,7 +6,7 @@ date: "2018-08-16T11:27:39Z"
 description: .NET Core, BenchmarkDotNet and string compare performance
 images: ["/wp-content/uploads/2017/07/dotnetcore.png"]
 published: true
-tags: ["benchmarkdotnet", "string"]
+tags: ["benchmark dotnet"]
 title: .NET Core, BenchmarkDotNet and string compare performance
 url: /2018/08/16/dotnet-core-benchmarkdotnet-and-string-compare-performance/
 ---

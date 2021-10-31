@@ -6,7 +6,7 @@ categories:
 date: "2016-07-30T16:07:18Z"
 description: Detect and Blur Faces with .NET Core and Face API
 images: ["/wp-content/uploads/2016/07/detectedfaces.jpg"]
-tags: ["CognitiveServices", "FaceAPI", "ImageProcessorCoreProjectOxford"]
+tags: ["cognitive services"]
 title: Detect and Blur Faces with .NET Core and Face API
 url: /2016/07/30/detect-and-blur-faces-with-dotnetcore-and-face-api/
 ---

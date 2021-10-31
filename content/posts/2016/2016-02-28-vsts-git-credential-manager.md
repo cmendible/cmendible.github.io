@@ -4,7 +4,7 @@ categories:
 - devops
 date: "2016-02-28T22:12:41Z"
 description: VSTS Git Credential Manager
-tags: ["Git", "VSTS"]
+tags: ["git"]
 title: VSTS Git Credential Manager
 ---
 Since the year started I've been working hard with **Visual Studio Team Services (VSTS)** with **Git** as source control. I was getting tired of entering my git credentials on each clone, pull or push, on Windows or Mac OS X,  so this weekend I decided to surf the web and look for a multi-platform solution.

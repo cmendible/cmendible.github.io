@@ -6,7 +6,7 @@ date: "2017-10-15T12:16:08Z"
 description: The following code shows you the structure of the console app we created
   and will help you Prepare a .Net Core Console App for Docker
 images: ["/wp-content/uploads/2017/07/dotnetcore.png"]
-tags: ["Docker", "Sidecar", "Container"]
+tags: ["docker"]
 title: Prepare a .Net Core Console App for Docker
 url: /2017/10/15/prepare-a-net-core-console-app-for-docker/
 ---

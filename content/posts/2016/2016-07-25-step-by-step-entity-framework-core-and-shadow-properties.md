@@ -5,7 +5,7 @@ categories:
 date: "2016-07-25T16:07:49Z"
 description: 'Step by step: Entity Framework Core and Shadow Properties'
 images: ["/wp-content/uploads/2016/07/efsqlite.png"]
-tags: ["EntityFrameworkCore"]
+tags: ["entity framework"]
 title: 'Step by step: Entity Framework Core and Shadow Properties'
 ---
 Today I'll show you how to create a small console application with a **Step by step: Entity Framework Core and Shadow Properties** example.

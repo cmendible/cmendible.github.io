@@ -5,7 +5,7 @@ categories:
 date: "2017-01-16T14:54:55Z"
 description: '.Net Core and NancyFX: can writing a WebApi get any simpler?'
 images: ["/wp-content/uploads/2017/01/nancy.jpg"]
-tags: ["aspNetCore", "NancyFX", "WebAPI"]
+tags: ["aspnetcore", "nancyfx"]
 title: '.Net Core and NancyFX: can writing a WebApi get any simpler?'
 url: /2017/01/16/net-core-and-nancyfx-can-writing-a-webapi-get-any-simpler/
 ---

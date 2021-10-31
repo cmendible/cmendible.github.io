@@ -4,6 +4,7 @@ categories:
 - management
 date: "2014-11-17T18:03:32Z"
 description: Continuum and The Surveillance State
+tags: ["security"]
 title: Continuum and The Surveillance State
 ---
 Continuum is a Canadian science fiction series in which the world, by year 2077, is run by huge hi-tech corporations and is heavily surveilled with few freedoms. The only dissenters are a terrorist organization called Liber-8. When Keira Cameron, a cyber-enhanced cop, attends the execution of a captured group of Liber-8 she’s thrown back in time along with them, to year 2012. Through the 3 seasons you learn that everything the world goes through is consequence of the invention of a wearable bracelet called Halo. A wearable device which measures vital statistics, amount of sleep, food intake, exercise, etc., and also sends signals to the brain to correct any problem it may detect… By year 2077 Halo is used to control the world population.

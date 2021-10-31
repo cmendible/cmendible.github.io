@@ -5,7 +5,7 @@ categories:
 date: "2016-06-01T13:17:22Z"
 description: Backup your Team Services Git Repositories with VSTS Vault
 images: ["/wp-content/uploads/2016/06/vault.jpg"]
-tags: ["BackUp", "Git", "VSTS"]
+tags: ["backup", "git"]
 title: Backup your Team Services Git Repositories with VSTS Vault
 url: /2016/06/01/backup-team-services-git-repositories-vsts-vault/
 ---

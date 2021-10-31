@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2010-05-06T16:02:00Z"
 description: netDumbster another .Net Fake SMTP server based on Dumbster
-tags: ["netDumbster", "SMTP"]
+tags: ["netdumbster"]
 title: netDumbster another .Net Fake SMTP server based on Dumbster
 url: /2010/05/06/netdumbster-another-net-fake-smtp-server-based-on-dumbster/
 ---

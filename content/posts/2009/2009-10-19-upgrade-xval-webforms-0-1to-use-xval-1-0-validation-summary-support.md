@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2009-10-19T15:18:00Z"
 description: Upgrade xVal.WebForms 0.1 to use xVal.1.0 (Validation Summary Support)
-tags: ["ASP.Net", "Validation", "WebForms", "xVal"]
+tags: ["aspnet", "xval"]
 title: Upgrade xVal.WebForms 0.1 to use xVal.1.0 (Validation Summary Support)
 ---
 Recently I found out about [xVal.WebForms](http://xvalwebforms.codeplex.com/) project at [CodePlex.com](http://codeplex.com). Its a good implementation of XVal for ASP.Net WebForms made by John Rummell.

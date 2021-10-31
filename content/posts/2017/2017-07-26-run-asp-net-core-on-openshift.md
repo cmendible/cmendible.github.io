@@ -5,7 +5,7 @@ categories:
 date: "2017-07-26T09:55:19Z"
 description: Run ASP.NET Core on OpenShift
 images: ["/wp-content/uploads/2017/07/openshift.png"]
-tags: ["aspNetCore", "Docker", "Dockerfile", "OpenShift"]
+tags: ["aspnetcore", "docker", "openshift"]
 title: Run ASP.NET Core on OpenShift
 ---
 Today I'll show you how to **Run ASP.NET Core on OpenShift**.

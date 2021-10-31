@@ -6,7 +6,7 @@ date: "2018-04-05T07:21:39Z"
 description: .NET Core, Code Analysis and StyleCop with dotnet-addcasa
 images: ["/wp-content/uploads/2017/07/dotnetcore.png"]
 published: true
-tags: ["CodeAnalysis", "FxCop", "StyleCop"]
+tags: ["static analysis"]
 title: Adding Code Analysis and StyleCop checks to .NET Core projects with dotnet-addcasa
 url: /2018/04/05/adding-code-analysis-and-stylecop-checks-to-net-core-projects-with-dotnet-addcasa/
 ---

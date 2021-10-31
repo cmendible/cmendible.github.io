@@ -5,7 +5,7 @@ categories:
 date: "2016-10-17T20:31:41Z"
 description: Is Privacy Dead?
 images: ["/assets/img/posts/privacydead.jpg"]
-tags: ["Security", "Privacy"]
+tags: ["cloud"]
 title: Is Privacy Dead?
 ---
 

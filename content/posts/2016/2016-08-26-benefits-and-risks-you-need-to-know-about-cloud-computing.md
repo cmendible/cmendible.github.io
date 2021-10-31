@@ -3,8 +3,8 @@ author: Carlos Mendible
 categories:
 - management
 date: "2016-08-26T20:31:41Z"
-description: Is Privacy Dead?
-tags: ["Security", "Privacy"]
+description: Benefits and Risks You Need to Know about Cloud Computing
+tags: ["security", "cloud"]
 title: Benefits and Risks You Need to Know about Cloud Computing
 ---
 

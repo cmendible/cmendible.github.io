@@ -5,6 +5,7 @@ categories:
 - devops
 date: "2016-03-15T20:31:41Z"
 description: Hiring a DevOps?
+tags: ["cloud"]
 title: Hiring a DevOps?
 ---
 Over the last couple of months, I’ve noticed that a lot of companies are trying to hire DevOps Engineers or DevOps Experts and I have to ask what are these companies looking for?

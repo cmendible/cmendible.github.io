@@ -6,7 +6,7 @@ date: "2018-03-17T17:23:14Z"
 description: My kubectl Cheat Sheet
 images: ["/assets/img/posts/kubernetes.png"]
 published: true
-tags: ["CheatSheet", "kubectl"]
+tags: ["cheat sheet", "kubectl"]
 title: My kubectl Cheat Sheet
 url: /2018/03/17/my-kubectl-cheat-sheet/
 ---

@@ -5,7 +5,7 @@ categories:
 date: "2016-07-04T08:20:15Z"
 description: Add Swagger to your .NET Core Web API
 images: ["/wp-content/uploads/2016/07/AddSwaggerHttp.png"]
-tags: ["Swagger", "Swashbuckle", "WebAPI"]
+tags: ["aspnetcore", "swagger"]
 title: Add Swagger to your .NET Core Web API
 ---
 Last week <a href="https://www.microsoft.com/net/core" target="_blank">.NET Core</a> was released, and the first thing I tried to solve was how to **Add Swagger to your .NET Core Web API**:

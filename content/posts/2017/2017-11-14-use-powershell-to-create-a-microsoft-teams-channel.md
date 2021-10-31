@@ -5,7 +5,7 @@ categories:
 date: "2017-11-14T02:15:00Z"
 description: Use PowerShell to create a Microsoft Teams Channel
 images: ["/wp-content/uploads/2017/06/powershell.png"]
-tags: ["PowerShell", "MicrosoftTeams"]
+tags: ["powershell", "microsoft teams"]
 title: Use PowerShell to create a Microsoft Teams Channel
 ---
 For those of you who have been trying to automate anything related to Microsoft Teams, let me tell you that there is a new PowerShell Module in town: [Microsoft Teams 0.9.0](https://www.powershellgallery.com/packages/MicrosoftTeams/0.9.0) which you can install with the following command:

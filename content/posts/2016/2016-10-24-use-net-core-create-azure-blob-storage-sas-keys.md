@@ -6,7 +6,7 @@ categories:
 date: "2016-10-24T10:11:58Z"
 description: Use .NET Core to Create Azure Blob Storage SAS Keys
 images: ["/wp-content/uploads/2016/10/SAS.jpg"]
-tags: ["Blob", "BlobStorage", "SAS", "SharedAccessSignature"]
+tags: ["storage account"]
 title: Use .NET Core to Create Azure Blob Storage SAS Keys
 url: /2016/10/24/use-net-core-create-azure-blob-storage-sas-keys/
 ---

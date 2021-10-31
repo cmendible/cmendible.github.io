@@ -5,7 +5,7 @@ categories:
 date: "2017-03-21T11:24:05Z"
 description: 'Step by step: Running ASP.NET Core on Raspberry Pi'
 images: ["/wp-content/uploads/2017/03/aspnetcorerpi.gif"]
-tags: ["ARM", "aspNetCore", "RaspberryPi", "Windows10", "IoT"]
+tags: ["aspnetcore", "raspberry pi"]
 title: 'Step by step: Running ASP.NET Core on Raspberry Pi'
 url: /2017/03/21/step-by-step-running-aspnet-core-on-raspberry-pi/
 ---

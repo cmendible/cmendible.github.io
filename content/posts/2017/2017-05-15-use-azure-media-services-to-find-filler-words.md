@@ -5,7 +5,7 @@ categories:
 date: "2017-05-15T18:33:40Z"
 description: Use Azure Media Services to Find Filler Words
 images: ["/wp-content/uploads/2017/05/mediaservices.png"]
-tags: ["FillerWords", "MediaServices", "VideoIndexer"]
+tags: ["Azure media services"]
 title: Use Azure Media Services to Find Filler Words
 ---
 On April 22 I had the great opportunity to give a talk on Azure Functions in the Global Azure Bootcamp hosted in Madrid. I had a great time, but weeks later when the video was published I realised that I was using a filler word way to much through my presentation.

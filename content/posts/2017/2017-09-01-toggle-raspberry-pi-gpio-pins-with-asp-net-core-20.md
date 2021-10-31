@@ -5,7 +5,7 @@ categories:
 date: "2017-09-01T09:39:08Z"
 description: Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0
 images: ["/wp-content/uploads/2017/09/IMG_20170901_111428_01.jpg"]
-tags: ["ARM", "aspNetCore", "GPIO", "RaspberryPi", "Raspbian"]
+tags: ["aspnetcore", "raspberry pi"]
 title: Toggle Raspberry Pi GPIO Pins with ASP.NET Core 2.0
 url: /2017/09/01/toggle-raspberry-pi-gpio-pins-with-asp-net-core-20/
 ---

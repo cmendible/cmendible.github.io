@@ -5,7 +5,7 @@ categories:
 date: "2017-07-04T12:59:05Z"
 description: Deploy your ASP.NET Core Web API to AWS Lambda
 images: ["/wp-content/uploads/2017/07/AWS-Lambda-DotNet-Core.png"]
-tags: ["aspNetCore", "AWS", "Lambda", "Serverless", "WebAPI"]
+tags: ["aspnetcore", "aws", "serverless"]
 title: Deploy your ASP.NET Core Web API to AWS Lambda
 url: /2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/
 ---

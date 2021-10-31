@@ -7,7 +7,7 @@ categories:
 date: "2016-04-06T10:30:28Z"
 description: Export Azure Resource Groups Templates
 images: ["/wp-content/uploads/2016/04/ExportAzureRmResourceGroup.png"]
-tags: ["ARM", "Templates", "Export", "PowerShell"]
+tags: ["powershell"]
 title: Export Azure Resource Groups Templates
 ---
 One of the great things about <a href="https://azure.microsoft.com/" target="_blank">Azure</a> is the possibility to **<a href="https://azure.microsoft.com/en-us/documentation/articles/resource-group-authoring-templates/" target="_blank">Export Azure Resource Groups Templates</a>**. Each template is a json file containing the exact configuration of the services you've provisioned in a <a href="https://azure.microsoft.com/en-us/documentation/articles/resource-group-overview/" target="_blank">Resource Group</a>.

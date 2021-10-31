@@ -4,7 +4,7 @@ categories:
 - dotnet
 date: "2009-10-26T09:10:00Z"
 description: xVal.WebForms, Validation Groups and CausesValidation
-tags: ["ASP.Net", "CausesValidation", "ValidationGroups", "WebForms", "xVal"]
+tags: ["aspnet", "xval"]
 title: xVal.WebForms, Validation Groups and CausesValidation
 url: /2009/10/26/xval-webforms-validation-groups-and-causesvalidation/
 ---

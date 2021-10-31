@@ -4,7 +4,6 @@ categories:
 - dotnet
 date: "2009-10-19T15:07:00Z"
 description: Issue in non Generic Execute Method in DbLinq.Data.Linq.Implementation.QueryProvider
-tags: ["DbLinq", "SQLite"]
 title: Issue in non Generic Execute Method in DbLinq.Data.Linq.Implementation.QueryProvider
 url: /2009/10/19/issue-in-non-generic-execute-method-in-dblinq-data-linq-implementation-queryprovider/
 ---

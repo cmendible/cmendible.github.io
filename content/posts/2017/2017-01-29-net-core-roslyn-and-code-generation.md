@@ -5,7 +5,7 @@ categories:
 date: "2017-01-29T20:31:41Z"
 description: .NET Core, Roslyn and Code Generation
 images: ["/wp-content/uploads/2017/01/roslyn.png"]
-tags: ["Roslyn"]
+tags: ["roslyn"]
 title: .NET Core, Roslyn and Code Generation
 url: /2017/01/29/net-core-roslyn-and-code-generation/
 ---

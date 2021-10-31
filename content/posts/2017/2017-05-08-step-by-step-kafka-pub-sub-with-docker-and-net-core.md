@@ -5,7 +5,7 @@ categories:
 date: "2017-05-08T10:55:32Z"
 description: 'Step by step: Kafka Pub/Sub with Docker and .Net Core'
 images: ["/wp-content/uploads/2017/05/kafka-logo-wide.png"]
-tags: ["Docker", "kafka", "pubsub"]
+tags: ["docker", "kafka"]
 title: 'Step by step: Kafka Pub/Sub with Docker and .Net Core'
 url: /2017/05/08/step-by-step-kafka-pub-sub-with-docker-and-net-core/
 ---

@@ -5,7 +5,7 @@ categories:
 date: "2009-12-10T12:15:00Z"
 description: Rhino Mocks Method &#8216;YYY' requires a return value or an exception
   to throw.
-tags: ["RhinoMocks", "UnitTests"]
+tags: ["unit tests"]
 title: Rhino Mocks Method &#8216;YYY' requires a return value or an exception to throw.
 url: /2009/12/10/rhino-mocks-method-yyy-requires-a-return-value-or-an-exception-to-throw/
 ---

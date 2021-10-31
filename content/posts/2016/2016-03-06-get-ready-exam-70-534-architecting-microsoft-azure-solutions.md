@@ -6,7 +6,7 @@ categories:
 date: "2016-03-06T12:07:02Z"
 description: 'Get Ready: Exam 70-534 Architecting Microsoft Azure Solutions'
 images: ["/wp-content/uploads/2016/02/ExamRef_70_534.jpg"]
-tags: ["70-534", "Architect", "Exam"]
+tags: ["exam"]
 title: 'Get Ready: Exam 70-534 Architecting Microsoft Azure Solutions'
 ---
 I recently passed the <a href="https://www.microsoft.com/en-us/learning/exam-70-534.aspx" target="_blank">70-534 Architecting Microsoft Azure Solutions</a> exam, and I want to share with you tips about the exam and the resources I used to study:

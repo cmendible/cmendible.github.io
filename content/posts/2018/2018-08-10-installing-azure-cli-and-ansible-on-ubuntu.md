@@ -7,7 +7,7 @@ date: "2018-08-10T00:18:30Z"
 description: Installing Azure CLI and Ansible on Ubuntu
 images: ["/assets/img/posts/ansible.png"]
 published: true
-tags: ["ansible", "cli"]
+tags: ["ansible", "azure cli"]
 title: Installing Azure CLI and Ansible on Ubuntu
 ---
 

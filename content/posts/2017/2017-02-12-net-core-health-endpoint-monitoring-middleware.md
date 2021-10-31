@@ -5,7 +5,7 @@ categories:
 date: "2017-02-12T14:06:42Z"
 description: .NET Core Health Endpoint Monitoring Middleware
 images: ["/wp-content/uploads/2017/02/pipeline.png"]
-tags: ["HealthEndpoint", "Middleware", "Monitoring"]
+tags: ["monitoring"]
 title: .NET Core Health Endpoint Monitoring Middleware
 url: /2017/02/12/dotnet-core-health-endpoint-monitoring-middleware/
 ---

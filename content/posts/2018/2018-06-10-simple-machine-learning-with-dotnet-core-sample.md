@@ -6,7 +6,7 @@ date: "2018-06-10T20:39:00Z"
 description: Simple Machine Learning with .NET Core Sample
 images: ["/wp-content/uploads/2017/07/dotnetcore.png"]
 published: true
-tags: ["MachineLearning", "Titanic", "BinaryClassifier", "Classifier"]
+tags: ["machine learning"]
 title: Simple Machine Learning with .NET Core Sample
 url: /2018/06/10/simple-machine-learning-with-dotnet-core-sample/
 ---

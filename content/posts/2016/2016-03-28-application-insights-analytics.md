@@ -6,7 +6,7 @@ categories:
 date: "2016-03-28T12:01:42Z"
 description: Application Insights Analytics
 images: ["/wp-content/uploads/2016/03/query-1.png"]
-tags: ["ApplicationInsights"]
+tags: ["application insights"]
 title: Application Insights Analytics
 ---
 For the last couple of months I've been using **<a href="https://azure.microsoft.com/en-us/documentation/articles/app-insights-overview/" target="_blank">Application Insights</a>** to monitor, detect and diagnose performance issues in our applications. Last week I noticed that the _Analytics_ button on the <a href="https://azure.microsoft.com/en-us/documentation/articles/app-insights-overview/" target="_blank">Application Insights</a> blade was working:

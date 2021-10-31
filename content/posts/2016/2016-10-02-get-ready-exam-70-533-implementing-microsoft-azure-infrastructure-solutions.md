@@ -6,7 +6,7 @@ categories:
 date: "2016-10-02T09:54:40Z"
 description: 'Get Ready: Exam 70-533 Implementing Microsoft Azure Infrastructure Solutions'
 images: ["/wp-content/uploads/2016/10/70-533.jpg"]
-tags: ["70-533", "Developer", "Exam"]
+tags: ["exam"]
 title: 'Get Ready: Exam 70-533 Implementing Microsoft Azure Infrastructure Solutions'
 ---
 This week I cleared the **<a href="https://www.microsoft.com/learning/en-us/exam-70-533.aspx" target="_blank">70-533 Implementing Microsoft Azure Infrastructure Solutions</a>** exam, and I want to share with you tips about the exam and the resources I used to study:
