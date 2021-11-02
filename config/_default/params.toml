@@ -1,5 +1,5 @@
 poweredBy = false
-logo = "/assets/img/about_me.jpg"
+logo = false
 titleCase = true
 palettes = []
 
@@ -14,7 +14,7 @@ palettes = []
     # ignoreLocation = true
     # location = 0
     # isCaseSensitive = false
-    # minMatchCharLength = 1
-    threshold = 0.1
-    # distance = 100
+    minMatchCharLength = 3
+    threshold = 0.6
+    distance = 500
     # useExtendedSearch = true
