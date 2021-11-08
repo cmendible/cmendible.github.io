@@ -166,7 +166,7 @@ az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/A
 az provider register --namespace Microsoft.ContainerService
 ```
 
-Once registered refresh the  `Microsoft.ContainerService` regsitartion:
+Once registered refresh the  `Microsoft.ContainerService` registration:
 
 ``` shell
 az provider register --namespace Microsoft.ContainerService
@@ -215,6 +215,8 @@ kubectl get meshconfig osm-mesh-config -n kube-system -o yaml
 ``` shell
 kubectl get meshconfig osm-mesh-config -n kube-system -o yaml | grep -i enablePermissiveTrafficPolicyMode
 ```
+
+> In this mode, OSM automatically discovers services that are a part of the service mesh and programs traffic policy rules on each Envoy proxy sidecar to be able to communicate with these services.
 
 ## Configure OSM to monitor a namespace
 
