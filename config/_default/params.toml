@@ -1,6 +1,6 @@
 poweredBy = false
 logo = false
-titleCase = true
+titleCase = false
 palettes = []
 
 [codeBlock]
