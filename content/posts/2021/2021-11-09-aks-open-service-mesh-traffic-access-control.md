@@ -11,7 +11,7 @@ tags: ["aks", "osm"]
 title: 'AKS: Open Service Mesh Traffic Access Control'
 ---
 
-In my previous post [AKS: Open Service Mesh & mTLS]({{< ref "/posts/2021/2021-11-08-aks-open_service_mesh_mtls.md" >}} ), I described how to deploy an AKS cluster with Open Service Mesh enabled, and how:
+In my previous post [AKS: Open Service Mesh & mTLS]({{< ref "/posts/2021/2021-11-08-aks-open-service-mesh-mtls.md" >}} ), I described how to deploy an AKS cluster with Open Service Mesh enabled, and how:
 
 * Easy is to onboard applications onto the mesh by enabling automatic sidecar injection of Envoy proxy.
 * OSM enables secure service to service communication.
@@ -33,7 +33,7 @@ Now let's see how this works:
 
 ## Deploy an AKS cluster with OSM enabled 
 
-Follow the steps in my previous post [AKS: Open Service Mesh & mTLS]({{< ref "/posts/2021/2021-11-08-aks-open_service_mesh_mtls.md" >}} ) to deploy an AKS cluster with Open Service Mesh enabled.
+Follow the steps in my previous post [AKS: Open Service Mesh & mTLS]({{< ref "/posts/2021/2021-11-08-aks-open-service-mesh-mtls.md" >}} ) to deploy an AKS cluster with Open Service Mesh enabled.
 
 ## Disable Permissive Traffic Policy Mode
 
