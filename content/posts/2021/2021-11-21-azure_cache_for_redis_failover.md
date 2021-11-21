@@ -3,11 +3,11 @@ author: Carlos Mendible
 categories:
 - azure
 date: "2021-11-21T10:00:00Z"
-description: 'Azure Cache for Redis: failover'
+description: 'Azure Cache for Redis: Failover Test'
 images: ["/assets/img/posts/redis.png"]
 draft: false
 tags: ["redis", "availabilty zones"]
-title: 'Azure Cache for Redis: failover'
+title: 'Azure Cache for Redis: Failover Test'
 ---
 
 Azure Cache for Redis supports zone redundancy in its Premium and Enterprise tiers. A zone-redundant cache runs on VMs spread across multiple Availability Zones. It provides higher resilience and availability.
@@ -16,7 +16,7 @@ Today I'll show hot to test the failover of a zone-redundant cache.
 
 ## Deploy Azure Cache for Redis with availability zones
 
-### Create a maim.tf file with the following content:
+### Create a main.tf file with the following content:
 
 ``` terraform
 terraform {
