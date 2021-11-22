@@ -206,7 +206,9 @@ RequestID=dececf94-7f11-4ffa-9a4b-35694dd3f091
 Code: InternalServerError
 Message: Something went wrong.
 RequestID=dececf94-7f11-4ffa-9a4b-35694dd3f091
-```	
+```
+
+Please track the following issue for more information: [az redis force-reboot fails with InternalServerError](https://github.com/Azure/azure-cli/issues/20458)
 
 ### Test the Azure Cache for Redis failover (Azure Portal):
 
