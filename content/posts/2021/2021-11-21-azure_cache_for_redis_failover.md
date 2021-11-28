@@ -125,12 +125,6 @@ output "redis_primary_access_key" {
 }
 ```
 
-and deploy it to your cluster:
-
-``` shell
-kubectl apply -f pvc.yaml
-```	
-
 **Note:** the zones are specified: `zones = ["1", "2"]`, making the cache zone-redundant.
 
 ### Deploy the Azure Cache for Redis with availability zones:
