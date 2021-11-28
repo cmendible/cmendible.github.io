@@ -212,7 +212,7 @@ To reboot the Primary Node, head to the Azure portal and use the Administration/
 
 Once failover start you should see the long running process disconnect. This means your applications must be able to recover from transient errors when working with the cache.
 
-After the failover is complete, check again which availability zone hosts the primary node:
+Once the failover is complete, check again which availability zone hosts the primary node:
 
 ``` powershell
 $redis_name=$(terraform output redis_name)
