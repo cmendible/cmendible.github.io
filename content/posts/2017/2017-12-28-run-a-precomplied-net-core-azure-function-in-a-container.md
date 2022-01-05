@@ -7,7 +7,7 @@ date: "2017-12-28T15:13:00Z"
 description: Run a Precompiled .NET Core Azure Function in a Container
 images: ["/assets/img/posts/azurefunctions.jpg"]
 published: true
-tags: ["docker", "azureFfunctions", "serverless"]
+tags: ["docker", "azure functions", "serverless"]
 title: Run a Precompiled .NET Core Azure Function in a Container
 url: /2017/12/28/run-a-precomplied-net-core-azure-function-in-a-container/
 ---
