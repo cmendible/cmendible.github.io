@@ -3,27 +3,29 @@ author: Carlos Mendible
 categories:
 - dotnet
 - azure
-date: "2022-01-07T10:00:00Z"
+date: "2022-01-18T10:00:00Z"
 description: 'Protect your Node.js or .NET API with Azure Active Directory)'
 images: ["/assets/img/posts/aad.png"]
-draft: true
+draft: false
 tags: ["dotnet", "nodejs", "aad", "azure active directory"]
 title: 'Protect your Node.js or .NET API with Azure Active Directory'
 ---
 
-One question I often get from by my customers is to show then how to use Azure Active Directroy to protect their Node.js or .NET APIs. 
+One question I often get from by my customers is how to use Azure Active Directroy to protect their Node.js or .NET APIs. 
 
-Every songle time I answer by redirecting them to this amazing post ([Proteger una API en Node.js con Azure Active Directory](https://www.returngis.net/2021/04/proteger-una-api-en-node-js-con-azure-active-directory/)), written in spanish, by my friend and peer Gisela Torres ([0gis0](https://twitter.com/0gis0)).
+Every single time I answer by redirecting them to this amazing post ([Proteger una API en Node.js con Azure Active Directory](https://www.returngis.net/2021/04/proteger-una-api-en-node-js-con-azure-active-directory/)), written in spanish, by my friend and peer Gisela Torres ([0gis0](https://twitter.com/0gis0)).
 
 Sometimes they come back with more questions:
 
 * How do we use Terrafrom to register the API and Client in Azure Active Directory?
-* How can we validate the scope in the Node.js API when using JwtStrategy strategy?
+* How can we validate the scope in the Node.js API when using [JwtStrategy](http://www.passportjs.org/packages/passport-jwt/) strategy?
 * Can you provide a .NET application sample that performs the same validation and without boilerplate?
 
-So  in this post what I'm going to do is answer those last 3 questions based on Gisela's [code](https://github.com/0GiS0/protected-nodejs-api-with-azure-ad) and alos create a PowerShell client to test your APIs:
+In this post what I'm going to do is give an answer to each of those 3 questions, based on Gisela's [code](https://github.com/0GiS0/protected-nodejs-api-with-azure-ad), and also create a PowerShell client to test your APIs:
 
 ## Terraform script to register the API and Client with Azure Active Directory
+
+This sample creates two Application Registrations. The first one (passport-client) will act as the client and the second one (passport-test-api) will be used to protect the Node.js and .NET APIs. 
 
 ### Create main.tf with the following contents:
 
@@ -180,7 +182,7 @@ const verify = (jwt_payload, done) => {
 
 ### Full Node.js API:
 
-Now that you learned how to validate the scope the ful Node.js API should look like this:
+Now that you've learned how to validate the scope, the full Node.js API should look like this:
 
 ``` javascript
 const express = require('express'),
@@ -237,6 +239,8 @@ node main.ts
 ```
 
 ## Create a PowerShell script to test the protected APIs.
+
+In order to test the APIs we will create a PowerShell client.
 
 ### Create a client.ps1 file with the following contents:
 
@@ -383,7 +387,7 @@ Configure(app =>
 
 > .NET Top level programs are amazing!
 
-> Check the code to understand where does the audience and scope validation occurs.
+> Check the code to understand where does the audience and scope validation is performed.
 
 ### Replace the contents of the **appsettings.json** file with:
 
