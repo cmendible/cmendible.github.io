@@ -3,14 +3,19 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2022-03-14T10:00:00Z"
+date: "2022-03-20T10:00:00Z"
 description: 'AKS: Simulate Spot Node Eviction'
 images: ["/assets/img/posts/aks.png"]
-draft: true
+draft: false
 tags: ["aks", "terraform", "spot"]
-title: 'AKS: AKS: Simulate Spot Node Eviction'
+title: 'AKS: Simulate Spot Node Eviction'
 ---
 
+When you deploy an Azure Kubernetes Service with a node pool composed by spot virtual machines, you are running a cluster with the risk of losing nodes based on the configuration you set. 
+
+> Eviction may occur based on capacity or max price.
+
+In this post I'll show you how to deploy an AKS cluster with such configuration and simulate a node eviction. The exercise will help you understand the resiliency of your solution and how to query related events with log analytics.   
 
 ## Use Terraform to create an AKS cluster with an extra node pool with Spot Virtual Machines.
 
@@ -124,11 +129,11 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
 resource "azurerm_kubernetes_cluster_node_pool" "spot" {
   kubernetes_cluster_id = azurerm_kubernetes_cluster.k8s.id
-  name                  = "spot"
-  priority        = "Spot"
-  eviction_policy = "Delete"
-  spot_max_price  = -1 # note: this is the "maximum" price
-  os_type = "Linux"
+  name                = "spot"
+  priority            = "Spot"
+  eviction_policy     = "Delete"
+  spot_max_price      = -1 # note: this is the "maximum" price
+  os_type             = "Linux"
   vm_size             = "Standard_DS3_v2"
   os_disk_type        = "Ephemeral"
   node_count          = 1
@@ -155,6 +160,13 @@ resource "azurerm_role_assignment" "kubelet_network_contributor" {
 }
 ```
 
+**Note:**
+
+* The cluster will have two node pools. 
+* The node pool with the spot virtual machines is named: `spot`
+* No máx price is set: `spot_max_price = -1`
+* Eviction Policy is set to Delete: `eviction_policy = "Delete"`
+
 ### Create outputs.tf with the following contents:
 
 ``` terraform 
@@ -165,16 +177,16 @@ output "node_resource_group" {
 
 ### Deploy the cluster:
 
-Run the following commands:
+To deploy the cluster, run the following commands:
 
 ``` shell
 terraform init
 terraform apply -auto-approve
 ```
 
-### Simulate Spot Node Eviction:
+## Simulate Spot Node Eviction:
 
-Run the following commands:
+To simulate a spot node eviction, you'll need the name of the Virtual Machine Scale Set used to manage the spot virtual Machines and then use the `az vmss simulate-eviction` CLI command:
 
 ``` powershell
 $nodeResourceGroup=$(terraform output -raw node_resource_group)
@@ -182,9 +194,13 @@ $windowsScaleSet=$(az vmss list --resource-group $nodeResourceGroup --query "[].
 az vmss simulate-eviction --resource-group $nodeResourceGroup --name $windowsScaleSet --instance-id 0
 ```
 
-### Query Log Analytics for Preempt status:
+**Note:**
 
-Run the following Log Analytics query:
+* The previous command will simulate eviction of instance 0.
+
+## Bonus: Query Log Analytics for Preempt status:
+
+If you connect the cluster to Log Analytics and simulate eviction you'll be able to catch related events querying for the `PreemptScheduled` status:
 
 ``` shell
 let endDateTime = now();
