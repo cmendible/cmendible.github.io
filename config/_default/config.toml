@@ -12,7 +12,6 @@ enableEmoji = true
 pygmentsUseClasses = true
 
 canonifyurls = true
-theme = "hugo-theme-bootstrap"
 
 [permalinks]
   posts = "/:year/:month/:day/:title/"
@@ -24,3 +23,4 @@ theme = "hugo-theme-bootstrap"
   category = "categories"
   series = "series"
   tag = "tags"
+  
