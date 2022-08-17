@@ -18,3 +18,55 @@ palettes = []
     threshold = 0.6
     distance = 500
     # useExtendedSearch = true
+
+[post]
+  featuredImage = false # Show the featured image above the content.
+  numberifyHeadings = true # Count headings automatically.
+  numberifyHeadingsSeparator = "." # The separator between of number and headings.
+  imageTitleAsCaption = true
+  copyright = false
+
+[pwa]
+  [pwa.manifest]
+    # name = "" # Default to site title.
+    short_name = "codeityourself"
+    # display = "fullscreen" # Default to standalone.
+    # description = "" # Default to site description.
+    # theme_color = ""
+    # background_color = ""
+
+    # Icons
+    # [[pwa.manifest.icons]]
+    #   sizes = "96x96"
+    #   src = "/images/icons/icon-96x96.png"
+    # [[pwa.manifest.icons]]
+    #   sizes = "144x144"
+    #   src = "/images/icons/icon-144x144.png"
+  [pwa.precache]
+    # fonts = [
+    #   "/assets/katex/fonts/KaTeX_Math-Italic.woff2"
+    # ]
+    # images = [
+    #   "/images/logo.webp",
+    #   "/images/profile.webp"
+    # ]
+    # pages = [
+    #   "/"
+    # ]
+    # scripts = [
+    #   "https://utteranc.es/client.js"
+    # ]
+    # styles = [
+    #   "https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+    # ]
+
+[repo]
+  url = "https://github.com/cmendible/cmendible.github.io"
+  # branch = "main"
+  # subPath = "exampleSite"
+
+[topAppBar]
+  # colorToggle = false # Disable the color toggle
+  # coloredInDark = true # Colored in dark mode
+  [topAppBar.social]
+    github = "cmendible"

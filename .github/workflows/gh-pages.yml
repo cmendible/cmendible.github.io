@@ -1,30 +1,85 @@
 name: github pages
 
 on:
+  # Runs on pushes targeting the default branch
   push:
-    branches:
-      - hugo
+    branches: [hugo]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+# Default to bash
+defaults:
+  run:
+    shell: bash
 
 jobs:
-  build-deploy:
-    runs-on: ubuntu-18.04
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.101.0
     steps:
-      - uses: actions/checkout@v1
-
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2.4.13
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
-          hugo-version: "latest"
+          submodules: recursive
 
-      - name: Build
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+                        ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Hugo CLI
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_Linux-64bit.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v1
+
+      - name: Build with Hugo
         run: hugo --gc --minify --cleanDestinationDir
 
-      - name: Feed Fix
+      - name: Fix Feed
         run: cp ./public/index.xml ./public/feed.xml
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3.7.3
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_branch: master
-          publish_dir: ./public
+          path: ./public
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
