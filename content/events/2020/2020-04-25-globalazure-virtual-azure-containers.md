@@ -1,5 +1,5 @@
 ---
-disableComments: true
+comment: false
 author: Carlos Mendible
 categories:
 - kubernetes
