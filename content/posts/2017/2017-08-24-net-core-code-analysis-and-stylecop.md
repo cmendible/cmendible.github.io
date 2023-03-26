@@ -15,7 +15,7 @@ This post will show you how easy is to make **.NET Core, Code Analysis and Style
 
 Here you go:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command prompt an run:
     
@@ -23,14 +23,14 @@ Open a command prompt an run:
 mkdir codeanalysis
 ```
  
-## 2. Create the project
+## Create the project
 ---
 
 ``` powershell
 cd codeanalysis
 dotnet new console
 ```
-## 3. Add the references for CodeAnalysis and StyleCop
+## Add the references for CodeAnalysis and StyleCop
 ---
 
 ``` powershell
@@ -39,7 +39,7 @@ dotnet add package StyleCop.Analyzers
 dotnet restore
 ```
 
-## 4. Add CodeAnalysisRuleSet property to the project
+## Add CodeAnalysisRuleSet property to the project
 ---
 Open the file **codeanalysis.csproj** and add the following property inside a Property Group:
 
@@ -55,7 +55,7 @@ or add a new Property Group:
 </PropertyGroup>
 ```
 
-## 5. Create the ca.ruleset file
+## Create the ca.ruleset file
 --- 
 Create a ca.ruleset file and replace it's content with the following xml:
  
@@ -141,7 +141,7 @@ Create a ca.ruleset file and replace it's content with the following xml:
     
 Of course you can choose to ignore rules (Action="None") and get warnings (Action="Warning") or errors (Action="Error") in the case your code is not compliant.
       
-## 6. Build the application and check the warnings
+## Build the application and check the warnings
 ---
 Run the following command:
           

@@ -16,7 +16,7 @@ After collaborating with the [Azure Ansible](https://github.com/microsoft/vscode
 
 Once again I collaborated with [Chuck Lantz](http://chuxel.github.io/) and the container definition resulted in the following two files:
 
-## 1. devcontainer.json file
+## devcontainer.json file
 ---
 
 This file configures the remote container with the specified extensions
@@ -40,7 +40,7 @@ This file configures the remote container with the specified extensions
 }
 ```
 
-## 2. Dockerfile
+## Dockerfile
 ---
 
 This is the Dockerfile with all the tooling for the Development environment.

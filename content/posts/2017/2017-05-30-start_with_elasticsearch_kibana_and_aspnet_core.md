@@ -11,7 +11,7 @@ url: /2017/05/30/start_with_elasticsearch_kibana_and_aspnet_core/
 ---
 You want to **Start with <a href="https://www.elastic.co/products/elasticsearch" target="_blank">Elasticssearch</a>, <a href="https://www.elastic.co/products/kibana" target="_blank">Kibana</a> and ASP.NET Core** and also want to do it fast? Let's use Docker and find out how easy it can be:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 
 Open a command prompt an run 
@@ -20,14 +20,14 @@ Open a command prompt an run
 mkdir aspnet.elk.sample
 cd aspnet.elk.sample
 ```
-## 2. Create a new ASP.NET Core project
+## Create a new ASP.NET Core project
 --- 
 
 ``` powershell
 dotnet new mvc
 ```
 
-## 3. Add the following Serilog packages
+## Add the following Serilog packages
 ---
 You´ll send the logs to ElasticSearch using Serilog:
 
@@ -39,7 +39,7 @@ dotnet add package Serilog.Sinks.ElasticSearch -v 5.1.0
 dotnet restore
 ```
 
-## 4. Replace the contents of the Startup.cs file
+## Replace the contents of the Startup.cs file
 ---
 Lines 27 and 66 are key to enable Serilog and the Elasticsearch sink:
 
@@ -125,7 +125,7 @@ namespace aspnet.elk.sample
 }
 ```
 
-## 5. Use Docker to start Elasticsearch and Kibana
+## Use Docker to start Elasticsearch and Kibana
 ---
 You'll need to add the following address range to your **docker unsafe registry**: **172.19.0.2:9200**
 
@@ -139,7 +139,7 @@ docker run -d -p 9200:9200 -p 5601:5601 nshou/elasticsearch-kibana
     
 It will take a while but you'll get a working Elasticsearch + Kibana installation.
       
-## 6. Run the program and navigate
+## Run the program and navigate
 Run the program 
           
 ``` powershell
@@ -148,7 +148,7 @@ dotnet run
 
 And navigate through some of the pages: <a href="http://localhost:5000" target="_blank">http://localhost:5000</a>
             
-## 7. Setup Kibana and search your logs
+## Setup Kibana and search your logs
 ---            
 Open <a href="http://localhost:5601" target="_blank">http://localhost:5601</a> and configure the Index Pattern with the default values (Click Create at the bottom of the page).
 

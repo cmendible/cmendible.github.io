@@ -45,7 +45,7 @@ First be aware of the following prerequisites:
 
 Now let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 
 Open a command promt an run 
@@ -54,7 +54,7 @@ Open a command promt an run
 mkdir efcore.shadowproperties.console
 ```
 
-## 2. Create the project
+## Create the project
 ---
 
 ``` powershell
@@ -62,7 +62,7 @@ cd efcore.shadowproperties.console
 dotnet new
 ```
 
-## 3. Create a settings file
+## Create a settings file
 ---
 Create an **appsettings.json** file to hold your connection string information. We'll be using **SQLite **for this example, so add these lines:
     
@@ -74,7 +74,7 @@ Create an **appsettings.json** file to hold your connection string information. 
 }
 ```
 
-## 4. Modify the project file
+## Modify the project file
 ---
   
 Modify the **project.json** to add the **EntityFrameworkCore** dependencies and also specify that the **appsettings.json** file must be copied to the output (**buildOptions**section) so it becomes available to the application once you build it.
@@ -112,7 +112,7 @@ Note that you'll also have to add **System.Security.Claims** to simulate an auth
 }
 ```
 
-## 5. Restore packages
+## Restore packages
 ---
 You just modified the **project.json** file with new dependencies so please restore the packages with the following command:
     
@@ -120,7 +120,7 @@ You just modified the **project.json** file with new dependencies so please rest
 dotnet restore
 ```
 
-## 6. Create a marker interface in order to make your entities auditable
+## Create a marker interface in order to make your entities auditable
 ---
 Every entity you mark with this interface will save audit info to the database.
 
@@ -134,7 +134,7 @@ namespace ConsoleApplication
 }
 ```
 
-## 7. Create the Entity Framework context
+## Create the Entity Framework context
 ---
 Create a **SampleContext.cs** file and copy the following code 
     
@@ -275,7 +275,7 @@ namespace ConsoleApplication
 
 Note that the beauty of shadow properties is that both the IAuditable interface and the Student entity don't expose Audit info. We are mapping properties that are not represented in our domain model!
 
-## 8. Modify Program.cs
+## Modify Program.cs
 ---
 Replace the contents of the **Program.cs** file with the following code 
     
@@ -322,7 +322,7 @@ namespace ConsoleApplication
 
 Line 22 is the one were we simulate an authenticated user.
 
-## 9. Build
+## Build
 ---
 Build the application with the following command 
     
@@ -330,7 +330,7 @@ Build the application with the following command
 dotnet build
 ```
 
-## 10. Run
+## Run
 ---
 You are good to go so run the application 
     

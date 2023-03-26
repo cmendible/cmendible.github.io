@@ -13,7 +13,7 @@ For ages I've been using T4 templates as main tool for code generation and scaff
 
 In the following sample we will take a class and replace the namespace with another. My intention is just to show you the tip of the iceberg of what you can accomplish with these tools!
 
-## 1. Create the application
+## Create the application
 ---
   
 Open a command prompt and run 
@@ -26,7 +26,7 @@ Open a command prompt and run
     code .
 ```
 
-## 2. Replace the contents of project.json
+## Replace the contents of project.json
 ---
 Replace the contents on **project.json** file in order to include the references to both: **Microsoft.CodeAnalysis.CSharp** and **Microsoft.CodeAnalysis.Compilers**.
     
@@ -55,7 +55,7 @@ Replace the contents on **project.json** file in order to include the references
 }
 ```
 
-## 3. Replace the contents of Program.cs
+## Replace the contents of Program.cs
 ---
 The **ChangeNamespaceAsync** method is where the magic occurs. It takes the code in a string, parses it, replaces the namespace and finally writes the class to the console and a file.
     
@@ -138,7 +138,7 @@ namespace Roslyn.CodeGeneration
 }
 ```
 
-## 4. Run the application
+## Run the application
 ---
 Open a command prompt and run 
     

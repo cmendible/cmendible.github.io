@@ -19,7 +19,7 @@ So this morning I found my self browsing through the images Microsoft has publis
 * [Docker](https://www.docker.com) installed and basic knowledge.
 * [.NET Core](https://www.microsoft.com/net/download/)
 
-## 1. Create a .NET Core lib project
+## Create a .NET Core lib project
 
 Create a .NET Core lib project.
 
@@ -29,7 +29,7 @@ cd dni
 rm .\Class1.cs
 ```
 
-## 2. Add the required references to be able to use Azure Functions API
+## Add the required references to be able to use Azure Functions API
 
 Be sure to add the following packages to the project. I couldn't make the sample work with the latest versions of some of the Microsoft.AspNetCore.* packages, so pay special attention to the version parameter.
 
@@ -41,7 +41,7 @@ dotnet add package Microsoft.Extensions.Primitives -v 2.0.0
 dotnet add package Newtonsoft.Json -v 10.0.3
 ```
 
-## 3. Modify the Output Path of the project
+## Modify the Output Path of the project
 
 Edit dni.csproj and the OutputPath property with the following value: **wwwroot\bin**. The project contents should now look like the following text:
 
@@ -61,7 +61,7 @@ Edit dni.csproj and the OutputPath property with the following value: **wwwroot\
 </Project>
 ```
 
-## 4. Create the wwwroot and validate folders
+## Create the wwwroot and validate folders
 
 Create two folders. The first one **wwwroot** will hold all the functions and global configuration. The second one: **validate** will hold the configuration of the **validate** function we'll be deploying.
 
@@ -70,7 +70,7 @@ md wwwroot
 md wwwroot/validate
 ```
 
-## 5. Create host.json file in the wwwroot folder
+## Create host.json file in the wwwroot folder
 
 Create a **host.json** file in the **wwwroot** folder with the following contents:
 
@@ -78,7 +78,7 @@ Create a **host.json** file in the **wwwroot** folder with the following content
 { }
 ```
 
-## 6. Create function.json and run.csx files
+## Create function.json and run.csx files
 
 In the **wwwroot/validate** folder create a **functions.json** file with the following contents:
 
@@ -106,7 +106,7 @@ Now create a **run.csx** file with the following contents:
 //leave this file empty - all the logic is placed within our precompiled function
 ```
 
-## 7. Create an HttpTrigger.cs file to hold your function
+## Create an HttpTrigger.cs file to hold your function
 
 Create a **HttpTrigger.cs** file with the following contents:
 
@@ -164,7 +164,7 @@ namespace Dni
 
 Cause I didn't want to create a simple Hello World sample, this Azure Function Code takes the **dni** parameter from the query string and validates if the given value is a valid **Spanish National Identity Document** number.
 
-## 8. Create a dockerfile
+## Create a dockerfile
 
 Create a **dockerfile** with the following contents:
 
@@ -176,7 +176,7 @@ ADD wwwroot /home/site/wwwroot
 
 Note that once you execute a docker build on the file all the contents of the **wwwroot** folder will be copied to the **/home/site/wwwroot** inside the image.
 
-## 9. Build the project and the docker image
+## Build the project and the docker image
 
 Build the .NET Core project so you get a precompiled funtion and then build the docker image:
 
@@ -185,7 +185,7 @@ dotnet build
 docker build -t dni .
 ```
 
-## 10. Create a container and test the function
+## Create a container and test the function
 
 Run the following to run the Azure Function in a container:
 

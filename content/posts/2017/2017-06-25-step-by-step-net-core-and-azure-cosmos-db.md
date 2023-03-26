@@ -14,13 +14,13 @@ url: /2017/06/25/step-by-step-net-core-and-azure-cosmos-db/
 
 Let's start:
 
-## 1. Create a Cosmos DB account
+## Create a Cosmos DB account
 ---
 Create a Cosmos DB account in your Azure subscription. Once created get the URI and the primary Read-write key from the Keys section.
 
 If you need info on how to do this browse to the **Create a database account** section here: <a href="https://docs.microsoft.com/en-us/azure/cosmos-db/create-documentdb-dotnet" target="_blank">https://docs.microsoft.com/en-us/azure/cosmos-db/create-documentdb-dotnet</a>
       
-## 2. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command promt an run 
           
@@ -28,7 +28,7 @@ Open a command promt an run
 mkdir cosmosdb
 ```
       
-## 3. Create the project
+## Create the project
 ---      
       
 ``` powershell
@@ -36,7 +36,7 @@ cd cosmosdb
 dotnet new console
 ```
 
-## 4. Add a reference to the Microsoft.Azure.DocumentDB.Core library
+## Add a reference to the Microsoft.Azure.DocumentDB.Core library
 ---      
 Add a reference to the Microsoft.Azure.DocumentDB.Core client library so you are able to talk with Cosmos Db.
           
@@ -44,7 +44,7 @@ Add a reference to the Microsoft.Azure.DocumentDB.Core client library so you are
 dotnet add package Microsoft.Azure.DocumentDB.Core -v 1.3.2
 ```    
       
-## 5. Restore packages
+## Restore packages
 ---
 You just modified the project dependencies so please restore the packages with the following command:
      
@@ -53,7 +53,7 @@ You just modified the project dependencies so please restore the packages with t
 dotnet restore
 ```
       
-## 6. Modify Program.cs
+## Modify Program.cs
 ---
 Replace the contents of the **Program.cs** file with the following code and remember to change lines 13 and 16 with your account URI and Key 
           
@@ -132,7 +132,7 @@ namespace cosmosdb
 }
 ```
       
-## 7. Build
+## Build
 ---      
 
 Build the application with the following command 
@@ -141,7 +141,7 @@ Build the application with the following command
 dotnet build
 ```
       
-## 8. Run
+## Run
 ---
 You are good to go so run the application 
           

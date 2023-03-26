@@ -15,7 +15,7 @@ For the last 3 years this blog was written using [Jekyll](https://jekyllrb.com/d
 
 Let's check the container definition:
 
-## 1. devcontainer.json file
+## devcontainer.json file
 ---
 
 This file configures the remote container with the specified extensions
@@ -48,7 +48,7 @@ This file configures the remote container with the specified extensions
 }
 ```
 
-## 2. Dockerfile
+## Dockerfile
 ---
 
 This is the Dockerfile with all the tooling for the Jekyll environment.

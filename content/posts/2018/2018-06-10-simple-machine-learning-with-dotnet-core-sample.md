@@ -20,7 +20,7 @@ Well well, times have changed and now [ML.NET](https://www.microsoft.com/net/lea
 
 The following sample will show you how to train a model with a binary classifier algorithm to determine if a passenger aboard the Titanic survived or not (Based on the sample provided in chapter 3 of the book).
 
-## 1. Create your project
+## Create your project
 ---
 Open a command prompt and run:
 
@@ -30,7 +30,7 @@ cd titanic.ml
 dotnet new console
 ```
 
-## 2. Add a reference to ML.NET
+## Add a reference to ML.NET
 ---
 
 The nuget package for ML.NET is: [Microsoft.ML](https://www.nuget.org/packages/Microsoft.ML/) so add a reference to it:
@@ -40,7 +40,7 @@ dotnet add package Microsoft.ML -v 0.2.0
 dotnet restore
 ```
 
-## 3. Replace the content of Program.cs
+## Replace the content of Program.cs
 ---
 Replace the content of Program.cs with the following contents:
 

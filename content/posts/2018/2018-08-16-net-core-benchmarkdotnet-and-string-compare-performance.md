@@ -17,7 +17,7 @@ Today I'll show you how to use [BenchmarkDotNet](https://benchmarkdotnet.org) wi
 
 Let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command prompt an run:
 
@@ -25,7 +25,7 @@ Open a command prompt an run:
 mkdir benchmark
 ```
 
-## 2. Create the project
+## Create the project
 ---
 
 ``` shell
@@ -33,7 +33,7 @@ cd benchmark
 dotnet new console
 ```
 
-## 3. Add the references to BenchmarkDotNet
+## Add the references to BenchmarkDotNet
 ---
 
 ``` shell
@@ -41,7 +41,7 @@ dotnet add package BenchmarkDotNet -v 0.11.0
 dotnet restore
 ```
 
-## 4. Replace the contents of Program.cs with the following code
+## Replace the contents of Program.cs with the following code
 ---
 
 ``` csharp
@@ -101,7 +101,7 @@ namespace benchmark
 }
 ```
 
-## 5. Run the application and interpret the results
+## Run the application and interpret the results
 ---
 Run the following command:
 

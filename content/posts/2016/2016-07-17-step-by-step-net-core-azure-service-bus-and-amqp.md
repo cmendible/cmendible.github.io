@@ -45,7 +45,7 @@ You will also need an Azure Service Bus namespace, topic and subscription with t
 
 Now let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 
 Open a command promt an run 
@@ -53,7 +53,7 @@ Open a command promt an run
 ``` powershell
 mkdir azureservicebus.amqp.console
 ```
-## 2. Create the project
+## Create the project
 ---
 
 ``` powershell
@@ -61,7 +61,7 @@ cd azureservicebus.amqp.console
 dotnet new
 ```
 
-## 3. Create a settings file
+## Create a settings file
 ---
 Create an **appsettings.json** file to hold your service bus connection information (remember to replace the values with those from your Service Bus configuration):
 
@@ -75,7 +75,7 @@ Create an **appsettings.json** file to hold your service bus connection informat
 }
 ```
 
-## 4. Modify the project file
+## Modify the project file
 ---
 Modify the **project.json** to add the **AMQPNetLite** dependencies and also specify that the **appsettings.json** file must be copied to the output (**buildOptions** section) so it becomes available to the application once you build it.
     
@@ -111,14 +111,14 @@ Modify the **project.json** to add the **AMQPNetLite** dependencies and also spe
 }
 ```
 
-## 5. Restore packages
+## Restore packages
 ---
 You just modified the **project.json** file with new dependencies so please restore the packages with the following command:
 
 ``` powershell
 dotnet restore
 ```
-## 6. Modify Program.cs
+## Modify Program.cs
 ---
 Replace the contents of the **Program.cs** file with the following code 
     
@@ -253,7 +253,7 @@ namespace ConsoleApplication
   }
   ```
 
-## 8. Build
+## Build
 ---  
 Build the application with the following command
 

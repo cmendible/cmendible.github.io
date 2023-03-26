@@ -23,11 +23,11 @@ Those are the main reason we could not use <a href="https://github.com/OrbitOne/
 
 Vsts.Vault is a Windows Service and to use it you'll need to follow these steps:
 
-## 1. Create Alternate Credentials for your Visual Studio Team Services Account
+## Create Alternate Credentials for your Visual Studio Team Services Account
 ---
 If you haven't setup alternate credentials for your <a href="https://www.visualstudio.com/en-us/products/visual-studio-team-services-vs.aspx" target="_blank">Visual Studio Team Services</a> Account follow the instructions of the Alternate Access Credentials section of the following doc: <a href="https://www.visualstudio.com/docs/report/analytics/client-authentication-options" target="_blank">Client Authentication Options</a>
 
-## 2. Configure VSTS.Vault Settings
+## Configure VSTS.Vault Settings
 ---
 Modify as needed the following parameters in the Vsts.Vault.exe.config file 
     
@@ -51,7 +51,7 @@ Modify as needed the following parameters in the Vsts.Vault.exe.config file
     TargetFolder="[Full path of the folder where the copy of your repositories will live]" />
 ```
 
-## 3. Install the VSTS.Vault service
+## Install the VSTS.Vault service
 ---
 Run the following command 
     

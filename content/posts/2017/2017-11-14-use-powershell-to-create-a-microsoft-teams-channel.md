@@ -16,7 +16,7 @@ For those of you who have been trying to automate anything related to Microsoft 
 
 Now to automate the channel creation In A Team you can simply:
 
-## 1. Create a file createTeamChannel.ps1 with the following contents:
+## Create a file createTeamChannel.ps1 with the following contents:
 
 ``` powershell
     Param
@@ -45,7 +45,7 @@ Now to automate the channel creation In A Team you can simply:
     }
 ```
 
-## 2. Run the following command in PowerShell
+## Run the following command in PowerShell
 
 ``` powershell
     $password = ConvertTo-SecureString "YOUR PASSWORD" -AsPlainText -Force

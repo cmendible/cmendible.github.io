@@ -13,7 +13,7 @@ url: /2018/04/04/using-docker-multi-stage-builds-to-build-an-asp-net-core-echo-s
 
 Today I'll show you how to create a simple Echo Server with ASP.NET Core and then a Docker Image using [multi-stage build](https://docs.docker.com/develop/develop-images/multistage-build/):
 
-## 1. Create the Application
+## Create the Application
 ---
 
 Open a PowerShell promt and run:
@@ -25,7 +25,7 @@ dotnet new console
 dotnet add package Microsoft.AspNetCore -v 2.0.2
 ```
 
-## 2. Replace the contents of Program.cs
+## Replace the contents of Program.cs
 ---
 
 Replace the contents of the **Program.cs** file with the following code:
@@ -69,7 +69,7 @@ namespace EchoServer
 }
 ```
 
-## 3. Build and Test
+## Build and Test
 ---
 
 Run the folowing commands to build the application:
@@ -100,7 +100,7 @@ User-Agent: curl/7.35.0
 Custom-Header: echo
 ```
 
-## 4. Create a Dockerfile
+## Create a Dockerfile
 ---
 
 In order to run the Echo Server in a container create a Dockerfile with the following contents:
@@ -128,7 +128,7 @@ Note: The previous Dockerfile defines a [multi-stage build](https://docs.docker.
 * The second stage uses the output of the first stage (builder) to create the final and optimized image (i.e. No need to remove the sdk or the source code).
 * Docker 17.05 or higher is needed in order to build and image based on a multi-stage Dockerfile.
 
-## 5. Build and test the image
+## Build and test the image
 ---
 
 Run the folowing commands to build and run the docker image:

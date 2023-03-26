@@ -37,7 +37,7 @@ The idea is to create a simple console application that will:
     * workflow
 * A GitHub Repo with the Terraform script you want to run.
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command prompt an run:
 
@@ -45,7 +45,7 @@ Open a command prompt an run:
 mkdir TerraformCloud
 ```
 
-## 2. Create the project
+## Create the project
 ---
 
 ``` shell
@@ -53,7 +53,7 @@ cd TerraformCloud
 dotnet new console
 ```
 
-## 3. Add a reference to Tfe.NetClient
+## Add a reference to Tfe.NetClient
 ---
 
 ``` shell
@@ -61,7 +61,7 @@ dotnet add package Tfe.NetClient -v 0.1.0
 dotnet restore
 ```
 
-## 4. Replace the contents of Program.cs with the following code
+## Replace the contents of Program.cs with the following code
 ---
 
 ```csharp
@@ -179,7 +179,7 @@ namespace TerraformCloud
 
 > [Tfe.NetClient](https://github.com/everis-technology/Tfe.NetClient) is still in early stages of development and the resulting code is very verbose and prone to errors. We will address this in a future relases introducing the use of enums and perhaps a fluent API. 
 
-## 5. Run the program
+## Run the program
 ---
 
 Run the following command:
@@ -188,7 +188,7 @@ Run the following command:
 dotnet run
 ```
 
-## 6. Check the results
+## Check the results
 ---
 
 Log In to [Terraform Cloud](https://app.terraform.io/) and check the status of the new workspace.

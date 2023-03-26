@@ -14,13 +14,13 @@ url: /2017/08/09/step-by-step-net-core-and-azure-search/
 
 Let's go for it:
 
-## 1. Create an Azure Search service
+## Create an Azure Search service
 ---
 Create an <a href="https://azure.microsoft.com/en-us/services/search/" target="_blank">Azure Search</a> service in your Azure subscription, and get the Azure Search name and primary Read-Write key.
     
 Find the steps <a href="https://docs.microsoft.com/en-us/azure/search/search-create-service-portal" target="_blank">here</a>.
       
-## 2. Create a folder for your project
+## Create a folder for your project
 ---
 Open a command prompt and run:
           
@@ -28,13 +28,13 @@ Open a command prompt and run:
 mkdir netCoreAzureSearch
 ```
 
-## 3. Create the project
+## Create the project
 ``` powershell
 cd netCoreAzureSearch
 dotnet new console
 ```
 
-## 4. Add a reference to Microsoft.Azure.Search
+## Add a reference to Microsoft.Azure.Search
 ---
 <a href="https://www.nuget.org/packages/Microsoft.Azure.Search" target="_blank">Microsoft.Azure.Search</a> will allow your application to talk with Azure Search.
           
@@ -43,7 +43,7 @@ dotnet add package  Microsoft.Azure.Search -v 3.0.4
 dotnet restore
 ```
 
-## 5. Replace the content of Program.cs
+## Replace the content of Program.cs
 ---
 Replace the content of Program.cs with the following contents and be sure to replace the values in lines 13 and 16 with the Azure Search service name and key from step 1:
           
@@ -234,7 +234,7 @@ namespace netCoreAzureSearch
 }
 ```
 
-## 6. Run the application
+## Run the application
 ---
 Run the following commands:
           

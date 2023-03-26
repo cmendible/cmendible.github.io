@@ -17,7 +17,7 @@ As a prerequisite read and run the sample provided here: **[Step by step: Runnin
 
 Let's start:
 
-## 1. Create startup.ps1
+## Create startup.ps1
 ---
 Create **startup.ps1** with the following contents 
     
@@ -26,7 +26,7 @@ Set-Location C:\publish\
 .\aspnet.on.rpi.exe
 ```
 
-## 2. Create startup.bat
+## Create startup.bat
 ---
 Create **startup.bat** with the following contents 
     
@@ -34,7 +34,7 @@ Create **startup.bat** with the following contents
 powershell -command "C:\startup.ps1"
 ```
 
-## 3. Copy the files to your Raspberry
+## Copy the files to your Raspberry
 ---
 Connect to Raspberry using powershell, start the ftp server
     
@@ -45,7 +45,7 @@ start C:\Windows\System32\ftpd.exe
 
 Open the **File Explorer** ftp://<TARGET_DEVICE> and copy both **startup.ps1** and **startup.cmd** to your Raspberry
       
-## 4. Schedule the command to run on Startup
+## Schedule the command to run on Startup
 ---      
 Connect to Raspberry using powershell and run
      
@@ -55,7 +55,7 @@ Enter-PSSession -ComputerName <Raspberry IP> -Credential <Raspberry IP>\Administ
 schtasks /create /tn "Startup Web" /tr c:\Startup.bat /sc onstart /ru SYSTEM
 ```
       
-## 5. Restart and verify
+## Restart and verify
 ---      
 Restart your Raspberry and after a bit your ASP.NET Core app should be up and running.
          

@@ -26,7 +26,7 @@ This findings triggered my interest and started wondering on how could I add suc
 
 Here is what I did:
 
-## 1. Added the following properties to the project's **csproj**
+## Added the following properties to the project's **csproj**
 
 ``` xml
 <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -34,7 +34,7 @@ Here is what I did:
 <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 ```
 
-## 2. Added the following **ItemGroup** to the project's **csproj**
+## Added the following **ItemGroup** to the project's **csproj**
 
 ``` xml
 <ItemGroup>
@@ -44,7 +44,7 @@ Here is what I did:
 
 **Note**: this Package Reference depends on the source control system.
 
-## 3. Finally built the nuget package as usual
+## Finally built the nuget package as usual
 
 ``` shell
 dotnet pack -c release
@@ -52,7 +52,7 @@ dotnet pack -c release
 
 Believe me that was all!!! So then I tested the new package and features with a simple console application and Visual Studio Code:
 
-## 1. Created a new console project
+## Created a new console project
 
 ``` shell
 mkdir SourceLinkTest
@@ -62,7 +62,7 @@ dotnet add package netDumbster -v 2.0.0.3
 dotnet restore
 ```
 
-## 2. Replaced the contents of Program.cs with the following code
+## Replaced the contents of Program.cs with the following code
 
 ``` csharp
 using System;
@@ -82,11 +82,11 @@ namespace a
 }
 ```
 
-## 3. Generated Assets for Build and Debug for .NET
+## Generated Assets for Build and Debug for .NET
 
 Inside Visual Studio Code and from the Command Palette invoke the **.NET: Generate Assets for Build and Debug** command so it creates the **launch.json** and **tasks.json** files inside the **.vscode** folder.
 
-## 4. Replace the contents of **launch.json** with the following configuration
+## Replace the contents of **launch.json** with the following configuration
 
 ``` json
 {
@@ -123,7 +123,7 @@ Inside Visual Studio Code and from the Command Palette invoke the **.NET: Genera
 
 **Note**: the configuration disables **justMyCode** and enables **suppressJITOptimizations**.
 
-## 5. Enjoyed the SourceLink debugging experience
+## Enjoyed the SourceLink debugging experience
 
 I added a breakpoint in line 12 of **Program.cs** and started debugging. Once the debugger hit the breakpoint I pressed F11 to "Step Into" the netDumbster code. And surprise! I was in!!!
 

@@ -16,7 +16,7 @@ I'll use .NET Core and xUnit to illustrate the problem and the proposed solution
 
 Now let's start:
 
-## 1. Create a test project
+## Create a test project
 ---
 Open a command prompt and run the following commands 
     
@@ -25,7 +25,7 @@ mkdir remove.datetime.dependency.test
 cd remove.datetime.dependency.test
 dotnet new -t xunittest
 ```
-## 2. Create a SystemDateTime helper class
+## Create a SystemDateTime helper class
 ---
 This is the helper class a proposed by Ayende
     
@@ -50,7 +50,7 @@ namespace MyServices
 }
 ```
 
-## 3. Create a Service with a dependency on time
+## Create a Service with a dependency on time
 The service will have two methods: one will use System.DateTime.Now and one will use the helper created on step 2
     
 ``` csharp
@@ -85,7 +85,7 @@ namespace MyServices
 }
 ```
 
-## 4. Create the tests
+## Create the tests
 ---
 Replace the content of Tests.cs with the following code 
     
@@ -124,7 +124,7 @@ namespace Tests
 }
 ```
 
-## 5. Run the tests
+## Run the tests
 ---  
 
 ``` powershell

@@ -15,7 +15,7 @@ I've been using [Ansible](https://www.ansible.com/) and the [Azure CLI](https://
 
 Turns out that because [Ansible](https://www.ansible.com/) uses python version **2.7.12** and the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) uses python **3.6.5** you can make a mess if you get "creative" trying to install the tools instead of using the recommended commands:
 
-## 1. Azure CLI
+## Azure CLI
 ---
 
 To install the Azure CLI just run the following commands:
@@ -32,7 +32,7 @@ sudo apt-get update && sudo apt-get install -y azure-cli
 
 If you want to read the official Microsoft documentation please find it [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
 
-## 2. Ansible
+## Ansible
 ---
 
 To install Ansible run the following commands:
@@ -44,7 +44,7 @@ sudo pip install ansible[azure]
 
 Please find the official Microsoft documentation [here](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/ansible-install-configure#ubuntu1604-lts)
 
-## 3. Verify the installation
+## Verify the installation
 
 To confirm that both tools are installed just run:
 
@@ -55,7 +55,7 @@ ansible --verison
 
 Take a minute and check the python versions and you'll see the difference!
 
-## 4. Install using a gist
+## Install using a gist
 ---
 
 I've published a [gist](https://gist.github.com/cmendible/696bc74bfd123924bd255834aeedb340#file-azure_cli_ansible_install-sh) so you can install both Ansible and Azure CLI in one run:

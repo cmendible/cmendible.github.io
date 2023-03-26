@@ -26,7 +26,7 @@ Now let's se how can we use terraform to make your Cloud Shell private!
 
 > If Cloud Shell has been used in the past, the existing clouddrive must be unmounted. To do this run `clouddrive unmount` from an active Cloud Shell session.
 
-### 1. Create a `provider.tf` file with the following contents:
+### Create a `provider.tf` file with the following contents:
 
 ``` yaml
 terraform {
@@ -49,7 +49,7 @@ provider "http" {
 
 Note that we are using `azurerm` to deploy Azure services, `azuread` to get some Service Principal information and `http` to get your current public ip address so that only you can reach your Cloud Shell. 
 
-### 2. Create a variables.tf file with the following contents:
+### Create a variables.tf file with the following contents:
 
 ``` yaml
 variable location {
@@ -75,7 +75,7 @@ variable relay_name {
 
 Make sure you replace the placeholders with the default values you want to use.
 
-### 3. Create a `main.tf` file with the following contents:
+### Create a `main.tf` file with the following contents:
 
 ``` yaml
 # Get Azure Container Instance Service Principal. Amazing right? Cloud Shell uses this Service Principal!
@@ -260,7 +260,7 @@ resource "null_resource" "open_relay_firewall" {
 }
 ```
 
-### 4. Deploy the solution:
+### Deploy the solution:
 
 Run the following commands:
 

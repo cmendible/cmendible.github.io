@@ -23,7 +23,7 @@ I'm going to try and save you some time, providing you with a basic terraform co
 
 ## Deploy AKS and [Kubecost](https://www.kubecost.com/) with Terraform
 
-### 1. Create a `provider.tf` file with the following contents:
+### Create a `provider.tf` file with the following contents:
 
 ``` yaml
 terraform {
@@ -71,7 +71,7 @@ provider "helm" {
 
 Note that you'll be using `azurerm` to deploy Azure services, `azuread` to create a Service Principal information and the `kubernetes` and `helm` provider to install [Kubecost](https://www.kubecost.com/).
 
-### 2. Create a `variables.tf` file with the following contents:
+### Create a `variables.tf` file with the following contents:
 
 ``` yaml
 # Location of the services
@@ -97,7 +97,7 @@ variable "kubecost_sp_name" {
 
 Note: Replace the the default values with your desired location and names.
 
-### 3. Create a `main.tf` file with the following contents:
+### Create a `main.tf` file with the following contents:
 
 ``` yaml
 # Create Resource Group
@@ -223,7 +223,7 @@ resource "azurerm_role_assignment" "kubecost" {
 }
 ```
 
-### 4. Create a `kubecost.tf` file with the following contents:
+### Create a `kubecost.tf` file with the following contents:
 
 ``` yaml
 # Create the kubecost namespace
@@ -293,7 +293,7 @@ resource "helm_release" "kubecost" {
 
 The configuration in the previous file installs [Kubecost](https://www.kubecost.com/) in the AKS cluster. If you want to learn more about the available configuration options please check the following file: [values.yaml](https://github.com/kubecost/cost-analyzer-helm-chart/blob/master/cost-analyzer/values.yaml) 
 
-### 5. Deploy the solution:
+### Deploy the solution:
 
 Run the following commands:
 
@@ -303,7 +303,7 @@ terraform plan -out tf.plan
 terraform apply ./tf.plan
 ```
 
-### 6. Test and browse Kubecost:
+### Test and browse Kubecost:
 
 To check the status of the kubecost pods run: 
 

@@ -15,7 +15,7 @@ This week I started to read an understand how **[Couchbase](http://www.couchbase
 
 Now let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command prompt an run 
     
@@ -24,13 +24,13 @@ mkdir couchbase.console
 cd couchbase.console
 ```
 
-## 2. Create a console project
+## Create a console project
 --- 
 
 ``` powershell
 dotnet new console
 ```
-## 3. Add the Couchbase nuget package
+## Add the Couchbase nuget package
 ---
 Add the **<a href="http://www.couchbase.com">Couchbase</a>** nuget package to your project:
     
@@ -39,7 +39,7 @@ dotnet add package CouchbaseNetClient
 dotnet restore
 ```
 
-## 4. Replace the contents of Program.cs
+## Replace the contents of Program.cs
 ---
 Replace the contents of the **Program.cs** file with the following code:
     
@@ -92,7 +92,7 @@ namespace couchbase.console
 }
 ```
 
-## 5. Setup Couchbase with Docker
+## Setup Couchbase with Docker
 ---
 Run the following commands:
     
@@ -105,7 +105,7 @@ Browse to: <a href="http://localhost:8091" target="_blank">http://localhost:8091
 
 Be sure to add the Beer Sample bucket and check the documentation here: <a href="https://hub.docker.com/r/couchbase/server/" target="_blank">https://hub.docker.com/r/couchbase/server/</a>
 
-## 6. Run the program
+## Run the program
 ---      
 Run the program and enjoy!
           

@@ -22,7 +22,7 @@ The second thing is that a Kubernetes Reboot Daemon named [Kured](https://github
 
 So how do you install it and check what's going on with your nodes? Let's see:
 
-## 1. Check the nodes
+## Check the nodes
 ---
 
 Damn I was running the affected kernel version: 4.15.0-1049-azure.
@@ -38,14 +38,14 @@ aks-agentpool-14502547-1   Ready     agent     3d        v1.12.8   <none>       
 aks-agentpool-14502547-2   Ready     agent     3d        v1.12.8   <none>        Ubuntu 16.04.6 LTS   4.15.0-1049-azure   docker://3.0.4
 ```
 
-## 2. Install [Kured](https://github.com/weaveworks/kured)
+## Install [Kured](https://github.com/weaveworks/kured)
 ---
 
 ``` shell
 kubectl apply -f https://github.com/weaveworks/kured/releases/download/1.2.0/kured-1.2.0-dockerhub.yaml
 ```
 
-## 3. Check the nodes again
+## Check the nodes again
 ---
 
 ``` shell

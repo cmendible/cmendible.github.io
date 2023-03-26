@@ -23,19 +23,19 @@ And what does serverless means? I really like the definition given by Scot Hanse
 
 Now let's start:
 
-## 1. Create a Function App
+## Create a Function App
 ---
 Head to <a href="http://portal.azure.com" target="_blank">portal.azure.com</a> and hit the New button. Search for **Function App** and create one. You'll be asked for an app name, resource group, app service plan and storage account where the code will live.
     
 <a href="/wp-content/uploads/2016/08/functionapp-1.png"><img src="/wp-content/uploads/2016/08/functionapp-1-186x300.png" alt="functionapp" width="186" height="300" class="alignleft size-medium wp-image-5601" srcset="/wp-content/uploads/2016/08/functionapp-1-186x300.png 186w, /wp-content/uploads/2016/08/functionapp-1-634x1024.png 634w, /wp-content/uploads/2016/08/functionapp-1-250x404.png 250w, /wp-content/uploads/2016/08/functionapp-1.png 639w" sizes="(max-width: 186px) 100vw, 186px" /></a>
       
-## 2. Create the function
+## Create the function
 ---      
 Create a new Function, selecting the empty C# template and give it a name: (i.e QRCoder)
           
 <a href="/wp-content/uploads/2016/08/qrcoder.png"><img src="/wp-content/uploads/2016/08/qrcoder.png" alt="qrcoder" class="alignleft size-medium wp-image-5621" srcset="/wp-content/uploads/2016/08/qrcoder.png 1900w, /wp-content/uploads/2016/08/qrcoder-300x205.png 300w, /wp-content/uploads/2016/08/qrcoder-768x525.png 768w, /wp-content/uploads/2016/08/qrcoder-1024x701.png 1024w, /wp-content/uploads/2016/08/qrcoder-250x171.png 250w" sizes="(max-width: 1900px) 100vw, 1900px" /></a>
          
-## 3. Add the code
+## Add the code
 ---
 Replace the contents of the **Code (run.csx)** section with the following code and save it:   
           
@@ -91,7 +91,7 @@ public class SimpleVCardRequest
 }
 ```  
       
-## 4. Fixing the missing references
+## Fixing the missing references
       
 If you read the log you'll notice the compiler can't resolve the references to **<a href="https://github.com/codebude/QRCoder" target="_blank">QRCoder</a>** and that's because we are using a 3rd party library to generate the QR codes.
       
@@ -101,13 +101,13 @@ You'll need to create a **bin** folder under the folder with your function's nam
       
 <a href="/wp-content/uploads/2016/08/sftpqrcoder.png"><img src="/wp-content/uploads/2016/08/sftpqrcoder.png" alt="sftpqrcoder" class="aligcenter size-medium wp-image-5641" /></a>
       
-## 6. Create an HTML endpoint for the function
+## Create an HTML endpoint for the function
 ---    
 Head to the Integrate tab and add a new HTML trigger and save it with the default values.
       
 <a href="/wp-content/uploads/2016/08/trigger.png"><img src="/wp-content/uploads/2016/08/trigger.png" alt="trigger" class="aligcenter size-medium wp-image-5651" /></a>
 
-## 7. Test the Web API
+## Test the Web API
 ---    
 Head to the Develop tab and copy the Function Url:
       

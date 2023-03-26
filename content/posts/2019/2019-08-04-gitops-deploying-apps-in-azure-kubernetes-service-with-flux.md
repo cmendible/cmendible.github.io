@@ -19,7 +19,7 @@ You can immediately see the main benefits of such an approach: Your Git reposito
 
 To implement GitOps you can use and configure [Flux](https://docs.fluxcd.io/en/latest/) following some simple steps:
 
-## 1. Download the helm template
+## Download the helm template
 
 ``` powershell
 helm fetch `
@@ -30,7 +30,7 @@ helm fetch `
   flux
 ```
 
-## 2. Bake the template with your repo (I don't use Tiller)
+## Bake the template with your repo (I don't use Tiller)
 
 ``` powershell
 helm template flux `
@@ -43,17 +43,17 @@ helm template flux `
 
 As you can see I'm configuring [Flux](https://docs.fluxcd.io/en/latest/) to use my k8s sample repo and the [19.flux](https://github.com/cmendible/kubernetes.samples/tree/main/19.flux) folder, which contains a simple deployment [file](https://github.com/cmendible/kubernetes.samples/blob/main/19.flux/dni-function.yaml), but of course you can have more resource definitions.
 
-## 3. Deploy the configuration to your cluster
+## Deploy the configuration to your cluster
 
 ``` powershell
 kubectl apply -f .\.baked\flux\templates\
 ```
 
-## 4. Get the fluxctl CLI
+## Get the fluxctl CLI
 
 Download the [fluxctl CLI](https://github.com/fluxcd/flux/releases/tag/1.13.2)
 
-## 5. Use fluxctl to get the public key
+## Use fluxctl to get the public key
 
 ``` powershell
 fluxctl identity --k8s-fwd-ns flux

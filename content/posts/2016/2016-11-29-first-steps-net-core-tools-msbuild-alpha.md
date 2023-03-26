@@ -13,11 +13,11 @@ On November 16th, Microsoft announced the <a href="https://blogs.msdn.microsoft.
 
 In this post I'll show you which were my **First steps with .NET Core Tools MSBuild "alpha"**
 
-## 1. Installing .NET Core SDK 1.0 Preview 3 build 004056
+## Installing .NET Core SDK 1.0 Preview 3 build 004056
 ---
 The first step was to install the new tools from: <a href="https://github.com/dotnet/core/blob/master/release-notes/preview3-download.md" target="_blank">.NET Core SDK 1.0 Preview 3 build 004056</a><br />
 
-## 2. Creating a Sample Console Application
+## Creating a Sample Console Application
 ---
 Open a command prompt and run the following commands 
 
@@ -31,11 +31,11 @@ Open a command prompt and run the following commands
 Surprise Code shows two files and one is **test.msbuild.csproj**. Bye bye **project.json**!!!
 
 
-## 3. There is no Intellisense for csproj files
+## There is no Intellisense for csproj files
 ---
 This will make things difficult for a while but right now you have to forget about Intellisense and Autocomplete on your **csproj** file, which makes adding references a real pain.
 
-## 4. The csproj file does not target .Net Core 1.1 by default
+## The csproj file does not target .Net Core 1.1 by default
 ---
 You'll have to edit the **csproj** file to target .Net Core 1.1 (lines 6 and 16)
     
@@ -66,7 +66,7 @@ You'll have to edit the **csproj** file to target .Net Core 1.1 (lines 6 and 16)
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
 ```
-## 5. Create launch.json
+## Create launch.json
 ---
 Hit F5 and select .NET Core. Visual Studio Code will create a **launch.json** file and because the tooling is not yet fully supported you'll have to edit the file manually with the following values 
     
@@ -94,7 +94,7 @@ Hit F5 and select .NET Core. Visual Studio Code will create a **launch.json** fi
     ]
 }
 ```
-## 6. Create task.json
+## Create task.json
 ---
 Hit F5 again and select .NET Core. Visual Studio Code will create a **task.json** file which you won't have to modify.
     
@@ -117,7 +117,7 @@ Hit F5 again and select .NET Core. Visual Studio Code will create a **task.json*
     ]
 }
 ```
-## 7. Restore packages
+## Restore packages
 ---
 Run the following command from the Visual Studio Code terminal or the command prompt from step 1
     
@@ -127,7 +127,7 @@ Run the following command from the Visual Studio Code terminal or the command pr
     
 Visual Studio Code won't prompt automatically to restore so failing to run this step manually will prevent you from building the application.
       
-## 8. Run and debug the application
+## Run and debug the application
 ---    
 Place a break point in line 7 of the **Program.cs** file
           
@@ -145,7 +145,7 @@ class Program
           
 Hit F5 and the program should stop at the break point and you are good to go!
             
-## 9. Side by side with project.json tooling (no migration)
+## Side by side with project.json tooling (no migration)
 ---     
 To be able to run my applications based on the **project.json** tools I had to add a **global.json** file in the root folder, with the following content 
                 

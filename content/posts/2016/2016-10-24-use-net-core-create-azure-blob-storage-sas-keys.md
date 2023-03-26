@@ -14,14 +14,14 @@ If you intend to use the <a href="https://www.nuget.org/packages/WindowsAzure.St
 
 So how can we use .Net Core to Create Azure Blob Storage SAS Keys?
 
-## 1. Add the System.Security.Cryptography.Algorithms dependency
+## Add the System.Security.Cryptography.Algorithms dependency
 ---
 Add the following dependency in your project.json file
     
 ``` json
     "System.Security.Cryptography.Algorithms": "4.2.0"
 ```
-## 2. Create a StorageEntitySas class to hold the SAS key
+## Create a StorageEntitySas class to hold the SAS key
 ---
 The following class will hold de blob Uri and the SAS credentials.
     
@@ -34,7 +34,7 @@ The following class will hold de blob Uri and the SAS credentials.
     }
 ```
 
-## 3. Create the following methods
+## Create the following methods
 ---
 I've created the GetSharedAccessSignature to return a write only SAS key for the blob. But you can easily change it to add more permissions.
     
@@ -103,7 +103,7 @@ I've created the GetSharedAccessSignature to return a write only SAS key for the
         }
 ```
 
-## 4. Call the GetSharedAccessSignature method.
+## Call the GetSharedAccessSignature method.
 ---  
 
 ``` csharp

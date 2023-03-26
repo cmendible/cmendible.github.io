@@ -20,14 +20,14 @@ First be aware of the following prerequisites:
 
 Now let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command promt an run 
     
 ``` powershell
 mkdir aws.lambda
 ```
-## 2. Create the project
+## Create the project
 ---
 
 ``` powershell
@@ -35,7 +35,7 @@ cd aws.lambda
 dotnet new webapi
 ```
 
-## 3. Replace the contents of aws.lambda.csproj
+## Replace the contents of aws.lambda.csproj
 ---
 You need to target **netcoreapp1.0** in order for your Web API to work on AWS Lambda. You'll also need to reference some nuget packages from aws so replace the contents of the **aws.lamda.csproj** file with the following lines:
 
@@ -81,14 +81,14 @@ You need to target **netcoreapp1.0** in order for your Web API to work on AWS La
 ```
 
 
-## 4. Restore the packages
+## Restore the packages
 ---
 You just changed the project files so restore the packages:
     
 ``` powershell
 dotnet restore
 ```
-## 5. Rename Program.cs and replace it's contents
+## Rename Program.cs and replace it's contents
 ---
 Rename **Program.cs** to **LocalEntrypoint.cs** and replace the contents of the file with the following lines:
     
@@ -125,7 +125,7 @@ namespace aws.lambda
     
 Note: This will be the entry point while you are developing.
 
-## 6. Create a file LambdaFunction.cs
+## Create a file LambdaFunction.cs
 ---
 Create a **LambdaFunction.cs** file and copy the following code 
     
@@ -155,7 +155,7 @@ namespace aws.lambda
     
 Note: This class will be the entry point once you deploy the Web API to AWS Lambda.
 
-## 7. Replace the contents of Startup.cs
+## Replace the contents of Startup.cs
 ---
 Replace the contents of the **Startup.cs** file with the following code 
           
@@ -208,7 +208,7 @@ namespace aws.lambda
           
 Note: Check lines 34 & 40 for special AWS configurations.
 
-## 8. Create aws-lambda-tools-defaults.json
+## Create aws-lambda-tools-defaults.json
 Create a aws-lambda-tools-defaults.json file with the following code 
           
 ``` json
@@ -230,7 +230,7 @@ Create a aws-lambda-tools-defaults.json file with the following code
           
 Note: Be aware of teh region specified in this file.
       
-## 9. Create serverless.template
+## Create serverless.template
 ---      
 Create a file: serverless.template with the following contents 
           
@@ -272,7 +272,7 @@ Create a file: serverless.template with the following contents
           
 Note: be aware of the Handler property in this file. It should be in the form:<br /> **[Assembly Name]::[Namespace].LambdaFunction::FunctionHandlerAsync**
       
-## 10. Build the application
+## Build the application
 --- 
 Build the application:
       
@@ -291,7 +291,7 @@ aws s3api create-bucket --bucket mylambdabucket --region eu-west-1 --create-buck
 dotnet lambda deploy-serverless
 ```
 
-## 12. Get your api id
+## Get your api id
 ---      
 Run the following commands and copy the api id for your stack:
       
@@ -300,7 +300,7 @@ Run the following commands and copy the api id for your stack:
 aws apigateway get-rest-apis
 ```
          
-## 13. Browse to your web api
+## Browse to your web api
 ---      
 You are good to go so browse to:<br /> **https://[api id from step 11].execute-api.eu-west-1.amazonaws.com/Prod/api/values**
 

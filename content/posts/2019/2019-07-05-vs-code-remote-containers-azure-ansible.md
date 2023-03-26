@@ -18,7 +18,7 @@ Why? Because just installing [Visual Studio Code](https://code.visualstudio.com/
 
 When I learned about this feature I tought I should create a Developer Container for those who need to work with Azure and Ansible so I went hands on and after collaborating with [Chuck Lantz](http://chuxel.github.io/) the container definition resulted in the following two files:
 
-## 1. devcontainer.json
+## devcontainer.json
 ---
 
 This file configures the remote container with the specified extensions
@@ -50,7 +50,7 @@ This file configures the remote container with the specified extensions
 }
 ```
 
-## 2. Dockerfile
+## Dockerfile
 ---
 
 This is the Dockerfile with all the tooling for the Development environment.

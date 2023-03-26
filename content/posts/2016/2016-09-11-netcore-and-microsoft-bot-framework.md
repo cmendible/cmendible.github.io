@@ -15,7 +15,7 @@ You'll be using **.Net Core and <a href="https://dev.botframework.com/" target="
 
 Let me show you what it takes to create a simple bot:
 
-## 1. Register the bot
+## Register the bot
 ---
 Head to the <a href="https://dev.botframework.com/bots/new" target="_blank">Register bot</a> page and fill the required fields.
     
@@ -23,7 +23,7 @@ For the messaging endpoint use something like: **<em>https://{url of your bot}/a
 
 Also get your Microsoft App ID and password from the Microsoft Application registration portal, and save them cause you'll need them to fill the BotCredentials in our sample.
       
-## 2. Create a new .NET Core Web the project
+## Create a new .NET Core Web the project
 ---
 
 ``` powershell
@@ -32,7 +32,7 @@ cd bot
 dotnet new -t web
 ```
       
-## 3. Add the following dependencies to your project.json file
+## Add the following dependencies to your project.json file
 ---     
 
 ``` json
@@ -50,7 +50,7 @@ And restore the packages
 dotnet restore
 ```    
       
-## 4. Add the following section to your appsettings.json file
+## Add the following section to your appsettings.json file
 ---     
         
 Replace the values with those of your registered bot.   
@@ -62,7 +62,7 @@ Replace the values with those of your registered bot.
   }
 ```
       
-## 5. Replace the ConfigureServices in you Startup class
+## Replace the ConfigureServices in you Startup class
 You'll be using options to inject configurations (BotCredentials) to the controller and in Memory Cache to save tokens to avoid authenticating the bot on every call.
                 
 ``` csharp
@@ -82,7 +82,7 @@ You'll be using options to inject configurations (BotCredentials) to the control
      }
 ```
       
-## 6. Create a BotCredentials class
+## Create a BotCredentials class
 This class will hold the bot credentials
       
 ``` csharp
@@ -106,7 +106,7 @@ namespace WebApplication
 }
 ```  
       
-## 7. Create TokenResponse class
+## Create TokenResponse class
       
 ``` csharp
 namespace WebApplication
@@ -124,7 +124,7 @@ namespace WebApplication
 }
 ```
 
-## 8. Create a MessagesController class
+## Create a MessagesController class
      
 ``` csharp
 namespace WebApplication.Controllers
@@ -245,13 +245,13 @@ namespace WebApplication.Controllers
 }
 ```  
       
-## 9. Deploy your bot and add it to your skype
+## Deploy your bot and add it to your skype
 ---      
 
 1. Deploy your bot (I deployed it to an Azure Web App)
 2. Head to the **My Bots** section of the <a href="https://dev.botframework.com/" target="_blank">Microsoft Bot Framework</a> page and add the bot to your skype contacts.
       
-## 10. Talk to your bot
+## Talk to your bot
 ---      
 No you can talk to your bot!
           

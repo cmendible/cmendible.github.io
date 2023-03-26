@@ -14,7 +14,7 @@ After my post first post on: **<a href="https://carlos.mendible.com/2017/01/29/n
 
 Let's see:
 
-## 1. Create the application
+## Create the application
 ---
 Open a command prompt and run 
 
@@ -26,7 +26,7 @@ Open a command prompt and run
     code .
 ```
 
-## 2. Replace the contents of project.json
+## Replace the contents of project.json
 ---
 Replace the contents on **project.json** file in order to include the references to: **Microsoft.CodeAnalysis.CSharp** and **Microsoft.CodeAnalysis.Compilers<br /> **
     
@@ -55,7 +55,7 @@ Replace the contents on **project.json** file in order to include the references
 }
 ```
 
-## 3. Replace the contents of Program.cs
+## Replace the contents of Program.cs
 ---
 The **CreateClass** method is where the magic occurs. Each relevant line is explained to help you understand each step.
     
@@ -140,7 +140,7 @@ namespace Roslyn.CodeGeneration
 }
 ```
 
-## 4. Run the application
+## Run the application
 ---
 
 ``` powershell

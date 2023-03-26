@@ -14,7 +14,7 @@ This week I decided to modify the sample of my previous post: <a href="https://c
 
 Let's see how I changed the application in order to make it work:
 
-## 1. Add HTTPS support for Kestrel
+## Add HTTPS support for Kestrel
 ---
 I added the following line to the dependencies in the <em>project.json</em> file.
     
@@ -22,7 +22,7 @@ I added the following line to the dependencies in the <em>project.json</em> file
     "Microsoft.AspNetCore.Server.Kestrel.Https": "1.0.1",
 ```
 
-## 2. Configure Kestrel to use HTTPS
+## Configure Kestrel to use HTTPS
 ---
 In the <em>Main</em> method I configured Kestrel to use HTTPS. Don't worry about the <em>cert.pfx</em> certificate file because it will be created inside the docker container.
     
@@ -47,7 +47,7 @@ Note that in line 8 I also configured the application to use port 443.
 
 Now It's time to show you how to Dockerize the application:
 
-## 1. Create a dockerfile
+## Create a dockerfile
 ---
   
 
@@ -88,7 +88,7 @@ EXPOSE 443
 ENTRYPOINT dotnet run
 ```
 
-## 2. Create a Docker image
+## Create a Docker image
 ---
 With the dockerfile in place run the following command 
     
@@ -98,7 +98,7 @@ sudo docker build -t httpssample .
 
 Now you have an image named <em>httpssample</em> with all the dependencies and code needed to run the application.
             
-## 3. Test the Docker image
+## Test the Docker image
 To test the Docker image run the following command 
           
 ``` powershell
@@ -107,7 +107,7 @@ sudo docker run -it -p 443:443 httpssample
 
 Browse to <a href="https://localhost" target="_blank">https://localhost</a> Your browser will warn about the certificate because it's self signed.
             
-## 4. Run the Docker image as a daemon process
+## Run the Docker image as a daemon process
 
 Now that you know that everything is working as expected use the following command to run the Docker image as a daemon process 
                 

@@ -18,7 +18,7 @@ For ages I've been waiting for a way to enforce netwok policies on AKS, so last 
 * [Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/) deployed with [HTTP application routing](https://docs.microsoft.com/en-us/azure/aks/http-application-routing) enabled.
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed
 
-## 1. Create a service exposed throuh your AKS DNS Zone
+## Create a service exposed throuh your AKS DNS Zone
 ---
 
 Let's start by deploying the following service to your Kubernetes cluster, by saving the following content to a file named **dni-function.yaml** and replacing **[YOUR_DNS__ZONE_NAME]** with the corresponding value of your service:
@@ -86,7 +86,7 @@ curl -k http://dni-function.[YOUR_DNS__ZONE_NAME]/api/validate?dni=88410248L
 
 which should return **true**.
 
-## 2. Deploy kube-router
+## Deploy kube-router
 ---
 
 Thanks to [Marcus Robinson](https://www.techdiction.com/bio/) we can deploy [kube-router](https://github.com/cloudnativelabs/kube-router) to AKS:
@@ -95,7 +95,7 @@ Thanks to [Marcus Robinson](https://www.techdiction.com/bio/) we can deploy [kub
 kubectl apply -f https://raw.githubusercontent.com/marrobi/kube-router/marrobi/aks-yaml/daemonset/kube-router-firewall-daemonset-aks.yaml
 ```
 
-## 3. Deny all traffic to the service
+## Deny all traffic to the service
 ---
 
 Now let's try to deny all the traffic to the service, creating a **dni-function-deny-all.yaml** file with the following contents:
@@ -138,7 +138,7 @@ This time you should get:
 
 That's it! Your service is no longer available!!!
 
-## 4. Allow only traffic from a specific pod
+## Allow only traffic from a specific pod
 
 Create a **dni-function-allow-internal.yaml** file with the following contents:
 

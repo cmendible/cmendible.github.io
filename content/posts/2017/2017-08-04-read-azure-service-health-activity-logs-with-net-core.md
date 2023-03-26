@@ -14,20 +14,20 @@ This week there was a small outage within the Azure Data Lake Store service and 
 
 Let's go for it:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command promt an run: 
     
 ``` powershell
 mkdir azure.health
 ```
-## 2. Create the project
+## Create the project
 ---
 ``` powershell
 cd azure.health
 dotnet new console
 ```
-## 3. Add the references needed to query Azure Health Events
+## Add the references needed to query Azure Health Events
 ---
 ``` powershell
 dotnet add package Microsoft.Azure.Insights -v 0.15.0-preview
@@ -37,7 +37,7 @@ dotnet restore
 
 <a href="https://www.nuget.org/packages/Microsoft.Azure.Insights/" target="_blank">Microsoft.Azure.Insights</a> will let you query the events and <a href="https://www.nuget.org/packages/Microsoft.Azure.Management.Fluent" target="_blank">Microsoft.Azure.Management.Fluent</a> will let the application authenticate to Azure
 
-## 4. Replace the content of Program.cs
+## Replace the content of Program.cs
 ---
 Replace the content of Program.cs with the following contents:
           
@@ -152,7 +152,7 @@ namespace azure.health
 }
 ```
 
-## 5. Create the my.azureauth file
+## Create the my.azureauth file
 ---
 To authenticate you'll need a my.azureauth file with the following format:
 
@@ -171,7 +171,7 @@ As you can see you'll be needing your **Azure Subscription Id**, **Tenand Id** a
 
 If you check my previous post: <a href="https://carlos.mendible.com/2017/08/02/create-service-principal-write-required-parameters-to-azureauth-file/">Create a Service Principal and write required parameters to a .azureauth file</a> and run the script you'll get a file with the credentials. 
             
-## 6. Run the application
+## Run the application
 ---
 Run the following command:
                 

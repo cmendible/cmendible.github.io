@@ -42,7 +42,7 @@ First be aware of the following prerequisites:
 
 Now let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command promt an run 
     
@@ -50,7 +50,7 @@ Open a command promt an run
 mkdir efcore
 ```
 
-## 2. Create the project
+## Create the project
 ---
 
 ``` powershell
@@ -58,7 +58,7 @@ cd efcore
 dotnet new
 ```
 
-## 3. Create a settings file
+## Create a settings file
 ---
 Create an **appsettings.json** file to hold your connection string information. We'll be using **SQLite **for this example, so add these lines:
 
@@ -70,7 +70,7 @@ Create an **appsettings.json** file to hold your connection string information. 
 }
 ```
 
-## 4. Modify the project file
+## Modify the project file
 ---
 Modify the **project.json** to add the **EntityFrameworkCore** dependencies and also specify that the **appsettings.json** file must be copied to the output (**buildOptions **section) so it becomes available to the application once you build it.
 
@@ -105,7 +105,7 @@ Modify the **project.json** to add the **EntityFrameworkCore** dependencies and 
 }
 ```
 
-## 5. Restore packages
+## Restore packages
 ---
 You just modified the **project.json** file with new dependencies so please restore the packages with the following command:
     
@@ -113,7 +113,7 @@ You just modified the **project.json** file with new dependencies so please rest
 dotnet restore
 ```
 
-## 6. Create the Entity Framework context
+## Create the Entity Framework context
 ---
   
 Create a **SampleContext.cs** file and copy the following code 
@@ -171,7 +171,7 @@ namespace ConsoleApplication
 }
 ```
 
-## 7. Modify Program.cs
+## Modify Program.cs
 ---
 Replace the contents of the **Program.cs** file with the following code 
     
@@ -210,7 +210,7 @@ namespace ConsoleApplication
 }
 ```
 
-## 8. Build
+## Build
 ---
 Build the application with the following command 
     
@@ -218,7 +218,7 @@ Build the application with the following command
 dotnet build
 ```
 
-## 9. Run
+## Run
 ---
 
 You are good to go so run the application 

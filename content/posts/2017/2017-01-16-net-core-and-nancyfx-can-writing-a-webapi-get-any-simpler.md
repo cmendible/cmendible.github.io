@@ -17,7 +17,7 @@ What are we waiting for? Lets's put in the mix **.Net Core and <a href="http://n
 
 Steps:
 
-## 1. Create the application
+## Create the application
 ---
 Open a command prompt and run 
     
@@ -29,7 +29,7 @@ Open a command prompt and run
     code .
 ```
 
-## 2. Replace the contents of project.json
+## Replace the contents of project.json
 ---
 Replace the contents on **project.json** file. Be sure to include the references to **Microsoft.AspNetCore.Owin** and **Nancy**
     
@@ -73,7 +73,7 @@ Replace the contents on **project.json** file. Be sure to include the references
 }
 ```
 
-## 3. Replace the contents of Program.cs
+## Replace the contents of Program.cs
 ---
 Let's host the Web API with AspNetCore 
     
@@ -100,7 +100,7 @@ namespace WebApplication
 }
 ```
 
-## 4. Add a Startup.cs
+## Add a Startup.cs
 ---
 This one-liner hooks **<a href="http://nancyfx.org/" target="_blank">NancyFX</a>** to our application. 
     
@@ -121,7 +121,7 @@ namespace WebApplication
 }
 ```
 
-## 5. Create a service to return some random message
+## Create a service to return some random message
 ---
 Add a new file (i.e BaconIpsumService.cs) to hold the application logic and add the following sample content 
     
@@ -159,7 +159,7 @@ namespace WebApplication
 }
 ```
 
-## 5. Create a NancyFX module to host the WebAPI
+## Create a NancyFX module to host the WebAPI
 ---
 Create a new file (i.e BaconIpsumModule .cs) to hold the routes and actions for the Web API 
     
@@ -184,7 +184,7 @@ The first route returns a string and the second one calls our service and return
 
 Also note that the module requires an instance of **IBaconIpsumService** in the constructor but don't worry because **<a href="http://nancyfx.org/" target="_blank">NancyFX</a>** will inject it for you without any special configuration or registration!
             
-## 6. Run and test the application
+## Run and test the application
 ---
 
 Run the following commands 

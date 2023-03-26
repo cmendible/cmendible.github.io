@@ -15,7 +15,7 @@ url: /2019/05/31/scale-a-kubernetes-deployment-with-dotnet-core/
 
 Let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 
 Open a command prompt an run:
@@ -24,7 +24,7 @@ Open a command prompt an run:
 mkdir kuberenetes.scale
 ```
 
-## 2. Create the project
+## Create the project
 ---
 
 ``` shell
@@ -32,7 +32,7 @@ cd kuberenetes.scale
 dotnet new api
 ```
 
-## 3. Add the references to KubernetesClient
+## Add the references to KubernetesClient
 ---
 
 ``` shell
@@ -40,7 +40,7 @@ dotnet add package KubernetesClient -v 1.5.18
 dotnet restore
 ```
 
-## 4. Create a PodsController.cs with the following code
+## Create a PodsController.cs with the following code
 ---
 
 ``` csharp
@@ -108,7 +108,7 @@ namespace kubernetes.scale
 }
 ```
 
-## 5. Replace the contents of the appsettings.Development.json file
+## Replace the contents of the appsettings.Development.json file
 
 Note the **UseKubeConfig** property is set to **true**.
 
@@ -125,7 +125,7 @@ Note the **UseKubeConfig** property is set to **true**.
 }
 ```
 
-## 6. Replace the contents of the appsettings.json file
+## Replace the contents of the appsettings.json file
 
 Note the **UseKubeConfig** property is set to **false**.
 
@@ -141,7 +141,7 @@ Note the **UseKubeConfig** property is set to **false**.
 }
 ```
 
-## 7. Test the application
+## Test the application
 ---
 
 Test the app from your dev machine running:

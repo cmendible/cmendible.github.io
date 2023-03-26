@@ -15,12 +15,12 @@ Today I'll show you how to use [dotnet-addcasa](https://github.com/cmendible/dot
 
 If you want to manually add those checks or understand the tool internals check my post: [.NET Core, Code Analysis and StyleCop](https://carlos.mendible.com/2017/08/24/dotnet-core-code-analysis-and-stylecop/)
 
-## 1. Prerequisites
+## Prerequisites
 ---
 
 You'll need [.NET Core SDK 2.1.300-preview1](https://www.microsoft.com/net/download/dotnet-core/sdk-2.1.300-preview1) installed.
 
-## 2. Install the dotnet-addcasa .NET Core tool
+## Install the dotnet-addcasa .NET Core tool
 ---
 
 To install [dotnet-addcasa](https://github.com/cmendible/dotnet-addcasa) as a global tool run:
@@ -29,7 +29,7 @@ To install [dotnet-addcasa](https://github.com/cmendible/dotnet-addcasa) as a gl
 dotnet tool install -g dotnet-addcasa
 ```
 
-## 3. Add Code Analysis and StyleCop checks to your projects
+## Add Code Analysis and StyleCop checks to your projects
 ---
 
 To add CodeAnalysis and StyleCop to all your projects run the following command from the root folder of your solution or workspace.

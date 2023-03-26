@@ -22,7 +22,7 @@ First be aware of the following prerequisites:
 
 Now let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command promt an run:
     
@@ -30,7 +30,7 @@ Open a command promt an run:
 mkdir aspnet.on.openshift
 ```
 
-## 2. Create the project
+## Create the project
 ---
 
 ``` powershell
@@ -39,7 +39,7 @@ dotnet new web
 ```
 No you have a working Hello World application.
 
-## 3. Publish your application
+## Publish your application
 ---
 Restore the nuget packages and publish your application with the following commands:
           
@@ -48,7 +48,7 @@ dotnet restore
 dotnet publish -c release
 ```
 
-## 4. Create a Dockerfile
+## Create a Dockerfile
 ---
 Create a Dockerfile (be aware of the capital D) with the following contents:
 
@@ -82,7 +82,7 @@ USER 1001
 ENTRYPOINT dotnet aspnet.on.openshift.dll
 ```
 
-## 5. Create you OpenShift Cluster
+## Create you OpenShift Cluster
 ---
 Run the following command:
 
@@ -98,7 +98,7 @@ oc status
           
 Browse to your cluster (i.e <a href="https://10.0.75.2:8443" target="_blank">https://10.0.75.2:8443</a>) and login with username: **developer** and password **developer**
 
-## 6. Create an app in OpenShift
+## Create an app in OpenShift
 ---
 Run the following command: 
           
@@ -106,7 +106,7 @@ Run the following command:
 oc new-app . --name=aspnetoc
 ```
  
-## 7. Build your OpenShift image
+## Build your OpenShift image
 ---
 Run the following command 
           
@@ -114,7 +114,7 @@ Run the following command
 oc start-build aspnetoc --from-dir=.
 ```
 
-## 8. Create a route so you can access the application
+## Create a route so you can access the application
 --- 
 Run the following commands 
           
@@ -125,7 +125,7 @@ oc get route aspnetoc
           
 Copy the host/port output of the previous command (i.e. aspnetoc-myproject.10.0.75.2.nip.io)
 
-## 9. Check the status and browse to you application
+## Check the status and browse to you application
 ---
 Check the status with the following command 
           

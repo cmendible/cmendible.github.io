@@ -19,7 +19,7 @@ First be aware of the following prerequisites:
 
 Now let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command prompt an run: 
     
@@ -28,7 +28,7 @@ mkdir aspnet.webapi.rpi.gpio
 cd aspnet.webapi.rpi.gpio
 ```
 
-## 2. Create an ASP.NET Core Web API project
+## Create an ASP.NET Core Web API project
 ---
 Create an ASP.NET Core Web API project with the following command:
     
@@ -36,7 +36,7 @@ Create an ASP.NET Core Web API project with the following command:
 dotnet new webapi
 ```
 
-## 3. Add a reference to Unosquare.Raspberry.IO
+## Add a reference to Unosquare.Raspberry.IO
 ---
 ``` powershell
 dotnet add package Unosquare.Raspberry.IO
@@ -47,7 +47,7 @@ Now restore the packages:
 ``` powershell
 dotnet restore
 ```
-## 4. Create BlinkyController.cs
+## Create BlinkyController.cs
 ---
 In the Controllers folder, create a BlinkyController.cs file with the following contents:
 
@@ -75,7 +75,7 @@ namespace aspnet.webapi.rpi.gpio.Controllers
     
 Note: The sample toggles GPIO pin 5. 
       
-## 5. Publish the application
+## Publish the application
 ---
 Publish the application with the following commands: 
           
@@ -83,13 +83,13 @@ Publish the application with the following commands:
 dotnet publish -c Release -r linux-arm
 ```
  
-## 6. Copy the files to your Raspberry
+## Copy the files to your Raspberry
 ---
 Copy the contents of the folder **\aspnet.on.rpi\bin\Release\netcoreapp2.0\linux-arm\publish** to the Raspberry (i.e. /home/pi/publish)
 
 **Note:** For this task I connect to the Raspberry via SFTP using <a href="https://winscp.net" target="_blank">WinSCP</a>
             
-## 7. Run the application
+## Run the application
 ---
 Connect to Raspberry using ssh and then run the following commands:
                
@@ -103,7 +103,7 @@ export ASPNETCORE_URLS="http://*:5000"
                 
 Note: Unosquare.Raspberry.IO must be run with elevated privileges.
                   
-## 8. Call the Web API to Toggle the GPIO pin
+## Call the Web API to Toggle the GPIO pin
 ---
 Post data to the Web API to toggle the GPIO pin.
 

@@ -13,7 +13,7 @@ Last week I attended to a <a href="https://kafka.apache.org/" target="_blank">Ka
 
 Let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command prompt an run 
     
@@ -22,13 +22,13 @@ mkdir kafka.pubsub.console
 cd kafka.pubsub.console
 ```
 
-## 2. Create a console project
+## Create a console project
 ---
 ``` powershell
 dotnet new console
 ```
 
-## 3. Add the Confluent.Kafka nuget package
+## Add the Confluent.Kafka nuget package
 ---
 Add the **Confluent.Kafka** nuget package to your project:
     
@@ -37,7 +37,7 @@ dotnet add package Confluent.Kafka -v 0.9.5
 dotnet restore
 ```
 
-## 4. Replace the contents of Program.cs
+## Replace the contents of Program.cs
 ---
 
 Replace the contents of the **Program.cs** file with the following code:
@@ -118,7 +118,7 @@ namespace kafka.pubsub.console
 }
 ```
 
-## 5. Start Kafka with Docker
+## Start Kafka with Docker
 ---
 
 You'll need to add the following address range to your **docker unsafe registry**: **172.18.0.0/16**
@@ -153,7 +153,7 @@ docker-compose up
     
 It will take a while but you'll get a working Kafka installation.
       
-## 6. Run the program
+## Run the program
 ---
 Run the program and enjoy!
           

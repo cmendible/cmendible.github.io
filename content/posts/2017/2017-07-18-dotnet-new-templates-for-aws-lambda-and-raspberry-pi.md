@@ -18,7 +18,7 @@ and having a twitter conversation with <a href="https://social.msdn.microsoft.co
 
 So here are the results:
 
-## 1. Create a an ASP.NET Core Web API project ready for AWS lambda
+## Create a an ASP.NET Core Web API project ready for AWS lambda
 ---
   
 * **Name:** CodeItYourself.WebAPI.AWS.Lambda
@@ -27,7 +27,7 @@ So here are the results:
 * **Usage:** <code>dotnet new webapilambda</code>
 * **Related post:** [Deploy your ASP.NET Core Web API to AWS Lambda](/2017/07/04/deploy-your-asp-net-core-web-api-to-aws-lambda/)
 
-## 2. Create an ASP.NET Core Web project for RaspberryPi
+## Create an ASP.NET Core Web project for RaspberryPi
 ---
 
 * **Name:** CodeItYourself.ASPNET.Raspberry 

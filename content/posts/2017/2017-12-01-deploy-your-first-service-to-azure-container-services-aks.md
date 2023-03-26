@@ -21,7 +21,7 @@ In this post I'll show you how to **Deploy your first Service to [Azure Containe
 * [Azure Subscription](https://azure.microsoft.com/en-us/pricing/purchase-options/)
 * [Kubernetes](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/) experience.
 
-## 1. Create a resource group:
+## Create a resource group:
 
 Firt create a Resource Group. Be aware that at the time of writing AKS is not available in all Azure regions. 
 
@@ -29,7 +29,7 @@ Firt create a Resource Group. Be aware that at the time of writing AKS is not av
 az group create -l westeurope -n aks
 ```
 
-## 2. Create an Azure Container Registry:
+## Create an Azure Container Registry:
 
 Probably you'll want a private registry to upload your docker images, so let's create an [Azure Container Registry](https://azure.microsoft.com/en-us/services/container-registry/) instance.
 
@@ -37,7 +37,7 @@ Probably you'll want a private registry to upload your docker images, so let's c
 az acr create -g aks -n myregistry --sku Basic --admin-enabled
 ```
 
-## 3. Login to the Azure Container Registry:
+## Login to the Azure Container Registry:
 
 You can login to the Container Registry using the following Azure CLI command:
 
@@ -52,7 +52,7 @@ az acr credential show -n myregistry
 docker login myregistry.azurecr.io -u myregistry -p [PASSWORD FROM PREVIOUS COMMAND]
 ```
 
-## 4. Push an image to the Azure Container Registry:
+## Push an image to the Azure Container Registry:
 
 In this step we are going to pull an image from docker hub, and then upload it to the Container Registry created in step 2. Feel free to use your own docker image with a working web application.
 
@@ -62,7 +62,7 @@ docker tag yaros1av/hello-core myregistry.azurecr.io/hello-core:1.0
 docker push myregistry.azurecr.io/hello-core:1.0
 ```
 
-## 5. Create AKS cluster
+## Create AKS cluster
 
 Now create the AKS cluster:
 
@@ -70,7 +70,7 @@ Now create the AKS cluster:
 az aks create -g aks --name myAKSCluster --generate-ssh-keys
 ```
 
-## 6. Install [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)
+## Install [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)
 
 To manage the cluster you'll need to install [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) so run the following command:
 
@@ -78,7 +78,7 @@ To manage the cluster you'll need to install [kubectl](https://kubernetes.io/doc
 az aks install-cli
 ```
 
-## 7. Get cluster credentials
+## Get cluster credentials
 
 Get the cluster credentials and check the connectivity so you can start working with the AKS cluster.
 
@@ -87,7 +87,7 @@ az aks get-credentials -g aks -n myAKSCluster
 kubectl get nodes
 ```
 
-## 8. Create a Secret to hold the registry credentials.
+## Create a Secret to hold the registry credentials.
 
 You have to add the Azure Container Registry credentials to your AKS service in order to be able to pull the images. This is acomplished by creating a secret:
 
@@ -101,7 +101,7 @@ Check for the secret:
 kubectl describe secret
 ```
 
-## 9. Create a kubernetes [deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) definition.
+## Create a kubernetes [deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) definition.
 
 Create a file **[your deployment].yml** with the following contents (replace the secret name):
 
@@ -139,7 +139,7 @@ spec:
 
 As you can see the file references the image pushed to the Container Service with the secret created in previous steps.
 
-## 10. Deploy your service.
+## Deploy your service.
 
 Run the following comnmand to deploy your service to AKS:
 
@@ -147,7 +147,7 @@ Run the following comnmand to deploy your service to AKS:
 kubectl create -f [your deployment].yml
 ```
 
-## 11. Get the puplic IP for your service
+## Get the puplic IP for your service
 
 To try your service you'll need to get the public IP (It can take a while).
 
@@ -157,7 +157,7 @@ kubectl.exe get service/my-api -w
 
 Once you get the IP go ahead and test the service.
 
-## 12. Update your deployment to different version of the image
+## Update your deployment to different version of the image
 
 If you need to update your service to use another version of the dokcer image run the following command:
 
@@ -165,7 +165,7 @@ If you need to update your service to use another version of the dokcer image ru
 kubectl set image deployment/my-api [image name]=myregistry.azurecr.io/[image name]:[new version]
 ```
 
-## 13. Add an autoscale rule
+## Add an autoscale rule
 
 To add an autoscale rule to your service, run the following command:
 

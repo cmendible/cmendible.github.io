@@ -22,7 +22,7 @@ Last post I was about [running a Precompiled .NET Core Azure Function in a Conta
 * [Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account)
 * [Azure Durable Functions Knowledge](https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-overview)
 
-## 1. Create a .NET Core lib project
+## Create a .NET Core lib project
 
 Create a .NET Core lib project.
 
@@ -32,7 +32,7 @@ cd dni
 rm .\Class1.cs
 ```
 
-## 2. Add the required references to be able to use Azure Functions API and the Durable Task Extensions
+## Add the required references to be able to use Azure Functions API and the Durable Task Extensions
 
 Be sure to add the following packages to the project. Sample code will not work with the latest versions of some of the Microsoft.AspNetCore.* packages, so pay special attention to the version parameter.
 
@@ -50,7 +50,7 @@ dotnet add package Microsoft.Azure.WebJobs.Extensions.DurableTask -v 1.0.0-beta
 dotnet add package Microsoft.Azure.WebJobs.Script.ExtensionsMetadataGenerator -v 1.0.0-beta2
 ```
 
-## 3. Create the wwwroot and the folders needed to hold the functions
+## Create the wwwroot and the folders needed to hold the functions
 
 Create some foders. The first one **wwwroot** will hold all the functions and global configuration. The others will hold the specific files for each of the 3 azure functions you'll deploy:
 
@@ -61,7 +61,7 @@ md wwwroot/activity
 md wwwroot/orchestrator
 ```
 
-## 4. Create host.json file in the wwwroot folder
+## Create host.json file in the wwwroot folder
 
 Create a **host.json** file in the **wwwroot** folder with the following contents:
 
@@ -69,7 +69,7 @@ Create a **host.json** file in the **wwwroot** folder with the following content
 { }
 ```
 
-## 5. Create the activity function
+## Create the activity function
 
 In the **wwwroot/activity** folder create a **functions.json** file with the following contents:
 
@@ -109,7 +109,7 @@ namespace DurableFunctions
 
 **Note**: this function uses an [Activity Trigger](https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings).
 
-## 6. Create an orchestrator function
+## Create an orchestrator function
 
 In the **wwwroot/orchestrator** folder create a **functions.json** file with the following contents:
 
@@ -158,7 +158,7 @@ namespace DurableFunctions
 
 **Note**: this function uses an [Orchestration Trigger](https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings).
 
-## 7. Create the Orchestrator Client
+## Create the Orchestrator Client
 
 In the **wwwroot/httpstart** folder create a **functions.json** file with the following contents:
 
@@ -223,7 +223,7 @@ namespace DurableFunctions
 
 **Note**: this function uses an http trigger and an [Orchestration client](https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-bindings).
 
-## 8. Create a dockerfile
+## Create a dockerfile
 
 Create a **dockerfile** with the following contents:
 
@@ -247,7 +247,7 @@ ENV AzureWebJobsStorage=$STORAGE_ACCOUNT
 
 Note that once you execute a docker build on the file all the contents of the **wwwroot** folder will be copied to the **/home/site/wwwroot** inside the image.
 
-## 9. Build the project and the docker image
+## Build the project and the docker image
 
 Build the .NET Core project so you get the precompiled funtions and then build the docker image:
 
@@ -258,7 +258,7 @@ dotnet build -o .\wwwroot\bin\
 docker build --build-arg STORAGE_ACCOUNT="[Valid Azure Storage Account Connection String]" -t durable .
 ```
 
-## 10. Create a container and test the function
+## Create a container and test the function
 
 Run the following to run the Azure Function in a container:
 

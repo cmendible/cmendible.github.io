@@ -13,7 +13,7 @@ Not long after writing **Step by step: Couchbase with .Net Core** I discovered C
 
 So let's start with this simple: **Step by step: Couchbase Lite with .Net Core** tutorial.
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command prompt an run 
     
@@ -22,14 +22,14 @@ mkdir couchbase.lite.console
 cd couchbase.lite.console
 ```
 
-## 2. Create a console project
+## Create a console project
 ---
 
 ``` powershell
 dotnet new console
 ```
 
-## 3. Add a nuget.config
+## Add a nuget.config
 ---
 Since Couchbase Lite is still in development you'll need to add their development nuget server as Nuget source, so create a nuget.config file with the following contents.
     
@@ -43,7 +43,7 @@ Since Couchbase Lite is still in development you'll need to add their developmen
 </configuration>
 ```
 
-## 4. Add a reference to the Couchbase Lite nuget package
+## Add a reference to the Couchbase Lite nuget package
 ---
 Run the following command 
     
@@ -52,7 +52,7 @@ dotnet add package couchbase.lite -v 2.0.0-db004
 dotnet restore
 ```
 
-## 5. Replace the contents of Program.cs
+## Replace the contents of Program.cs
 ---
 Replace the contents of the **Program.cs** file with the following code:
 
@@ -109,7 +109,7 @@ namespace couchbase.lite
 }
 ```
 
-## 6. Run the program
+## Run the program
 ---
 Run the program 
     

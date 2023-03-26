@@ -27,7 +27,7 @@ First be aware of the following prerequisites:
 
 Now let's create an ASP .NET Core application and debug it inside Docker:
 
-## 1. Create an ASP .NET Core application
+## Create an ASP .NET Core application
 ---
 Open a command prompt and run 
           
@@ -39,7 +39,7 @@ Open a command prompt and run
     code .
 ```
 
-## 2. Change your application port in Program.cs
+## Change your application port in Program.cs
 ---
 Let's use port **5000** to host the application
           
@@ -58,7 +58,7 @@ Let's use port **5000** to host the application
    }
 ```  
       
-## 3. Create the artifacts needed to Debug on Docker
+## Create the artifacts needed to Debug on Docker
 ---
 Run the following command in the root folder of your project.
           
@@ -78,7 +78,7 @@ What do you want to name your service? debug.on.docker
 What do you want to name your compose project? debugondocker
 ```   
       
-## 4. Change dockerTask.ps1
+## Change dockerTask.ps1
 ---      
 The Yeoman generator is not ready for .Net Core 1.1 so change **dockerTask.ps1** line **47** with 
           
@@ -86,7 +86,7 @@ The Yeoman generator is not ready for .Net Core 1.1 so change **dockerTask.ps1**
    $framework = "netcoreapp1.1"
 ```
       
-## 5. Change the docker files
+## Change the docker files
 ---
 Change the fist line of both **Dockerfile** and **Dockerfile.debug** in order to use the latest image for .NET Core 1.1
           
@@ -94,7 +94,7 @@ Change the fist line of both **Dockerfile** and **Dockerfile.debug** in order to
    FROM microsoft/dotnet
 ```
 
-## 6. Debug your application
+## Debug your application
 ---
 Place a break point in your code (i.e. line 14 of Program.cs) and hit **F5** in Visual Studio Code. 
 

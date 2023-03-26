@@ -10,7 +10,7 @@ title: Add Swagger to your .NET Core Web API
 ---
 Last week <a href="https://www.microsoft.com/net/core" target="_blank">.NET Core</a> was released, and the first thing I tried to solve was how to **Add Swagger to your .NET Core Web API**:
 
-## 1. Dependencies
+## Dependencies
 ---
 At the time of writing you should add the following dependency to your **project.json** file 
     
@@ -18,7 +18,7 @@ At the time of writing you should add the following dependency to your **project
     "Swashbuckle": "6.0.0-beta901"
 ```
 
-## 2. Using statement
+## Using statement
 ---
 In your **Startup** class add the following using statement 
     
@@ -26,7 +26,7 @@ In your **Startup** class add the following using statement
     using Swashbuckle.Swagger.Model;
 ```
 
-## 3. Add Swagger as a service
+## Add Swagger as a service
 ---
 In your **Startup** class add the following code to the **ConfigureServices** method 
     
@@ -50,7 +50,7 @@ In your **Startup** class add the following code to the **ConfigureServices** me
     }
 ```
 
-## 4. Add Swagger to the HTTP request pipeline
+## Add Swagger to the HTTP request pipeline
 ---
 And finally add the following lines to the **Configure** method of your **Startup** class 
     

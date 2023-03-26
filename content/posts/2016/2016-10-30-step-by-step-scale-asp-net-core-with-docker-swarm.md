@@ -16,7 +16,7 @@ Today I bring you: **Step by step: Scale ASP.NET Core with Docker Swarm** so you
 
 Assuming you have <a href="https://www.docker.com/" target="_blank">Docker 1.12 or later</a> installed and running, follow this steps:
 
-## 1. Create a dockerfile
+## Create a dockerfile
 ---
 On your Docker box create a dockerfile with the following contents 
     
@@ -48,7 +48,7 @@ On your Docker box create a dockerfile with the following contents
     # Start the application using dotnet!!!
     ENTRYPOINT dotnet run
 ```
-## 2. Create a Docker image
+## Create a Docker image
 ---
 With the dockerfile in place run the following command 
     
@@ -58,7 +58,7 @@ sudo docker build -t hello_world .
 
 Now you have an image named <em>hello_world</em> with all the dependencies and code needed to run the sample.  
       
-## 3. Initialize a Swarm
+## Initialize a Swarm
 ---
 Initialize <a href="https://docs.docker.com/swarm/" target="_blank">Docker Swarm</a>.
           
@@ -66,7 +66,7 @@ Initialize <a href="https://docs.docker.com/swarm/" target="_blank">Docker Swarm
 docker swarm init
 ```   
       
-## 4. Create a Docker Service
+## Create a Docker Service
 ---
 Now that you have setup everything use the following command to create a service named <em>hello_service</em> based on the <em>hello_world</em> image and start it 
           
@@ -78,7 +78,7 @@ Wait a few seconds and navigate to <a href="http://localhost:5000" target="_blan
       
 If you want to learn more about Docker services, start here: <a href="https://docs.docker.com/engine/reference/commandline/service_create/" target="_blank">Service Create/</a>
       
-## 5. Scale up your application
+## Scale up your application
 ---
 Let's scale your service up to 3 instances with the following command 
           
@@ -94,7 +94,7 @@ docker service ls
 
 Note that it takes some seconds before all new replicas start.
             
-## 6. Scale down your application
+## Scale down your application
 ---            
 Let's scale your service down to 1 instance with the following command 
                 
@@ -102,7 +102,7 @@ Let's scale your service down to 1 instance with the following command
 docker service scale hello_service=1
 ```
             
-## 7. Optional: Remove the service
+## Optional: Remove the service
 If you are don't want the service anymore, remove it from the Swarm with the following command 
                 
 ``` powershell   

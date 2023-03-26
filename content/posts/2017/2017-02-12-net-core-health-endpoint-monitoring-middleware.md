@@ -13,7 +13,7 @@ Today I'll show a simple example of how to create a **.Net Core Health Endpoint 
 
 If you need to know about the Health Endpoint Monitoring Pattern check: <a href="https://msdn.microsoft.com/en-us/library/dn589789.aspx" target="_blank">https://msdn.microsoft.com/en-us/library/dn589789.aspx</a>
 
-## 1. Create the application
+## Create the application
 ---
   
 Open a command prompt and run 
@@ -26,7 +26,7 @@ Open a command prompt and run
     code .
 ```
 
-## 2. Add the middleware ServiceStatusMiddleware class
+## Add the middleware ServiceStatusMiddleware class
 ---
 
 Create a Middleware folder in your project and add a ServiceStatusMiddleware.cs file with the following contents 
@@ -171,7 +171,7 @@ namespace WebApplication
 }
 ```
 
-## 3. Add the middleware to the pipeline
+## Add the middleware to the pipeline
 ---
   
 In the **Startup** class find the **app.AddMvc** line and add the following just above 
@@ -186,7 +186,7 @@ app.UseServiceStatus(() =>
 });
 ```
 
-## 4. Run the application
+## Run the application
 ---
 Open a command prompt and run 
     

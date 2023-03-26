@@ -13,7 +13,7 @@ url: /2019/01/14/updated-step-step-serilog-asp-net-core/
 
 Many of you come to my site to read the post [Step by step: Serilog with ASP.NET Core](https://carlos.mendible.com/2016/09/19/step-step-serilog-asp-net-core/) which I wrote in 2016 and is completely out of date, so with this post I will show you how to setup [Serilog](https://serilog.net/) to work with your ASP.NET Core 2.2 applications.
 
-## 1. Create an ASP.NET Core project
+## Create an ASP.NET Core project
 ---
 
 ``` bash
@@ -22,7 +22,7 @@ Many of you come to my site to read the post [Step by step: Serilog with ASP.NET
     dotnet new mvc
 ```
 
-## 2. Add the following dependencies to your project
+## Add the following dependencies to your project
 ---
 
 ``` bash
@@ -31,7 +31,7 @@ Many of you come to my site to read the post [Step by step: Serilog with ASP.NET
     dotnet add package Serilog.Sinks.ColoredConsole
 ```
 
-## 3. Change your Program.cs file to look like the following
+## Change your Program.cs file to look like the following
 ---
 
 ``` csharp
@@ -80,7 +80,7 @@ namespace aspnet.serilog.sample
 }
 ```
 
-## 4. Inject the logger to your services or controllers
+## Inject the logger to your services or controllers
 ---
 
 Change the home controller and log some actions:

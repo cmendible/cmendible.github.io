@@ -30,7 +30,7 @@ Through this post I'll walk you through a series of samples to show you how you 
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) installed
 * [helm](https://github.com/kubernetes/helm)
 
-## 1. Expose a service with public IP
+## Expose a service with public IP
 ---
 
 Let's start by deploying the following service to your Kubernetes cluster, by saving the following content yaml content to a file named **dni-function.yaml**:
@@ -83,7 +83,7 @@ curl -k http://localhost:9000/api/validate?dni=88410248L
 
 which should return **true**.
 
-## 2. Make the service private (No public IP)
+## Make the service private (No public IP)
 ---
 
 Now in order to secure the API let's make the service private changing it's type to **ClusterIP**. So update the contents of **dni-function.yaml** as follows:
@@ -128,7 +128,7 @@ kubectl apply -f ./dni-function.yaml
 
 Now you don't have a public endpoint and therefore any attempt to query the service will result in a Service Unavailable response.
 
-## 3. Deploy the [NGINX Ingress Controller](https://github.com/kubernetes/ingress-nginx)
+## Deploy the [NGINX Ingress Controller](https://github.com/kubernetes/ingress-nginx)
 ---
 
 It's time to deploy the [NGINX Ingress Controller](https://github.com/kubernetes/ingress-nginx): a daemon, deployed as a Kubernetes Pod which provides a simple yet effective way to configure features such as TLS, Whitelisting, rate limits, etc...
@@ -150,7 +150,7 @@ curl -k http://localhost/api/validate?dni=88410248L
 
 and because there is no rule specified to route the traffic from the ingress endpoint to the private service, you'll get a response coming from a **default backend!**
 
-## 4. Deploy the first Ingress Rule
+## Deploy the first Ingress Rule
 ---
 
 Create a file named **ingress_rules.yaml** with the following contents and deploy:
@@ -183,7 +183,7 @@ If everything is ok and you query the service again you should get a response fr
 
 Please note that with this rules you can use different paths to expose diferent services.
 
-## 5. TLS
+## TLS
 ---
 
 To add TLS to the service you'll first need a certificate which you can generate with [openssl](https://github.com/kubernetes/ingress-nginx/blob/master/docs/examples/PREREQUISITES.md#tls-certificates). In order to speed things up save the following contents to a file named **tls-secret.yaml**, which provides a certificate for localhost (just for testing) and will add a [secret](https://kubernetes.io/docs/concepts/configuration/secret/) to your Kubernetes cluster:
@@ -241,7 +241,7 @@ https://localhost/api/validate?dni=88410248L;
 
 and yes! the service is responding and only accesible through the TLS endpoint!
 
-## 6. Whitelisting
+## Whitelisting
 ---
 
 To restrict the service in a way that only a list of IPs can access it, modify the **ingress_rules.yaml** to add the **whitelist-source-range** annotation:
@@ -279,7 +279,7 @@ kubectl apply -f ./ingress_rules.yaml
 
 Feel free to try different ranges and understand how you can block or enable access to your service.
 
-## 7. Rate limits
+## Rate limits
 ---
 
 Now it's time to protect the service applying some kind of throtling. Modify the **ingress_rules.yaml** to add the **limit-connections** and **limit-rps** annotations:

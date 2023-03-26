@@ -14,7 +14,7 @@ This week I have to give an introductory talk on DevOps and <a href="https://www
 
 Assuming you have <a href="https://www.docker.com/" target="_blank">Docker</a> installed and running, follow these 4 simple steps:
 
-## 1. Create a dockerfile
+## Create a dockerfile
 ---
 On your Docker box create a dockerfile with the following contents
     
@@ -47,7 +47,7 @@ On your Docker box create a dockerfile with the following contents
     ENTRYPOINT dotnet run
 ```
 
-## 2. Create a docker image
+## Create a docker image
 ---
 With the dockerfile in place run the following command
     
@@ -56,7 +56,7 @@ With the dockerfile in place run the following command
 ```
 Now you have an image named <em>hello_world</em> with all the dependencies and code needed to run the sample.
 
-## 3. Test the Docker image
+## Test the Docker image
 ---
 To test the Docker image run the following command
     
@@ -66,7 +66,7 @@ To test the Docker image run the following command
     
 If everything runs as expected you can head to your browser and navigate to http://localhost:5000 and confirm that the application is running!
          
-## 4. Run the Docker image as a daemon process
+## Run the Docker image as a daemon process
 ---
 Now that you know that everything is working as expected use the following command to run the Docker image as a daemon process 
           

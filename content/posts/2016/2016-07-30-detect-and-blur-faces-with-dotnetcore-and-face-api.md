@@ -45,14 +45,14 @@ You will also need an Azure Cognitive Services Face API account and the correct 
 
 Now let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command promt an run 
     
 ``` powershell
 mkdir projectoxford
 ```
-## 2. Create the project
+## Create the project
 ---
 
 ``` powershell
@@ -60,7 +60,7 @@ cd projectoxford
 dotnet new
 ```
 
-## 3. Create a settings file
+## Create a settings file
 ---
 Create an **appsettings.json** file to hold your Face API Key (remember to replace the values with those from your Cognitive Service account):
 
@@ -70,7 +70,7 @@ Create an **appsettings.json** file to hold your Face API Key (remember to repla
 }
 ```
 
-## 4. Modify the project file
+## Modify the project file
 ---
 Modify the **project.json** to add the **Microsoft.ProjectOxford.Face** dependency and also specify that the **appsettings.json** file must be copied to the output (**buildOptions** section) so it becomes available to the application once you build it.
 
@@ -112,7 +112,7 @@ We'll be needing <a href="https://github.com/JimBobSquarePants/ImageProcessor" t
 }
 ```
 
-## 6. Add ImageProcessorCore package source
+## Add ImageProcessorCore package source
 ---
 ImageProcessorCore is in alpha stage and packages are available via MyGet so add **NuGet.config** file with the following content:
 
@@ -125,7 +125,7 @@ ImageProcessorCore is in alpha stage and packages are available via MyGet so add
 </configuration>
 ```
 
-## 7. Restore packages
+## Restore packages
 ---
 You just modified the **project.json** file with new dependencies and added the NuGet.config file so please restore the packages with the following command:
     
@@ -133,7 +133,7 @@ You just modified the **project.json** file with new dependencies and added the 
 dotnet restore
 ```
 
-## 8. Modify Program.cs
+## Modify Program.cs
 ---
 Replace the contents of the **Program.cs** file with the following code 
     
@@ -267,7 +267,7 @@ namespace ConsoleApplication
     }
 }
 ```
-## 9. Build
+## Build
 ---
 Build and run the application with the following command 
     
@@ -275,7 +275,7 @@ Build and run the application with the following command
 dotnet run
 ```
 
-## 10. Expected results
+## Expected results
 ---
 Command line should read 
     

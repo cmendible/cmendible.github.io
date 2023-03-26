@@ -18,7 +18,7 @@ First be aware of the following prerequisites:
 
 Now let's start:
 
-## 1. Create a folder for your new project
+## Create a folder for your new project
 ---
 Open a command prompt an run 
     
@@ -28,7 +28,7 @@ cd aspnet.on.rpi
 code .
 ```
 
-## 2. Create a global.json file
+## Create a global.json file
 ---
 To specify the correct sdk create a **global.json** with the following contents 
     
@@ -40,7 +40,7 @@ To specify the correct sdk create a **global.json** with the following contents
 }
 ```
 
-## 3. Create the ASP.NET Core project
+## Create the ASP.NET Core project
 ---
 Create the ASP.NET Core project with the following command:
     
@@ -48,7 +48,7 @@ Create the ASP.NET Core project with the following command:
 dotnet new mvc
 ```
 
-## 4. Modify the project file
+## Modify the project file
 ---
 Modify the **aspnet.on.rpi.csproj** to add the correct **OutputType**, **TargetFramework**, **RuntimeFrameworkVersion**and **RuntimeIdentifiers**
     
@@ -73,7 +73,7 @@ Modify the **aspnet.on.rpi.csproj** to add the correct **OutputType**, **TargetF
 </Project>
 ```
 
-## 5. Add a Nuget.config file and restore packages
+## Add a Nuget.config file and restore packages
 Create a **Nuget.config** file with the following contents:
     
 ``` xml
@@ -91,7 +91,7 @@ Now restore the packages:
 dotnet restore
 ```
 
-## 6. Modify Program.cs
+## Modify Program.cs
 ---
 Replace the contents of the **Program.cs** file with the following code 
     
@@ -123,7 +123,7 @@ namespace aspnet.on.rpi
 }
 ```
 
-## 7. Publish the application
+## Publish the application
 ---
 Publish the application with the following commands 
     
@@ -139,7 +139,7 @@ dotnet publish -r win8-arm
           
 This step is no longer needed cause we added **libuv** as a dependency in the **csproj** file
       
-## 9. Copy the files to your Raspberry
+## Copy the files to your Raspberry
 ---      
 Connect to Raspberry using PowerShell, start the ftp server and open port 5000 on the Raspberry
       
@@ -152,7 +152,7 @@ netsh advfirewall firewall add rule name="Open Port 5000" dir=in action=allow pr
           
 Open the **File Explorer** ftp://<TARGET_DEVICE> and copy the contents of **\aspnet.on.rpi\bin\Debug\netcoreapp2.0\win8-arm\publish** to a folder on your Raspberry (i.e. c:\publish).
 
-## 10. Run the application
+## Run the application
 ---            
 Connect to Raspberry using PowerShell and run
                             
