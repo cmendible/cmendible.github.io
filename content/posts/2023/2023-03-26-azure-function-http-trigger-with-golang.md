@@ -10,14 +10,14 @@ tags: ["golang", "azure functions", "serverless"]
 title: Azure Function HTTP Trigger with Golang
 ---
 
-Back in 2017 I wrote a post about how to [run a precompiled .NET Core Azure Function in a container]({{< ref "/posts/2023/2023-03-26-azure-function-http-trigger-with-golang.md" >}}). Fast forward to 2023 and, as some of you know, I've been playing with [Golang](https://golang.org/) for a while now so I thought it was about time to translate the .NET code and make it work with Golang.
+Back in 2017 I wrote a post about how to [run a precompiled .NET Core Azure Function in a container]({{< ref "/posts/2017/2017-12-28-run-a-precomplied-net-core-azure-function-in-a-container.md" >}}). Fast forward to 2023 and, as some of you know, I've been playing with [Golang](https://golang.org/) for a while now so I thought it was about time to translate the .NET code and make it work with Golang.
 
 **Prerequisites**:
 
 * [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash)
 * [Golang](https://golang.org/)
 
-## 1. Create an Azure Function with a custom worker runtime
+## Create an Azure Function with a custom worker runtime
 
 Create an Azure Function with a custom worker runtime
 
@@ -27,7 +27,7 @@ cd dni
 func init --worker-runtime custom
 ```
 
-## 2. Edit the host.json file
+## Edit the host.json file
 
 Modify the `defaultExecutablePath` to the name of the executable file you want to run. In this case: **handler**. Also, set the `enableForwardingHttpRequest` to `true` so the function can access the HTTP request:
 
@@ -57,7 +57,7 @@ Modify the `defaultExecutablePath` to the name of the executable file you want t
 }
 ``` 
 
-## 3. Create a new HTTP Trigger Azure Function
+## Create a new HTTP Trigger Azure Function
 
 Create a new HTTP Trigger Azure Function
 
@@ -65,7 +65,7 @@ Create a new HTTP Trigger Azure Function
 func new -n dni -t httptrigger
 ```
 
-## 4. Create a golang handler for the function.
+## Create a golang handler for the function.
 
 Create a `handlers.go` file with the following contents:
 
@@ -160,7 +160,7 @@ Build the executable:
 go build ./handlers.go
 ```
 
-## 5. Test the Azure Function locally
+## Test the Azure Function locally
 
 To test the Azure Function locally run the following command:
 
