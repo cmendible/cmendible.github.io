@@ -6,7 +6,7 @@ date: "2023-08-27T10:00:00Z"
 description: "AZQR: Azure Quick Review"
 images: ["/assets/img/posts/azure.png"]
 published: true
-tags: ["azure", "compliance", "assessment"]
+tags: ["azure", "compliance", "assessment", "azqr"]
 title: "AZQR: Azure Quick Review"
 ---
 
