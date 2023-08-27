@@ -65,6 +65,20 @@ Download the latest release from [here](https://github.com/Azure/azqr/releases)
 
 - Subscription Reader
 
+## Usage
+
+The simplest way to use [Azure Quick Review](https://github.com/azure/azqr) is to run the follwoing command:
+
+``` bash
+./azqr scan
+```
+
+For more commands and options run:
+
+``` bash
+./azqr -h
+```
+
 If you have any feedback, questions or issues, you can use the GitHub issues page to contact the developers and contributors: https://github.com/Azure/azqr/issues
 
 Hope it helps!
