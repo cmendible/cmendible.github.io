@@ -17,7 +17,7 @@ But don't worry! it's possible to disable local account while deploying a new cl
 
 > If you disable local accounts on an existing AKS cluster, and want to revoke access to any user, be sure to [rotate the cluster certificates](https://docs.microsoft.com/en-us/azure/aks/certificate-rotation#rotate-your-cluster-certificates) 
 
-Once local accounts are disbled you'll find another challenge: when using service principals or managed identities to connect to the cluster, you'll need a non-interactive flow to get valid cluster credentials, otherwise when attempting to run commands against the cluster you'll get prompted for authentication.
+Once local accounts are disabled you'll find another challenge: when using service principals or managed identities to connect to the cluster, you'll need a non-interactive flow to get valid cluster credentials, otherwise when attempting to run commands against the cluster you'll get prompted for authentication.
 
 [kubelogin](https://github.com/Azure/kubelogin) is a tool that will help you with the non-interactive flow by providing the `get-token` command, which you'll learn to use together with the exec credential plugin in the following sample.
 
