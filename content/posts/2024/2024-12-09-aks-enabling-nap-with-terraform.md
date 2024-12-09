@@ -3,11 +3,11 @@ author: Carlos Mendible
 categories:
 - azure
 date: "2024-12-09T10:00:00Z"
-description: 'AKS: enabling NAP with Terraform'
+description: 'AKS: Enabling NAP with Terraform'
 images: ["/assets/img/posts/aks.png"]
 draft: false
 tags: ["aks", "containers", "terrafrom"]
-title: 'AKS: enabling NAP with Terraform'
+title: 'AKS: Enabling NAP with Terraform'
 ---
 
 Let's learn how to create an AKS cluster and enable Node Autoprovisioning (NAP) with Terraform. 
