@@ -4,7 +4,7 @@ titleCase = false
 palettes = []
 
 [codeBlock]
-  maxLines = 120
+  maxLines = 500
 
 [search]
   paginate = 5 # Pagination. Default to 10.
