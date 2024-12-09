@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - dotnet
 - azure
-date: "2019-01-26T00:00:00Z"
+date: "2019-01-26"
 description: "NetConf Barcelona - Decoupling your Application with .NET Core, Azure and Events"
 tags: ["eventhubs", "kafka", "pubsub"]
 title: "NetConf Barcelona - Decoupling your Application with .NET Core, Azure and Events"

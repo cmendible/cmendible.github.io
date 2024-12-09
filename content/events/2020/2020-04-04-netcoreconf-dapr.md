@@ -5,7 +5,7 @@ categories:
 - azure
 - kubernetes
 - dotnet
-date: "2020-04-04T00:00:00Z"
+date: "2020-04-04"
 description: "Dapr: Run Microservices in Azure without SDKs or vendor lock-in"
 tags: []
 title: "Dapr: Run Microservices in Azure without SDKs or vendor lock-in"

@@ -3,7 +3,7 @@ comment: false
 author: Carlos Mendible
 categories:
 - ai
-date: "2024-10-22T00:00:00Z"
+date: "2024-10-22"
 description: "AI Tour: LLMOps con enfoque en el código del prototipo a la producción"
 tags: ["llmops", "prompty", "python", "promtflow"]
 title: "AI Tour: LLMOps con enfoque en el código del prototipo a la producción"

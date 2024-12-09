@@ -6,7 +6,7 @@ categories:
 - devops
 - dotnet
 - kubernetes
-date: "2020-01-18T00:00:00Z"
+date: "2020-01-18"
 description: "Netcoreconf Barcelona - Shhhhh: Secrets Should Stay Secret"
 tags: ["keyvault", "managedidentity"]
 title: "Netcoreconf Barcelona - Shhhhh: Secrets Should Stay Secret"

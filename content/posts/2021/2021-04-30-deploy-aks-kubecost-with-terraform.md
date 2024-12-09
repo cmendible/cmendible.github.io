@@ -186,7 +186,7 @@ resource "random_password" "passwd" {
 resource "azuread_service_principal_password" "main" {
   service_principal_id = azuread_service_principal.kubecost.id
   value                = random_password.passwd.result
-  end_date             = "2099-01-01T00:00:00Z"
+  end_date             = "2099-01-01"
 }
 
 # Get current Subscription

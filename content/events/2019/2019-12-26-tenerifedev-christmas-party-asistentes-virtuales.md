@@ -5,7 +5,7 @@ categories:
 - azure
 - devops
 - kubernetes
-date: "2019-12-26T00:00:00Z"
+date: "2019-12-26"
 description: "TenerifeDev Christmas TechParty - Asistentes Virtuales"
 tags: ["alexa", "chatops"]
 title: "TenerifeDev Christmas TechParty - Asistentes Virtuales"

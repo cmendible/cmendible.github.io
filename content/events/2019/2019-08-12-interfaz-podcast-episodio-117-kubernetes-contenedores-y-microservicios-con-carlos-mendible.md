@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2019-08-12T00:00:00Z"
+date: "2019-08-12"
 description: "Interfaz Podcast Episodio 117 – Kubernetes, contenedores y microservicios con Carlos Mendible"
 tags: ["microservices"]
 title: "Interfaz Podcast Episodio 117 – Kubernetes, contenedores y microservicios con Carlos Mendible"

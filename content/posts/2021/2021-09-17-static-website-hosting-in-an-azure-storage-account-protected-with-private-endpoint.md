@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - azure
-date: "2021-09-17T10:00:00Z"
+date: "2021-09-17"
 description: 'Static website hosting in an Azure Storage Account protected with Private Endpoint'
 images: ["/assets/img/posts/azure.png"]
 draft: false

@@ -3,7 +3,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2023-09-04T10:00:00Z"
+date: "2023-09-04"
 description: 'AKS: Login with Azure CLI and Workload Identity'
 images: ["/assets/img/posts/aks.png"]
 draft: false

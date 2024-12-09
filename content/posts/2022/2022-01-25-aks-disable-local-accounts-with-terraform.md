@@ -3,7 +3,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2022-01-25T10:00:00Z"
+date: "2022-01-25"
 description: 'AKS: Disable local accounts with Terraform'
 images: ["/assets/img/posts/aks.png"]
 draft: false
@@ -211,7 +211,7 @@ resource "random_password" "passwd" {
 resource "azuread_service_principal_password" "sp_password" {
   service_principal_id = azuread_service_principal.sp.id
   value                = random_password.passwd.result
-  end_date             = "2099-01-01T00:00:00Z"
+  end_date             = "2099-01-01"
 }
 
 resource "azuread_group" "aks_admins" {

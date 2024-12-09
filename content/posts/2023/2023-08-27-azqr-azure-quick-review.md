@@ -2,10 +2,9 @@
 author: Carlos Mendible
 categories:
 - azure
-date: "2023-08-27T10:00:00Z"
+date: "2023-08-27"
 description: "AZQR: Azure Quick Review"
 images: ["/assets/img/posts/azure.png"]
-published: true
 tags: ["azure", "compliance", "assessment", "azqr"]
 title: "AZQR: Azure Quick Review"
 ---

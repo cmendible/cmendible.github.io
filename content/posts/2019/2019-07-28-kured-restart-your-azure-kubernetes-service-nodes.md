@@ -4,10 +4,9 @@ categories:
 - azure
 - kubernetes
 - devops
-date: "2019-07-28T00:00:00Z"
+date: "2019-07-28"
 description: 'Kured: Restart your Azure Kubernetes Service Nodes'
 images: ["/assets/img/posts/aks.png"]
-published: true
 tags: ["aks", "kured"]
 title: 'Kured: Restart your Azure Kubernetes Service Nodes'
 ---

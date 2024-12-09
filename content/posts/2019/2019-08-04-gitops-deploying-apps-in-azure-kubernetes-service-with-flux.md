@@ -4,10 +4,9 @@ categories:
 - azure
 - kubernetes
 - devops
-date: "2019-08-04T00:00:00Z"
+date: "2019-08-04"
 description: 'GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux'
 images: ["/assets/img/posts/aks.png"]
-published: true
 tags: ["git", "gitops", "aks", "flux"]
 title: 'GitOps: Deploying apps in Azure Kubernetes Service (AKS) with Flux'
 url: /2019/08/04/gitops-deploying-apps-in-azure-kubernetes-service-with-flux/

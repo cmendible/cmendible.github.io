@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2020-09-29T00:00:00Z"
+date: "2020-09-29"
 description: "Microsoft Ignite 2020. ¿Qué hay de nuevo?"
 tags: ["ignite"]
 title: "Microsoft Ignite 2020. ¿Qué hay de nuevo?"

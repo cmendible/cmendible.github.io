@@ -3,7 +3,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2021-11-09T10:00:00Z"
+date: "2021-11-09"
 description: 'AKS: Open Service Mesh Traffic Access Control'
 images: ["/assets/img/posts/osm.png"]
 draft: false

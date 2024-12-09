@@ -2,7 +2,8 @@
 author: Carlos Mendible
 categories:
 - azure
-date: "2024-07-15T10:00:00Z"
+- kubernetes
+date: 2024-07-15
 description: 'Exploring AKS Automatic'
 images: ["/assets/img/posts/aks.png"]
 draft: false

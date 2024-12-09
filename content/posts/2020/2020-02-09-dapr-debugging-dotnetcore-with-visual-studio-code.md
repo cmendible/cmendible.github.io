@@ -3,10 +3,9 @@ author: Carlos Mendible
 categories:
 - dotnet
 - azure
-date: "2020-02-09T00:00:00Z"
+date: "2020-02-09"
 description: 'Dapr: Debugging .NET Core with Visual Studio Code'
 images: ["/assets/img/posts/dapr.png"]
-published: true
 tags: ["dapr", "visual studio code", "debugging"]
 title: 'Dapr: Debugging .NET Core with Visual Studio Code'
 url: /2020/02/09/dapr-debugging-dotnetcore-with-visual-studio-code/

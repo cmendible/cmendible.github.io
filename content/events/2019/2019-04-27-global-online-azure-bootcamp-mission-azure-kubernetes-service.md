@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2019-04-27T00:00:00Z"
+date: "2019-04-27"
 description: "Global Online Azure Bootcamp - Mission: Azure Kuberentes Service"
 tags: ["aks", "microservices"]
 title: "Global Online Azure Bootcamp - Mission: Azure Kuberentes Service"

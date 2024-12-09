@@ -3,10 +3,9 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2019-11-30T00:00:00Z"
+date: "2019-11-30"
 description: 'AKS: Read Azure Key Vault secrets using AAD Pod Identity'
 images: ["/assets/img/posts/aks.png"]
-published: true
 tags: ["aks", "azure key vault", "pod identity", "secrets"]
 title: 'AKS: Read Azure Key Vault secrets using AAD Pod Identity'
 alias:

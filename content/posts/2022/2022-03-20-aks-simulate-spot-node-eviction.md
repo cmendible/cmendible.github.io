@@ -3,7 +3,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2022-03-20T10:00:00Z"
+date: "2022-03-20"
 description: 'AKS: Simulate Spot Node Eviction'
 images: ["/assets/img/posts/aks.png"]
 draft: false

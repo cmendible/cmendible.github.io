@@ -6,7 +6,7 @@ categories:
 - devops
 - dotnet
 - kubernetes
-date: "2020-02-01T00:00:00Z"
+date: "2020-02-01"
 description: "DOSConf - Azure Kuberentes Service: Lessons Learned"
 tags: ["keyvault", "managedidentity"]
 title: "DOSConf - Azure Kuberentes Service: Lessons Learned"

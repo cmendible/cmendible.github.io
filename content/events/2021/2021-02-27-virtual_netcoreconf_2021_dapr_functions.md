@@ -3,7 +3,7 @@ comment: false
 author: Carlos Mendible
 categories:
 - azure
-date: "2021-02-27T00:00:00Z"
+date: "2021-02-27"
 description: "Extending Azure Functions with Dapr"
 tags: ["dapr", "functions"]
 title: "Extending Azure Functions with Dapr"

@@ -3,10 +3,9 @@ author: Carlos Mendible
 categories:
 - azure
 - devops
-date: "2019-07-06T00:00:00Z"
+date: "2019-07-06"
 description: 'Visual Studio Code Remote Containers: Azure Blockchain'
 images: ["/assets/img/posts/code.png"]
-published: true
 tags: ["blockchain", "truffle", "ganache", "nodejs", "ethereum", "visual studio code"]
 title: 'Visual Studio Code Remote Containers: Azure Blockchain'
 url: /2019/07/06/vs-code-remote-containers-azure-blockchain/

@@ -2,10 +2,9 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-date: "2020-04-05T00:00:00Z"
+date: "2020-04-05"
 description: 'Kubernetes NGINX ingress controller with Dapr'
 images: ["/assets/img/posts/dapr.png"]
-published: true
 tags: ["dapr", "nginx", "ingress controller"]
 title: 'Kubernetes NGINX ingress controller with Dapr'
 ---

@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - dotnet
 - kubernetes
-date: "2022-09-17T00:00:00Z"
+date: "2022-09-17"
 description: "Create, Build, and Run .NET 7 WASM apps"
 tags: ["dotnet", "kubernetes", "wasm"]
 title: "Create, Build, and Run .NET 7 WASM apps"

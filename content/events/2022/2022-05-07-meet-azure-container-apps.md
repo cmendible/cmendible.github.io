@@ -3,9 +3,9 @@ comment: false
 author: Carlos Mendible
 categories:
 - azure
-date: "2022-05-07T00:00:00Z"
+date: "2022-05-07"
 description: "Meeting Azure Container Apps"
-tags: ["dapr", "Azure Container Apps"]
+tags: ["dapr", "azure container apps"]
 title: "Meet Azure Container Apps"
 url: /events/2022/05/07/meet-azure-container-apps/
 ---

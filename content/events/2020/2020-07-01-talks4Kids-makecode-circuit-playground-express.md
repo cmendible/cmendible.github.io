@@ -3,7 +3,7 @@ comment: false
 author: Carlos Mendible
 categories:
 - dotnet
-date: "2020-07-01T00:00:00Z"
+date: "2020-07-01"
 description: "Programming for Kids with Microsoft MakeCode and Circuit Playground Express"
 tags: ["cpx", "makecode"]
 title: "Programming for Kids with Microsoft MakeCode and Circuit Playground Express"

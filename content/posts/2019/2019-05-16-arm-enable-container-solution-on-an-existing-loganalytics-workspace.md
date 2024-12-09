@@ -6,8 +6,7 @@ date: "2019-05-16T15:00:00Z"
 description: 'ARM: Enable Container Monitoring Solution on an existing Log Analytics
   Workspace'
 images: ["/assets/img/posts/azure.png"]
-published: true
-tags: ["ARM", "log analytics"]
+tags: ["arm", "log analytics"]
 title: 'ARM: Enable Container Monitoring Solution on an existing Log Analytics Workspace'
 url: /2019/05/16/arm-enable-container-solution-on-an-existing-loganalytics-workspace/
 ---

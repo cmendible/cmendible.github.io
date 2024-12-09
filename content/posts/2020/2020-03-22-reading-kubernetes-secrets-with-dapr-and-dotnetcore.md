@@ -3,10 +3,9 @@ author: Carlos Mendible
 categories:
 - kubernetes
 - dotnet
-date: "2020-03-22T00:00:00Z"
+date: "2020-03-22"
 description: 'Reading Kubernetes Secrets with Dapr and .NET Core'
 images: ["/assets/img/posts/aks.png"]
-published: true
 tags: ["dapr", "secrets"]
 title: 'Reading Kubernetes Secrets with Dapr and .NET Core'
 ---

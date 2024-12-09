@@ -6,7 +6,6 @@ categories:
 date: "2018-03-13T17:00:00Z"
 description: Microsoft MVP Global Summit 2018 Experience
 images: ["/assets/img/posts/mvpsummit18/me_msft.jpg"]
-published: true
 tags: ["mvp"]
 title: Microsoft MVP Global Summit 2018 Experience
 url: /2018/02/18/microsoft-mvp-global-summit-2018-experience/

@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - azure
-date: "2021-11-28T10:00:00Z"
+date: "2021-11-28"
 description: 'Azure Database for MySQL Flexible Server: Failover Test'
 images: ["/assets/img/posts/mysql.jpg"]
 draft: false

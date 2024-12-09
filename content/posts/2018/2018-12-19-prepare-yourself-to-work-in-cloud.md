@@ -3,10 +3,9 @@ author: Carlos Mendible
 categories:
 - azure
 crosspost_to_medium: false
-date: "2018-12-19T10:00:00Z"
+date: "2018-12-19"
 description: Prepare yourself to work in Cloud
 images: ["/assets/img/posts/azure.png"]
-published: true
 tags: ["cloud"]
 title: Prepare yourself to work in Cloud
 ---

@@ -6,7 +6,6 @@ categories:
 date: "2019-02-10T15:12:00Z"
 description: 'Kubernetes: Mount a file in your Pod using a ConfigMap'
 images: ["/assets/img/posts/aks.png"]
-published: true
 tags: ["config map", "volume"]
 title: 'Kubernetes: Mount a file in your Pod using a ConfigMap'
 url: /2019/02/10/kubernetes-mount-file-pod-with-configmap/

@@ -3,7 +3,7 @@ author: Carlos Mendible
 categories:
 - kubernetes
 - azure
-date: "2021-09-13T10:00:00Z"
+date: "2021-09-13"
 description: 'AKS: Windows node pool with spot virtual machines and ephemeral disks'
 images: ["/assets/img/posts/aks.png"]
 draft: false

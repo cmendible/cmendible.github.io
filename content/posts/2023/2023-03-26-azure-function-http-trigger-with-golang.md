@@ -2,15 +2,14 @@
 author: Carlos Mendible
 categories:
 - azure
-date: "2023-03-26T10:00:00Z"
+date: "2023-03-26"
 description: Azure Function HTTP Trigger with Golang
 images: ["/assets/img/posts/azurefunctions.jpg"]
-published: true
 tags: ["golang", "azure functions", "serverless"]
 title: Azure Function HTTP Trigger with Golang
 ---
 
-Back in 2017 I wrote a post about how to [run a precompiled .NET Core Azure Function in a container]({{< ref "/posts/2017/2017-12-28-run-a-precomplied-net-core-azure-function-in-a-container.md" >}}). Fast forward to 2023 and, as some of you know, I've been playing with [Golang](https://golang.org/) for a while now so I thought it was about time to translate the .NET code and make it work with Golang.
+Back in 2017 I wrote a post about how to [run a precompiled .NET Core Azure Function in a container]({{< ref "/posts/2017/2017-12-28-run-a-precomplied-net-core-azure-function-in-a-container" >}}). Fast forward to 2023 and, as some of you know, I've been playing with [Golang](https://golang.org/) for a while now so I thought it was about time to translate the .NET code and make it work with Golang.
 
 **Prerequisites**:
 

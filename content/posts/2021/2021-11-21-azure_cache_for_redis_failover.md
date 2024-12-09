@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - azure
-date: "2021-11-21T10:00:00Z"
+date: "2021-11-21"
 description: 'Azure Cache for Redis: Failover Test'
 images: ["/assets/img/posts/redis.png"]
 draft: false

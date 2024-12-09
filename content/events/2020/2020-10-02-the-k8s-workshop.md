@@ -5,7 +5,7 @@ categories:
 - azure
 - kubernetes
 - dotnet
-date: "2020-10-02T00:00:00Z"
+date: "2020-10-02"
 description: "The k8s Workshop"
 tags: ["netcoreconf", "terraform", "ansible", "arm", "pulumi"]
 title: "The k8s Workshop"

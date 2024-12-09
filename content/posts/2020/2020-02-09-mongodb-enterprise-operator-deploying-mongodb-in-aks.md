@@ -4,10 +4,9 @@ categories:
 - kubernetes
 - azure
 - devops
-date: "2020-02-09T00:00:00Z"
+date: "2020-02-09"
 description: 'MongoDB Enterprise Operator: Deploying MongoDB in AKS'
 images: ["/assets/img/posts/aks.png"]
-published: true
 tags: ["aks", "mongodb"]
 title: 'MongoDB Enterprise Operator: Deploying MongoDB in AKS'
 url: /2020/02/09/mongodb-enterprise-operator-deploying-mongodb-in-aks/

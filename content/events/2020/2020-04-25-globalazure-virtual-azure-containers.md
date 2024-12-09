@@ -3,7 +3,7 @@ comment: false
 author: Carlos Mendible
 categories:
 - kubernetes
-date: "2020-04-25T00:00:00Z"
+date: "2020-04-25"
 description: "Global Azure Live 2020 - Azure Containers"
 tags: []
 title: "Global Azure Live 2020 - Azure Containers"

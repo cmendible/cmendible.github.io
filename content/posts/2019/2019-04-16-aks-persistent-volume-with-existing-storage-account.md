@@ -6,7 +6,6 @@ categories:
 date: "2019-04-16T05:00:00Z"
 description: 'AKS: Persistent Volume with existing Storage Account'
 images: ["/assets/img/posts/aks.png"]
-published: true
 tags: ["aks", "storage account", "persistent volume", "persistent volume claim", "storage class"]
 title: 'AKS: Persistent Volume with existing Storage Account'
 ---

@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2019-07-17T00:00:00Z"
+date: "2019-07-17"
 description: "Webcast - Azure Summer Ask the Experts"
 tags: ["aks", "microservices"]
 title: "Webcast - Azure Summer Ask the Experts"

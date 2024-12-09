@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2020-07-30T00:00:00Z"
+date: "2020-07-30"
 description: "Azure Summer Talks Community"
 tags: ["dapr"]
 title: "Azure Summer Talks Community"

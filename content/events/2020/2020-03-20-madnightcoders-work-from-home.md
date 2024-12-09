@@ -3,7 +3,7 @@ comment: false
 author: Carlos Mendible
 categories:
 - management
-date: "2020-03-20T00:00:00Z"
+date: "2020-03-20"
 description: "Qué hacer y qué no hacer cuando trabajas desde casa"
 tags: []
 title: "Qué hacer y qué no hacer cuando trabajas desde casa"

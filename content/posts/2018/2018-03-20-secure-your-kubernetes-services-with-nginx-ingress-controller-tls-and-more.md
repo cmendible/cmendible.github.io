@@ -7,7 +7,6 @@ date: "2018-03-20T15:13:00Z"
 description: Secure your Kubernetes services with NGINX ingress controller, tls and
   more.
 images: ["/assets/img/posts/kubernetes.png"]
-published: true
 tags: ["nginx", "ingress conroller"]
 title: Secure your Kubernetes services with NGINX ingress controller, tls and more.
 url: /2018/03/20/secure-your-kubernetes-services-with-nginx-ingress-controller-tls-and-more/

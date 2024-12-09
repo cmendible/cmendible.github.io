@@ -3,7 +3,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2021-11-15T10:00:00Z"
+date: "2021-11-15"
 description: 'AKS: Resize Private Volume Claim to expand a Managed Premium Disk'
 images: ["/assets/img/posts/aks.png"]
 draft: false

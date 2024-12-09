@@ -5,7 +5,6 @@ categories:
 date: "2018-02-18T17:00:00Z"
 description: Consuming Azure Event Hubs Events With Kafka Connect
 images: ["/assets/img/posts/azureventhubs.png"]
-published: true
 tags: ["kafka", "kafka connect", "event hubs"]
 title: Consuming Azure Event Hubs Events With Kafka Connect
 ---

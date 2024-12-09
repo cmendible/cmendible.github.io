@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2020-07-27T00:00:00Z"
+date: "2020-07-27"
 description: "Virtual Azure Community Day: Introducción a Dapr"
 tags: ["dapr"]
 title: "Virtual Azure Community Day: Introducción a Dapr"

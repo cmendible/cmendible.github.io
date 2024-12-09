@@ -3,7 +3,7 @@ author: Carlos Mendible
 categories:
 - kubernetes
 - azure
-date: "2021-08-02T10:00:00Z"
+date: "2021-08-02"
 description: 'AKS: Persistent Volume Claim with an Azure File Storage protected with a Private Endpoint'
 images: ["/assets/img/posts/aks.png"]
 draft: false

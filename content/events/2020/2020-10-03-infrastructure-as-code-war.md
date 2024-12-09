@@ -5,7 +5,7 @@ categories:
 - azure
 - kubernetes
 - dotnet
-date: "2020-10-03T00:00:00Z"
+date: "2020-10-03"
 description: "Infrastructure as Code War"
 tags: ["netcoreconf", "terraform", "ansible", "arm", "pulumi"]
 title: "Infrastructure as Code War"

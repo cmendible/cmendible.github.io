@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - dotnet
-date: "2021-05-18T00:00:00Z"
+date: "2021-05-18"
 description: "KCD 2021: Event driven Microservices with Dapr and .NET"
 tags: ["dapr"]
 title: "KCD 2021: Event driven Microservices with Dapr and .NET"

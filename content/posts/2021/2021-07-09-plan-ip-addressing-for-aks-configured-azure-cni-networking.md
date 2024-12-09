@@ -3,7 +3,7 @@ author: Carlos Mendible
 categories:
 - kubernetes
 - azure
-date: "2021-07-09T10:00:00Z"
+date: "2021-07-09"
 description: 'Plan IP addressing for AKS configured with Azure CNI Networking'
 images: ["/assets/img/posts/aks.png"]
 draft: false

@@ -6,7 +6,7 @@ categories:
 - devops
 - dotnet
 - kubernetes
-date: "2020-04-23T00:00:00Z"
+date: "2020-04-23"
 description: "Global Azure Virtual - Shhhhh: Secrets Should Stay Secret"
 tags: ["keyvault", "managedidentity"]
 title: "Global Azure Virtual - Shhhhh: Secrets Should Stay Secret"

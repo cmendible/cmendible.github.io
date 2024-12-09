@@ -2,10 +2,9 @@
 author: Carlos Mendible
 categories:
 - devops
-date: "2020-01-10T00:00:00Z"
+date: "2020-01-10"
 description: 'Visual Studio Code Remote Containers: Jekyll'
 images: ["/assets/img/posts/code.png"]
-published: true
 tags: ["jekyll", "visual studio code"]
 title: 'Visual Studio Code Remote Containers: Jekyll'
 url: /2020/01/10/vs-code-remote-containers-jekyll/

@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2020-05-20T00:00:00Z"
+date: "2020-05-20"
 description: "The GitHub Actions Team"
 tags: ["dapr", "github", "actions"]
 title: "The GitHub Actions Team"

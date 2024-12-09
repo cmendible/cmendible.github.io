@@ -2,10 +2,9 @@
 author: Carlos Mendible
 categories:
 - kubernetes
-date: "2020-10-18T10:00:00Z"
+date: "2020-10-18"
 description: 'What I Learned From Hacktoberfest 2020'
 images: ["/assets/img/posts/hacktoberfest2020.png"]
-published: true
 tags: ["hacktoberfest"]
 title: 'What I Learned From Hacktoberfest 2020'
 ---

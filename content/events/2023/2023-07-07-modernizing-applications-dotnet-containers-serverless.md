@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - dotnet
 - kubernetes
-date: "2023-07-07T00:00:00Z"
+date: "2023-07-07"
 description: "Modernizing your applications .NET with containers and serverless"
 tags: ["dotnet", "container apps", "dapr"]
 title: "Modernizing your applications .NET with containers and serverless"

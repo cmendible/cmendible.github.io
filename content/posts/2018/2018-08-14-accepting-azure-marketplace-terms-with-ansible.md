@@ -6,7 +6,6 @@ categories:
 date: "2018-08-14T11:27:39Z"
 description: Accepting Azure Marketplace Terms with Ansible
 images: ["/assets/img/posts/ansible.png"]
-published: true
 tags: ["ansible"]
 title: Accepting Azure Marketplace Terms with Ansible
 ---

@@ -3,7 +3,7 @@ comment: false
 author: Carlos Mendible
 categories:
 - azure
-date: "2021-11-18T00:00:00Z"
+date: "2021-11-18"
 description: "Overcoming Event-driven Microservices challenges with Dapr"
 tags: ["dapr"]
 title: "Overcoming Event-driven Microservices challenges with Dapr"

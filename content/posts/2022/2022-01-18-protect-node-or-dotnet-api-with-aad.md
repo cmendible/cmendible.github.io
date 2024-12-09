@@ -3,7 +3,7 @@ author: Carlos Mendible
 categories:
 - dotnet
 - azure
-date: "2022-01-18T10:00:00Z"
+date: "2022-01-18"
 description: 'Protect your Node.js or .NET API with Azure Active Directory'
 images: ["/assets/img/posts/aad.png"]
 draft: false

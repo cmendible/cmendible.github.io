@@ -28,8 +28,8 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    env:
-      HUGO_VERSION: 0.134.1
+    # env:
+    #   HUGO_VERSION: 0.139.3
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -39,34 +39,34 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Cache dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-                        ${{ runner.os }}-node-
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
 
-      - name: Install Hugo CLI
-        run: |
-          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
-          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+      # - name: Install Hugo CLI
+      #   run: |
+      #     wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+      #     && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
+      - name: Build with Hugo
+        run: npm run build:production
+
+      - name: Fix Feed
+        run: cp ./public/index.xml ./public/feed.xml
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v1
 
-      - name: Build with Hugo
-        run: hugo --gc --minify --cleanDestinationDir
-
-      - name: Fix Feed
-        run: cp ./public/index.xml ./public/feed.xml
-        
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:

@@ -4,11 +4,10 @@ categories:
 - dotnet
 - kubernetes
 - azure
-date: "2018-11-18T10:00:00Z"
+date: "2018-11-18"
 description: Develop and build ASP.NET Core applications to run on Kubernetes with
   Draft
 images: ["/assets/img/posts/draft-logo.png"]
-published: true
 tags: ["aks", "azure container registry", "aspnetcore"]
 title: Develop and build ASP.NET Core applications to run on Kubernetes with Draft
 url: /2018/11/18/develop-and-build-aspnetcore-applications-to-run-on-kubernetes-with-draft/

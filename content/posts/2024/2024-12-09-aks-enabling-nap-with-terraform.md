@@ -2,7 +2,8 @@
 author: Carlos Mendible
 categories:
 - azure
-date: "2024-12-09T10:00:00Z"
+- kubernetes
+date: "2024-12-09"
 description: 'AKS: Enabling NAP with Terraform'
 images: ["/assets/img/posts/aks.png"]
 draft: false

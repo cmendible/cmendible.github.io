@@ -4,7 +4,7 @@ author: Carlos Mendible
 categories:
 - azure
 - kubernetes
-date: "2020-04-03T00:00:00Z"
+date: "2020-04-03"
 description: "La resistencia tecnológica - Episodio 3, Docker, Kubernetes y Azure"
 tags: []
 title: "La resistencia tecnológica - Episodio 3, Docker, Kubernetes y Azure"

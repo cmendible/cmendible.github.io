@@ -6,7 +6,6 @@ categories:
 date: "2019-01-10T15:20:00Z"
 description: 'AKS: Configure TLS termination with the http application routing addon'
 images: ["/assets/img/posts/aks.png"]
-published: true
 tags: ["aks", "nginx", "ingress controller"]
 title: 'AKS: Configure TLS termination with the http application routing addon'
 ---

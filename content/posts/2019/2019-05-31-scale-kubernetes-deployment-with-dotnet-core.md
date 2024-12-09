@@ -7,7 +7,6 @@ categories:
 date: "2019-05-31T09:12:00Z"
 description: Scale a Kubernetes Deployment with .NET Core
 images: ["/assets/img/posts/aks.png"]
-published: true
 tags: ["aspnetcore"]
 title: Scale a Kubernetes Deployment with .NET Core
 url: /2019/05/31/scale-a-kubernetes-deployment-with-dotnet-core/

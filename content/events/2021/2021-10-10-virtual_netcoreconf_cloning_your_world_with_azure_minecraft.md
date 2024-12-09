@@ -3,7 +3,7 @@ comment: false
 author: Carlos Mendible
 categories:
 - azure
-date: "2021-10-10T00:00:00Z"
+date: "2021-10-10"
 description: "Cloning your world with Azure & Minecraft"
 tags: ["dapr", "minecraft"]
 title: "Cloning your world with Azure & Minecraft"

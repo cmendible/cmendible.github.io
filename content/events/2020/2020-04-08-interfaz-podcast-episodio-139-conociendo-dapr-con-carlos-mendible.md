@@ -5,7 +5,7 @@ categories:
 - azure
 - dotnet
 - kubernetes
-date: "2020-04-08T00:00:00Z"
+date: "2020-04-08"
 description: "Interfaz Podcast Episodio 139 – Conociendo Dapr con Carlos Mendible"
 tags: ["dapr"]
 title: "Interfaz Podcast Episodio 139 – Conociendo Dapr con Carlos Mendible"

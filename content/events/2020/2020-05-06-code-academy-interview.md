@@ -5,7 +5,7 @@ categories:
 - azure
 - kubernetes
 - dotnet
-date: "2020-05-06T00:00:00Z"
+date: "2020-05-06"
 description: "Code Academy - Entrevista a Carlos Mendible"
 tags: []
 title: "Code Academy - Entrevista a Carlos Mendible"

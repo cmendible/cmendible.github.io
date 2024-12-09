@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - azure
-date: "2021-04-12T10:00:00Z"
+date: "2021-04-12"
 description: 'Deploy a Private Azure Cloud Shell with Terraform'
 images: ["/assets/img/posts/azure.png"]
 draft: false
