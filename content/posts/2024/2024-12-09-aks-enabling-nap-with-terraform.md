@@ -7,7 +7,7 @@ date: "2024-12-09"
 description: 'AKS: Enabling NAP with Terraform'
 images: ["/assets/img/posts/aks.png"]
 draft: false
-tags: ["aks", "containers", "terrafrom"]
+tags: ["aks", "containers", "terraform"]
 title: 'AKS: Enabling NAP with Terraform'
 ---
 
