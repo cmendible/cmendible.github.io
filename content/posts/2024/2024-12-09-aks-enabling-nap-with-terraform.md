@@ -102,7 +102,7 @@ resource "azapi_update_resource" "nap" {
 Run the following commands to create the AKS cluster and enable NAP:
 
 ``` bash
-export ARM_SUBSCRIOPTION_ID=<your-subscription-id>
+export ARM_SUBSCRIPTION_ID=<your-subscription-id>
 terraform init
 terraform apply
 ```
