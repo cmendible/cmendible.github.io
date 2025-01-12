@@ -4,7 +4,7 @@ categories:
 - kubernetes
 date: "2025-01-12"
 description: 'kubeadm: change the control plane IP'
-images: ["/assets/img/posts/aks.png"]
+images: ["/assets/img/posts/kubernetes.png"]
 draft: false
 tags: ["kubeadm", "kubernetes"]
 title: 'kubeadm: change the control plane IP'
