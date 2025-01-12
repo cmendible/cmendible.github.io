@@ -7,7 +7,7 @@ date: "2023-09-04"
 description: 'AKS: Login with Azure CLI and Workload Identity'
 images: ["/assets/img/posts/aks.png"]
 draft: false
-tags: ["aks", "terraform", "az cli", "workload identity", "aad", "azure active directory"]
+tags: ["aks", "terraform", "azure cli", "workload identity", "aad", "azure active directory"]
 title: 'AKS: Login with Azure CLI and Workload Identity'
 ---
 

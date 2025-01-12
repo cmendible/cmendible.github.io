@@ -5,7 +5,7 @@ categories:
 date: "2018-08-22T16:12:00Z"
 description: '.NET Core, BenchmarkDotNet: for vs foreach performance'
 images: ["/wp-content/uploads/2017/07/dotnetcore.png"]
-tags: ["benchmark dotnet"]
+tags: ["dotnet"]
 title: '.NET Core, BenchmarkDotNet: for vs foreach performance'
 url: /2018/08/22/net-core-benchmarkdotnet-for-vs-foreach-performance/
 ---

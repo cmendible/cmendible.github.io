@@ -5,7 +5,7 @@ categories:
 date: "2019-01-14T18:00:00Z"
 description: 'Updated Step by step: Serilog with ASP.NET Core'
 images: ["/wp-content/uploads/2016/09/serilog.png"]
-tags: ["aspnetcode", "serilog"]
+tags: ["aspnetcore", "serilog"]
 title: 'Updated Step by step: Serilog with ASP.NET Core'
 url: /2019/01/14/updated-step-step-serilog-asp-net-core/
 ---

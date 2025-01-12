@@ -6,7 +6,7 @@ categories:
 date: "2018-05-21T19:21:39Z"
 description: Accepting Azure Marketplace Terms with Azure CLI
 images: ["/assets/img/posts/azure.png"]
-tags: ["aure cli"]
+tags: ["azure cli"]
 title: Accepting Azure Marketplace Terms with Azure CLI
 ---
 

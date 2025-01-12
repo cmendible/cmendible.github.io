@@ -7,7 +7,7 @@ date: "2016-05-06T07:18:05Z"
 description: NHInsights an OracleManagedDataClientDriver for NHibernate and Application
   Insights
 images: ["/wp-content/uploads/2016/05/download.png"]
-tags: ["application onsights", "nhibernate", "oracle"]
+tags: ["application insights", "nhibernate", "oracle"]
 title: NHInsights an OracleManagedDataClientDriver for NHibernate and Application
   Insights
 ---
