@@ -2,7 +2,7 @@
 author: Carlos Mendible
 categories:
 - azure
-date: "2025-01-12"
+date: "2025-01-18"
 description: 'tinyproxy: a lightweight HTTP/HTTPS proxy server'
 draft: false
 tags: ["tinyproxy"]
