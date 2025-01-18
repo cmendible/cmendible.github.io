@@ -1,0 +1,23 @@
+disabled = false
+languageCode = "en"
+languageName = "English"
+weight = 1
+title = "Code it Yourself"
+
+[params]
+displayName = "EN"
+isoCode = "en"
+rtl = false
+dateFormat = "2 January 2006"
+
+[params.author]
+name = "Carlos Mendible"
+image = "img/me.jpg"
+headline = "Father | Husband | Principal Cloud Solution Architect @Microsoft | Opinions are my own"
+links = [
+    { linkedin = "https://linkedin.com/in/carlosmendible" },
+    { github = "https://github.com/cmendible" },
+    { twitter = "https://twitter.com/cmendibl3" },
+    { reddit = "https://reddit.com/user/cmendibl3" },
+    { instagram = "https://instagram.com/cmendibl3" },
+]

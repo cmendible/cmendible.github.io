@@ -6,7 +6,7 @@ date: "2025-01-12"
 description: 'kubeadm: change the control plane IP'
 images: ["/assets/img/posts/kubernetes.png"]
 draft: false
-tags: ["kubeadm", "kubernetes"]
+tags: ["kubeadm"]
 title: 'kubeadm: change the control plane IP'
 ---
 
