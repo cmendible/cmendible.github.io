@@ -4,7 +4,6 @@ categories:
 - azure
 date: "2025-01-12"
 description: 'tinyproxy: a lightweight HTTP/HTTPS proxy server'
-images: ["/assets/img/posts/kubernetes.png"]
 draft: false
 tags: ["tinyproxy"]
 title: 'tinyproxy: a lightweight HTTP/HTTPS proxy server'
