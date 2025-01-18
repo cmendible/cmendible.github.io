@@ -17,6 +17,10 @@ buildFuture = false
 
 enableEmoji = true
 
+[permalinks.page]
+posts = "/:year/:month/:day/:slug/"
+events = "/events/:year/:month/:day/:slug/"
+
 # googleAnalytics = "G-XXXXXXXXX"
 
 [pagination]
