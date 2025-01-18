@@ -18,6 +18,9 @@ links = [
     { linkedin = "https://linkedin.com/in/carlosmendible" },
     { github = "https://github.com/cmendible" },
     { twitter = "https://twitter.com/cmendibl3" },
+    { bluesky = "https://bsky.app/profile/cmendibl3.bsky.social" },
+    { mastodon = "https://hachyderm.io/@cmendibl3" },
     { reddit = "https://reddit.com/user/cmendibl3" },
     { instagram = "https://instagram.com/cmendibl3" },
+    { rss = "https://carlos.mendible.com/feed.xml" },
 ]

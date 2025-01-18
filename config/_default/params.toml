@@ -102,6 +102,9 @@ cardViewScreenWidth = false
 [selineAnalytics]
 
 [buymeacoffee]
+identifier = "cmendibl3"
+globalWidget = true
+globalWidgetPosition = "right"
 
 [verification]
 
