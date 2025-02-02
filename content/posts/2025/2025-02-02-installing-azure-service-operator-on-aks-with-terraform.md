@@ -5,6 +5,7 @@ categories:
 - kubernetes
 date: "2025-02-02"
 description: 'Installing Azure Service Operator on AKS with Terraform'
+images: ["/assets/img/posts/kubernetes.png"]
 draft: false
 tags: ["aso", "terraform"]
 title: 'Installing Azure Service Operator on AKS with Terraform'
