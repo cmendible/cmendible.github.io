@@ -278,6 +278,15 @@ resource "helm_release" "azure-service-operator" {
 }
 ```
 
+## Deploy the Terraform Configuration
+
+Deploy the Terraform configuration using the following commands:
+
+```bash
+terraform init
+terraform apply
+```
+
 ## Deploy a Resource Group using Azure Service Operator (ASO)
 
 Create a Kubernetes custom resource to deploy a resource group using the Azure Service Operator:
