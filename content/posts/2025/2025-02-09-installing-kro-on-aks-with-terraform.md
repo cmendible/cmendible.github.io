@@ -333,4 +333,4 @@ Hope it helps!
 **References:**
 
 * [kro (Kube Resource Orchestrator)](https://kro.run/docs/overview)
-* [Installing Azure Service Operator on AKS with Terraform]({{ relref "2025-02-02-installing-azure-service-operator-on-aks-with-terraform.md" >}})
+* [Installing Azure Service Operator on AKS with Terraform](https://carlos.mendible.com/2025/02/02/installing-azure-service-operator-on-aks-with-terraform/)
