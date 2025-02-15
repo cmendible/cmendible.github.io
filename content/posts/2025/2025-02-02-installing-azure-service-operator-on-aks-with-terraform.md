@@ -180,6 +180,18 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   }
 }
 
+resource "azurerm_role_assignment" "kubelet_network_contributor" {
+  scope                = azurerm_virtual_network.vnet.id
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_kubernetes_cluster.k8s.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "kubelet_network_reader" {
+  scope                = azurerm_virtual_network.vnet.id
+  role_definition_name = "Reader"
+  principal_id         = azurerm_kubernetes_cluster.k8s.identity[0].principal_id
+}
+
 # Create Managed Identity
 resource "azurerm_user_assigned_identity" "mi" {
   resource_group_name = azurerm_resource_group.rg.name
@@ -284,6 +296,7 @@ Deploy the Terraform configuration using the following commands:
 
 ```bash
 terraform init
+export ARM_SUBSCRIPTION_ID="<your-subscription-id>"
 terraform apply
 ```
 

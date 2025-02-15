@@ -176,6 +176,18 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     network_data_plane  = "cilium"
   }
 }
+
+resource "azurerm_role_assignment" "kubelet_network_contributor" {
+  scope                = azurerm_virtual_network.vnet.id
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_kubernetes_cluster.k8s.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "kubelet_network_reader" {
+  scope                = azurerm_virtual_network.vnet.id
+  role_definition_name = "Reader"
+  principal_id         = azurerm_kubernetes_cluster.k8s.identity[0].principal_id
+}
 ```
 
 > The sample requires an ingress controller to be deployed in the cluster. The ingress controller is used to route traffic to the web application. That's why we enable the `web_app_routing` add-on.
@@ -204,6 +216,7 @@ Apply the Terraform configuration using the following commands:
 
 ```bash
 terraform init
+export ARM_SUBSCRIPTION_ID="<your-subscription-id>"
 terraform apply
 ```
 
