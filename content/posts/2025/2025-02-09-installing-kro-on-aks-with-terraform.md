@@ -220,6 +220,14 @@ export ARM_SUBSCRIPTION_ID="<your-subscription-id>"
 terraform apply
 ```
 
+## Get the cluster credentials
+
+Get the cluster credentials using the following command:
+
+```bash
+az aks get-credentials --resource-group rg-kro-demo --name aks-kro --overwrite-existing
+```
+
 ## Deploy a ResourceGraphDefinition
 
 A `ResourceGraphDefinition` allows you to define a custom Kubernetes API and group of Kubernetes objects and the logical operations between them, effectively defining a complete Application Stack.

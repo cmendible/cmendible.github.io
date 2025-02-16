@@ -300,6 +300,14 @@ export ARM_SUBSCRIPTION_ID="<your-subscription-id>"
 terraform apply
 ```
 
+## Get the cluster credentials
+
+Get the cluster credentials using the following command:
+
+```bash
+az aks get-credentials --resource-group rg-aso-demo --name aks-aso --overwrite-existing
+```
+
 ## Deploy a Resource Group using Azure Service Operator (ASO)
 
 Create a Kubernetes custom resource to deploy a resource group using the Azure Service Operator:
