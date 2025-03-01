@@ -97,7 +97,7 @@ resource "azapi_update_resource" "nap" {
 }
 ```
 
-> Note: We set the `only_critical_addons_enabled` to true, to tain the nodes and avoid scheduling workloads on the system node pool.
+> Note: We set the `only_critical_addons_enabled` to true, to taint the nodes and avoid scheduling workloads on the system node pool.
 
 Run the following commands to create the AKS cluster and enable NAP:
 
