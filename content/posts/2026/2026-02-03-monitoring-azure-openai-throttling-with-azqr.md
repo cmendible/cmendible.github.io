@@ -3,10 +3,10 @@ author: Carlos Mendible
 categories:
 - azure
 date: "2026-02-03"
-description: 'Monitor Azure OpenAI throttling with azqr to identify capacity constraints, optimize deployments, and improve load distribution'
+description: 'Diagnose Azure OpenAI throttling with azqr to identify capacity constraints, optimize deployments, and improve load distribution'
 draft: false
 tags: ["azqr", "azure-openai", "throttling", "capacity-planning", "apim"]
-title: 'Monitoring Azure OpenAI Throttling with azqr'
+title: 'Diagnose Azure OpenAI Throttling with azqr'
 ---
 
 As organizations scale their Azure OpenAI workloads, **throttling (HTTP 429 errors) becomes a critical operational concern**. These errors indicate that your requests exceed the provisioned capacity, leading to degraded user experience, failed completions, and potential revenue loss.
