@@ -4,7 +4,7 @@ categories:
 - azure
 date: "2026-02-07"
 description: 'How I refactored Azure Quick Review (azqr) for maintainability and performance using GitHub Copilot'
-draft: true
+draft: false
 images: ["/assets/img/posts/azqr_readme.png"]
 tags: ["azqr", "github-copilot", "refactoring", "go", "performance", "ai"]
 title: 'Refactoring Azure Quick Review with GitHub Copilot'
