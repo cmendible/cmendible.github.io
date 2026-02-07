@@ -5,6 +5,7 @@ categories:
 date: "2026-02-03"
 description: 'Diagnose Azure OpenAI throttling with azqr to identify capacity constraints, optimize deployments, and improve load distribution'
 draft: false
+images: ["/assets/img/posts/azqr_readme.png"]
 tags: ["azqr", "azure-openai", "throttling", "capacity-planning", "apim"]
 title: 'Diagnose Azure OpenAI Throttling with azqr'
 ---

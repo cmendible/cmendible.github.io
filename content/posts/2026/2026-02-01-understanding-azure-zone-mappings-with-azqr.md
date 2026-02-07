@@ -5,6 +5,7 @@ categories:
 date: "2026-02-01"
 description: 'Understanding Azure Zone Mappings with azqr for High-Performance Applications and Disaster Recovery'
 draft: false
+images: ["/assets/img/posts/azqr_readme.png"]
 tags: ["azqr", "availability-zones", "disaster-recovery", "high-availability", "performance"]
 title: 'Understanding Azure Zone Mappings with azqr'
 ---
