@@ -13,7 +13,7 @@ title: 'Deploy AKS + Kubecost with Terraform'
 
 This morning I saw this tweet from Mr Brendan Burns:
 
-{{< tweet user="brendandburns" id="1387933511433154564" >}}
+{{< x user="brendandburns" id="1387933511433154564" >}}
 
 And I'm sure that once you also read through it, you'll learn that you have to take several steps in order to achieve [AKS Cost Monitoring and Governance With Kubecost](http://blog.kubecost.com/blog/aks-cost/).
 

@@ -13,7 +13,7 @@ dateFormat = "2 January 2006"
 [params.author]
 name = "Carlos Mendible"
 image = "img/me.jpg"
-headline = "Father | Husband | Principal Cloud Solution Architect @Microsoft | Opinions are my own"
+headline = "Father | Husband | Europe South - Migrate and Modernize CSA Lead @Microsoft | Opinions are my own"
 links = [
     { linkedin = "https://linkedin.com/in/carlosmendible" },
     { github = "https://github.com/cmendible" },
