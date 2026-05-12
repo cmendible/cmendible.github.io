@@ -6,7 +6,7 @@ categories:
 date: "2026-05-11"
 description: 'AKS NAP: ZRS Disk PV Zone Fix with a Mutating Admission Webhook'
 images: ["/assets/img/posts/aks.png"]
-draft: true
+draft: false
 tags: ["aks", "containers", "terraform", "karpenter", "nap"]
 title: 'AKS NAP: ZRS Disk PV Zone Fix with a Mutating Admission Webhook'
 ---
