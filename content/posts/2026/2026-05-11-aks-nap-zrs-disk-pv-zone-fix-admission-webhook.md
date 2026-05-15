@@ -14,6 +14,8 @@ title: 'AKS NAP: ZRS Disk PV Zone Fix with a Mutating Admission Webhook'
 If you are running AKS with Node Auto Provisioning (NAP/Karpenter) and using Azure Disk ZRS (Zone-Redundant Storage) Persistent Volumes with `volumeBindingMode: Immediate`, you may have noticed that pods get stuck in `Pending` state. In this post, I'll show you a **temporary workaround** using a Kubernetes mutating admission webhook that fixes this scheduling issue.
 
 > **⚠️ Important:** This is a **temporary workaround / Proof of Concept**. The root cause is tracked in [kubernetes-sigs/karpenter#2743](https://github.com/kubernetes-sigs/karpenter/pull/2743). Once the fix lands in Karpenter and is rolled out to AKS NAP, this webhook will no longer be needed.
+>
+> **Update (2026-05-15):** PR [#2743](https://github.com/kubernetes-sigs/karpenter/pull/2743) has already been merged upstream in Karpenter, but it is **not part of AKS NAP yet**. Until AKS NAP picks up a release containing that change, this webhook workaround is still an option.
 
 ## The Problem
 
