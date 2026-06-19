@@ -18,6 +18,8 @@ If you are running AKS with Node Auto Provisioning (NAP/Karpenter) and using Azu
 > **Update (2026-05-15):** PR [#2743](https://github.com/kubernetes-sigs/karpenter/pull/2743) has already been merged upstream in Karpenter, but it is **not part of AKS NAP yet**. Until AKS NAP picks up a release containing that change, this webhook workaround is still an option.
 >
 > **Update (2026-05-26):** The fix has been released in [karpenter-provider-azure v1.12.1](https://github.com/Azure/karpenter-provider-azure/releases/tag/v1.12.1). Once your AKS NAP is running v1.12.1 or later, this webhook workaround will no longer be needed.
+>
+> **Update (2026-06-19):** ✅ The fix has now been deployed to the **AKS NAP add-on**. This workaround is **no longer needed** — you can safely remove the webhook from your clusters.
 
 ## The Problem
 
