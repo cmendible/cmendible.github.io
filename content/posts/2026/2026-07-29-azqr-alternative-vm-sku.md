@@ -38,24 +38,26 @@ azqr alternative-vm-sku --sku <SKU-name> [--top <N>]
 | Flag | Short | Default | Description |
 |------|-------|---------|-------------|
 | `--sku` | `-s` | *(required)* | Azure VM SKU name to find alternatives for |
-| `--top` | `-n` | `3` | Number of alternative SKUs to return |
+| `--top` | `-n` | `10` | Number of alternative SKUs to return |
 
 ## How the Compatibility Score Works
 
-Each candidate SKU is evaluated against the target using a weighted scoring algorithm that produces a score between **0.0 and 1.0** (higher is better). Candidates scoring below 0.1 are excluded.
+Each candidate SKU is evaluated against the target using a weighted scoring algorithm (higher is better). Candidates scoring below 0.1 are excluded.
 
 | Factor | Weight | Description |
 |--------|--------|-------------|
 | vCPU count match | 0.30 | Ratio of the smaller to the larger vCPU count |
 | Memory match | 0.25 | Ratio of the smaller to the larger memory (GB) |
 | Same base model series | 0.15 | Bonus when candidate shares the same SKU series, ignoring the `_vN` suffix (e.g. `Standard_D16s`) |
-| Same VM family | 0.10 | Bonus when candidate belongs to the same Azure VM family |
+| Cross-family bonus | up to +0.10 | Candidates from a **different** family draw from independent capacity pools, making them more useful when the target family is constrained. Base bonus 0.10, reduced by 0.02 per generation behind, floored at 0.0 |
+| Same-family penalty | −0.10 | Candidates in the **same** family face the same regional capacity constraints as the target, so they are penalized |
 | Version proximity | 0.05 | Full score for same/newer generation; −0.02 per generation behind, floored at 0.0 |
-| GPU match | 0.15 | GPU-enabled SKUs: proportional GPU count match. Non-GPU SKUs: flat 0.10 bonus |
+| GPU count match | 0.15 | GPU-enabled SKUs: proportional GPU count match. Non-GPU SKUs: flat 0.10 bonus |
+| GPU workload class match | 0.20 | **GPU SKUs only.** Bonus when candidate shares the same N-series workload class: NV (visualization), NC (compute), ND (distributed). Weighted higher than memory because GPU VM sizing is driven by partition count and workload type, not raw RAM |
 | Data disk match | 0.05 | Ratio of the smaller to the larger max data disk count |
 | Accelerated networking | 0.05 | Full score when candidate supports accelerated networking (or target doesn't require it) |
 
-> The total is capped at **1.0**. A score of 1.0 would represent a perfect match across all dimensions.
+> The cross-family bonus and same-family penalty replace the previous "same-family bonus" (+0.10). This change ensures that alternatives from independent capacity pools rank higher — which is exactly what you want when responding to quota exhaustion or SKU retirement.
 
 ## Examples
 
@@ -117,7 +119,7 @@ azqr alternative-vm-sku --sku Standard_D4s_v5 --top 3
 }
 ```
 
-The top recommendations for a `Standard_D4s_v5` are the newer `v6` and `v7` siblings identical vCPUs, memory, and networking, just a newer generation. The slightly lower-scored `v4` is the previous generation of the same series.
+The top recommendations for a `Standard_D4s_v5` are the newer `v6` and `v7` siblings — identical vCPUs, memory, and networking, just a newer generation. The slightly lower-scored `v4` is the previous generation of the same series. Note that same-family candidates are now penalized (−0.10) to favour cross-family alternatives; within the D-series family this shows up as a modest score reduction compared to the previous algorithm.
 
 ### GPU Workloads Standard_NC6s_v3
 
@@ -177,7 +179,7 @@ azqr alternative-vm-sku --sku Standard_NC6s_v3 --top 3
 }
 ```
 
-For the GPU-enabled `Standard_NC6s_v3`, the algorithm correctly prioritizes GPU count as a key criterion, surfacing other single-GPU SKUs rather than general-purpose VMs.
+For the GPU-enabled `Standard_NC6s_v3`, the algorithm now correctly prioritizes the **GPU workload class** (NC = compute) as a key criterion, surfacing same-class NC candidates ahead of NV (visualization) or ND (distributed) SKUs. Within the same class, GPU count and vCPU/memory ratios break ties.
 
 ## Practical Use Cases
 
