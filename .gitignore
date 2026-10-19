@@ -1,3 +1,6 @@
 [Pp]ublic/
 [Rr]esources/
 node_modules/
+
+# HVE Core RPI tracking files
+.copilot-tracking/
