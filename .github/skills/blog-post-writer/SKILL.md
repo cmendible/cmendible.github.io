@@ -1,6 +1,6 @@
 ---
 name: blog-post-writer
-description: Expert guidance for developing and contributing to Azure Quick Review (azqr) - A Go-based CLI tool for Azure resource compliance analysis
+description: Create new technical blog posts for a Hugo-based blog with proper front matter, structure, and Microsoft Learn documentation references. Use when asked to write, create, or generate a blog post or article.
 ---
 
 # Blog Post Writer Skill
